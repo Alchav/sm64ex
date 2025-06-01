@@ -60,7 +60,7 @@ AP_EXTERN_C int SM64AP_GetStars();
 AP_EXTERN_C int SM64AP_GetRequiredStars(int);
 AP_EXTERN_C u32 SM64AP_CourseStarFlags(s32);
 AP_EXTERN_C void SM64AP_RedirectWarp(s16*,s16*,s8*,s16*,s16*,bool,int);
-AP_EXTERN_C int SM64AP_CourseToTTC();
+AP_EXTERN_C int SM64AP_EntranceToTTC();
 AP_EXTERN_C void SM64AP_SetClockToTTCAction(int* action);
 AP_EXTERN_C void SM64AP_SetClockToTTCState();
 AP_EXTERN_C bool SM64AP_CheckedLoc(int);

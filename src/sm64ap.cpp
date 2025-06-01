@@ -219,11 +219,11 @@ void SM64AP_RedirectWarp(s16* curLevel, s16* destLevel, s8* curArea, s16* destAr
     }
 }
 
-int SM64AP_CourseToTTC() {
+int SM64AP_EntranceToTTC() {
     int level = 0;
     for (auto itr : map_entrances) {
         if (itr.second/10 == LEVEL_TTC) {
-            return itr.first/10;
+            return itr.first;
         }
     }
     return -1; // Error Cond
