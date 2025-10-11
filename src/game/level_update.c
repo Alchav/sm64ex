@@ -15,6 +15,7 @@
 #include "area.h"
 #include "save_file.h"
 #include "sound_init.h"
+#include "levels/castle_inside/header.h"
 #include "mario.h"
 #include "camera.h"
 #include "object_list_processor.h"
@@ -656,6 +657,61 @@ struct WarpNode *get_painting_warp_node(void) {
     return warpNode;
 }
 
+void reject_mario_from_painting(s16 courseNum, s16 destArea) {
+    Vec3s rejectAngle = {0, 0, 0};
+    f32 newYaw = 0.0f;
+    f32 perpYaw = 0.0f;
+    Vec3f ejectPos = {0.0f,0.0f,0.0f};
+    f32 ejectDistance = 50.0f;
+    f32 minYDiff = 30.0f;
+    struct Painting p;
+    switch(courseNum) {
+        case 1:  p = bob_painting;      break;
+        case 2:  p = wf_painting;       break;
+        case 3:  p = jrb_painting;      break;
+        case 4:  p = ccm_painting;      break;
+        // BBH and HMC are skipped here
+        case 7:  p = lll_painting;      break;
+        case 8:  p = ssl_painting;      break;
+        case 9:  p = ddd_painting;      break;
+        case 10: p = sl_painting;       break;
+        case 11: p = wdw_painting;      break;
+        case 12: p = ttm_painting;      break;
+        case 13: 
+            p = destArea == 1 ? thi_huge_painting : thi_tiny_painting;
+            break;
+        case 14: p = ttc_painting;      break;
+    }
+    newYaw = p.yaw;
+    perpYaw = p.yaw - 90.0f;
+    // Painting placement is by the bottom left corner
+    vec3f_set(ejectPos, gMarioState->pos[0], gMarioState->pos[1] < p.posY+minYDiff? p.posY+minYDiff : gMarioState->pos[1], gMarioState->pos[2]);
+    // Adjust it out of the painting slightly; sin/cosf use radians, convert the yaw to radians
+    ejectPos[0] += ejectDistance * sinf(newYaw * M_PI / 180.0);
+    ejectPos[2] += ejectDistance * cosf(newYaw * M_PI / 180.0);
+
+    if(gMarioState->forwardVel > 0.0f) {
+        // Eject mario backward, which means face him toward the painting rather than away
+        newYaw = (((s16)newYaw + 180) % 360) + 0.0f;
+    }
+    // Convert to s16 representation of the angle; -2^15 = -180 degree, 2^15-1 = 180 degree, 0 = 0
+    rejectAngle[1] =  (s16)((newYaw > 180.0f? 180.0f-newYaw : newYaw)/180.0f*0x7FFF);
+    vec3s_copy(gMarioState->faceAngle, rejectAngle);
+    vec3f_copy(gMarioState->pos, ejectPos);
+
+    gMarioState->marioObj->oPosX = gMarioState->pos[0];
+    gMarioState->marioObj->oPosZ = gMarioState->pos[2];
+
+    vec3f_copy(gMarioState->marioObj->header.gfx.pos, gMarioState->pos);
+
+    if(gMarioState->forwardVel > 0.0f) {
+        set_mario_action(gMarioState, ACT_HARD_BACKWARD_AIR_KB, 0);
+    } else {
+        set_mario_action(gMarioState, ACT_HARD_FORWARD_AIR_KB, 0);
+    }
+    play_sound(SOUND_GENERAL_PAINTING_EJECT, gDefaultSoundArgs);
+}
+
 /**
  * Check is Mario has entered a painting, and if so, initiate a warp.
  */
@@ -669,6 +725,15 @@ void initiate_painting_warp(void) {
                 play_painting_eject_sound();
             } else if (pWarpNode->id != 0) {
                 warpNode = *pWarpNode;
+
+                // If we don't have the painting for this course, kick Mario out
+                // The function takes care of handling if painting locking is not enabled
+                s16 destCourse = gLevelToCourseNumTable[warpNode.destLevel - 1];
+                if(!SM64AP_HavePainting(destCourse)) {
+                    // If we're not allowed we need to be ejected forcefully enough not to fall back in
+                    reject_mario_from_painting(destCourse, warpNode.destArea);
+                    return;
+                }
 
                 if (!(warpNode.destLevel & 0x80)) {
                     D_8032C9E0 = check_warp_checkpoint(&warpNode);

@@ -16,6 +16,7 @@ extern "C" {
 #include <set>
 
 #define WARP_NODE_CREDITS_MIN 0xF8 // level_update.c
+#define NUM_PAINTING_LOCKS 15
 
 // Set to false on some branch for compat with patches
 static constexpr bool SM64AP_SUPPORT_MOVE_RANDO = true;
@@ -29,6 +30,7 @@ bool sm64_have_metalcap = false;
 bool sm64_have_vanishcap = false;
 int sm64_moat_state = 0;
 bool sm64_have_cannon[15];
+bool sm64_have_painting[NUM_PAINTING_LOCKS];
 int sm64_completion_type = 0;
 std::bitset<SM64AP_NUM_ABILITIES> sm64_have_abilities;
 int* sm64_clockaction = nullptr;
@@ -79,6 +81,10 @@ void SM64AP_RecvItem(int64_t idx, bool notify) {
         case SM64AP_ID_CANNONUNLOCK(0) ... SM64AP_ID_CANNONUNLOCK(15-1):
             sm64_have_cannon[idx-(SM64AP_ID_CANNONUNLOCK(0))] = true;
             break;
+    case SM64AP_ID_PAINTINGUNLOCK(0) ... SM64AP_ID_PAINTINGUNLOCK(NUM_PAINTING_LOCKS-1):
+        // We don't have a painting unlock for BoB, so (0) will never appear; index 1 corresponds to WF, and so on
+        sm64_have_painting[idx-(SM64AP_ID_PAINTINGUNLOCK(0))] = true;
+        break;
         case SM64AP_ID_ABILITY(0):
             sm64_have_abilities[idx-SM64AP_ABILITY_OFFSET+1] = sm64_have_abilities[idx-SM64AP_ABILITY_OFFSET];
             sm64_have_abilities[idx-SM64AP_ABILITY_OFFSET] = true;
@@ -275,6 +281,13 @@ void SM64AP_SetMoveRandoVec(int vec) {
         sm64_have_abilities[i] = !std::bitset<SM64AP_NUM_ABILITIES>(vec).test(i) || sm64_have_abilities[i];
     }
 }
+void SM64AP_SetPaintingRando(int enabled) {
+    if(!enabled) {
+        // Not enabled, so unlock all paintings
+        for (int i = 0; i < NUM_PAINTING_LOCKS; i++)
+            sm64_have_painting[i] = true;
+    }
+}
 
 void SM64AP_ResetItems() {
     for (int i = 0; i < SM64AP_NUM_LOCS; i++) {
@@ -282,6 +295,9 @@ void SM64AP_ResetItems() {
     }
     for (int i = 0; i < 15; i++) {
         sm64_have_cannon[i] = false;
+    }
+    for (int i = 0; i < NUM_PAINTING_LOCKS; i++) {
+        sm64_have_painting[i] = false;
     }
     sm64_have_abilities.reset();
     sm64_have_key1 = false;
@@ -333,6 +349,7 @@ void SM64AP_GenericInit() {
     AP_RegisterSlotDataIntCallback("StarsToFinish", &SM64AP_SetStarsToFinish);
     AP_RegisterSlotDataIntCallback("CompletionType", &SM64AP_SetCompletionType);
     AP_RegisterSlotDataIntCallback("MoveRandoVec", &SM64AP_SetMoveRandoVec);
+    AP_RegisterSlotDataIntCallback("PaintingRando", &SM64AP_SetPaintingRando);
     AP_RegisterSlotDataMapIntIntCallback("AreaRando", &SM64AP_SetCourseMap);
 
     course_dest_supported = {
@@ -484,6 +501,19 @@ bool SM64AP_PressedSwitch(int flag) {
 bool SM64AP_HaveCannon(int courseIdx) {
     if (courseIdx < 15) return sm64_have_cannon[courseIdx];
     return true;
+}
+
+bool SM64AP_HavePainting(int courseIdx) {
+    switch(courseIdx) {
+        case 1:  // BOB painting is always unlocked
+        case 5:  // BBH doesn't have a painting
+        case 6:  // HMC has a painting but you get stuck in an infinite loop of falling in and getting pushed out, so let's not do that :)
+        case 15: // RR doesn't have a painting
+            return true;
+        default:
+            // courses are 1-indexed, the items are 0-indexed
+            return sm64_have_painting[courseIdx-1];
+    }
 }
 
 bool SM64AP_MoatDrained() {
