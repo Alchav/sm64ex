@@ -1020,6 +1020,8 @@ $(BUILD_DIR)/%.o: %.s
 APCPP_LIB:=lib/APCpp/build/libAPCpp
 ifeq ($(WINDOWS_BUILD),1)
   APCPP_LIB:=$(APCPP_LIB).dll
+else ifeq ($(OSX_BUILD),1)
+  APCPP_LIB:=$(APCPP_LIB).dylib
 else
   APCPP_LIB:=$(APCPP_LIB).so
 endif
