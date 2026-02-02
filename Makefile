@@ -1018,19 +1018,23 @@ $(BUILD_DIR)/%.o: %.s
 	$(AS) $(ASFLAGS) -MD $(BUILD_DIR)/$*.d -o $@ $<
 
 APCPP_LIB:=lib/APCpp/build/libAPCpp
+LDFLAGS_STATIC:=-static-libgcc -static-libstdc++
 ifeq ($(WINDOWS_BUILD),1)
   APCPP_LIB:=$(APCPP_LIB).dll
 else ifeq ($(OSX_BUILD),1)
   APCPP_LIB:=$(APCPP_LIB).dylib
 else
   APCPP_LIB:=$(APCPP_LIB).so
+  ifeq ($(IS_FLATPAK),1)
+    LDFLAGS_STATIC=""
+  endif
 endif
 
 $(APCPP_LIB): lib/APCpp/Archipelago.cpp lib/APCpp/Archipelago.h
 	cd lib/APCpp && mkdir -p build && cd build && CXX=$(CXX) cmake .. $(CMAKE_WIN_BUILD_FLAG) -DMBEDTLS_FATAL_WARNINGS=OFF -DCMAKE_C_FLAGS="-fzero-init-padding-bits=unions" && CXX=$(CXX) cmake --build .
 
 $(EXE): $(O_FILES) $(MIO0_FILES:.mio0=.o) $(SOUND_OBJ_FILES) $(ULTRA_O_FILES) $(GODDARD_O_FILES) $(if $(RPC_LIBS),$(BUILD_DIR)/$(RPC_LIBS),) $(APCPP_LIB)
-	$(LD) -static-libgcc -static-libstdc++ -L $(BUILD_DIR) -o $@ $(O_FILES) $(SOUND_OBJ_FILES) $(ULTRA_O_FILES) $(GODDARD_O_FILES) $(LDFLAGS) $(APCPP_LIB) -Wl,-rpath,. 
+	$(LD) $(LDFLAGS_STATIC) -L $(BUILD_DIR) -o $@ $(O_FILES) $(SOUND_OBJ_FILES) $(ULTRA_O_FILES) $(GODDARD_O_FILES) $(LDFLAGS) $(APCPP_LIB) -Wl,-rpath,.
 	cp $(APCPP_LIB) $(BUILD_DIR)
 
 .PHONY: all clean distclean default diff test load libultra res
