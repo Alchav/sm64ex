@@ -18,6 +18,7 @@
 #include "game/segment2.h"
 #include "game/segment7.h"
 #include "game/spawn_object.h"
+#include "sm64ap.h"
 #include "sm64.h"
 #include "text_strings.h"
 
@@ -179,8 +180,6 @@ static unsigned char textMarioD[] = { TEXT_FILE_MARIO_D };
 
 #ifndef VERSION_EU
 static unsigned char textNew[] = { TEXT_NEW };
-static unsigned char starIcon[] = { GLYPH_STAR, GLYPH_SPACE };
-static unsigned char xIcon[] = { GLYPH_MULTIPLY, GLYPH_SPACE };
 #endif
 
 #ifndef VERSION_EU
@@ -300,8 +299,6 @@ static unsigned char textHiScore[][15] = {{ TEXT_HI_SCORE }, { TEXT_HI_SCORE_FR 
 static unsigned char textMyScore[][10] = {{ TEXT_MY_SCORE }, { TEXT_MY_SCORE_FR }, { TEXT_MY_SCORE_DE }};
 
 static unsigned char textNew[][5] = {{ TEXT_NEW }, { TEXT_NEW_FR }, { TEXT_NEW_DE }};
-static unsigned char starIcon[] = { GLYPH_STAR, GLYPH_SPACE };
-static unsigned char xIcon[] = { GLYPH_MULTIPLY, GLYPH_SPACE };
 #endif
 
 /**
@@ -1698,28 +1695,53 @@ s32 update_text_fade_out(void) {
     return FALSE;
 }
 
+static s8 get_received_castle_key_count(void) {
+    s8 keyCount = 0;
+    s8 key;
+
+    for (key = 0; key < SM64AP_NUM_CASTLE_KEYS; key++) {
+        if (SM64AP_HaveCastleKey(key)) {
+            keyCount++;
+        }
+    }
+
+    return keyCount;
+}
+
+static s8 get_received_cap_count(void) {
+    s8 capCount = 0;
+
+    if (SM64AP_HaveCap(2)) {
+        capCount++;
+    }
+    if (SM64AP_HaveCap(4)) {
+        capCount++;
+    }
+    if (SM64AP_HaveCap(8)) {
+        capCount++;
+    }
+
+    return capCount;
+}
+
 /**
- * Prints the amount of stars of a save file.
+ * Prints AP key/cap counts for an existing save file.
  * If a save doesn't exist, print "NEW" instead.
  */
 void print_save_file_star_count(s8 fileIndex, s16 x, s16 y) {
-    u8 starCountText[4];
-    s8 offset = 0;
-    s16 starCount;
+    u8 progressionText[5];
 
     if (save_file_exists(fileIndex) == TRUE) {
-        starCount = save_file_get_total_star_count(fileIndex, 0, 24);
-        // Print star icon
-        print_hud_lut_string(HUD_LUT_GLOBAL, x, y, starIcon);
-        // If star count is less than 100, print x icon and move
-        // the star count text one digit to the right.
-        if (starCount < 100) {
-            print_hud_lut_string(HUD_LUT_GLOBAL, x + 16, y, xIcon);
-            offset = 16;
-        }
-        // Print star count
-        int_to_str(starCount, starCountText);
-        print_hud_lut_string(HUD_LUT_GLOBAL, x + offset + 16, y, starCountText);
+#if defined(VERSION_JP) || defined(VERSION_SH)
+        progressionText[0] = GLYPH_BETA_KEY;
+#else
+        progressionText[0] = ASCII_TO_DIALOG('K');
+#endif
+        progressionText[1] = get_received_castle_key_count();
+        progressionText[2] = ASCII_TO_DIALOG('C');
+        progressionText[3] = get_received_cap_count();
+        progressionText[4] = GLOBAR_CHAR_TERMINATOR;
+        print_hud_lut_string(HUD_LUT_GLOBAL, x, y, progressionText);
     } else {
         // Print "new" text
         print_hud_lut_string(HUD_LUT_GLOBAL, x, y, LANGUAGE_ARRAY(textNew));

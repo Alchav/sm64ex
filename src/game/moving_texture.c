@@ -13,6 +13,7 @@
 #include "geo_misc.h"
 #include "rendering_graph_node.h"
 #include "object_list_processor.h"
+#include "sm64ap.h"
 
 /**
  * This file contains functions for generating display lists with moving textures
@@ -311,13 +312,14 @@ Gfx *geo_wdw_set_initial_water_level(s32 callContext, UNUSED struct GraphNode *n
         gWdwWaterLevelSet = 0;
     } else if (callContext == GEO_CONTEXT_RENDER && gEnvironmentRegions != NULL
                && gWdwWaterLevelSet == 0) {
-        if (gPaintingMarioYEntry <= 1382.4) {
-            wdwWaterHeight = 31;
-        } else if (gPaintingMarioYEntry >= 1600.0) {
-            wdwWaterHeight = 2816;
+        if (gPaintingMarioYEntry <= SM64AP_WDW_LOW_ENTRY_MAX) {
+            wdwWaterHeight = SM64AP_WDW_LOW_WATER_LEVEL;
+        } else if (gPaintingMarioYEntry >= SM64AP_WDW_HIGH_ENTRY_MIN) {
+            wdwWaterHeight = SM64AP_WDW_HIGH_WATER_LEVEL;
         } else {
-            wdwWaterHeight = 1024;
+            wdwWaterHeight = SM64AP_WDW_MIDDLE_WATER_LEVEL;
         }
+        wdwWaterHeight = SM64AP_GetWDWEntranceWaterLevel(wdwWaterHeight);
         for (i = 0; i < *gEnvironmentRegions; i++) {
             gEnvironmentRegions[i * 6 + 6] = wdwWaterHeight;
         }

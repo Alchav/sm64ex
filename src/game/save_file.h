@@ -104,6 +104,11 @@ extern s8 gLevelToCourseNumTable[];
 #define SAVE_FLAG_CAP_ON_UKIKI           /* 0x040000 */ (1 << 18)
 #define SAVE_FLAG_CAP_ON_MR_BLIZZARD     /* 0x080000 */ (1 << 19)
 #define SAVE_FLAG_UNLOCKED_50_STAR_DOOR  /* 0x100000 */ (1 << 20)
+#define SAVE_FLAG_UNLOCKED_70_STAR_DOOR  /* 0x200000 */ (1 << 21)
+#define SAVE_FLAG_UNLOCKED_AP_8_KEY_DOOR  /* 0x400000 */ (1 << 22)
+#define SAVE_FLAG_UNLOCKED_AP_30_KEY_DOOR /* 0x800000 */ (1 << 23)
+#define SAVE_FLAG_UNLOCKED_AP_50_KEY_DOOR /* 0x1000000 */ (1 << 24)
+#define SAVE_FLAG_UNLOCKED_AP_70_KEY_DOOR /* 0x2000000 */ (1 << 25)
 
 // Variable for setting a warp checkpoint.
 

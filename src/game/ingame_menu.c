@@ -2706,9 +2706,11 @@ s16 render_pause_courses_and_castle(void) {
     optmenu_draw_prompt();
 #endif
 
-    print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(78), 209-20, "KEYS");
-    print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(78), 209-35, SM64AP_HaveKey1() ? "Y" : "N");
-    print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(78)+13, 209-35, SM64AP_HaveKey2() ? "Y" : "N");
+    s16 keyX = GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(78);
+    for (s16 i = 0; i < SM64AP_NUM_CASTLE_KEYS; i++) {
+        print_text(keyX + i * 13, 209-35, SM64AP_HaveCastleKey(i) ? "Y" : "N");
+    }
+    print_text(keyX, 209-20, "KEYS");
     print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(78), 209-35-20, "CAPS");
     print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(78), 209-70, SM64AP_HaveCap(2) ? "Y" : "N");
     print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(78)+13, 209-70, SM64AP_HaveCap(4) ? "Y" : "N");

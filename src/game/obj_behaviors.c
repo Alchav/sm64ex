@@ -1,5 +1,6 @@
 #include <PR/ultratypes.h>
 
+#include "sm64ap.h"
 #include "sm64.h"
 #include "area.h"
 #include "audio/external.h"

@@ -9,14 +9,15 @@
 #define FILENAME_FORMAT "%s/sm64_save_file_%d.sav"
 #define NUM_COURSES 15
 #define NUM_BONUS_COURSES 10
-#define NUM_FLAGS 21
+#define NUM_FLAGS 26
 #define NUM_CAP_ON 4
 
 const char *sav_flags[NUM_FLAGS] = {
     "file_exists", "wing_cap", "metal_cap", "vanish_cap", "key_1", "key_2",
     "basement_door", "upstairs_door", "ddd_moved_back", "moat_drained",
     "pps_door", "wf_door", "ccm_door", "jrb_door", "bitdw_door",
-    "bitfs_door", "", "", "", "", "50star_door"    // 4 Cap flags are processed in their own section
+    "bitfs_door", "", "", "", "", "50star_door", "70star_door",
+    "ap_8_key_door", "ap_30_key_door", "ap_50_key_door", "ap_70_key_door"    // 4 Cap flags are processed in their own section
 };
 
 const char *sav_courses[NUM_COURSES] = {

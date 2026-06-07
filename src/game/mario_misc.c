@@ -26,10 +26,6 @@
 #include "skybox.h"
 #include "sound_init.h"
 
-#define TOAD_STAR_1_REQUIREMENT 12
-#define TOAD_STAR_2_REQUIREMENT 25
-#define TOAD_STAR_3_REQUIREMENT 35
-
 #define TOAD_STAR_1_DIALOG DIALOG_082
 #define TOAD_STAR_2_DIALOG DIALOG_076
 #define TOAD_STAR_3_DIALOG DIALOG_083
@@ -183,39 +179,35 @@ void bhv_toad_message_loop(void) {
 }
 
 void bhv_toad_message_init(void) {
-    s32 saveFlags = save_file_get_flags();
-    s32 starCount = save_file_get_total_star_count(gCurrSaveFileNum - 1, 0, 24);
     s32 dialogId = (gCurrentObject->oBehParams >> 24) & 0xFF;
-    s32 enoughStars = TRUE;
+
+    if (!SM64AP_HaveToads()) {
+        obj_mark_for_deletion(gCurrentObject);
+        return;
+    }
 
     switch (dialogId) {
         case TOAD_STAR_1_DIALOG:
-            enoughStars = (starCount >= TOAD_STAR_1_REQUIREMENT);
             if (SM64AP_CheckedLoc(SM64AP_LOCATIONID_BASEMENTTOAD)) {
                 dialogId = TOAD_STAR_1_DIALOG_AFTER;
             }
             break;
         case TOAD_STAR_2_DIALOG:
-            enoughStars = (starCount >= TOAD_STAR_2_REQUIREMENT);
             if (SM64AP_CheckedLoc(SM64AP_LOCATIONID_SECONDFLOORTOAD)) {
                 dialogId = TOAD_STAR_2_DIALOG_AFTER;
             }
             break;
         case TOAD_STAR_3_DIALOG:
-            enoughStars = (starCount >= TOAD_STAR_3_REQUIREMENT);
             if (SM64AP_CheckedLoc(SM64AP_LOCATIONID_THIRDFLOORTOAD)) {
                 dialogId = TOAD_STAR_3_DIALOG_AFTER;
             }
             break;
     }
-    if (enoughStars) {
-        gCurrentObject->oToadMessageDialogId = dialogId;
-        gCurrentObject->oToadMessageRecentlyTalked = 0;
-        gCurrentObject->oToadMessageState = TOAD_MESSAGE_FADED;
-        gCurrentObject->oOpacity = 81;
-    } else {
-        obj_mark_for_deletion(gCurrentObject);
-    }
+
+    gCurrentObject->oToadMessageDialogId = dialogId;
+    gCurrentObject->oToadMessageRecentlyTalked = 0;
+    gCurrentObject->oToadMessageState = TOAD_MESSAGE_FADED;
+    gCurrentObject->oOpacity = 81;
 }
 
 static void star_door_unlock_spawn_particles(s16 angleOffset) {

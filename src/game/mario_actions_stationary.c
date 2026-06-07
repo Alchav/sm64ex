@@ -1078,14 +1078,12 @@ s32 act_first_person(struct MarioState *m) {
         }
     }
 
-    if (m->floor->type == SURFACE_LOOK_UP_WARP) {
-        if (save_file_get_total_star_count(gCurrSaveFileNum - 1, 0, 0x18) >= 10) {
-            sp1A = m->statusForCamera->headRotation[0];
-            sp18 = ((m->statusForCamera->headRotation[1] * 4) / 3) + m->faceAngle[1];
-            if (sp1A == -0x1800) {
-                if (sp18 < -0x6FFF || sp18 >= 0x7000) {
-                    level_trigger_warp(m, 1);
-                }
+    if (m->floor->type == SURFACE_LOOK_UP_WARP && SM64AP_HaveWingCapLight()) {
+        sp1A = m->statusForCamera->headRotation[0];
+        sp18 = ((m->statusForCamera->headRotation[1] * 4) / 3) + m->faceAngle[1];
+        if (sp1A == -0x1800) {
+            if (sp18 < -0x6FFF || sp18 >= 0x7000) {
+                level_trigger_warp(m, 1);
             }
         }
     }

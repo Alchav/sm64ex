@@ -8,6 +8,8 @@ extern "C" {
     #include "level_table.h"
     #include "model_ids.h"
     #include "game/level_update.h"
+    #include "game/object_list_processor.h"
+    #include "object_constants.h"
 }
 
 #include <string>
@@ -24,8 +26,15 @@ static constexpr bool SM64AP_SUPPORT_MOVE_RANDO = true;
 
 int starsCollected = 0;
 bool sm64_locations[SM64AP_NUM_LOCS];
-bool sm64_have_key1 = false;
-bool sm64_have_key2 = false;
+bool sm64_have_first_floor_key = false;
+int sm64_have_progressive_basement_keys = 0;
+int sm64_have_progressive_upstairs_keys = 0;
+int sm64_have_progressive_keys = 0;
+int sm64_have_progressive_mips = 0;
+bool sm64_have_wing_cap_light = false;
+bool sm64_have_bbh = false;
+bool sm64_have_toads = false;
+bool sm64_have_castle_cannon = false;
 bool sm64_have_wingcap = false;
 bool sm64_have_metalcap = false;
 bool sm64_have_vanishcap = false;
@@ -51,6 +60,20 @@ std::map<int,int> map_boxid_locid;
 
 int sm64_exit_return_to;
 int sm64_exit_orig_entrancelvl;
+int sm64_wdw_entrance_variant = 0;
+int sm64_ttc_entrance_variant = SM64AP_ENTRANCE_TTC_STOPPED;
+
+static void SM64AP_IncrementClamped(int &value, int maxValue) {
+    if (value < maxValue) {
+        value++;
+    }
+}
+
+static void SM64AP_SetMin(int &value, int minValue) {
+    if (value < minValue) {
+        value = minValue;
+    }
+}
 
 void SM64AP_RecvItem(int64_t idx, bool notify) {
     switch (idx) {
@@ -58,14 +81,37 @@ void SM64AP_RecvItem(int64_t idx, bool notify) {
             starsCollected++;
             break;
         case SM64AP_ID_KEY1:
-            sm64_have_key1 = true;
+            SM64AP_SetMin(sm64_have_progressive_basement_keys, 1);
             break;
         case SM64AP_ID_KEY2:
-            sm64_have_key2 = true;
+            SM64AP_SetMin(sm64_have_progressive_upstairs_keys, 1);
             break;
         case SM64AP_ID_KEYPROG:
-            sm64_have_key2 = sm64_have_key1;
-            sm64_have_key1 = true;
+            SM64AP_IncrementClamped(sm64_have_progressive_keys, SM64AP_NUM_CASTLE_KEYS);
+            break;
+        case SM64AP_ID_FIRST_FLOOR_KEY:
+            sm64_have_first_floor_key = true;
+            break;
+        case SM64AP_ID_BASEMENT_KEYPROG:
+            SM64AP_IncrementClamped(sm64_have_progressive_basement_keys, 2);
+            break;
+        case SM64AP_ID_UPSTAIRS_KEYPROG:
+            SM64AP_IncrementClamped(sm64_have_progressive_upstairs_keys, 3);
+            break;
+        case SM64AP_ID_PROGRESSIVE_MIPS:
+            SM64AP_IncrementClamped(sm64_have_progressive_mips, 2);
+            break;
+        case SM64AP_ID_WING_CAP_LIGHT:
+            sm64_have_wing_cap_light = true;
+            break;
+        case SM64AP_ID_BBH:
+            sm64_have_bbh = true;
+            break;
+        case SM64AP_ID_TOADS:
+            sm64_have_toads = true;
+            break;
+        case SM64AP_ID_CASTLE_CANNON:
+            sm64_have_castle_cannon = true;
             break;
         case SM64AP_ID_WINGCAP:
             sm64_have_wingcap = true;
@@ -418,7 +464,92 @@ void setCourseNodeAndArea(int coursenum, s16* oldnode, bool isDeathWarp, int war
     }
 }
 
-void SM64AP_RedirectWarp(s16* curLevel, s16* destLevel, s8* curArea, s16* destArea, s16* destWarpNode, bool isDeathWarp, int warpOp) {
+static int SM64AP_GetEntranceDefaultVariant() {
+    return 1;
+}
+
+static int SM64AP_DefaultEntranceKey(int entranceKey) {
+    int level = entranceKey / 10;
+    int variant = entranceKey % 10;
+
+    if ((level == LEVEL_WDW && variant >= SM64AP_ENTRANCE_WDW_LOW && variant <= SM64AP_ENTRANCE_WDW_HIGH)
+        || (level == LEVEL_TTC && variant >= SM64AP_ENTRANCE_TTC_STOPPED && variant <= SM64AP_ENTRANCE_TTC_FAST)) {
+        return SM64AP_ENTRANCE_ID(level, SM64AP_GetEntranceDefaultVariant());
+    }
+
+    return entranceKey;
+}
+
+static int SM64AP_GetMappedEntrance(int sourceEntrance) {
+    auto itr = map_entrances.find(sourceEntrance);
+    if (itr != map_entrances.end()) {
+        return itr->second;
+    }
+
+    int defaultEntrance = SM64AP_DefaultEntranceKey(sourceEntrance);
+    itr = map_entrances.find(defaultEntrance);
+    if (itr != map_entrances.end()) {
+        return itr->second;
+    }
+
+    return sourceEntrance;
+}
+
+static void SM64AP_SetTTCEntranceVariantSpeed(int variant) {
+    switch (variant) {
+        case SM64AP_ENTRANCE_TTC_STOPPED:
+            gTTCSpeedSetting = TTC_SPEED_STOPPED;
+            break;
+        case SM64AP_ENTRANCE_TTC_SLOW:
+            gTTCSpeedSetting = TTC_SPEED_SLOW;
+            break;
+        case SM64AP_ENTRANCE_TTC_RANDOM:
+            gTTCSpeedSetting = TTC_SPEED_RANDOM;
+            break;
+        case SM64AP_ENTRANCE_TTC_FAST:
+            gTTCSpeedSetting = TTC_SPEED_FAST;
+            break;
+    }
+}
+
+static void SM64AP_SetWDWEntranceVariant(int variant) {
+    sm64_wdw_entrance_variant = variant;
+}
+
+static void SM64AP_ApplyEntranceDestination(int destination, s16* destLevel, s16* destArea) {
+    int level = destination / 10;
+    int variant = destination % 10;
+
+    SM64AP_SetWDWEntranceVariant(0);
+    *destLevel = level;
+    *destArea = variant;
+
+    if (level == LEVEL_WDW && variant >= SM64AP_ENTRANCE_WDW_LOW && variant <= SM64AP_ENTRANCE_WDW_HIGH) {
+        *destArea = 1;
+        SM64AP_SetWDWEntranceVariant(variant);
+    } else if (level == LEVEL_TTC && variant >= SM64AP_ENTRANCE_TTC_STOPPED && variant <= SM64AP_ENTRANCE_TTC_FAST) {
+        *destArea = 1;
+        SM64AP_SetTTCEntranceVariantSpeed(variant);
+    }
+}
+
+static int SM64AP_SourceEntranceKey(s16 destLevel, s16 destArea, s32 sourceEntrance) {
+    if (sourceEntrance != 0) {
+        return sourceEntrance;
+    }
+
+    switch (destLevel) {
+        case LEVEL_LLL:
+        case LEVEL_SSL:
+        case LEVEL_TTM:
+        case LEVEL_COTMC:
+            return SM64AP_ENTRANCE_ID(destLevel, 1);
+        default:
+            return SM64AP_ENTRANCE_ID(destLevel, destArea);
+    }
+}
+
+void SM64AP_RedirectWarp(s16* curLevel, s16* destLevel, s8* curArea, s16* destArea, s16* destWarpNode, bool isDeathWarp, int warpOp, s32 sourceEntrance) {
     // When warping, always lock the clock and reset var to avoid segfault if old clock val is not in new area
     SM64AP_SetClockToTTCState();
     if (*destLevel == LEVEL_BOWSER_3 || *curLevel == LEVEL_BOWSER_3 ||
@@ -426,25 +557,14 @@ void SM64AP_RedirectWarp(s16* curLevel, s16* destLevel, s8* curArea, s16* destAr
     if (*destWarpNode >= WARP_NODE_CREDITS_MIN) return; // Credit Warps
     if ((*curLevel == LEVEL_CASTLE || *curLevel == LEVEL_CASTLE_COURTYARD || *curLevel == LEVEL_CASTLE_GROUNDS || *curLevel == LEVEL_HMC) && 
          *destLevel != LEVEL_CASTLE && *destLevel != LEVEL_CASTLE_COURTYARD && *destLevel != LEVEL_CASTLE_GROUNDS) {
-        int destination;
-        switch (*destLevel) {
-            case LEVEL_LLL:
-            case LEVEL_SSL:
-            case LEVEL_TTM:
-            case LEVEL_COTMC:
-                destination = map_entrances[*destLevel * 10 + 1];
-                break;
-            default:
-                if (*curLevel == LEVEL_HMC) return; // Safety Check: If in HMC only relevant warp is to COTMC
-                destination = map_entrances[*destLevel * 10 + *destArea];
-                break;
-        }
+        if (*curLevel == LEVEL_HMC && *destLevel != LEVEL_COTMC) return; // Safety Check: If in HMC only relevant warp is to COTMC
+        int sourceKey = SM64AP_SourceEntranceKey(*destLevel, *destArea, sourceEntrance);
+        int destination = SM64AP_GetMappedEntrance(sourceKey);
         if (*curLevel != LEVEL_HMC) { // HMC -> COTMC transition should not set new return point
             sm64_exit_return_to = *curLevel * 10 + *curArea;
-            sm64_exit_orig_entrancelvl = *destLevel;
+            sm64_exit_orig_entrancelvl = sourceKey / 10;
         }
-        *destLevel = destination/10; // Cuts off Area Info
-        *destArea = destination % 10; // Cuts off Level Info
+        SM64AP_ApplyEntranceDestination(destination, destLevel, destArea);
         *destWarpNode = 0x0A;
         return;
     }
@@ -459,13 +579,7 @@ void SM64AP_RedirectWarp(s16* curLevel, s16* destLevel, s8* curArea, s16* destAr
 }
 
 int SM64AP_CourseToTTC() {
-    int level = 0;
-    for (auto itr : map_entrances) {
-        if (itr.second/10 == LEVEL_TTC) {
-            return itr.first/10;
-        }
-    }
-    return -1; // Error Cond
+    return LEVEL_TTC;
 }
 
 void SM64AP_SetClockToTTCAction(int* action) {
@@ -473,8 +587,48 @@ void SM64AP_SetClockToTTCAction(int* action) {
 }
 
 void SM64AP_SetClockToTTCState() {
-    if (sm64_clockaction) *sm64_clockaction = 5;
+    if (sm64_clockaction) *sm64_clockaction = 6;
     sm64_clockaction = nullptr;
+}
+
+void SM64AP_SetTTCEntranceSpeed(int speed) {
+    switch (speed) {
+        case TTC_SPEED_STOPPED:
+            sm64_ttc_entrance_variant = SM64AP_ENTRANCE_TTC_STOPPED;
+            break;
+        case TTC_SPEED_SLOW:
+            sm64_ttc_entrance_variant = SM64AP_ENTRANCE_TTC_SLOW;
+            break;
+        case TTC_SPEED_RANDOM:
+            sm64_ttc_entrance_variant = SM64AP_ENTRANCE_TTC_RANDOM;
+            break;
+        case TTC_SPEED_FAST:
+            sm64_ttc_entrance_variant = SM64AP_ENTRANCE_TTC_FAST;
+            break;
+    }
+}
+
+int SM64AP_GetTTCEntranceVariant() {
+    return sm64_ttc_entrance_variant;
+}
+
+s16 SM64AP_GetWDWEntranceWaterLevel(s16 vanillaWaterLevel) {
+    s16 waterLevel = vanillaWaterLevel;
+
+    switch (sm64_wdw_entrance_variant) {
+        case SM64AP_ENTRANCE_WDW_LOW:
+            waterLevel = SM64AP_WDW_LOW_WATER_LEVEL;
+            break;
+        case SM64AP_ENTRANCE_WDW_MIDDLE:
+            waterLevel = SM64AP_WDW_MIDDLE_WATER_LEVEL;
+            break;
+        case SM64AP_ENTRANCE_WDW_HIGH:
+            waterLevel = SM64AP_WDW_HIGH_WATER_LEVEL;
+            break;
+    }
+
+    sm64_wdw_entrance_variant = 0;
+    return waterLevel;
 }
 
 void SM64AP_SetFirstBowserDoorCost(int amount) {
@@ -524,8 +678,15 @@ void SM64AP_ResetItems() {
     }
     sm64_have_abilities.reset();
     sm64_have_features.reset();
-    sm64_have_key1 = false;
-    sm64_have_key2 = false;
+    sm64_have_first_floor_key = false;
+    sm64_have_progressive_basement_keys = 0;
+    sm64_have_progressive_upstairs_keys = 0;
+    sm64_have_progressive_keys = 0;
+    sm64_have_progressive_mips = 0;
+    sm64_have_wing_cap_light = false;
+    sm64_have_bbh = false;
+    sm64_have_toads = false;
+    sm64_have_castle_cannon = false;
     sm64_have_wingcap = false;
     sm64_have_metalcap = false;
     sm64_have_vanishcap = false;
@@ -685,11 +846,50 @@ bool SM64AP_CheckedLoc(int x) {
 }
 
 bool SM64AP_HaveKey1() {
-    return sm64_have_key1;
+    return SM64AP_HaveCastleKey(SM64AP_CASTLE_KEY_BASEMENT);
 }
 
 bool SM64AP_HaveKey2() {
-    return sm64_have_key2;
+    return SM64AP_HaveCastleKey(SM64AP_CASTLE_KEY_UPSTAIRS);
+}
+
+bool SM64AP_HaveCastleKey(int key) {
+    switch (key) {
+        case SM64AP_CASTLE_KEY_FIRST_FLOOR:
+            return sm64_have_first_floor_key || sm64_have_progressive_keys >= 1;
+        case SM64AP_CASTLE_KEY_BASEMENT:
+            return sm64_have_progressive_basement_keys >= 1 || sm64_have_progressive_keys >= 2;
+        case SM64AP_CASTLE_KEY_BASEMENT_STAR:
+            return sm64_have_progressive_basement_keys >= 2 || sm64_have_progressive_keys >= 3;
+        case SM64AP_CASTLE_KEY_UPSTAIRS:
+            return sm64_have_progressive_upstairs_keys >= 1 || sm64_have_progressive_keys >= 4;
+        case SM64AP_CASTLE_KEY_50_STAR:
+            return sm64_have_progressive_upstairs_keys >= 2 || sm64_have_progressive_keys >= 5;
+        case SM64AP_CASTLE_KEY_70_STAR:
+            return sm64_have_progressive_upstairs_keys >= 3 || sm64_have_progressive_keys >= 6;
+    }
+
+    return false;
+}
+
+bool SM64AP_HaveProgressiveMips(int tier) {
+    return sm64_have_progressive_mips >= tier;
+}
+
+bool SM64AP_HaveWingCapLight() {
+    return sm64_have_wing_cap_light;
+}
+
+bool SM64AP_HaveBBH() {
+    return sm64_have_bbh;
+}
+
+bool SM64AP_HaveToads() {
+    return sm64_have_toads;
+}
+
+bool SM64AP_HaveCastleCannon() {
+    return sm64_have_castle_cannon;
 }
 
 bool SM64AP_HaveCap(int flag) {

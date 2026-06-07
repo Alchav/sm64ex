@@ -889,42 +889,108 @@ u32 interact_warp(struct MarioState *m, UNUSED u32 interactType, struct Object *
     return FALSE;
 }
 
+static s16 get_door_id(struct Object *door) {
+    return (u32) door->oBehParams >> 24;
+}
+
+static bool ap_castle_door_has_key(s16 doorId) {
+    switch (doorId) {
+        case SM64AP_CASTLE_DOOR_FIRST_FLOOR:
+            return SM64AP_HaveCastleKey(SM64AP_CASTLE_KEY_FIRST_FLOOR);
+        case 2:
+            return SM64AP_HaveCastleKey(SM64AP_CASTLE_KEY_BASEMENT);
+        case SM64AP_CASTLE_DOOR_BASEMENT_STAR:
+            return SM64AP_HaveCastleKey(SM64AP_CASTLE_KEY_BASEMENT_STAR);
+        case 1:
+            return SM64AP_HaveCastleKey(SM64AP_CASTLE_KEY_UPSTAIRS);
+        case SM64AP_CASTLE_DOOR_UPSTAIRS_50:
+            return SM64AP_HaveCastleKey(SM64AP_CASTLE_KEY_50_STAR);
+        case SM64AP_CASTLE_DOOR_UPSTAIRS_70:
+            return SM64AP_HaveCastleKey(SM64AP_CASTLE_KEY_70_STAR);
+    }
+
+    return false;
+}
+
+static u32 ap_castle_door_save_file_flag(s16 doorId) {
+    switch (doorId) {
+        case SM64AP_CASTLE_DOOR_FIRST_FLOOR:
+            return SAVE_FLAG_UNLOCKED_AP_8_KEY_DOOR;
+        case 2:
+            return SAVE_FLAG_UNLOCKED_BASEMENT_DOOR;
+        case SM64AP_CASTLE_DOOR_BASEMENT_STAR:
+            return SAVE_FLAG_UNLOCKED_AP_30_KEY_DOOR;
+        case 1:
+            return SAVE_FLAG_UNLOCKED_UPSTAIRS_DOOR;
+        case SM64AP_CASTLE_DOOR_UPSTAIRS_50:
+            return SAVE_FLAG_UNLOCKED_AP_50_KEY_DOOR;
+        case SM64AP_CASTLE_DOOR_UPSTAIRS_70:
+            return SAVE_FLAG_UNLOCKED_AP_70_KEY_DOOR;
+    }
+
+    return 0;
+}
+
+static bool ap_castle_door_is_replaced_star_door(s16 doorId) {
+    return doorId == SM64AP_CASTLE_DOOR_FIRST_FLOOR || doorId == SM64AP_CASTLE_DOOR_BASEMENT_STAR
+        || doorId == SM64AP_CASTLE_DOOR_UPSTAIRS_50 || doorId == SM64AP_CASTLE_DOOR_UPSTAIRS_70;
+}
+
+static u32 interact_ap_castle_key_door(struct MarioState *m, struct Object *o, s16 doorId) {
+    u32 actionArg = should_push_or_pull_door(m, o);
+    u32 doorAction;
+    u32 doorSaveFileFlag;
+
+    if (!ap_castle_door_has_key(doorId)) {
+        if (doorId == SM64AP_CASTLE_DOOR_UPSTAIRS_70) {
+            m->interactObj = o;
+            m->usedObj = o;
+            doorAction = (actionArg & 0x00000001) ? ACT_PULLING_DOOR : ACT_PUSHING_DOOR;
+            return set_mario_action(m, doorAction, actionArg);
+        }
+
+        if (!sDisplayingDoorText) {
+            set_mario_action(m, ACT_READING_AUTOMATIC_DIALOG, DIALOG_022);
+        }
+        sDisplayingDoorText = TRUE;
+        return FALSE;
+    }
+
+    doorAction = (actionArg & 0x00000001) ? ACT_PULLING_DOOR : ACT_PUSHING_DOOR;
+    doorSaveFileFlag = ap_castle_door_save_file_flag(doorId);
+
+    m->interactObj = o;
+    m->usedObj = o;
+
+    if (doorSaveFileFlag != 0 && !(save_file_get_flags() & doorSaveFileFlag)) {
+        doorAction = ACT_UNLOCKING_KEY_DOOR;
+    }
+
+    return set_mario_action(m, doorAction, actionArg);
+}
+
 u32 interact_warp_door(struct MarioState *m, UNUSED u32 interactType, struct Object *o) {
     u32 doorAction = 0;
     u32 saveFlags = save_file_get_flags();
-    s16 warpDoorId = o->oBehParams >> 24;
+    s16 warpDoorId = get_door_id(o);
     u32 actionArg;
 
     if (m->action == ACT_WALKING || m->action == ACT_DECELERATING) {
-        if (warpDoorId == 1) {
-            if (!SM64AP_HaveKey2()) {
+        if (warpDoorId == 1 || warpDoorId == 2) {
+            if (!ap_castle_door_has_key(warpDoorId)) {
                 if (!sDisplayingDoorText) {
                     set_mario_action(m, ACT_READING_AUTOMATIC_DIALOG,
-                                     SM64AP_HaveKey1() ? DIALOG_023 : DIALOG_022);
+                                     (warpDoorId == 1 && SM64AP_HaveKey1())
+                                         || (warpDoorId == 2 && SM64AP_HaveKey2())
+                                             ? DIALOG_023
+                                             : DIALOG_022);
                 }
                 sDisplayingDoorText = TRUE;
 
                 return FALSE;
             }
 
-            if (!(saveFlags & SAVE_FLAG_UNLOCKED_UPSTAIRS_DOOR)) {
-                doorAction = ACT_UNLOCKING_KEY_DOOR;
-            }
-        }
-
-        if (warpDoorId == 2) {
-            if (!SM64AP_HaveKey1()) {
-                if (!sDisplayingDoorText) {
-                    // Moat door skip was intended confirmed
-                    set_mario_action(m, ACT_READING_AUTOMATIC_DIALOG,
-                                     SM64AP_HaveKey2() ? DIALOG_023 : DIALOG_022);
-                }
-                sDisplayingDoorText = TRUE;
-
-                return FALSE;
-            }
-
-            if (!(saveFlags & SAVE_FLAG_UNLOCKED_BASEMENT_DOOR)) {
+            if (!(saveFlags & ap_castle_door_save_file_flag(warpDoorId))) {
                 doorAction = ACT_UNLOCKING_KEY_DOOR;
             }
         }
@@ -951,7 +1017,7 @@ u32 interact_warp_door(struct MarioState *m, UNUSED u32 interactType, struct Obj
 
 u32 get_door_save_file_flag(struct Object *door) {
     u32 saveFileFlag = 0;
-    s16 requiredNumStars = door->oBehParams >> 24;
+    s16 requiredNumStars = get_door_id(door);
 
     s16 isCcmDoor = door->oPosX < 0.0f;
     s16 isPssDoor = door->oPosY > 500.0f;
@@ -990,63 +1056,68 @@ u32 get_door_save_file_flag(struct Object *door) {
 }
 
 u32 interact_door(struct MarioState *m, UNUSED u32 interactType, struct Object *o) {
-    s16 orignumstars = o->oBehParams >> 24;
-    s16 requiredNumStars = SM64AP_GetRequiredStars(orignumstars);
-    s16 numStars = save_file_get_total_star_count(gCurrSaveFileNum - 1, COURSE_MIN - 1, COURSE_MAX - 1);
+    s16 orignumstars = get_door_id(o);
 
     if (m->action == ACT_WALKING || m->action == ACT_DECELERATING) {
-        if (numStars >= requiredNumStars) {
-            u32 actionArg = should_push_or_pull_door(m, o);
-            u32 enterDoorAction;
-            u32 doorSaveFileFlag;
+        if (ap_castle_door_is_replaced_star_door(orignumstars)) {
+            return interact_ap_castle_key_door(m, o, orignumstars);
+        } else {
+            s16 requiredNumStars = SM64AP_GetRequiredStars(orignumstars);
+            s16 numStars = save_file_get_total_star_count(gCurrSaveFileNum - 1, COURSE_MIN - 1, COURSE_MAX - 1);
 
-            if (actionArg & 0x00000001) {
-                enterDoorAction = ACT_PULLING_DOOR;
-            } else {
-                enterDoorAction = ACT_PUSHING_DOOR;
+            if (numStars >= requiredNumStars) {
+                u32 actionArg = should_push_or_pull_door(m, o);
+                u32 enterDoorAction;
+                u32 doorSaveFileFlag;
+
+                if (actionArg & 0x00000001) {
+                    enterDoorAction = ACT_PULLING_DOOR;
+                } else {
+                    enterDoorAction = ACT_PUSHING_DOOR;
+                }
+
+                doorSaveFileFlag = get_door_save_file_flag(o);
+                m->interactObj = o;
+                m->usedObj = o;
+
+                if (o->oInteractionSubtype & INT_SUBTYPE_STAR_DOOR) {
+                    enterDoorAction = ACT_ENTERING_STAR_DOOR;
+                }
+
+                if (doorSaveFileFlag != 0 && !(save_file_get_flags() & doorSaveFileFlag)) {
+                    enterDoorAction = ACT_UNLOCKING_STAR_DOOR;
+                }
+
+                return set_mario_action(m, enterDoorAction, actionArg);
+            } else if (!sDisplayingDoorText) {
+                u32 text = DIALOG_022 << 16;
+
+                switch (orignumstars) {
+                    case 1:
+                        text = DIALOG_024 << 16;
+                        break;
+                    case 3:
+                        text = DIALOG_025 << 16;
+                        break;
+                    case 8:
+                        text = DIALOG_026 << 16;
+                        break;
+                    case 30:
+                        text = DIALOG_027 << 16;
+                        break;
+                    case 50:
+                        text = DIALOG_028 << 16;
+                        break;
+                    case 70:
+                        text = DIALOG_029 << 16;
+                        break;
+                }
+
+                text += requiredNumStars;
+
+                sDisplayingDoorText = TRUE;
+                return set_mario_action(m, ACT_READING_AUTOMATIC_DIALOG, text);
             }
-
-            doorSaveFileFlag = get_door_save_file_flag(o);
-            m->interactObj = o;
-            m->usedObj = o;
-
-            if (o->oInteractionSubtype & INT_SUBTYPE_STAR_DOOR) {
-                enterDoorAction = ACT_ENTERING_STAR_DOOR;
-            }
-
-            if (doorSaveFileFlag != 0 && !(save_file_get_flags() & doorSaveFileFlag)) {
-                enterDoorAction = ACT_UNLOCKING_STAR_DOOR;
-            }
-
-            return set_mario_action(m, enterDoorAction, actionArg);
-        } else if (!sDisplayingDoorText) {
-            u32 text = DIALOG_022 << 16;
-
-            switch (orignumstars) {
-                case 1:
-                    text = DIALOG_024 << 16;
-                    break;
-                case 3:
-                    text = DIALOG_025 << 16;
-                    break;
-                case 8:
-                    text = DIALOG_026 << 16;
-                    break;
-                case 30:
-                    text = DIALOG_027 << 16;
-                    break;
-                case 50:
-                    text = DIALOG_028 << 16;
-                    break;
-                case 70:
-                    text = DIALOG_029 << 16;
-                    break;
-            }
-
-            text += requiredNumStars;
-
-            sDisplayingDoorText = TRUE;
-            return set_mario_action(m, ACT_READING_AUTOMATIC_DIALOG, text);
         }
     } else if (m->action == ACT_IDLE && sDisplayingDoorText == TRUE && orignumstars == 70) {
         m->interactObj = o;

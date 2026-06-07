@@ -3748,9 +3748,9 @@ const Collision inside_castle_seg7_area_1_collision[] = {
     SPECIAL_OBJECT_WITH_YAW_AND_PARAM(/*preset*/ special_castle_door_warp,  /*pos*/ -946,     0,  2202, /*yaw*/ 128, /*behParam2*/ 1),
     SPECIAL_OBJECT_WITH_YAW_AND_PARAM(/*preset*/ special_wooden_door_warp,  /*pos*/ -1023, -101, -5170, /*yaw*/   0, /*behParam2*/ 2),
     SPECIAL_OBJECT_WITH_YAW(/*preset*/ special_0stars_door,       /*pos*/ -3122,  205,  -793, /*yaw*/  64),
-    SPECIAL_OBJECT_WITH_YAW(/*preset*/ special_1star_door,        /*pos*/   256,    0, -1074, /*yaw*/   0),
-    SPECIAL_OBJECT_WITH_YAW(/*preset*/ special_1star_door,        /*pos*/   644,  614, -1476, /*yaw*/ 224),
-    SPECIAL_OBJECT_WITH_YAW(/*preset*/ special_3star_door,        /*pos*/  1075,  205,  -229, /*yaw*/ 192),
-    SPECIAL_OBJECT_WITH_YAW(/*preset*/ special_3star_door,        /*pos*/ -2303,    0, -1074, /*yaw*/   0),
+    SPECIAL_OBJECT_WITH_YAW(/*preset*/ special_0stars_door,       /*pos*/   256,    0, -1074, /*yaw*/   0),
+    SPECIAL_OBJECT_WITH_YAW(/*preset*/ special_0stars_door,       /*pos*/   644,  614, -1476, /*yaw*/ 224),
+    SPECIAL_OBJECT_WITH_YAW(/*preset*/ special_0stars_door,       /*pos*/  1075,  205,  -229, /*yaw*/ 192),
+    SPECIAL_OBJECT_WITH_YAW(/*preset*/ special_0stars_door,       /*pos*/ -2303,    0, -1074, /*yaw*/   0),
     COL_END(),
 };

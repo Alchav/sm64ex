@@ -786,11 +786,45 @@ s32 launch_mario_until_land(struct MarioState *m, s32 endAction, s32 animation, 
     return airStepLanded;
 }
 
-s32 act_unlocking_key_door(struct MarioState *m) {
-    m->faceAngle[1] = m->usedObj->oMoveAngleYaw;
+static s16 get_key_door_id(struct Object *door) {
+    return (u32) door->oBehParams >> 24;
+}
 
-    m->pos[0] = m->usedObj->oPosX + coss(m->faceAngle[1]) * 75.0f;
-    m->pos[2] = m->usedObj->oPosZ + sins(m->faceAngle[1]) * 75.0f;
+static u32 get_key_door_unlock_flag(struct Object *door) {
+    switch (get_key_door_id(door)) {
+        case 1:
+            return SAVE_FLAG_UNLOCKED_UPSTAIRS_DOOR;
+        case 2:
+            return SAVE_FLAG_UNLOCKED_BASEMENT_DOOR;
+        case SM64AP_CASTLE_DOOR_FIRST_FLOOR:
+            return SAVE_FLAG_UNLOCKED_AP_8_KEY_DOOR;
+        case SM64AP_CASTLE_DOOR_BASEMENT_STAR:
+            return SAVE_FLAG_UNLOCKED_AP_30_KEY_DOOR;
+        case SM64AP_CASTLE_DOOR_UPSTAIRS_50:
+            return SAVE_FLAG_UNLOCKED_AP_50_KEY_DOOR;
+        case SM64AP_CASTLE_DOOR_UPSTAIRS_70:
+            return SAVE_FLAG_UNLOCKED_AP_70_KEY_DOOR;
+    }
+
+    return 0;
+}
+
+static s32 is_ap_replaced_key_door(s16 doorId) {
+    return doorId == SM64AP_CASTLE_DOOR_FIRST_FLOOR || doorId == SM64AP_CASTLE_DOOR_BASEMENT_STAR
+        || doorId == SM64AP_CASTLE_DOOR_UPSTAIRS_50 || doorId == SM64AP_CASTLE_DOOR_UPSTAIRS_70;
+}
+
+s32 act_unlocking_key_door(struct MarioState *m) {
+    s16 doorId = get_key_door_id(m->usedObj);
+    s16 doorYaw = m->usedObj->oMoveAngleYaw;
+
+    m->faceAngle[1] = doorYaw;
+    m->pos[0] = m->usedObj->oPosX + coss(doorYaw) * 75.0f;
+    if (is_ap_replaced_key_door(doorId)) {
+        m->pos[2] = m->usedObj->oPosZ - sins(doorYaw) * 75.0f;
+    } else {
+        m->pos[2] = m->usedObj->oPosZ + sins(doorYaw) * 75.0f;
+    }
 
     if (m->actionArg & 2) {
         m->faceAngle[1] += 0x8000;
@@ -814,11 +848,15 @@ s32 act_unlocking_key_door(struct MarioState *m) {
     stop_and_set_height_to_floor(m);
 
     if (is_anim_at_end(m)) {
-        if (m->usedObj->oBehParams >> 24 == 1) {
-            save_file_set_flags(SAVE_FLAG_UNLOCKED_UPSTAIRS_DOOR);
+        u32 unlockFlag = get_key_door_unlock_flag(m->usedObj);
+
+        if (unlockFlag != 0) {
+            save_file_set_flags(unlockFlag);
+        }
+
+        if (doorId == 1) {
             save_file_clear_flags(SAVE_FLAG_HAVE_KEY_2);
-        } else {
-            save_file_set_flags(SAVE_FLAG_UNLOCKED_BASEMENT_DOOR);
+        } else if (doorId == 2) {
             save_file_clear_flags(SAVE_FLAG_HAVE_KEY_1);
         }
         set_mario_action(m, ACT_WALKING, 0);

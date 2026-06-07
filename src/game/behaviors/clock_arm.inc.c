@@ -4,6 +4,20 @@
 
 #include "sm64ap.h"
 
+static s16 ttc_speed_setting_from_roll_angle(u16 rollAngle) {
+    // The angle counts down from 0xffff to 0, so 11 o'clock is a small value and 1 o'clock is large.
+    if (rollAngle < 0xAAA)
+        return TTC_SPEED_STOPPED;
+    else if (rollAngle < 0x6aa4)
+        return TTC_SPEED_FAST;
+    else if (rollAngle < 0x954C)
+        return TTC_SPEED_RANDOM;
+    else if (rollAngle < 0xf546)
+        return TTC_SPEED_SLOW;
+    else
+        return TTC_SPEED_STOPPED;
+}
+
 void bhv_rotating_clock_arm_loop(void) {
     if (o->oBehParams != SM64AP_CourseToTTC()) {
         obj_mark_for_deletion(o);
@@ -14,6 +28,12 @@ void bhv_rotating_clock_arm_loop(void) {
     
     struct Surface *marioSurface;
     u16 rollAngle = o->oFaceAngleRoll;
+    s16 speedSetting = ttc_speed_setting_from_roll_angle(rollAngle);
+
+    if (cur_obj_has_behavior(bhvClockMinuteHand)) {
+        SM64AP_SetTTCEntranceSpeed(speedSetting);
+    }
+
     o->oFloorHeight =
         find_floor(gMarioObject->oPosX, gMarioObject->oPosY, gMarioObject->oPosZ, &marioSurface);
 
@@ -29,21 +49,8 @@ void bhv_rotating_clock_arm_loop(void) {
         // If Mario is touching the Tick Tock Clock painting...
         if (1) {
             // And this is the minute hand...
-            if (cur_obj_has_behavior(bhvClockMinuteHand)) {
-                // Set Tick Tick Clock's speed based on the angle of the hand.
-                // The angle actually counting down from 0xFFFF to 0 so
-                //   11 o'clock is a small value and 1 o'clock is a large value.
-                if (rollAngle < 0xAAA) // > 345 degrees from 12 o'clock.
-                    gTTCSpeedSetting = TTC_SPEED_STOPPED;
-                else if (rollAngle < 0x6aa4) // 210..345 degrees from 12 o'clock.
-                    gTTCSpeedSetting = TTC_SPEED_FAST;
-                else if (rollAngle < 0x954C) // 150..210 degrees from 12 o'clock.
-                    gTTCSpeedSetting = TTC_SPEED_RANDOM;
-                else if (rollAngle < 0xf546) // 15..150 degrees from 12 o'clock.
-                    gTTCSpeedSetting = TTC_SPEED_SLOW;
-                else // < 15 degrees from 12 o'clock.
-                    gTTCSpeedSetting = TTC_SPEED_STOPPED;
-            }
+            if (cur_obj_has_behavior(bhvClockMinuteHand))
+                gTTCSpeedSetting = speedSetting;
 
             // Increment the action to stop animating the hands.
             o->oAction++;

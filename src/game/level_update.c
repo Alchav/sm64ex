@@ -18,6 +18,7 @@
 #include "mario.h"
 #include "camera.h"
 #include "object_list_processor.h"
+#include "moving_texture.h"
 #include "ingame_menu.h"
 #include "obj_behaviors.h"
 #include "save_file.h"
@@ -533,8 +534,7 @@ void check_instant_warp(void) {
     s16 cameraAngle;
     struct Surface *floor;
 
-    if (gCurrLevelNum == LEVEL_CASTLE
-        && save_file_get_total_star_count(gCurrSaveFileNum - 1, COURSE_MIN - 1, COURSE_MAX - 1) >= SM64AP_GetRequiredStars(70)) {
+    if (gCurrLevelNum == LEVEL_CASTLE && SM64AP_HaveCastleKey(SM64AP_CASTLE_KEY_70_STAR)) {
         return;
     }
 
@@ -615,8 +615,9 @@ s16 music_changed_through_warp(s16 arg) {
  * Set the current warp type and destination level/area/node.
  */
 
-void initiate_warp(s16 destLevel, s16 destArea, s16 destWarpNode, s32 arg3) {
-    SM64AP_RedirectWarp(&gCurrLevelNum, &destLevel, &(gCurrentArea->index), &destArea, &destWarpNode, sSourceWarpNodeId == WARP_NODE_DEATH, sDelayedWarpOp);
+void initiate_warp_with_source(s16 destLevel, s16 destArea, s16 destWarpNode, s32 arg3, s32 sourceEntrance) {
+    SM64AP_RedirectWarp(&gCurrLevelNum, &destLevel, &(gCurrentArea->index), &destArea, &destWarpNode,
+                        sSourceWarpNodeId == WARP_NODE_DEATH, sDelayedWarpOp, sourceEntrance);
     if (destWarpNode >= WARP_NODE_CREDITS_MIN) {
         sWarpDest.type = WARP_TYPE_CHANGE_LEVEL;
     } else if (destLevel != gCurrLevelNum) {
@@ -631,6 +632,10 @@ void initiate_warp(s16 destLevel, s16 destArea, s16 destWarpNode, s32 arg3) {
     sWarpDest.areaIdx = destArea;
     sWarpDest.nodeId = destWarpNode;
     sWarpDest.arg = arg3;
+}
+
+void initiate_warp(s16 destLevel, s16 destArea, s16 destWarpNode, s32 arg3) {
+    initiate_warp_with_source(destLevel, destArea, destWarpNode, arg3, 0);
 }
 
 // From Surface 0xD3 to 0xFC
@@ -656,6 +661,28 @@ struct WarpNode *get_painting_warp_node(void) {
     return warpNode;
 }
 
+static s32 get_ap_wdw_painting_source_entrance(void) {
+    if (gPaintingMarioYEntry <= SM64AP_WDW_LOW_ENTRY_MAX) {
+        return SM64AP_ENTRANCE_ID(LEVEL_WDW, SM64AP_ENTRANCE_WDW_LOW);
+    } else if (gPaintingMarioYEntry >= SM64AP_WDW_HIGH_ENTRY_MIN) {
+        return SM64AP_ENTRANCE_ID(LEVEL_WDW, SM64AP_ENTRANCE_WDW_HIGH);
+    }
+
+    return SM64AP_ENTRANCE_ID(LEVEL_WDW, SM64AP_ENTRANCE_WDW_MIDDLE);
+}
+
+static s32 get_ap_painting_source_entrance(s16 destLevel) {
+    if (destLevel == LEVEL_WDW) {
+        return get_ap_wdw_painting_source_entrance();
+    }
+
+    if (destLevel == LEVEL_TTC) {
+        return SM64AP_ENTRANCE_ID(LEVEL_TTC, SM64AP_GetTTCEntranceVariant());
+    }
+
+    return 0;
+}
+
 /**
  * Check is Mario has entered a painting, and if so, initiate a warp.
  */
@@ -674,7 +701,8 @@ void initiate_painting_warp(void) {
                     D_8032C9E0 = check_warp_checkpoint(&warpNode);
                 }
 
-                initiate_warp(warpNode.destLevel & 0x7F, warpNode.destArea, warpNode.destNode, 0);
+                initiate_warp_with_source(warpNode.destLevel & 0x7F, warpNode.destArea, warpNode.destNode, 0,
+                                          get_ap_painting_source_entrance(warpNode.destLevel & 0x7F));
                 check_if_should_set_warp_checkpoint(&warpNode);
 
                 play_transition_after_delay(WARP_TRANSITION_FADE_INTO_COLOR, 30, 255, 255, 255, 45);
