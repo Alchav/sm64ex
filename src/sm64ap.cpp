@@ -17,6 +17,8 @@ extern "C" {
     void SM64AP_SetMarioShoesColor(u8 r, u8 g, u8 b);
     void SM64AP_SetMarioSkinColor(u8 r, u8 g, u8 b);
     void SM64AP_SetMarioHairColor(u8 r, u8 g, u8 b);
+    void SM64AP_ResetMarioSideburnColor(void);
+    void SM64AP_SetMarioSideburnColor(u8 r, u8 g, u8 b);
     void SM64AP_SetMarioCapShirtColor(u8 r, u8 g, u8 b);
     void SM64AP_SetMarioCapGlovesColor(u8 r, u8 g, u8 b);
     void SM64AP_SetMarioCapHairColor(u8 r, u8 g, u8 b);
@@ -49,6 +51,7 @@ bool sm64_have_wing_cap_light = false;
 bool sm64_have_bbh = false;
 bool sm64_have_toads = false;
 bool sm64_have_castle_cannon = false;
+bool sm64_have_yoshi = false;
 bool sm64_have_wingcap = false;
 bool sm64_have_metalcap = false;
 bool sm64_have_vanishcap = false;
@@ -128,6 +131,9 @@ void SM64AP_RecvItem(int64_t idx, bool notify) {
             break;
         case SM64AP_ID_CASTLE_CANNON:
             sm64_have_castle_cannon = true;
+            break;
+        case SM64AP_ID_YOSHI:
+            sm64_have_yoshi = true;
             break;
         case SM64AP_ID_WINGCAP:
             sm64_have_wingcap = true;
@@ -760,6 +766,7 @@ static void SM64AP_ResetMarioColors() {
     SM64AP_SetMarioShoesColor(114, 28, 14);
     SM64AP_SetMarioSkinColor(254, 193, 121);
     SM64AP_SetMarioHairColor(115, 6, 0);
+    SM64AP_ResetMarioSideburnColor();
     SM64AP_SetMarioCapHairColor(115, 6, 0);
 }
 
@@ -786,6 +793,7 @@ static void SM64AP_SetMarioColors(std::string rawColors) {
     }
     if (SM64AP_ReadMarioColor(rawColors, "hair", color)) {
         SM64AP_SetMarioHairColor(color[0], color[1], color[2]);
+        SM64AP_SetMarioSideburnColor(color[0], color[1], color[2]);
         SM64AP_SetMarioCapHairColor(color[0], color[1], color[2]);
     }
 }
@@ -824,6 +832,7 @@ void SM64AP_ResetItems() {
     sm64_have_bbh = false;
     sm64_have_toads = false;
     sm64_have_castle_cannon = false;
+    sm64_have_yoshi = false;
     sm64_have_wingcap = false;
     sm64_have_metalcap = false;
     sm64_have_vanishcap = false;
@@ -1035,6 +1044,10 @@ bool SM64AP_HaveToads() {
 
 bool SM64AP_HaveCastleCannon() {
     return sm64_have_castle_cannon;
+}
+
+bool SM64AP_HaveYoshi() {
+    return sm64_have_yoshi;
 }
 
 bool SM64AP_HaveCap(int flag) {

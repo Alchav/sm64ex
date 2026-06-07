@@ -85,9 +85,65 @@ ALIGNED8 static const u8 mario_texture_m_logo[] = {
 };
 
 // 0x04002090
-ALIGNED8 static const u8 mario_texture_hair_sideburn[] = {
+ALIGNED8 static u8 mario_texture_hair_sideburn[] = {
 #include "actors/mario/mario_sideburn.rgba16.inc.c"
 };
+
+ALIGNED8 static const u8 mario_texture_hair_sideburn_vanilla[] = {
+#include "actors/mario/mario_sideburn.rgba16.inc.c"
+};
+
+static u8 sm64ap_rgba16_channel_to_u8(u16 value) {
+    return (value * 255 + 15) / 31;
+}
+
+static u8 sm64ap_u8_channel_to_rgba16(u8 value) {
+    return (value * 31 + 127) / 255;
+}
+
+static u8 sm64ap_scale_sideburn_channel(u8 value, u32 luma) {
+#define SM64AP_VANILLA_HAIR_LUMA ((115 * 299 + 6 * 587) / 1000)
+    u32 scaled = value * luma;
+
+    scaled = (scaled + SM64AP_VANILLA_HAIR_LUMA / 2) / SM64AP_VANILLA_HAIR_LUMA;
+    return scaled > 255 ? 255 : scaled;
+#undef SM64AP_VANILLA_HAIR_LUMA
+}
+
+void SM64AP_ResetMarioSideburnColor(void) {
+    for (u32 i = 0; i < sizeof(mario_texture_hair_sideburn); i++) {
+        mario_texture_hair_sideburn[i] = mario_texture_hair_sideburn_vanilla[i];
+    }
+}
+
+void SM64AP_SetMarioSideburnColor(u8 r, u8 g, u8 b) {
+    if (r == 115 && g == 6 && b == 0) {
+        SM64AP_ResetMarioSideburnColor();
+        return;
+    }
+
+    for (u32 i = 0; i < sizeof(mario_texture_hair_sideburn); i += 2) {
+        u16 texel = (mario_texture_hair_sideburn_vanilla[i] << 8) | mario_texture_hair_sideburn_vanilla[i + 1];
+
+        if (!(texel & 1)) {
+            mario_texture_hair_sideburn[i] = mario_texture_hair_sideburn_vanilla[i];
+            mario_texture_hair_sideburn[i + 1] = mario_texture_hair_sideburn_vanilla[i + 1];
+            continue;
+        }
+
+        u8 sourceR = sm64ap_rgba16_channel_to_u8((texel >> 11) & 0x1F);
+        u8 sourceG = sm64ap_rgba16_channel_to_u8((texel >> 6) & 0x1F);
+        u8 sourceB = sm64ap_rgba16_channel_to_u8((texel >> 1) & 0x1F);
+        u32 luma = (sourceR * 299 + sourceG * 587 + sourceB * 114) / 1000;
+        u16 recolored = (sm64ap_u8_channel_to_rgba16(sm64ap_scale_sideburn_channel(r, luma)) << 11)
+                       | (sm64ap_u8_channel_to_rgba16(sm64ap_scale_sideburn_channel(g, luma)) << 6)
+                       | (sm64ap_u8_channel_to_rgba16(sm64ap_scale_sideburn_channel(b, luma)) << 1)
+                       | 1;
+
+        mario_texture_hair_sideburn[i] = recolored >> 8;
+        mario_texture_hair_sideburn[i + 1] = recolored & 0xFF;
+    }
+}
 
 // 0x04002890
 ALIGNED8 static const u8 mario_texture_mustache[] = {

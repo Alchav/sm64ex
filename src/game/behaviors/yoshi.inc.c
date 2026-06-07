@@ -11,7 +11,7 @@ void bhv_yoshi_init(void) {
     o->oBuoyancy = 1.3f;
     o->oInteractionSubtype = INT_SUBTYPE_NPC;
 
-    if (save_file_get_total_star_count(gCurrSaveFileNum - 1, 0, 24) < 120 || sYoshiDead == TRUE) {
+    if (!SM64AP_HaveYoshi() || sYoshiDead == TRUE) {
         o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
     }
 }
@@ -130,19 +130,12 @@ void yoshi_finish_jumping_and_despawn_loop(void) {
 }
 
 void yoshi_give_present_loop(void) {
-    s32 sp1C = gGlobalTimer;
-
-    if (gHudDisplay.lives == 100) {
-        play_sound(SOUND_GENERAL_COLLECT_1UP, gDefaultSoundArgs);
-        gSpecialTripleJump = 1;
-        o->oAction = YOSHI_ACT_WALK_JUMP_OFF_ROOF;
-        return;
+    if (!SM64AP_CheckedLoc(SM64AP_LOCATIONID_YOSHI)) {
+        SM64AP_SendItem(SM64AP_LOCATIONID_YOSHI);
     }
 
-    if ((sp1C & 0x03) == 0) {
-        play_sound(SOUND_MENU_YOSHI_GAIN_LIVES, gDefaultSoundArgs);
-        gMarioState->numLives++;
-    }
+    gSpecialTripleJump = 1;
+    o->oAction = YOSHI_ACT_WALK_JUMP_OFF_ROOF;
 }
 
 void bhv_yoshi_loop(void) {
