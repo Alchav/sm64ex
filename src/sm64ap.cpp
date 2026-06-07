@@ -63,6 +63,7 @@ int sm64_completion_type = 0;
 std::bitset<SM64AP_NUM_ABILITIES> sm64_have_abilities;
 std::bitset<SM64AP_NUM_FEATURES> sm64_have_features;
 std::bitset<SM64AP_NUM_LEVEL_CAPS> sm64_have_level_caps;
+std::bitset<SM64AP_NUM_OBJECT_ITEMS> sm64_have_object_items;
 int* sm64_clockaction = nullptr;
 int sm64_cost_firstbowserdoor = 8;
 int sm64_cost_basementdoor = 30;
@@ -149,6 +150,9 @@ void SM64AP_RecvItem(int64_t idx, bool notify) {
         case SM64AP_ID_LEVEL_CAP(0) ... SM64AP_ID_LEVEL_CAP(SM64AP_NUM_LEVEL_CAPS - 1):
             sm64_have_level_caps[idx - SM64AP_LEVEL_CAP_OFFSET] = true;
             break;
+        case SM64AP_ID_OBJECT_ITEM(0) ... SM64AP_ID_OBJECT_ITEM(SM64AP_NUM_OBJECT_ITEMS - 1):
+            sm64_have_object_items[idx - SM64AP_OBJECT_ITEM_OFFSET] = true;
+            break;
         case SM64AP_ITEMID_1UP:
             gMarioState->numLives++;
             break;
@@ -218,6 +222,10 @@ bool SM64AP_HaveFeature(int feature) {
     return feature >= 0 && feature < SM64AP_NUM_FEATURES && sm64_have_features[feature];
 }
 
+static bool SM64AP_HaveObjectItem(int item) {
+    return item >= 0 && item < SM64AP_NUM_OBJECT_ITEMS && sm64_have_object_items[item];
+}
+
 bool SM64AP_CollectedCourseStar(int courseIdx, int starIdx) {
     return courseIdx >= 0 && starIdx >= 0 && starIdx < 7
         && (SM64AP_CourseStarFlags(courseIdx) & (1 << starIdx));
@@ -276,6 +284,9 @@ static bool SM64AP_ShouldSpawnWfObject(u32 behParam, const void *behavior) {
 static bool SM64AP_ShouldSpawnCcmObject(const void *behavior) {
     bool snowmanStar = SM64AP_CollectedCourseStar(AP_COURSE_CCM, 4);
 
+    if (behavior_is(behavior, bhvSmallPenguin)) {
+        return SM64AP_HaveObjectItem(SM64AP_OBJECT_ITEM_CCM_BABY_PENGUINS);
+    }
     if (behavior_is(behavior, bhvSnowmansBottom)) {
         return SM64AP_HaveFeature(SM64AP_FEATURE_CCM_SNOWMANS_HEAD) && !snowmanStar;
     }
@@ -322,6 +333,9 @@ static bool SM64AP_ShouldSpawnJrbObject(u32 behParam, const void *behavior) {
 }
 
 static bool SM64AP_ShouldSpawnSslObject(u32 behParam, const void *behavior) {
+    if (behavior_is(behavior, bhvPyramidElevator)) {
+        return SM64AP_HaveObjectItem(SM64AP_OBJECT_ITEM_SSL_PYRAMID_ELEVATOR);
+    }
     if (behavior_is(behavior, bhvKlepto)) {
         bool kleptoStarCollected = SM64AP_CollectedCourseStar(AP_COURSE_SSL, 0);
         bool kleptoShouldHoldStar = SM64AP_HaveFeature(SM64AP_FEATURE_SSL_KLEPTO_STAR)
@@ -382,7 +396,21 @@ static bool SM64AP_ShouldSpawnBbhObject(s16 x, s16 y, s16 z, const void *behavio
     return true;
 }
 
-bool SM64AP_ShouldSpawnLevelObject(s16 level, s16, s16, s16 x, s16 y, s16 z, u32 behParam, const void *behavior) {
+static bool SM64AP_IsCheckerboardPlatformObject(s16 level, s16 model, const void *behavior) {
+    if (behavior_is(behavior, bhvCheckerboardElevatorGroup)) {
+        return level == LEVEL_BOB || level == LEVEL_WF || level == LEVEL_VCUTM;
+    }
+
+    return behavior_is(behavior, bhvPlatformOnTrack)
+        && model == MODEL_CHECKERBOARD_PLATFORM
+        && (level == LEVEL_LLL || level == LEVEL_HMC);
+}
+
+bool SM64AP_ShouldSpawnLevelObject(s16 level, s16, s16 model, s16 x, s16 y, s16 z, u32 behParam, const void *behavior) {
+    if (SM64AP_IsCheckerboardPlatformObject(level, model, behavior)) {
+        return SM64AP_HaveObjectItem(SM64AP_OBJECT_ITEM_CHECKERBOARD_PLATFORMS);
+    }
+
     switch (level) {
         case LEVEL_BOB:
             return SM64AP_ShouldSpawnBobObject(x, y, z, behParam, behavior);
@@ -396,12 +424,33 @@ bool SM64AP_ShouldSpawnLevelObject(s16 level, s16, s16, s16 x, s16 y, s16 z, u32
             if (behavior_is(behavior, bhvExclamationBox) && behParam == 0x00030000) {
                 return SM64AP_HaveFeature(SM64AP_FEATURE_LLL_KOOPA_SHELL);
             }
+            if (behavior_is(behavior, bhvLllRollingLog)) {
+                return SM64AP_HaveObjectItem(SM64AP_OBJECT_ITEM_LLL_ROLLING_LOG);
+            }
             return true;
         case LEVEL_SSL:
             return SM64AP_ShouldSpawnSslObject(behParam, behavior);
         case LEVEL_THI:
+            if (behavior_is(behavior, bhvWarpPipe)) {
+                return SM64AP_HaveObjectItem(SM64AP_OBJECT_ITEM_THI_WARP_PIPES);
+            }
             if (behavior_is(behavior, bhvKoopa) || behavior_is(behavior, bhvKoopaRaceEndpoint)) {
                 return SM64AP_HaveFeature(SM64AP_FEATURE_THI_KOOPA_THE_QUICK);
+            }
+            return true;
+        case LEVEL_HMC:
+            if (behavior_is(behavior, bhvDorrie)) {
+                return SM64AP_HaveObjectItem(SM64AP_OBJECT_ITEM_HMC_SWIMMING_BEAST);
+            }
+            return true;
+        case LEVEL_SL:
+            if (behavior_is(behavior, bhvSLWalkingPenguin)) {
+                return SM64AP_HaveObjectItem(SM64AP_OBJECT_ITEM_SL_PENGUIN);
+            }
+            return true;
+        case LEVEL_RR:
+            if (behavior_is(behavior, bhvPlatformOnTrack) && model == MODEL_RR_FLYING_CARPET) {
+                return SM64AP_HaveObjectItem(SM64AP_OBJECT_ITEM_RR_CARPETS);
             }
             return true;
         case LEVEL_TTM:
@@ -829,6 +878,7 @@ void SM64AP_ResetItems() {
     sm64_have_abilities.reset();
     sm64_have_features.reset();
     sm64_have_level_caps.reset();
+    sm64_have_object_items.reset();
     sm64_have_first_floor_key = false;
     sm64_have_progressive_basement_keys = 0;
     sm64_have_progressive_upstairs_keys = 0;
