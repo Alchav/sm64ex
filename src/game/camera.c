@@ -29,6 +29,7 @@
 #include "engine/graph_node.h"
 #include "level_table.h"
 #include "pc/configfile.h"
+#include "sm64ap.h"
 
 #define CBUTTON_MASK (U_CBUTTONS | D_CBUTTONS | L_CBUTTONS | R_CBUTTONS)
 
@@ -6629,7 +6630,8 @@ s16 camera_course_processing(struct Camera *c) {
                             break;
 
                         case SURFACE_BOSS_FIGHT_CAMERA:
-                            if (gCurrActNum == 1) {
+                            if (SM64AP_HaveFeature(SM64AP_FEATURE_WF_WHOMP_KING)
+                                && !SM64AP_HaveFeature(SM64AP_FEATURE_WF_FORTRESS)) {
                                 set_camera_mode_boss_fight(c);
                             } else {
                                 set_camera_mode_radial(c, 60);

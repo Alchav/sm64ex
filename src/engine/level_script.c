@@ -440,17 +440,29 @@ static void level_cmd_init_mario(void) {
 }
 
 static void level_cmd_place_object(void) {
-    u8 val7 = 1 << (gCurrActNum - 1);
     u16 model;
+    s16 posX;
+    s16 posY;
+    s16 posZ;
+    u32 behaviorArg;
+    void *behaviorScript;
     struct SpawnInfo *spawnInfo;
 
-    if (sCurrAreaIndex != -1 && ((CMD_GET(u8, 2) & val7) || CMD_GET(u8, 2) == 0x1F)) {
-        model = CMD_GET(u8, 3);
+    model = CMD_GET(u8, 3);
+    posX = CMD_GET(s16, 4);
+    posY = CMD_GET(s16, 6);
+    posZ = CMD_GET(s16, 8);
+    behaviorArg = CMD_GET(u32, 16);
+    behaviorScript = CMD_GET(void *, 20);
+
+    if (sCurrAreaIndex != -1
+        && SM64AP_ShouldSpawnLevelObject(gCurrLevelNum, sCurrAreaIndex, model, posX, posY, posZ,
+                                         behaviorArg, behaviorScript)) {
         spawnInfo = alloc_only_pool_alloc(sLevelPool, sizeof(struct SpawnInfo));
 
-        spawnInfo->startPos[0] = CMD_GET(s16, 4);
-        spawnInfo->startPos[1] = CMD_GET(s16, 6);
-        spawnInfo->startPos[2] = CMD_GET(s16, 8);
+        spawnInfo->startPos[0] = posX;
+        spawnInfo->startPos[1] = posY;
+        spawnInfo->startPos[2] = posZ;
 
         spawnInfo->startAngle[0] = CMD_GET(s16, 10) * 0x8000 / 180;
         spawnInfo->startAngle[1] = CMD_GET(s16, 12) * 0x8000 / 180;
@@ -459,8 +471,8 @@ static void level_cmd_place_object(void) {
         spawnInfo->areaIndex = sCurrAreaIndex;
         spawnInfo->activeAreaIndex = sCurrAreaIndex;
 
-        spawnInfo->behaviorArg = CMD_GET(u32, 16);
-        spawnInfo->behaviorScript = CMD_GET(void *, 20);
+        spawnInfo->behaviorArg = behaviorArg;
+        spawnInfo->behaviorScript = behaviorScript;
         spawnInfo->unk18 = gLoadedGraphNodes[model];
         spawnInfo->next = gAreas[sCurrAreaIndex].objectSpawnInfos;
 
@@ -571,10 +583,9 @@ static void level_cmd_3A(void) {
 static void level_cmd_create_whirlpool(void) {
     struct Whirlpool *whirlpool;
     s32 index = CMD_GET(u8, 2);
-    s32 beatBowser2 = SM64AP_CheckedLoc(SM64AP_ID_KEY2) && SM64AP_CheckedLoc(SM64AP_LOCATIONID_BOARDBOWSERSSUB);
 
-    if (CMD_GET(u8, 3) == 0 || (CMD_GET(u8, 3) == 1 && !beatBowser2)
-        || (CMD_GET(u8, 3) == 2 && beatBowser2) || (CMD_GET(u8, 3) == 3 && gCurrActNum >= 2)) {
+    if (SM64AP_ShouldCreateWhirlpool(gCurrLevelNum, sCurrAreaIndex, index, CMD_GET(u8, 3), CMD_GET(s16, 4),
+                                      CMD_GET(s16, 6), CMD_GET(s16, 8), CMD_GET(s16, 10))) {
         if (sCurrAreaIndex != -1 && index < 2) {
             if ((whirlpool = gAreas[sCurrAreaIndex].whirlpools[index]) == NULL) {
                 whirlpool = alloc_only_pool_alloc(sLevelPool, sizeof(struct Whirlpool));

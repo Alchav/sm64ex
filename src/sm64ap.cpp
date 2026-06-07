@@ -3,8 +3,10 @@
 
 extern "C" {
     #include "game/print.h"
+    #include "behavior_data.h"
     #include "gfx_dimensions.h"
     #include "level_table.h"
+    #include "model_ids.h"
     #include "game/level_update.h"
 }
 
@@ -31,6 +33,7 @@ int sm64_moat_state = 0;
 bool sm64_have_cannon[15];
 int sm64_completion_type = 0;
 std::bitset<SM64AP_NUM_ABILITIES> sm64_have_abilities;
+std::bitset<SM64AP_NUM_FEATURES> sm64_have_features;
 int* sm64_clockaction = nullptr;
 int sm64_cost_firstbowserdoor = 8;
 int sm64_cost_basementdoor = 30;
@@ -82,6 +85,9 @@ void SM64AP_RecvItem(int64_t idx, bool notify) {
         case SM64AP_ID_ABILITY(0) ... SM64AP_ID_ABILITY(SM64AP_NUM_ABILITIES-1):
             sm64_have_abilities[idx-(SM64AP_ID_ABILITY(0))] = true;
             break;
+        case SM64AP_ID_FEATURE(0) ... SM64AP_ID_FEATURE(SM64AP_NUM_FEATURES-1):
+            sm64_have_features[idx-(SM64AP_ID_FEATURE(0))] = true;
+            break;
     }
 }
 
@@ -101,6 +107,243 @@ u32 SM64AP_CourseStarFlags(s32 courseIdx) {
         }
     }
     return starflags;
+}
+
+static constexpr s32 AP_COURSE_BOB = 0;
+static constexpr s32 AP_COURSE_WF = 1;
+static constexpr s32 AP_COURSE_JRB = 2;
+static constexpr s32 AP_COURSE_CCM = 3;
+static constexpr s32 AP_COURSE_BBH = 4;
+static constexpr s32 AP_COURSE_LLL = 6;
+static constexpr s32 AP_COURSE_SSL = 7;
+
+static bool behavior_is(const void *behavior, const BehaviorScript *target) {
+    return behavior == target;
+}
+
+static u8 beh_param_star(u32 behParam) {
+    return (behParam >> 24) & 0xFF;
+}
+
+static u8 beh_param_second_byte(u32 behParam) {
+    return (behParam >> 16) & 0xFF;
+}
+
+bool SM64AP_HaveFeature(int feature) {
+    return feature >= 0 && feature < SM64AP_NUM_FEATURES && sm64_have_features[feature];
+}
+
+bool SM64AP_CollectedCourseStar(int courseIdx, int starIdx) {
+    return courseIdx >= 0 && starIdx >= 0 && starIdx < 7
+        && (SM64AP_CourseStarFlags(courseIdx) & (1 << starIdx));
+}
+
+static bool SM64AP_ShouldSpawnBobObject(s16 x, s16, s16, u32 behParam, const void *behavior) {
+    if (behavior_is(behavior, bhvKingBobomb)) {
+        return SM64AP_HaveFeature(SM64AP_FEATURE_BOB_KING_BOBOMB);
+    }
+    if (behavior_is(behavior, bhvKoopaRaceEndpoint) || behavior_is(behavior, bhvKoopa)) {
+        return SM64AP_HaveFeature(SM64AP_FEATURE_BOB_KOOPA_THE_QUICK);
+    }
+    if (behavior_is(behavior, bhvBobombBuddyOpensCannon) || behavior_is(behavior, bhvCannonClosed)) {
+        return SM64AP_HaveFeature(SM64AP_FEATURE_BOB_BOBOMB_BUDDY);
+    }
+    if (behavior_is(behavior, bhvWaterBombCannon)) {
+        return !SM64AP_HaveFeature(SM64AP_FEATURE_BOB_BOBOMB_BUDDY);
+    }
+    if (behavior_is(behavior, bhvBobombBuddy)) {
+        return beh_param_second_byte(behParam) == 3
+            ? SM64AP_HaveFeature(SM64AP_FEATURE_BOB_BOBOMB_BUDDY)
+            : !SM64AP_HaveFeature(SM64AP_FEATURE_BOB_BOBOMB_BUDDY);
+    }
+    if (behavior_is(behavior, bhvBobBowlingBallSpawner)) {
+        return SM64AP_CollectedCourseStar(AP_COURSE_BOB, 0);
+    }
+    if (behavior_is(behavior, bhvTtmBowlingBallSpawner)) {
+        return SM64AP_CollectedCourseStar(AP_COURSE_BOB, 1);
+    }
+    if (behavior_is(behavior, bhvPitBowlingBall) && x == -93) {
+        return SM64AP_CollectedCourseStar(AP_COURSE_BOB, 0);
+    }
+    return true;
+}
+
+static bool SM64AP_ShouldSpawnWfObject(u32 behParam, const void *behavior) {
+    if (behavior_is(behavior, bhvWhompKingBoss)) {
+        return SM64AP_HaveFeature(SM64AP_FEATURE_WF_WHOMP_KING);
+    }
+    if (behavior_is(behavior, bhvKickableBoard) || behavior_is(behavior, bhv1Up)
+        || behavior_is(behavior, bhvBulletBill) || behavior_is(behavior, bhvTower)
+        || behavior_is(behavior, bhvBulletBillCannon) || behavior_is(behavior, bhvTowerPlatformGroup)
+        || behavior_is(behavior, bhvTowerDoor)
+        || (behavior_is(behavior, bhvStar) && beh_param_star(behParam) == 1)) {
+        return SM64AP_HaveFeature(SM64AP_FEATURE_WF_FORTRESS);
+    }
+    if (behavior_is(behavior, bhvBobombBuddyOpensCannon)) {
+        return SM64AP_HaveFeature(SM64AP_FEATURE_WF_BOBOMB_BUDDY);
+    }
+    if (behavior_is(behavior, bhvHoot)) {
+        return SM64AP_HaveFeature(SM64AP_FEATURE_WF_HOOT);
+    }
+    return true;
+}
+
+static bool SM64AP_ShouldSpawnCcmObject(const void *behavior) {
+    bool snowmanStar = SM64AP_CollectedCourseStar(AP_COURSE_CCM, 4);
+
+    if (behavior_is(behavior, bhvSnowmansBottom)) {
+        return SM64AP_HaveFeature(SM64AP_FEATURE_CCM_SNOWMANS_HEAD) && !snowmanStar;
+    }
+    if (behavior_is(behavior, bhvSnowmansHead)) {
+        return SM64AP_HaveFeature(SM64AP_FEATURE_CCM_SNOWMANS_HEAD) || snowmanStar;
+    }
+    if (behavior_is(behavior, bhvRacingPenguin)) {
+        return SM64AP_HaveFeature(SM64AP_FEATURE_CCM_BIG_PENGUIN);
+    }
+    return true;
+}
+
+static bool SM64AP_ShouldSpawnJrbObject(u32 behParam, const void *behavior) {
+    if (behavior_is(behavior, bhvSunkenShipPart) || behavior_is(behavior, bhvSunkenShipPart2)
+        || behavior_is(behavior, bhvInSunkenShip) || behavior_is(behavior, bhvInSunkenShip2)) {
+        return SM64AP_HaveFeature(SM64AP_FEATURE_JRB_SUNKEN_SHIP);
+    }
+    if (behavior_is(behavior, bhvShipPart3) || behavior_is(behavior, bhvInSunkenShip3)
+        || behavior_is(behavior, bhvJrbSlidingBox)) {
+        return SM64AP_HaveFeature(SM64AP_FEATURE_JRB_RAISED_SHIP);
+    }
+    if (behavior_is(behavior, bhvBobombBuddyOpensCannon)) {
+        return SM64AP_HaveFeature(SM64AP_FEATURE_JRB_BOBOMB_BUDDY);
+    }
+    if (behavior_is(behavior, bhvJetStream)
+        || (behavior_is(behavior, bhvStar) && beh_param_star(behParam) == 5)) {
+        return SM64AP_HaveFeature(SM64AP_FEATURE_JRB_JET_STREAM);
+    }
+    if (behavior_is(behavior, bhvUnagi)) {
+        bool star2Collected = SM64AP_CollectedCourseStar(AP_COURSE_JRB, 1);
+        if (!SM64AP_HaveFeature(SM64AP_FEATURE_JRB_UNAGI)) {
+            return false;
+        }
+        switch (beh_param_second_byte(behParam)) {
+            case 1:
+                return !star2Collected;
+            case 2:
+                return star2Collected;
+            default:
+                return false;
+        }
+    }
+    return true;
+}
+
+static bool SM64AP_ShouldSpawnSslObject(u32 behParam, const void *behavior) {
+    if (behavior_is(behavior, bhvKlepto)) {
+        bool kleptoStarCollected = SM64AP_CollectedCourseStar(AP_COURSE_SSL, 0);
+        bool kleptoShouldHoldStar = SM64AP_HaveFeature(SM64AP_FEATURE_SSL_KLEPTO_STAR)
+            && !kleptoStarCollected;
+
+        return beh_param_second_byte(behParam) != 0
+            ? kleptoShouldHoldStar
+            : !kleptoShouldHoldStar;
+    }
+    return true;
+}
+
+static bool SM64AP_ShouldSpawnDddObject(u32 behParam, const void *behavior) {
+    if (behavior_is(behavior, bhvMantaRay)) {
+        return SM64AP_HaveFeature(SM64AP_FEATURE_DDD_MANTA_RAY);
+    }
+    if (behavior_is(behavior, bhvBowserSubDoor)) {
+        return SM64AP_HaveFeature(SM64AP_FEATURE_DDD_BOWSERS_SUB)
+            || SM64AP_HaveFeature(SM64AP_FEATURE_DDD_POLES);
+    }
+    if (behavior_is(behavior, bhvBowsersSub)) {
+        if (behParam == 0x000B0000) {
+            return SM64AP_HaveFeature(SM64AP_FEATURE_DDD_BOWSERS_SUB);
+        }
+        return SM64AP_HaveFeature(SM64AP_FEATURE_DDD_POLES)
+            && !SM64AP_HaveFeature(SM64AP_FEATURE_DDD_BOWSERS_SUB);
+    }
+    if (behavior_is(behavior, bhvDDDPole)) {
+        return SM64AP_HaveFeature(SM64AP_FEATURE_DDD_POLES);
+    }
+    return true;
+}
+
+static bool SM64AP_IsBbhNormalBooPosition(s16 x, s16 y, s16 z) {
+    return (x == 20 && y == 100 && z == -908)
+        || (x == 3150 && y == 100 && z == 398)
+        || (x == -2000 && y == 150 && z == -800)
+        || (x == 2851 && y == 100 && z == 2289)
+        || (x == -1551 && y == 100 && z == -1018);
+}
+
+static bool SM64AP_ShouldSpawnBbhObject(s16 x, s16 y, s16 z, const void *behavior) {
+    bool ghostHuntStarCollected = SM64AP_CollectedCourseStar(AP_COURSE_BBH, 0);
+
+    if (behavior_is(behavior, bhvGhostHuntBigBoo) || behavior_is(behavior, bhvGhostHuntBoo)) {
+        return !ghostHuntStarCollected;
+    }
+    if (behavior_is(behavior, bhvBoo) && SM64AP_IsBbhNormalBooPosition(x, y, z)) {
+        return ghostHuntStarCollected;
+    }
+    if (behavior_is(behavior, bhvHiddenStaircaseStep)) {
+        return SM64AP_HaveFeature(SM64AP_FEATURE_BBH_STAIRCASE);
+    }
+    if (behavior_is(behavior, bhvMerryGoRound) || behavior_is(behavior, bhvFlamethrower)
+        || behavior_is(behavior, bhvMerryGoRoundBooManager)) {
+        return SM64AP_HaveFeature(SM64AP_FEATURE_BBH_MERRY_GO_ROUND);
+    }
+    return true;
+}
+
+bool SM64AP_ShouldSpawnLevelObject(s16 level, s16, s16, s16 x, s16 y, s16 z, u32 behParam, const void *behavior) {
+    switch (level) {
+        case LEVEL_BOB:
+            return SM64AP_ShouldSpawnBobObject(x, y, z, behParam, behavior);
+        case LEVEL_WF:
+            return SM64AP_ShouldSpawnWfObject(behParam, behavior);
+        case LEVEL_CCM:
+            return SM64AP_ShouldSpawnCcmObject(behavior);
+        case LEVEL_JRB:
+            return SM64AP_ShouldSpawnJrbObject(behParam, behavior);
+        case LEVEL_LLL:
+            if (behavior_is(behavior, bhvExclamationBox) && behParam == 0x00030000) {
+                return SM64AP_HaveFeature(SM64AP_FEATURE_LLL_KOOPA_SHELL);
+            }
+            return true;
+        case LEVEL_SSL:
+            return SM64AP_ShouldSpawnSslObject(behParam, behavior);
+        case LEVEL_THI:
+            if (behavior_is(behavior, bhvKoopa) || behavior_is(behavior, bhvKoopaRaceEndpoint)) {
+                return SM64AP_HaveFeature(SM64AP_FEATURE_THI_KOOPA_THE_QUICK);
+            }
+            return true;
+        case LEVEL_TTM:
+            if (behavior_is(behavior, bhvUkiki) || behavior_is(behavior, bhvUkikiCage)) {
+                return SM64AP_HaveFeature(SM64AP_FEATURE_TTM_UKIKI);
+            }
+            return true;
+        case LEVEL_DDD:
+            return SM64AP_ShouldSpawnDddObject(behParam, behavior);
+        case LEVEL_BBH:
+            return SM64AP_ShouldSpawnBbhObject(x, y, z, behavior);
+        default:
+            return true;
+    }
+}
+
+bool SM64AP_ShouldCreateWhirlpool(s16 level, s16, s8, s8 condition, s16, s16, s16, s16) {
+    switch (condition) {
+        case 0:
+            return true;
+        case 2:
+            return level == LEVEL_DDD && SM64AP_HaveFeature(SM64AP_FEATURE_DDD_POLES);
+        case 3:
+            return level == LEVEL_JRB && SM64AP_HaveFeature(SM64AP_FEATURE_JRB_JET_STREAM);
+        default:
+            return true;
+    }
 }
 
 void setCourseNodeAndArea(int coursenum, s16* oldnode, bool isDeathWarp, int warpOp) {
@@ -280,6 +523,7 @@ void SM64AP_ResetItems() {
         sm64_have_cannon[i] = false;
     }
     sm64_have_abilities.reset();
+    sm64_have_features.reset();
     sm64_have_key1 = false;
     sm64_have_key2 = false;
     sm64_have_wingcap = false;
