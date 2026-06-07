@@ -1711,13 +1711,13 @@ static s8 get_received_castle_key_count(void) {
 static s8 get_received_cap_count(void) {
     s8 capCount = 0;
 
-    if (SM64AP_HaveCap(2)) {
+    if (SM64AP_HaveAnyCap(2)) {
         capCount++;
     }
-    if (SM64AP_HaveCap(4)) {
+    if (SM64AP_HaveAnyCap(4)) {
         capCount++;
     }
-    if (SM64AP_HaveCap(8)) {
+    if (SM64AP_HaveAnyCap(8)) {
         capCount++;
     }
 

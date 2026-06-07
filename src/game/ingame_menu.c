@@ -2711,9 +2711,9 @@ s16 render_pause_courses_and_castle(void) {
     }
     print_text(keyX, 209-20, "KEYS");
     print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(78), 209-35-20, "CAPS");
-    print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(78), 209-70, SM64AP_HaveCap(2) ? "Y" : "N");
-    print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(78)+13, 209-70, SM64AP_HaveCap(4) ? "Y" : "N");
-    print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(78)+26, 209-70, SM64AP_HaveCap(8) ? "Y" : "N");
+    print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(78), 209-70, SM64AP_HaveAnyCap(2) ? "Y" : "N");
+    print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(78)+13, 209-70, SM64AP_HaveAnyCap(4) ? "Y" : "N");
+    print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(78)+26, 209-70, SM64AP_HaveAnyCap(8) ? "Y" : "N");
     print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(78), 209-70-20, "PAINT");
 
     u8 txt_y[] = { TEXT_PAINTING_Y };

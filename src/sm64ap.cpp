@@ -2,6 +2,7 @@
 #include "Archipelago.h"
 
 extern "C" {
+    #include "game/area.h"
     #include "game/print.h"
     #include "behavior_data.h"
     #include "gfx_dimensions.h"
@@ -61,6 +62,7 @@ bool sm64_have_painting[NUM_PAINTING_LOCKS];
 int sm64_completion_type = 0;
 std::bitset<SM64AP_NUM_ABILITIES> sm64_have_abilities;
 std::bitset<SM64AP_NUM_FEATURES> sm64_have_features;
+std::bitset<SM64AP_NUM_LEVEL_CAPS> sm64_have_level_caps;
 int* sm64_clockaction = nullptr;
 int sm64_cost_firstbowserdoor = 8;
 int sm64_cost_basementdoor = 30;
@@ -143,6 +145,9 @@ void SM64AP_RecvItem(int64_t idx, bool notify) {
             break;
         case SM64AP_ID_VANISHCAP:
             sm64_have_vanishcap = true;
+            break;
+        case SM64AP_ID_LEVEL_CAP(0) ... SM64AP_ID_LEVEL_CAP(SM64AP_NUM_LEVEL_CAPS - 1):
+            sm64_have_level_caps[idx - SM64AP_LEVEL_CAP_OFFSET] = true;
             break;
         case SM64AP_ITEMID_1UP:
             gMarioState->numLives++;
@@ -823,6 +828,7 @@ void SM64AP_ResetItems() {
     }
     sm64_have_abilities.reset();
     sm64_have_features.reset();
+    sm64_have_level_caps.reset();
     sm64_have_first_floor_key = false;
     sm64_have_progressive_basement_keys = 0;
     sm64_have_progressive_upstairs_keys = 0;
@@ -1050,19 +1056,101 @@ bool SM64AP_HaveYoshi() {
     return sm64_have_yoshi;
 }
 
+static bool SM64AP_HaveLevelCap(int cap) {
+    return cap >= 0 && cap < SM64AP_NUM_LEVEL_CAPS && sm64_have_level_caps[cap];
+}
+
+static int SM64AP_LevelCapForCurrentLevel(int flag) {
+    switch (flag) {
+        case 2:
+            switch (gCurrLevelNum) {
+                case LEVEL_BOB:
+                    return SM64AP_LEVEL_CAP_BOB_WING;
+                case LEVEL_CASTLE_GROUNDS:
+                    return SM64AP_LEVEL_CAP_CASTLE_WING;
+                case LEVEL_LLL:
+                    return SM64AP_LEVEL_CAP_LLL_WING;
+                case LEVEL_SSL:
+                    return SM64AP_LEVEL_CAP_SSL_WING;
+                case LEVEL_TOTWC:
+                    return SM64AP_LEVEL_CAP_TOTWC_WING;
+                case LEVEL_WMOTR:
+                    return SM64AP_LEVEL_CAP_WMOTR_WING;
+            }
+            break;
+        case 4:
+            switch (gCurrLevelNum) {
+                case LEVEL_WF:
+                    return SM64AP_LEVEL_CAP_WF_METAL;
+                case LEVEL_JRB:
+                    return SM64AP_LEVEL_CAP_JRB_METAL;
+                case LEVEL_HMC:
+                    return SM64AP_LEVEL_CAP_HMC_METAL;
+                case LEVEL_DDD:
+                    return SM64AP_LEVEL_CAP_DDD_METAL;
+                case LEVEL_WDW:
+                    return SM64AP_LEVEL_CAP_WDW_METAL;
+                case LEVEL_COTMC:
+                    return SM64AP_LEVEL_CAP_COTMC_METAL;
+                case LEVEL_BITDW:
+                    return SM64AP_LEVEL_CAP_BITDW_METAL;
+            }
+            break;
+        case 8:
+            switch (gCurrLevelNum) {
+                case LEVEL_BBH:
+                    return SM64AP_LEVEL_CAP_BBH_VANISH;
+                case LEVEL_DDD:
+                    return SM64AP_LEVEL_CAP_DDD_VANISH;
+                case LEVEL_SL:
+                    return SM64AP_LEVEL_CAP_SL_VANISH;
+                case LEVEL_VCUTM:
+                    return SM64AP_LEVEL_CAP_VCUTM_VANISH;
+                case LEVEL_WDW:
+                    return SM64AP_LEVEL_CAP_WDW_VANISH;
+            }
+            break;
+    }
+
+    return -1;
+}
+
+static bool SM64AP_HaveAnyLevelCap(int first, int last) {
+    for (int cap = first; cap <= last; cap++) {
+        if (SM64AP_HaveLevelCap(cap)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 bool SM64AP_HaveCap(int flag) {
     switch (flag) {
         case 2:
-            return sm64_have_wingcap;
-            break;
+            return sm64_have_wingcap || SM64AP_HaveLevelCap(SM64AP_LevelCapForCurrentLevel(flag));
         case 4:
-            return sm64_have_metalcap;
-            break;
+            return sm64_have_metalcap || SM64AP_HaveLevelCap(SM64AP_LevelCapForCurrentLevel(flag));
         case 8:
-            return sm64_have_vanishcap;
-            break;
+            return sm64_have_vanishcap || SM64AP_HaveLevelCap(SM64AP_LevelCapForCurrentLevel(flag));
         default:
             //Probably coin/1up or something
+            return true;
+    }
+}
+
+bool SM64AP_HaveAnyCap(int flag) {
+    switch (flag) {
+        case 2:
+            return sm64_have_wingcap
+                || SM64AP_HaveAnyLevelCap(SM64AP_LEVEL_CAP_BOB_WING, SM64AP_LEVEL_CAP_WMOTR_WING);
+        case 4:
+            return sm64_have_metalcap
+                || SM64AP_HaveAnyLevelCap(SM64AP_LEVEL_CAP_WF_METAL, SM64AP_LEVEL_CAP_BITDW_METAL);
+        case 8:
+            return sm64_have_vanishcap
+                || SM64AP_HaveAnyLevelCap(SM64AP_LEVEL_CAP_BBH_VANISH, SM64AP_LEVEL_CAP_WDW_VANISH);
+        default:
             return true;
     }
 }
