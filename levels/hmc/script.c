@@ -14,6 +14,7 @@
 
 #include "make_const_nonconst.h"
 #include "levels/hmc/header.h"
+#include "levels/castle_inside/header.h"
 
 static const LevelScript script_func_local_1[] = {
     OBJECT(/*model*/ MODEL_RED_FLAME, /*pos*/ 4936, -357, -4146, /*angle*/ 0, 0, 0, /*behParam*/ 0x00000000, /*beh*/ bhvFlame),
@@ -93,10 +94,14 @@ const LevelScript level_hmc_entry[] = {
     LOAD_MODEL_FROM_GEO(MODEL_HMC_ROCK_PIECE,           hmc_geo_000570),
     LOAD_MODEL_FROM_GEO(MODEL_HMC_ROCK_SMALL_PIECE,     hmc_geo_000588),
     LOAD_MODEL_FROM_GEO(MODEL_HMC_RED_GRILLS,           hmc_geo_000530),
+    LOAD_MODEL_FROM_GEO(MODEL_CASTLE_CLOCK_MINUTE_HAND, castle_geo_001530),
+    LOAD_MODEL_FROM_GEO(MODEL_CASTLE_CLOCK_HOUR_HAND,   castle_geo_001548),
 
     AREA(/*index*/ 1, hmc_geo_000B90),
         OBJECT(/*model*/ MODEL_NONE, /*pos*/ -7152,  3161, 7181, /*angle*/ 0, 135, 0, /*behParam*/ 0x000A0000, /*beh*/ bhvSpinAirborneWarp),
         OBJECT(/*model*/ MODEL_NONE, /*pos*/  3351, -4690, 4773, /*angle*/ 0,   0, 0, /*behParam*/ 0x340B0000, /*beh*/ bhvWarp),
+        OBJECT(/*model*/ MODEL_CASTLE_CLOCK_HOUR_HAND, /*pos*/  3350, -4480, 4770, /*angle*/ 0, -45, 0, /*behParam*/ LEVEL_COTMC, /*beh*/ bhvClockHourHand),
+        OBJECT(/*model*/ MODEL_CASTLE_CLOCK_MINUTE_HAND, /*pos*/  3350, -4480, 4770, /*angle*/ 0, -45, 0, /*behParam*/ LEVEL_COTMC, /*beh*/ bhvClockMinuteHand),
         WARP_NODE(/*id*/ 0x0A, /*destLevel*/ LEVEL_HMC, /*destArea*/ 0x01, /*destNode*/ 0x0A, /*flags*/ WARP_NO_CHECKPOINT),
         WARP_NODE(/*id*/ 0x0B, /*destLevel*/ LEVEL_COTMC, /*destArea*/ 0x01, /*destNode*/ 0x0A, /*flags*/ WARP_NO_CHECKPOINT),
         WARP_NODE(/*id*/ 0xF0, /*destLevel*/ LEVEL_CASTLE, /*destArea*/ 0x03, /*destNode*/ 0x34, /*flags*/ WARP_NO_CHECKPOINT),
@@ -107,6 +112,8 @@ const LevelScript level_hmc_entry[] = {
         JUMP_LINK(script_func_local_4),
         TERRAIN(/*terrainData*/ hmc_seg7_collision_level),
         MACRO_OBJECTS(/*objList*/ hmc_seg7_macro_objs),
+        OBJECT(/*model*/ MODEL_EXCLAMATION_BOX, /*pos*/ -4960,  2700,    80, /*angle*/ 0, 0, 0, /*behParam*/ (0x14040000 + LEVEL_HMC*10 + 1), /*beh*/ bhvExclamationBox),
+        OBJECT(/*model*/ MODEL_EXCLAMATION_BOX, /*pos*/ -2700,  2100, -6400, /*angle*/ 0, 0, 0, /*behParam*/ (0x14040000 + LEVEL_HMC*10 + 2), /*beh*/ bhvExclamationBox),
         ROOMS(/*surfaceRooms*/ hmc_seg7_rooms),
         SET_BACKGROUND_MUSIC(/*settingsPreset*/ 0x0004, /*seq*/ SEQ_LEVEL_UNDERGROUND),
         TERRAIN_TYPE(/*terrainType*/ TERRAIN_STONE),

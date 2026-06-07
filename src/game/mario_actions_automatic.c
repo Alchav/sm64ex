@@ -1,4 +1,5 @@
 #include <PR/ultratypes.h>
+#include "sm64ap.h"
 
 #include "sm64.h"
 #include "behavior_data.h"
@@ -395,7 +396,7 @@ s32 act_start_hanging(struct MarioState *m) {
         return set_mario_action(m, ACT_FREEFALL, 0);
     }
 
-    if (m->input & INPUT_Z_PRESSED) {
+    if (m->input & INPUT_Z_PRESSED && SM64AP_CanGroundPound()) {
         return set_mario_action(m, ACT_GROUND_POUND, 0);
     }
 
@@ -424,7 +425,7 @@ s32 act_hanging(struct MarioState *m) {
         return set_mario_action(m, ACT_FREEFALL, 0);
     }
 
-    if (m->input & INPUT_Z_PRESSED) {
+    if (m->input & INPUT_Z_PRESSED && SM64AP_CanGroundPound()) {
         return set_mario_action(m, ACT_GROUND_POUND, 0);
     }
 
@@ -448,7 +449,7 @@ s32 act_hang_moving(struct MarioState *m) {
         return set_mario_action(m, ACT_FREEFALL, 0);
     }
 
-    if (m->input & INPUT_Z_PRESSED) {
+    if (m->input & INPUT_Z_PRESSED && SM64AP_CanGroundPound()) {
         return set_mario_action(m, ACT_GROUND_POUND, 0);
     }
 

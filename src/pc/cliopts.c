@@ -47,7 +47,7 @@ void parse_cli_opts(int argc, char* argv[]) {
     // Initialize options with false values.
     memset(&gCLIOpts, 0, sizeof(gCLIOpts));
 
-    int idx_ip = 0, idx_name = 0, idx_passwd = 0;
+    int idx_ip = 0, idx_name = 0, idx_passwd = 0, idx_file = 0;
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "--skip-intro") == 0) // Skip Peach Intro
             gCLIOpts.SkipIntro = 1;
@@ -77,6 +77,8 @@ void parse_cli_opts(int argc, char* argv[]) {
         else if (strcmp(argv[i], "--sm64ap_name") == 0 && (i + 1) < argc) idx_name = ++i;
         else if (strcmp(argv[i], "--sm64ap_passwd") == 0 && (i + 1) < argc) idx_passwd = ++i;
 
+        else if (strcmp(argv[i], "--sm64ap_file") == 0 && (i + 1) < argc) idx_file = ++i;
+
         // Print help
         else if (strcmp(argv[i], "--help") == 0) {
             print_help();
@@ -84,9 +86,14 @@ void parse_cli_opts(int argc, char* argv[]) {
         }
     }
     if (idx_name == 0) {
-        printf("SM64AP: You need to at least specify Name. Exiting.\n");
-        fflush(stdout);
-        game_exit();
+        if (idx_file == 0) {
+            printf("SM64AP: You need to at least specify Name (For MultiWorld) or Seed Filename (For Singleplayer). Exiting.\n");
+            fflush(stdout);
+            game_exit();
+        } else {
+            SM64AP_InitSP(argv[idx_file]);
+        }
+    } else {
+        SM64AP_InitMW(idx_ip == 0 ? "" : argv[idx_ip], argv[idx_name], idx_passwd == 0 ? "" : argv[idx_passwd]);
     }
-    SM64AP_Init(idx_ip == 0 ? "" : argv[idx_ip], argv[idx_name], idx_passwd == 0 ? "" : argv[idx_passwd]);
 }

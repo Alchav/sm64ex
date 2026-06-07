@@ -1,4 +1,11 @@
 #include <stdbool.h>
+
+#ifdef __cplusplus
+#define AP_EXTERN_C extern "C"
+#else
+#define AP_EXTERN_C
+#endif
+
 #ifdef __cplusplus
 extern "C" {
     #include "types.h"
@@ -9,48 +16,110 @@ extern "C" {
 
 #define SM64AP_ID_OFFSET 3626000
 #define SM64AP_ITEMID_STAR SM64AP_ID_OFFSET
-#define SM64AP_ITEMID_KEY1 (SM64AP_ID_OFFSET+178)
-#define SM64AP_ITEMID_KEY2 (SM64AP_ITEMID_KEY1+1)
-#define SM64AP_ITEMID_WINGCAP (SM64AP_ITEMID_KEY2+1)
-#define SM64AP_ITEMID_METALCAP (SM64AP_ITEMID_WINGCAP+1)
-#define SM64AP_ITEMID_VANISHCAP (SM64AP_ITEMID_METALCAP+1)
+#define SM64AP_ID_KEY1 (SM64AP_ID_OFFSET+178)
+#define SM64AP_ID_KEY2 (SM64AP_ID_KEY1+1)
+#define SM64AP_ID_KEYPROG (SM64AP_ID_KEY2+1)
+#define SM64AP_ID_WINGCAP (SM64AP_ID_KEYPROG+1)
+#define SM64AP_ID_METALCAP (SM64AP_ID_WINGCAP+1)
+#define SM64AP_ID_VANISHCAP (SM64AP_ID_METALCAP+1)
+#define SM64AP_ITEMID_1UP (SM64AP_ID_VANISHCAP+1)
 
-#define SM64AP_NUM_LOCS 183
+#define SM64AP_ABILITY_OFFSET (SM64AP_ITEMID_1UP+1)
+#define SM64AP_ID_DOUBLEJUMP (SM64AP_ABILITY_OFFSET)
+#define SM64AP_ID_TRIPLEJUMP (SM64AP_ABILITY_OFFSET+1)
+#define SM64AP_ID_LONGJUMP (SM64AP_ABILITY_OFFSET+2)
+#define SM64AP_ID_BACKFLIP (SM64AP_ABILITY_OFFSET+3)
+#define SM64AP_ID_SIDEFLIP (SM64AP_ABILITY_OFFSET+4)
+#define SM64AP_ID_WALLKICK (SM64AP_ABILITY_OFFSET+5)
+#define SM64AP_ID_DIVE (SM64AP_ABILITY_OFFSET+6)
+#define SM64AP_ID_GROUNDPOUND (SM64AP_ABILITY_OFFSET+7)
+#define SM64AP_ID_KICK (SM64AP_ABILITY_OFFSET+8)
+#define SM64AP_ID_CLIMB (SM64AP_ABILITY_OFFSET+9)
+#define SM64AP_ID_LEDGEGRAB (SM64AP_ABILITY_OFFSET+10)
+
+#define SM64AP_ID_CANNONUNLOCK(x) (SM64AP_ID_OFFSET+200+x)
+#define SM64AP_ID_PAINTINGUNLOCK(x) (SM64AP_ID_OFFSET+230+x)
+#define SM64AP_ID_ABILITY(x) (SM64AP_ABILITY_OFFSET+x)
+// Reserving some room for coins, if needed
+// Nice filler
+#define SM64AP_ID_1_HEALTH_PIP   (SM64AP_ID_OFFSET+1750)
+#define SM64AP_ID_2_HEALTH_PIP   (SM64AP_ID_OFFSET+1751)
+#define SM64AP_ID_3_HEALTH_PIP   (SM64AP_ID_OFFSET+1752)
+#define SM64AP_ID_4_HEALTH_PIP   (SM64AP_ID_OFFSET+1753)
+#define SM64AP_ID_FULL_REFILL    (SM64AP_ID_OFFSET+1754)
+// Traps
+#define SM64AP_ID_BONK_TRAP      (SM64AP_ID_OFFSET+1760)
+#define SM64AP_ID_FIRE_TRAP      (SM64AP_ID_OFFSET+1761)
+#define SM64AP_ID_ELEC_TRAP      (SM64AP_ID_OFFSET+1762)
+#define SM64AP_ID_CHUCK_TRAP     (SM64AP_ID_OFFSET+1763)
+#define SM64AP_ID_SPIN_TRAP      (SM64AP_ID_OFFSET+1764)
+#define SM64AP_ID_GUST_TRAP      (SM64AP_ID_OFFSET+1765)
 
 
-#ifdef __cplusplus
+#define SM64AP_LOCATIONID_BOARDBOWSERSSUB (SM64AP_ID_OFFSET + 56)
+#define SM64AP_LOCATIONID_BASEMENTTOAD (SM64AP_ID_OFFSET + 168)
+#define SM64AP_LOCATIONID_SECONDFLOORTOAD (SM64AP_LOCATIONID_BASEMENTTOAD + 1)
+#define SM64AP_LOCATIONID_THIRDFLOORTOAD (SM64AP_LOCATIONID_SECONDFLOORTOAD + 1)
+#define SM64AP_LOCATIONID_MIPS1 (SM64AP_LOCATIONID_THIRDFLOORTOAD + 1)
+#define SM64AP_LOCATIONID_MIPS2 (SM64AP_LOCATIONID_MIPS1 + 1)
+
+#define SM64AP_NUM_LOCS 244
+
+#define SM64AP_NUM_ABILITIES 11
+
 //Init
-extern "C" void SM64AP_Init(const char*, const char*, const char*);
+AP_EXTERN_C void SM64AP_InitMW(const char*, const char*, const char*);
+AP_EXTERN_C void SM64AP_InitSP(const char*);
 
 // Local Stars, Keys and Caps
-extern "C" int SM64AP_GetStars();
-extern "C" int SM64AP_StarsToFinish();
-extern "C" u32 SM64AP_CourseStarFlags(s32);
-extern "C" bool SM64AP_CheckedKey1();
-extern "C" bool SM64AP_HaveKey1();
-extern "C" bool SM64AP_CheckedKey2();
-extern "C" bool SM64AP_HaveKey2();
-extern "C" bool SM64AP_HaveCap(int);
+AP_EXTERN_C int SM64AP_GetStars();
+AP_EXTERN_C int SM64AP_GetRequiredStars(int);
+AP_EXTERN_C u32 SM64AP_CourseStarFlags(s32);
+AP_EXTERN_C void SM64AP_RedirectWarp(s16*,s16*,s8*,s16*,s16*,bool,int);
+AP_EXTERN_C int SM64AP_EntranceToTTC();
+AP_EXTERN_C void SM64AP_SetClockToTTCAction(int* action);
+AP_EXTERN_C void SM64AP_SetClockToTTCState();
+AP_EXTERN_C bool SM64AP_CheckedLoc(int);
+AP_EXTERN_C bool SM64AP_HaveKey1();
+AP_EXTERN_C bool SM64AP_HaveKey2();
+AP_EXTERN_C bool SM64AP_HaveCap(int);
+AP_EXTERN_C bool SM64AP_HaveCannon(int);
+AP_EXTERN_C bool SM64AP_HavePainting(int);
+AP_EXTERN_C bool SM64AP_DeathLinkPending();
+AP_EXTERN_C void SM64AP_DeathLinkClear();
+AP_EXTERN_C void SM64AP_DeathLinkSend();
+
+// Local Moves
+AP_EXTERN_C bool SM64AP_CanDoubleJump();
+AP_EXTERN_C bool SM64AP_CanTripleJump();
+AP_EXTERN_C bool SM64AP_CanLongJump();
+AP_EXTERN_C bool SM64AP_CanBackflip();
+AP_EXTERN_C bool SM64AP_CanSideFlip();
+AP_EXTERN_C bool SM64AP_CanWallKick();
+AP_EXTERN_C bool SM64AP_CanDive();
+AP_EXTERN_C bool SM64AP_CanGroundPound();
+AP_EXTERN_C bool SM64AP_CanKick();
+AP_EXTERN_C bool SM64AP_CanClimb();
+AP_EXTERN_C bool SM64AP_CanLedgeGrab();
 
 // Send Item
-extern "C" void SM64AP_SendItem(int);
+AP_EXTERN_C void SM64AP_SendByBoxID(int);
+AP_EXTERN_C void SM64AP_SendItem(int);
 
 // Print Next Message to Screen
-extern "C" void SM64AP_PrintNext();
+AP_EXTERN_C void SM64AP_PrintNext();
 
-// Called when Story completed, sends StatusUpdate
-extern "C" void SM64AP_StoryComplete();
-#else
-void SM64AP_Init(const char*, const char*, const char*);
-int SM64AP_GetStars();
-int SM64AP_StarsToFinish();
-u32 SM64AP_CourseStarFlags(s32);
-bool SM64AP_CheckedKey1();
-bool SM64AP_HaveKey1();
-bool SM64AP_CheckedKey2();
-bool SM64AP_HaveKey2();
-bool SM64AP_HaveCap(int);
-void SM64AP_SendItem(int);
-void SM64AP_PrintNext();
-void SM64AP_StoryComplete();
-#endif
+// If an item exists on the stack, return it, otherwise 0
+AP_EXTERN_C int64_t SM64AP_PopDelayedStack();
+
+// Called on each Bowser stage completion, i is bowser index. Will send StoryComplete depending on completion option.
+AP_EXTERN_C void SM64AP_FinishBowser(int i);
+
+// Used to send and receive moat state
+AP_EXTERN_C void SM64AP_SetMoatDrained();
+AP_EXTERN_C bool SM64AP_MoatDrained();
+
+// Check for switch state (used for initial switch state on level load)
+AP_EXTERN_C bool SM64AP_PressedSwitch(int);
+
+#undef AP_EXTERN_C

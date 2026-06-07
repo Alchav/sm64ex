@@ -1,5 +1,7 @@
 #include <PR/ultratypes.h>
 
+#include "sm64ap.h"
+
 #include "sm64.h"
 #include "area.h"
 #include "audio/data.h"
@@ -987,6 +989,16 @@ static u32 set_mario_action_cutscene(struct MarioState *m, u32 action, UNUSED u3
  * specific function if needed.
  */
 u32 set_mario_action(struct MarioState *m, u32 action, u32 actionArg) {
+    // Intercepting and replacing Mario's jumps if not yet unlocked.
+    if (   (action == ACT_DOUBLE_JUMP && !SM64AP_CanDoubleJump())
+        || (action == ACT_TRIPLE_JUMP && !SM64AP_CanTripleJump())
+        || (action == ACT_FLYING_TRIPLE_JUMP && !SM64AP_CanTripleJump())
+        || (action == ACT_BACKFLIP && !SM64AP_CanBackflip())
+        || (action == ACT_LONG_JUMP && !SM64AP_CanLongJump())
+        || (action == ACT_SIDE_FLIP && !SM64AP_CanSideFlip())
+    ) {
+        action = ACT_JUMP;
+    }
     switch (action & ACT_GROUP_MASK) {
         case ACT_GROUP_MOVING:
             action = set_mario_action_moving(m, action, actionArg);
@@ -1853,7 +1865,17 @@ void init_mario(void) {
     if (save_file_get_flags()
         & (SAVE_FLAG_CAP_ON_GROUND | SAVE_FLAG_CAP_ON_KLEPTO | SAVE_FLAG_CAP_ON_UKIKI
            | SAVE_FLAG_CAP_ON_MR_BLIZZARD)) {
-        gMarioState->flags = 0;
+        switch(save_file_get_cap_level()) {
+            case LEVEL_SSL:
+            case LEVEL_SL:
+            case LEVEL_TTM:
+                gMarioState->flags = 0;
+                break;
+            default:
+                gMarioState->flags = (MARIO_CAP_ON_HEAD | MARIO_NORMAL_CAP);
+                save_file_clear_flags(SAVE_FLAG_CAP_ON_GROUND | SAVE_FLAG_CAP_ON_KLEPTO | SAVE_FLAG_CAP_ON_MR_BLIZZARD | SAVE_FLAG_CAP_ON_UKIKI);
+                break;
+        }
     } else {
         gMarioState->flags = (MARIO_CAP_ON_HEAD | MARIO_NORMAL_CAP);
     }

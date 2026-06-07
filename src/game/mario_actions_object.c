@@ -1,4 +1,5 @@
 #include <PR/ultratypes.h>
+#include "sm64ap.h"
 
 #include "sm64.h"
 #include "mario_actions_object.h"
@@ -102,7 +103,7 @@ s32 mario_update_punch_sequence(struct MarioState *m) {
                 m->flags |= MARIO_PUNCHING;
             }
 
-            if (m->input & INPUT_B_PRESSED) {
+            if (m->input & INPUT_B_PRESSED && SM64AP_CanKick()) {
                 m->actionArg = 6;
             }
 
@@ -154,7 +155,7 @@ s32 act_punching(struct MarioState *m) {
         return check_common_action_exits(m);
     }
 
-    if (m->actionState == 0 && (m->input & INPUT_A_DOWN)) {
+    if (m->actionState == 0 && (m->input & INPUT_A_DOWN) && SM64AP_CanKick()) {
         return set_mario_action(m, ACT_JUMP_KICK, 0);
     }
 

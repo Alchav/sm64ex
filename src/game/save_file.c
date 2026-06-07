@@ -510,25 +510,27 @@ void save_file_collect_star_or_key(s16 coinScore, s16 starIndex) {
             if (!(save_file_get_flags() & (SAVE_FLAG_HAVE_KEY_1 | SAVE_FLAG_UNLOCKED_BASEMENT_DOOR))) {
                 save_file_set_flags(SAVE_FLAG_HAVE_KEY_1);
             }
-            SM64AP_SendItem(SM64AP_ITEMID_KEY1 - SM64AP_ID_OFFSET);
+            SM64AP_SendItem(SM64AP_ID_KEY1);
+            SM64AP_FinishBowser(0);
             break;
 
         case LEVEL_BOWSER_2:
             if (!(save_file_get_flags() & (SAVE_FLAG_HAVE_KEY_2 | SAVE_FLAG_UNLOCKED_UPSTAIRS_DOOR))) {
                 save_file_set_flags(SAVE_FLAG_HAVE_KEY_2);
             }
-            SM64AP_SendItem(SM64AP_ITEMID_KEY2 - SM64AP_ID_OFFSET);
+            SM64AP_SendItem(SM64AP_ID_KEY2);
+            SM64AP_FinishBowser(1);
             break;
 
         case LEVEL_BOWSER_3:
-            SM64AP_StoryComplete();
+            SM64AP_FinishBowser(2);
             break;
 
         default:
             if (!(save_file_get_star_flags(fileIndex, courseIndex) & starFlag)) {
                 save_file_set_star_flags(fileIndex, courseIndex, starFlag);
             }
-            SM64AP_SendItem((courseIndex == -1 ? (10+15-1)*7 : courseIndex*7) + starIndex);
+            SM64AP_SendItem((courseIndex == -1 ? (10+15-1)*7 : courseIndex*7) + starIndex + SM64AP_ID_OFFSET);
             break;
     }
 }
@@ -584,13 +586,13 @@ s32 save_file_get_total_star_count(s32 fileIndex, s32 minCourse, s32 maxCourse) 
 void save_file_set_flags(u32 flags) {
     switch (flags) {
         case 2:
-            SM64AP_SendItem(SM64AP_ITEMID_WINGCAP - SM64AP_ID_OFFSET);
+            SM64AP_SendItem(SM64AP_ID_WINGCAP);
             break;
         case 4:
-            SM64AP_SendItem(SM64AP_ITEMID_METALCAP - SM64AP_ID_OFFSET);
+            SM64AP_SendItem(SM64AP_ID_METALCAP);
             break;
         case 8:
-            SM64AP_SendItem(SM64AP_ITEMID_VANISHCAP - SM64AP_ID_OFFSET);
+            SM64AP_SendItem(SM64AP_ID_VANISHCAP);
             break;
     }
     gSaveBuffer.files[gCurrSaveFileNum - 1][0].flags |= (flags | SAVE_FLAG_FILE_EXISTS);
@@ -615,20 +617,7 @@ u32 save_file_get_flags(void) {
  * If course is -1, return the bitset of obtained castle secret stars.
  */
 u32 save_file_get_star_flags(s32 fileIndex, s32 courseIndex) {
-    u32 starFlags;
-
-    if (courseIndex == -1) {
-        starFlags = (gSaveBuffer.files[fileIndex][0].flags >> 24) & 0x7F;
-    } else {
-        if (courseIndex > 14) {
-            starFlags = gSaveBuffer.files[fileIndex][0].courseStars[courseIndex] & 0x7F;
-        } else {
-            starFlags = SM64AP_CourseStarFlags(courseIndex);
-        }
-        
-    }
-
-    return starFlags;
+    return SM64AP_CourseStarFlags(courseIndex);
 }
 u32 save_file_get_cannon_flags(s32 fileIndex, s32 courseIndex) {
     
@@ -660,13 +649,14 @@ s32 save_file_get_course_coin_score(s32 fileIndex, s32 courseIndex) {
  * Return TRUE if the cannon is unlocked in the current course.
  */
 s32 save_file_is_cannon_unlocked(void) {
-    return (gSaveBuffer.files[gCurrSaveFileNum - 1][0].courseStars[gCurrCourseNum] & 0x80) != 0;
+    return SM64AP_HaveCannon(gCurrCourseNum-1);
 }
 
 /**
  * Sets the cannon status to unlocked in the current course.
  */
 void save_file_set_cannon_unlocked(void) {
+    if (gCurrCourseNum <= 15 ) SM64AP_SendItem(200 + gCurrCourseNum - 1 + SM64AP_ID_OFFSET);
     gSaveBuffer.files[gCurrSaveFileNum - 1][0].courseStars[gCurrCourseNum] |= 0x80;
     gSaveBuffer.files[gCurrSaveFileNum - 1][0].flags |= SAVE_FLAG_FILE_EXISTS;
     gSaveFileModified = TRUE;
@@ -720,6 +710,11 @@ void save_file_move_cap_to_default_location(void) {
         }
         save_file_clear_flags(SAVE_FLAG_CAP_ON_GROUND);
     }
+}
+
+u8 save_file_get_cap_level(void) {
+    struct SaveFile *saveFile = &gSaveBuffer.files[gCurrSaveFileNum - 1][0];
+    return saveFile->capLevel;
 }
 
 #ifdef VERSION_EU

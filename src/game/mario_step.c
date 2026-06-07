@@ -1,4 +1,5 @@
 #include <ultra64.h>
+#include "sm64ap.h"
 
 #include "sm64.h"
 #include "engine/math_util.h"
@@ -351,6 +352,10 @@ u32 check_ledge_grab(struct MarioState *m, struct Surface *wall, Vec3f intendedP
     f32 displacementX;
     f32 displacementZ;
 
+    if (!SM64AP_CanLedgeGrab()) {
+        return 0;
+    }
+
     if (m->vel[1] > 0) {
         return 0;
     }
@@ -449,7 +454,7 @@ s32 perform_air_quarter_step(struct MarioState *m, Vec3f intendedPos, u32 stepAr
 
             //! Uses referenced ceiling instead of ceil (ceiling hang upwarp)
             if ((stepArg & AIR_STEP_CHECK_HANG) && m->ceil != NULL
-                && m->ceil->type == SURFACE_HANGABLE) {
+                && m->ceil->type == SURFACE_HANGABLE && SM64AP_CanClimb()) {
                 return AIR_STEP_GRABBED_CEILING;
             }
 

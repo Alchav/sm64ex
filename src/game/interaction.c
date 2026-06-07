@@ -9,6 +9,7 @@
 #include "camera.h"
 #include "course_table.h"
 #include "dialog_ids.h"
+#include "engine/behavior_script.h"
 #include "engine/math_util.h"
 #include "engine/surface_collision.h"
 #include "game_init.h"
@@ -76,6 +77,8 @@ u32 interact_hoot(struct MarioState *, u32, struct Object *);
 u32 interact_cap(struct MarioState *, u32, struct Object *);
 u32 interact_grabbable(struct MarioState *, u32, struct Object *);
 u32 interact_text(struct MarioState *, u32, struct Object *);
+
+u16 delayedArchTimer = 100;
 
 struct InteractionHandler {
     u32 interactType;
@@ -836,6 +839,8 @@ u32 interact_bbh_entrance(struct MarioState *m, UNUSED u32 interactType, struct 
         m->interactObj = o;
         m->usedObj = o;
 
+        SM64AP_SetClockToTTCState();
+
         if (m->action & ACT_FLAG_AIR) {
             return set_mario_action(m, ACT_BBH_ENTER_SPIN, 0);
         }
@@ -894,7 +899,7 @@ u32 interact_warp_door(struct MarioState *m, UNUSED u32 interactType, struct Obj
     u32 actionArg;
 
     if (m->action == ACT_WALKING || m->action == ACT_DECELERATING) {
-        if (warpDoorId == 1 && !(saveFlags & SAVE_FLAG_UNLOCKED_UPSTAIRS_DOOR)) {
+        if (warpDoorId == 1) {
             if (!SM64AP_HaveKey2()) {
                 if (!sDisplayingDoorText) {
                     set_mario_action(m, ACT_READING_AUTOMATIC_DIALOG,
@@ -905,22 +910,26 @@ u32 interact_warp_door(struct MarioState *m, UNUSED u32 interactType, struct Obj
                 return FALSE;
             }
 
-            doorAction = ACT_UNLOCKING_KEY_DOOR;
+            if (!(saveFlags & SAVE_FLAG_UNLOCKED_UPSTAIRS_DOOR)) {
+                doorAction = ACT_UNLOCKING_KEY_DOOR;
+            }
         }
 
-        if (warpDoorId == 2 && !(saveFlags & SAVE_FLAG_UNLOCKED_BASEMENT_DOOR)) {
+        if (warpDoorId == 2) {
             if (!SM64AP_HaveKey1()) {
                 if (!sDisplayingDoorText) {
                     // Moat door skip was intended confirmed
                     set_mario_action(m, ACT_READING_AUTOMATIC_DIALOG,
-                                     SM64AP_HaveKey2() ? DIALOG_023 : DIALOG_022);
+                                     SM64AP_HaveKey2() ? DIALOG_099 : DIALOG_022);
                 }
                 sDisplayingDoorText = TRUE;
 
                 return FALSE;
             }
 
-            doorAction = ACT_UNLOCKING_KEY_DOOR;
+            if (!(saveFlags & SAVE_FLAG_UNLOCKED_BASEMENT_DOOR)) {
+                doorAction = ACT_UNLOCKING_KEY_DOOR;
+            }
         }
 
         if (m->action == ACT_WALKING || m->action == ACT_DECELERATING) {
@@ -984,7 +993,8 @@ u32 get_door_save_file_flag(struct Object *door) {
 }
 
 u32 interact_door(struct MarioState *m, UNUSED u32 interactType, struct Object *o) {
-    s16 requiredNumStars = o->oBehParams >> 24;
+    s16 orignumstars = o->oBehParams >> 24;
+    s16 requiredNumStars = SM64AP_GetRequiredStars(orignumstars);
     s16 numStars = save_file_get_total_star_count(gCurrSaveFileNum - 1, COURSE_MIN - 1, COURSE_MAX - 1);
 
     if (m->action == ACT_WALKING || m->action == ACT_DECELERATING) {
@@ -1015,7 +1025,7 @@ u32 interact_door(struct MarioState *m, UNUSED u32 interactType, struct Object *
         } else if (!sDisplayingDoorText) {
             u32 text = DIALOG_022 << 16;
 
-            switch (requiredNumStars) {
+            switch (orignumstars) {
                 case 1:
                     text = DIALOG_024 << 16;
                     break;
@@ -1036,12 +1046,12 @@ u32 interact_door(struct MarioState *m, UNUSED u32 interactType, struct Object *
                     break;
             }
 
-            text += requiredNumStars - numStars;
+            text += requiredNumStars;
 
             sDisplayingDoorText = TRUE;
             return set_mario_action(m, ACT_READING_AUTOMATIC_DIALOG, text);
         }
-    } else if (m->action == ACT_IDLE && sDisplayingDoorText == TRUE && requiredNumStars == 70) {
+    } else if (m->action == ACT_IDLE && sDisplayingDoorText == TRUE && orignumstars == 70) {
         m->interactObj = o;
         m->usedObj = o;
         return set_mario_action(m, ACT_ENTERING_STAR_DOOR, should_push_or_pull_door(m, o));
@@ -1476,7 +1486,7 @@ u32 check_object_grab_mario(struct MarioState *m, UNUSED u32 interactType, struc
 
 u32 interact_pole(struct MarioState *m, UNUSED u32 interactType, struct Object *o) {
     s32 actionId = m->action & ACT_ID_MASK;
-    if (actionId >= 0x080 && actionId < 0x0A0) {
+    if (actionId >= 0x080 && actionId < 0x0A0 && SM64AP_CanClimb()) {
         if (!(m->prevAction & ACT_FLAG_ON_POLE) || m->usedObj != o) {
 #ifdef VERSION_SH
             f32 velConv = m->forwardVel; // conserve the velocity.
@@ -1738,6 +1748,139 @@ void check_kick_or_punch_wall(struct MarioState *m) {
     }
 }
 
+/**
+ * Update the timer if we're in a course and determine if there's anything to pop
+ */
+void update_arch_delayed_items(struct MarioState *m) {
+    if(gCurrCourseNum < COURSE_MIN || gCurrCourseNum > COURSE_MAX - 1) {
+        return; // Don't update during any section we don't have control or in the castle
+    }
+    if(m->invincTimer > 0) {
+        return; // Don't update when Mario is invincible, we don't want to spawn fire when we can't be burned by it :)
+    }
+    if(gCurrDemoInput != NULL) {
+        return; // Also don't update when we're in the demo screen
+    }
+    switch(m->action) {
+        case ACT_IDLE:
+        case ACT_PANTING:
+        case ACT_HOLD_IDLE:
+        case ACT_HOLD_HEAVY_IDLE:
+        case ACT_STANDING_AGAINST_WALL:
+        case ACT_COUGHING:
+        case ACT_SHIVERING:
+        case ACT_CROUCHING:
+        case ACT_WALKING:
+        case ACT_HOLD_WALKING:
+        case ACT_TURNING_AROUND:
+        case ACT_RIDING_SHELL_GROUND:
+        case ACT_HOLD_HEAVY_WALKING:
+        case ACT_CRAWLING:
+        case ACT_JUMP:
+        case ACT_DOUBLE_JUMP:
+        case ACT_TRIPLE_JUMP:
+        case ACT_BACKFLIP:
+        case ACT_STEEP_JUMP:
+        case ACT_WALL_KICK_AIR:
+        case ACT_SIDE_FLIP:
+        case ACT_LONG_JUMP:
+        case ACT_WATER_JUMP:
+        case ACT_DIVE:
+        case ACT_FREEFALL:
+        case ACT_TOP_OF_POLE_JUMP:
+        case ACT_FLYING:
+        case ACT_RIDING_SHELL_JUMP:
+        case ACT_RIDING_SHELL_FALL:
+        case ACT_WATER_IDLE:
+        case ACT_HOLD_WATER_IDLE:
+        case ACT_BREASTSTROKE:
+        case ACT_HOLD_BREASTSTROKE:
+        case ACT_WATER_PUNCH:
+            break;
+        default:
+            // If we aren't in one of the known Mario states, don't decrement the timer
+            return;
+    }
+    // If we have time left on the timer, decrement and don't do anything else
+    if(delayedArchTimer > 0) {
+        delayedArchTimer--;
+        return;
+    }
+    u32 item = SM64AP_PopDelayedStack();
+    if(item == 0) {
+        return;
+    }
+    delayedArchTimer = 100; // Pop at most one item every 100 frames
+    struct Object *interact;
+    switch(item) {
+        case 0:
+            break;
+        case SM64AP_ID_1_HEALTH_PIP ... SM64AP_ID_FULL_REFILL:
+            if(item == SM64AP_ID_FULL_REFILL) {
+                m->healCounter += 4*8;
+            } else {
+                s16 amtToHeal = (item - SM64AP_ID_1_HEALTH_PIP + 1);
+                m->healCounter += 4*amtToHeal;
+            }
+            break;
+        case SM64AP_ID_BONK_TRAP:
+            interact = spawn_object(m->marioObj, MODEL_NONE, bhvSmallParticleBubbles);
+            interact_bully(m, INTERACT_BULLY, interact);
+            break;
+        case SM64AP_ID_FIRE_TRAP:
+            interact = spawn_object(m->marioObj, MODEL_RED_FLAME, bhvFlameLargeBurningOut);
+            interact_flame(m, INTERACT_FLAME, interact);
+            break;
+        case SM64AP_ID_ELEC_TRAP:
+            interact = spawn_object(m->marioObj, MODEL_NONE, bhvSmallParticleBubbles);
+            m->hurtCounter += 4; // hurt for one pip
+            interact_shock(m, INTERACT_SHOCK, interact);
+            break;
+        case SM64AP_ID_CHUCK_TRAP:
+            m->faceAngle[1] = random_u16();
+            m->forwardVel = 40.0f;
+            m->vel[1] = 40.0f;
+            play_sound(SOUND_OBJ_CHUCKYA_DEATH, gDefaultSoundArgs);
+            play_sound(SOUND_MARIO_WAAAOOOW, m->marioObj->header.gfx.cameraToObject);
+            update_mario_sound_and_camera(m);
+            set_mario_action(m, ACT_THROWN_FORWARD, 0);
+            break;
+        case SM64AP_ID_SPIN_TRAP:
+            interact = spawn_object(m->marioObj, MODEL_SAND_DUST, bhvTweesterSandParticle);
+            mario_stop_riding_and_holding(m);
+            bounce_off_object(m, interact, 80.0f);
+            reset_mario_pitch(m);
+            play_sound(SOUND_ENV_WIND1, m->marioObj->header.gfx.cameraToObject);
+            play_sound(SOUND_MARIO_WAAAOOOW, m->marioObj->header.gfx.cameraToObject);
+            drop_and_set_mario_action(m, ACT_TWIRLING, 0);
+            break;
+        case SM64AP_ID_GUST_TRAP:
+            mario_stop_riding_and_holding(m);
+            m->faceAngle[1] = random_u16();
+            m->unkC4 = 0.4f;
+            m->forwardVel = -24.0f;
+            m->vel[1] = 12.0f;
+
+            play_sound(SOUND_MARIO_WAAAOOOW, m->marioObj->header.gfx.cameraToObject);
+            update_mario_sound_and_camera(m);
+            set_mario_action(m, ACT_GETTING_BLOWN, 0);
+            break;
+        default:
+            break;
+    }
+    // and play the appropriate sound
+    switch(item) {
+        // For all the positive filler, play the ding-ding sound
+        case SM64AP_ID_1_HEALTH_PIP ... SM64AP_ID_FULL_REFILL:
+            play_sound(SOUND_GENERAL2_RIGHT_ANSWER, gDefaultSoundArgs);
+            break;
+        // For all the negative filler, play the buzzer
+        default:
+            play_sound(SOUND_MENU_CAMERA_BUZZ, gDefaultSoundArgs);
+            break;
+    }
+}
+
 void mario_process_interactions(struct MarioState *m) {
     sDelayInvincTimer = FALSE;
     sInvulnerable = (m->action & ACT_FLAG_INVULNERABLE) || m->invincTimer != 0;
@@ -1775,6 +1918,7 @@ void mario_process_interactions(struct MarioState *m) {
     if (!(m->marioObj->collidedObjInteractTypes & INTERACT_WARP)) {
         sJustTeleported = FALSE;
     }
+    update_arch_delayed_items(m);
 }
 
 void check_death_barrier(struct MarioState *m) {

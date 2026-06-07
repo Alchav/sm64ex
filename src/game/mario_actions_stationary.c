@@ -1,4 +1,5 @@
 #include <PR/ultratypes.h>
+#include "sm64ap.h"
 
 #include "sm64.h"
 #include "area.h"
@@ -561,7 +562,7 @@ s32 act_crouching(struct MarioState *m) {
         return set_mario_action(m, ACT_START_CRAWLING, 0);
     }
 
-    if (m->input & INPUT_B_PRESSED) {
+    if (m->input & INPUT_B_PRESSED && SM64AP_CanKick()) {
         return set_mario_action(m, ACT_PUNCHING, 9);
     }
 

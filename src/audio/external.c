@@ -244,7 +244,7 @@ u8 sDialogSpeaker[] = {
     /* 6*/ _,     _,     _,     _,     _,     _,     _,     BOWS2, _,     _,
     /* 7*/ _,     _,     _,     _,     _,     _,     _,     _,     _,     UKIKI,
     /* 8*/ UKIKI, _,     _,     _,     _,     BOO,   _,     _,     _,     _,
-    /* 9*/ BOWS2, _,     BOWS2, BOWS2, _,     _,     _,     _,     BOO,   BOO,
+    /* 9*/ BOWS2, _,     BOWS2, BOWS2, _,     _,     _,     _,     BOO,   BOWS1,
     /*10*/ UKIKI, UKIKI, _,     _,     _,     BOMB,  BOMB,  BOO,   BOO,   _,
     /*11*/ _,     _,     _,     _,     GRUNT, GRUNT, KBOMB, GRUNT, GRUNT, _,
     /*12*/ _,     _,     _,     _,     _,     _,     _,     _,     KBOMB, _,
@@ -1346,13 +1346,6 @@ void update_game_sound(void) {
                             break;
                     }
                 }
-#ifdef VERSION_JP
-                else if (soundStatus == SOUND_STATUS_STOPPED) {
-                    func_8031E0E4(bankIndex, index);
-                    gSequencePlayers[SEQ_PLAYER_SFX].channels[channelIndex]->soundScriptIO[0] = 0;
-                    func_8031DFE8(bankIndex, index);
-                }
-#else
                 else if (gSequencePlayers[SEQ_PLAYER_SFX].channels[channelIndex]->layers[0] == NULL) {
                     func_8031E0E4(bankIndex, index);
                     gSoundBanks[bankIndex][index].soundStatus = SOUND_STATUS_STOPPED;
@@ -1364,7 +1357,6 @@ void update_game_sound(void) {
                     gSequencePlayers[SEQ_PLAYER_SFX].channels[channelIndex]->soundScriptIO[0] = 0;
                     func_8031DFE8(bankIndex, index);
                 }
-#endif
                 else if (gSequencePlayers[SEQ_PLAYER_SFX].channels[channelIndex]->layers[0]->enabled == FALSE) {
                     func_8031E0E4(bankIndex, index);
                     gSoundBanks[bankIndex][index].soundStatus = SOUND_STATUS_STOPPED;

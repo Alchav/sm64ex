@@ -321,7 +321,6 @@ void bobomb_buddy_cannon_dialog(s16 dialogFirstText, s16 dialogSecondText) {
         case BOBOMB_BUDDY_CANNON_UNOPENED:
             buddyText = cutscene_object_with_dialog(CUTSCENE_DIALOG, o, dialogFirstText);
             if (buddyText != 0) {
-                save_file_set_cannon_unlocked();
                 cannonClosed = cur_obj_nearest_object_with_behavior(bhvCannonClosed);
                 if (cannonClosed != 0)
                     o->oBobombBuddyCannonStatus = BOBOMB_BUDDY_CANNON_OPENING;
@@ -345,7 +344,7 @@ void bobomb_buddy_cannon_dialog(s16 dialogFirstText, s16 dialogSecondText) {
 
         case BOBOMB_BUDDY_CANNON_STOP_TALKING:
             set_mario_npc_dialog(0);
-
+            save_file_set_cannon_unlocked();
             o->activeFlags &= ~ACTIVE_FLAG_INITIATED_TIME_STOP;
             o->oBobombBuddyHasTalkedToMario = BOBOMB_BUDDY_HAS_TALKED;
             o->oInteractStatus = 0;

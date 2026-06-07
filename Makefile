@@ -112,26 +112,25 @@ endif
 # macOS overrides
 ifeq ($(HOST_OS),Darwin)
   OSX_BUILD := 1
+  # Using Homebrew?
+  ifeq ($(shell which brew >/dev/null 2>&1 && echo y),y)
+	PLATFORM := $(shell uname -m)
+	OSX_GCC_VER = $(shell find `brew --prefix`/bin/gcc* | grep -oE '[[:digit:]]+' | sort -n | uniq | tail -1)
+	CC := gcc-$(OSX_GCC_VER)
+	CXX := g++-$(OSX_GCC_VER)
+	CPP := cpp-$(OSX_GCC_VER) -P
+	PLATFORM_CFLAGS := -I $(shell brew --prefix)/include
+	PLATFORM_LDFLAGS := -L $(shell brew --prefix)/lib
   # Using MacPorts?
-  ifeq ($(shell test -d /opt/local/lib && echo y),y)
-    OSX_GCC_VER = $(shell find /opt/local/bin/gcc* | grep -oE '[[:digit:]]+' | sort -n | uniq | tail -1)
-    CC := gcc-mp-$(OSX_GCC_VER)
-    CXX := g++-mp-$(OSX_GCC_VER)
-    CPP := cpp-mp-$(OSX_GCC_VER) -P
-    PLATFORM_CFLAGS := -I /opt/local/include
-    PLATFORM_LDFLAGS := -L /opt/local/lib
+  else ifeq ($(shell test -d /opt/local/lib && echo y),y)
+	OSX_GCC_VER = $(shell find /opt/local/bin/gcc* | grep -oE '[[:digit:]]+' | sort -n | uniq | tail -1)
+	CC := gcc-mp-$(OSX_GCC_VER)
+	CXX := g++-mp-$(OSX_GCC_VER)
+	CPP := cpp-mp-$(OSX_GCC_VER) -P
+	PLATFORM_CFLAGS := -I /opt/local/include
+	PLATFORM_LDFLAGS := -L /opt/local/lib
   else
-    # Using Homebrew?
-    ifeq ($(shell which brew >/dev/null 2>&1 && echo y),y)
-      OSX_GCC_VER = $(shell find `brew --prefix`/bin/gcc* | grep -oE '[[:digit:]]+' | sort -n | uniq | tail -1)
-      CC := gcc-$(OSX_GCC_VER)
-      CXX := g++-$(OSX_GCC_VER)
-      CPP := cpp-$(OSX_GCC_VER) -P
-      PLATFORM_CFLAGS := -I /usr/local/include
-      PLATFORM_LDFLAGS := -L /usr/local/lib
-    else
-      $(error No suitable macOS toolchain found, have you installed Homebrew?)
-    endif
+	$(error No suitable macOS toolchain found, have you installed Homebrew?)
   endif
 endif
 
@@ -266,7 +265,7 @@ endif
 endif
 
 # Make tools if out of date
-DUMMY != CC=$(CC) CXX=$(CXX) $(MAKE) -C tools >&2 || echo FAIL
+DUMMY != CC=$(CC) CXX=$(CXX) $(MAKE) -C tools -j1 >&2 || echo FAIL
 ifeq ($(DUMMY),FAIL)
   $(error Failed to build tools)
 endif
@@ -293,7 +292,7 @@ EXE := $(BUILD_DIR)/$(TARGET).html
 	else
 	ifeq ($(WINDOWS_BUILD),1)
 		EXE := $(BUILD_DIR)/$(TARGET).exe
-		CMAKE_WIN_BUILD_FLAG := -DMINGW=1 -DWIN32=1
+		CMAKE_WIN_BUILD_FLAG := -DMINGW=1 -DWIN32=1 -G"MSYS Makefiles"
 		else # Linux builds/binary namer
 		ifeq ($(TARGET_RPI),1)
 			EXE := $(BUILD_DIR)/$(TARGET).arm
@@ -727,11 +726,11 @@ res: $(BASEPACK_PATH)
 $(BASEPACK_LST): $(EXE)
 	@mkdir -p $(BUILD_DIR)/$(BASEDIR)
 	@touch $(BASEPACK_LST)
-	@echo "$(BUILD_DIR)/sound/bank_sets sound/bank_sets" >> $(BASEPACK_LST)
+	@echo "$(BUILD_DIR)/sound/bank_sets sound/bank_sets" > $(BASEPACK_LST)
 	@echo "$(BUILD_DIR)/sound/sequences.bin sound/sequences.bin" >> $(BASEPACK_LST)
 	@echo "$(BUILD_DIR)/sound/sound_data.ctl sound/sound_data.ctl" >> $(BASEPACK_LST)
 	@echo "$(BUILD_DIR)/sound/sound_data.tbl sound/sound_data.tbl" >> $(BASEPACK_LST)
-	@$(foreach f, $(wildcard $(SKYTILE_DIR)/*), echo $(f) gfx/$(f:$(BUILD_DIR)/%=%) >> $(BASEPACK_LST);)
+	@cd $(BUILD_DIR) ; find textures/skybox_tiles -name \*.png -exec echo "$(BUILD_DIR)/{} gfx/{}" >> basepack.lst \;
 	@find actors -name \*.png -exec echo "{} gfx/{}" >> $(BASEPACK_LST) \;
 	@find levels -name \*.png -exec echo "{} gfx/{}" >> $(BASEPACK_LST) \;
 	@find textures -name \*.png -exec echo "{} gfx/{}" >> $(BASEPACK_LST) \;
@@ -759,8 +758,12 @@ test: $(ROM)
 load: $(ROM)
 	$(LOADER) $(LOADER_FLAGS) $<
 
+ifneq ($(RPC_LIBS),)
+
 $(BUILD_DIR)/$(RPC_LIBS):
 	@$(CP) -f $(RPC_LIBS) $(BUILD_DIR)
+
+endif
 
 libultra: $(BUILD_DIR)/libultra.a
 
@@ -895,18 +898,18 @@ $(ENDIAN_BITWIDTH): tools/determine-endian-bitwidth.c
 	@rm $@.dummy1
 	@rm $@.dummy2
 
-$(SOUND_BIN_DIR)/sound_data.ctl: sound/sound_banks/ $(SOUND_BANK_FILES) $(SOUND_SAMPLE_AIFCS) $(ENDIAN_BITWIDTH)
-	$(PYTHON) tools/assemble_sound.py $(BUILD_DIR)/sound/samples/ sound/sound_banks/ $(SOUND_BIN_DIR)/sound_data.ctl $(SOUND_BIN_DIR)/sound_data.tbl $(VERSION_CFLAGS) $$(cat $(ENDIAN_BITWIDTH))
+$(SOUND_BIN_DIR)/sound_data.ctl: sound/sound_banks $(SOUND_BANK_FILES) $(SOUND_SAMPLE_AIFCS) $(ENDIAN_BITWIDTH)
+	$(PYTHON) tools/assemble_sound.py $(BUILD_DIR)/sound/samples sound/sound_banks $(SOUND_BIN_DIR)/sound_data.ctl $(SOUND_BIN_DIR)/sound_data.tbl $(VERSION_CFLAGS) $$(cat $(ENDIAN_BITWIDTH))
 
 $(SOUND_BIN_DIR)/sound_data.tbl: $(SOUND_BIN_DIR)/sound_data.ctl
 	@true
 
 ifeq ($(VERSION),sh)
-$(SOUND_BIN_DIR)/sequences.bin: $(SOUND_BANK_FILES) sound/sequences.json sound/sequences/ sound/sequences/jp/ $(SOUND_SEQUENCE_FILES) $(ENDIAN_BITWIDTH)
-	$(PYTHON) tools/assemble_sound.py --sequences $@ $(SOUND_BIN_DIR)/bank_sets sound/sound_banks/ sound/sequences.json $(SOUND_SEQUENCE_FILES) $(VERSION_CFLAGS) $$(cat $(ENDIAN_BITWIDTH))
+$(SOUND_BIN_DIR)/sequences.bin: $(SOUND_BANK_FILES) sound/sequences.json sound/sequences sound/sequences/jp $(SOUND_SEQUENCE_FILES) $(ENDIAN_BITWIDTH)
+	$(PYTHON) tools/assemble_sound.py --sequences $@ $(SOUND_BIN_DIR)/bank_sets sound/sound_banks sound/sequences.json $(SOUND_SEQUENCE_FILES) $(VERSION_CFLAGS) $$(cat $(ENDIAN_BITWIDTH))
 else
-$(SOUND_BIN_DIR)/sequences.bin: $(SOUND_BANK_FILES) sound/sequences.json sound/sequences/ sound/sequences/$(VERSION)/ $(SOUND_SEQUENCE_FILES) $(ENDIAN_BITWIDTH)
-	$(PYTHON) tools/assemble_sound.py --sequences $@ $(SOUND_BIN_DIR)/bank_sets sound/sound_banks/ sound/sequences.json $(SOUND_SEQUENCE_FILES) $(VERSION_CFLAGS) $$(cat $(ENDIAN_BITWIDTH))
+$(SOUND_BIN_DIR)/sequences.bin: $(SOUND_BANK_FILES) sound/sequences.json sound/sequences sound/sequences/$(VERSION) $(SOUND_SEQUENCE_FILES) $(ENDIAN_BITWIDTH)
+	$(PYTHON) tools/assemble_sound.py --sequences $@ $(SOUND_BIN_DIR)/bank_sets sound/sound_banks sound/sequences.json $(SOUND_SEQUENCE_FILES) $(VERSION_CFLAGS) $$(cat $(ENDIAN_BITWIDTH))
 endif
 
 $(SOUND_BIN_DIR)/bank_sets: $(SOUND_BIN_DIR)/sequences.bin
@@ -1014,12 +1017,33 @@ $(BUILD_DIR)/%.o: $(BUILD_DIR)/%.c
 $(BUILD_DIR)/%.o: %.s
 	$(AS) $(ASFLAGS) -MD $(BUILD_DIR)/$*.d -o $@ $<
 
-lib/APCpp/build/libAPCpp.so:
-	cd lib/APCpp && mkdir -p build && cd build && CXX=$(CXX) cmake .. $(CMAKE_WIN_BUILD_FLAG) -G"Unix Makefiles" && CXX=$(CXX) $(MAKE)
+APCPP_LIB:=lib/APCpp/build/libAPCpp
+LDFLAGS_STATIC:=-static-libgcc -static-libstdc++
+ifeq ($(WINDOWS_BUILD),1)
+  APCPP_LIB:=$(APCPP_LIB).dll
+else ifeq ($(OSX_BUILD),1)
+  APCPP_LIB:=$(APCPP_LIB).dylib
+else
+  APCPP_LIB:=$(APCPP_LIB).so
+  ifeq ($(IS_FLATPAK),1)
+    LDFLAGS_STATIC=""
+  endif
+endif
 
-$(EXE): $(O_FILES) $(MIO0_FILES:.mio0=.o) $(SOUND_OBJ_FILES) $(ULTRA_O_FILES) $(GODDARD_O_FILES) $(BUILD_DIR)/$(RPC_LIBS) lib/APCpp/build/libAPCpp.so
-	$(LD) -static-libgcc -static-libstdc++ -L $(BUILD_DIR) -o $@ $(O_FILES) $(SOUND_OBJ_FILES) $(ULTRA_O_FILES) $(GODDARD_O_FILES) $(LDFLAGS) lib/APCpp/build/libAPCpp.so -Wl,-rpath,. 
-	cp lib/APCpp/build/libAPCpp.so $(BUILD_DIR)
+CMAKE_CFLAGS:="-fzero-init-padding-bits=unions"
+# Check if gcc<15 is being used, set gcc flags appropriately
+GCC_MAJORVERSION:=$(shell gcc -dumpversion)
+GCC_MAJORVERSION_BELOW15:=$(shell expr $(GCC_MAJORVERSION) \< 15)
+ifeq ($(GCC_MAJORVERSION_BELOW15),1)
+  CMAKE_CFLAGS:=""
+endif
+
+$(APCPP_LIB): lib/APCpp/Archipelago.cpp lib/APCpp/Archipelago.h
+	cd lib/APCpp && mkdir -p build && cd build && CXX=$(CXX) cmake .. $(CMAKE_WIN_BUILD_FLAG) -DMBEDTLS_FATAL_WARNINGS=OFF -DCMAKE_C_FLAGS=$(CMAKE_CFLAGS) && CXX=$(CXX) cmake --build .
+
+$(EXE): $(O_FILES) $(MIO0_FILES:.mio0=.o) $(SOUND_OBJ_FILES) $(ULTRA_O_FILES) $(GODDARD_O_FILES) $(if $(RPC_LIBS),$(BUILD_DIR)/$(RPC_LIBS),) $(APCPP_LIB)
+	$(LD) $(LDFLAGS_STATIC) -L $(BUILD_DIR) -o $@ $(O_FILES) $(SOUND_OBJ_FILES) $(ULTRA_O_FILES) $(GODDARD_O_FILES) $(LDFLAGS) $(APCPP_LIB) -Wl,-rpath,.
+	cp $(APCPP_LIB) $(BUILD_DIR)
 
 .PHONY: all clean distclean default diff test load libultra res
 .PRECIOUS: $(BUILD_DIR)/bin/%.elf $(SOUND_BIN_DIR)/%.ctl $(SOUND_BIN_DIR)/%.tbl $(SOUND_SAMPLE_TABLES) $(SOUND_BIN_DIR)/%.s $(BUILD_DIR)/%

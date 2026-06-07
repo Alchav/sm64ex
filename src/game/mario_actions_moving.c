@@ -1,4 +1,5 @@
 #include <PR/ultratypes.h>
+#include "sm64ap.h"
 
 #include "sm64.h"
 #include "mario.h"
@@ -107,7 +108,7 @@ void check_ledge_climb_down(struct MarioState *m) {
     s16 wallAngle;
     s16 wallDYaw;
 
-    if (m->forwardVel < 10.0f) {
+    if (m->forwardVel < 10.0f && SM64AP_CanLedgeGrab()) {
         wallCols.x = m->pos[0];
         wallCols.y = m->pos[1];
         wallCols.z = m->pos[2];
@@ -497,11 +498,10 @@ s32 check_ground_dive_or_punch(struct MarioState *m) {
 
     if (m->input & INPUT_B_PRESSED) {
         //! Speed kick (shoutouts to SimpleFlips)
-        if (m->forwardVel >= 29.0f && m->controller->stickMag > 48.0f) {
+        if (m->forwardVel >= 29.0f && m->controller->stickMag > 48.0f && SM64AP_CanDive()) {
             m->vel[1] = 20.0f;
             return set_mario_action(m, ACT_DIVE, 1);
         }
-
         return set_mario_action(m, ACT_MOVE_PUNCHING, 0);
     }
 
@@ -856,7 +856,7 @@ s32 act_move_punching(struct MarioState *m) {
         return set_mario_action(m, ACT_BEGIN_SLIDING, 0);
     }
 
-    if (m->actionState == 0 && (m->input & INPUT_A_DOWN)) {
+    if (m->actionState == 0 && (m->input & INPUT_A_DOWN) && SM64AP_CanKick()) {
         return set_mario_action(m, ACT_JUMP_KICK, 0);
     }
 
@@ -1476,9 +1476,9 @@ s32 act_crouch_slide(struct MarioState *m) {
     }
 
     if (m->input & INPUT_B_PRESSED) {
-        if (m->forwardVel >= 10.0f) {
+        if (m->forwardVel >= 10.0f && SM64AP_CanKick()) {
             return set_mario_action(m, ACT_SLIDE_KICK, 0);
-        } else {
+        } else if (SM64AP_CanKick()) {
             return set_mario_action(m, ACT_MOVE_PUNCHING, 0x0009);
         }
     }

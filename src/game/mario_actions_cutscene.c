@@ -31,6 +31,8 @@
 #include "../../include/libc/stdlib.h"
 #include "pc/pc_main.h"
 
+#include "sm64ap.h"
+
 // TODO: put this elsewhere
 enum SaveOption { SAVE_OPT_SAVE_AND_CONTINUE = 1, SAVE_OPT_SAVE_AND_QUIT, SAVE_OPT_SAVE_EXIT_GAME, SAVE_OPT_CONTINUE_DONT_SAVE };
 
@@ -1178,6 +1180,7 @@ s32 act_death_exit(struct MarioState *m) {
 #endif
         queue_rumble_data(5, 80);
         m->numLives--;
+        SM64AP_DeathLinkSend();
         // restore 7.75 units of health
         m->healCounter = 31;
     }
@@ -1194,6 +1197,7 @@ s32 act_unused_death_exit(struct MarioState *m) {
         play_sound(SOUND_MARIO_OOOF2, m->marioObj->header.gfx.cameraToObject);
 #endif
         m->numLives--;
+        SM64AP_DeathLinkSend();
         // restore 7.75 units of health
         m->healCounter = 31;
     }
@@ -1211,6 +1215,7 @@ s32 act_falling_death_exit(struct MarioState *m) {
 #endif
         queue_rumble_data(5, 80);
         m->numLives--;
+        SM64AP_DeathLinkSend();
         // restore 7.75 units of health
         m->healCounter = 31;
     }
@@ -1256,6 +1261,7 @@ s32 act_special_death_exit(struct MarioState *m) {
     if (launch_mario_until_land(m, ACT_HARD_BACKWARD_GROUND_KB, MARIO_ANIM_BACKWARD_AIR_KB, -24.0f)) {
         queue_rumble_data(5, 80);
         m->numLives--;
+        SM64AP_DeathLinkSend();
         m->healCounter = 31;
     }
     // show Mario

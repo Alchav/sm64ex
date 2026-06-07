@@ -307,32 +307,28 @@ paintings."))
 
 DEFINE_DIALOG(DIALOG_025, 1, 4, 95, 200, _("\
 It takes the power of\n\
-3 Stars to open this\n\
-door. You need [%] more\n\
-Stars."))
+[%] Stars to open this\n\
+door."))
 
 DEFINE_DIALOG(DIALOG_026, 1, 4, 95, 200, _("\
 It takes the power of\n\
-8 Stars to open this\n\
-door. You need [%] more\n\
-Stars."))
+[%] Stars to open this\n\
+door."))
 
 DEFINE_DIALOG(DIALOG_027, 1, 4, 95, 200, _("\
 It takes the power of\n\
-30 Stars to open this\n\
-door. You need [%] more\n\
-Stars."))
+[%] Stars to open this\n\
+door."))
 
 DEFINE_DIALOG(DIALOG_028, 1, 4, 95, 200, _("\
 It takes the power of\n\
-50 Stars to open this\n\
-door. You need [%] more\n\
-Stars."))
+[%] Stars to open this\n\
+door."))
 
 DEFINE_DIALOG(DIALOG_029, 1, 5, 95, 200, _("\
 To open the door that\n\
 leads to the 『endless』\n\
-stairs, you need 70\n\
+stairs, you need [%]\n\
 Stars.\n\
 Bwa ha ha!"))
 
@@ -1232,13 +1228,10 @@ DEFINE_DIALOG(DIALOG_098, 1, 2, 95, 200, _("\
 Come on in here...\n\
 ...heh, heh, heh..."))
 
-// unused
-DEFINE_DIALOG(DIALOG_099, 1, 5, 95, 200, _("\
-Eh he he...\n\
-You're mine, now, hee hee!\n\
-I'll pass right through\n\
-this wall. Can you do\n\
-that? Heh, heh, heh!"))
+DEFINE_DIALOG(DIALOG_099, 1, 3, 95, 200, _("\
+This key doesn't fit!\n\
+Maybe it's for the\n\
+second floor..."))
 
 DEFINE_DIALOG(DIALOG_100, 1, 3, 95, 200, _("\
 Ukkiki...Wakkiki...kee kee!\n\
