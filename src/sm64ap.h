@@ -41,7 +41,23 @@ extern "C" {
 #define SM64AP_ID_LEDGEGRAB (SM64AP_ABILITY_OFFSET+10)
 
 #define SM64AP_ID_CANNONUNLOCK(x) (SM64AP_ID_OFFSET+200+x)
+#define SM64AP_ID_PAINTINGUNLOCK(x) (SM64AP_ID_OFFSET+230+x)
 #define SM64AP_ID_ABILITY(x) (SM64AP_ABILITY_OFFSET+x)
+// Reserving some room for coins, if needed
+// Nice filler
+#define SM64AP_ID_1_HEALTH_PIP   (SM64AP_ID_OFFSET+1750)
+#define SM64AP_ID_2_HEALTH_PIP   (SM64AP_ID_OFFSET+1751)
+#define SM64AP_ID_3_HEALTH_PIP   (SM64AP_ID_OFFSET+1752)
+#define SM64AP_ID_4_HEALTH_PIP   (SM64AP_ID_OFFSET+1753)
+#define SM64AP_ID_FULL_REFILL    (SM64AP_ID_OFFSET+1754)
+// Traps
+#define SM64AP_ID_BONK_TRAP      (SM64AP_ID_OFFSET+1760)
+#define SM64AP_ID_FIRE_TRAP      (SM64AP_ID_OFFSET+1761)
+#define SM64AP_ID_ELEC_TRAP      (SM64AP_ID_OFFSET+1762)
+#define SM64AP_ID_CHUCK_TRAP     (SM64AP_ID_OFFSET+1763)
+#define SM64AP_ID_SPIN_TRAP      (SM64AP_ID_OFFSET+1764)
+#define SM64AP_ID_GUST_TRAP      (SM64AP_ID_OFFSET+1765)
+
 
 #define SM64AP_LOCATIONID_BOARDBOWSERSSUB (SM64AP_ID_OFFSET + 56)
 #define SM64AP_LOCATIONID_BASEMENTTOAD (SM64AP_ID_OFFSET + 168)
@@ -53,6 +69,7 @@ extern "C" {
 #define SM64AP_NUM_LOCS 244
 
 #define SM64AP_NUM_ABILITIES 11
+#define SM64AP_NUM_PAINTING_LOCKS 15
 
 enum {
     SM64AP_FEATURE_BOB_KING_BOBOMB,
@@ -81,7 +98,7 @@ enum {
     SM64AP_NUM_FEATURES
 };
 
-#define SM64AP_FEATURE_OFFSET (SM64AP_ID_OFFSET + SM64AP_NUM_LOCS)
+#define SM64AP_FEATURE_OFFSET SM64AP_ID_PAINTINGUNLOCK(SM64AP_NUM_PAINTING_LOCKS)
 #define SM64AP_ID_FEATURE(x) (SM64AP_FEATURE_OFFSET + (x))
 
 #define SM64AP_CASTLE_KEY_FIRST_FLOOR 0
@@ -134,7 +151,7 @@ AP_EXTERN_C int SM64AP_GetStars();
 AP_EXTERN_C int SM64AP_GetRequiredStars(int);
 AP_EXTERN_C u32 SM64AP_CourseStarFlags(s32);
 AP_EXTERN_C void SM64AP_RedirectWarp(s16*,s16*,s8*,s16*,s16*,bool,int,s32);
-AP_EXTERN_C int SM64AP_CourseToTTC();
+AP_EXTERN_C int SM64AP_EntranceToTTC();
 AP_EXTERN_C void SM64AP_SetClockToTTCAction(int* action);
 AP_EXTERN_C void SM64AP_SetClockToTTCState();
 AP_EXTERN_C void SM64AP_SetTTCEntranceSpeed(int speed);
@@ -155,6 +172,7 @@ AP_EXTERN_C bool SM64AP_HaveFeature(int);
 AP_EXTERN_C bool SM64AP_CollectedCourseStar(int, int);
 AP_EXTERN_C bool SM64AP_ShouldSpawnLevelObject(s16, s16, s16, s16, s16, s16, u32, const void *);
 AP_EXTERN_C bool SM64AP_ShouldCreateWhirlpool(s16, s16, s8, s8, s16, s16, s16, s16);
+AP_EXTERN_C bool SM64AP_HavePainting(int);
 AP_EXTERN_C bool SM64AP_DeathLinkPending();
 AP_EXTERN_C void SM64AP_DeathLinkClear();
 AP_EXTERN_C void SM64AP_DeathLinkSend();
@@ -178,6 +196,9 @@ AP_EXTERN_C void SM64AP_SendItem(int);
 
 // Print Next Message to Screen
 AP_EXTERN_C void SM64AP_PrintNext();
+
+// If an item exists on the stack, return it, otherwise 0
+AP_EXTERN_C int64_t SM64AP_PopDelayedStack();
 
 // Called on each Bowser stage completion, i is bowser index. Will send StoryComplete depending on completion option.
 AP_EXTERN_C void SM64AP_FinishBowser(int i);

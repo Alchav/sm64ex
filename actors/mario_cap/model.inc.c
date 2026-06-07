@@ -1,22 +1,43 @@
 // Mario Cap (Normal Cap, Metal, Winged, etc)
 
 // 0x0301CF08
-static const Lights1 mario_cap_seg3_lights_0301CF08 = gdSPDefLights1(
+static Lights1 mario_cap_seg3_lights_0301CF08 = gdSPDefLights1(
     0x39, 0x03, 0x00,
     0x73, 0x06, 0x00, 0x28, 0x28, 0x28
 );
 
 // 0x0301CF20
-static const Lights1 mario_cap_seg3_lights_0301CF20 = gdSPDefLights1(
+static Lights1 mario_cap_seg3_lights_0301CF20 = gdSPDefLights1(
     0x7f, 0x7f, 0x7f,
     0xff, 0xff, 0xff, 0x28, 0x28, 0x28
 );
 
 // 0x0301CF38
-static const Lights1 mario_cap_seg3_lights_0301CF38 = gdSPDefLights1(
+static Lights1 mario_cap_seg3_lights_0301CF38 = gdSPDefLights1(
     0x7f, 0x00, 0x00,
     0xff, 0x00, 0x00, 0x28, 0x28, 0x28
 );
+
+static void sm64ap_set_mario_cap_light_color(Lights1 *lights, u8 r, u8 g, u8 b) {
+    lights->a.l.col[0] = lights->a.l.colc[0] = r >> 1;
+    lights->a.l.col[1] = lights->a.l.colc[1] = g >> 1;
+    lights->a.l.col[2] = lights->a.l.colc[2] = b >> 1;
+    lights->l[0].l.col[0] = lights->l[0].l.colc[0] = r;
+    lights->l[0].l.col[1] = lights->l[0].l.colc[1] = g;
+    lights->l[0].l.col[2] = lights->l[0].l.colc[2] = b;
+}
+
+void SM64AP_SetMarioCapShirtColor(u8 r, u8 g, u8 b) {
+    sm64ap_set_mario_cap_light_color(&mario_cap_seg3_lights_0301CF38, r, g, b);
+}
+
+void SM64AP_SetMarioCapGlovesColor(u8 r, u8 g, u8 b) {
+    sm64ap_set_mario_cap_light_color(&mario_cap_seg3_lights_0301CF20, r, g, b);
+}
+
+void SM64AP_SetMarioCapHairColor(u8 r, u8 g, u8 b) {
+    sm64ap_set_mario_cap_light_color(&mario_cap_seg3_lights_0301CF08, r, g, b);
+}
 
 // 0x0301CF50
 ALIGNED8 static const u8 mario_cap_seg3_texture_0301CF50[] = {

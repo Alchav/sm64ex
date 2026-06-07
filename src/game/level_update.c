@@ -15,6 +15,7 @@
 #include "area.h"
 #include "save_file.h"
 #include "sound_init.h"
+#include "levels/castle_inside/header.h"
 #include "mario.h"
 #include "camera.h"
 #include "object_list_processor.h"
@@ -683,6 +684,59 @@ static s32 get_ap_painting_source_entrance(s16 destLevel) {
     return 0;
 }
 
+void reject_mario_from_painting(s16 courseNum, s16 destArea) {
+    Vec3s rejectAngle = {0, 0, 0};
+    f32 newYaw = 0.0f;
+    Vec3f ejectPos = {0.0f,0.0f,0.0f};
+    f32 ejectDistance = 50.0f;
+    f32 minYDiff = 30.0f;
+    struct Painting p;
+    switch(courseNum) {
+        case 1:  p = bob_painting;      break;
+        case 2:  p = wf_painting;       break;
+        case 3:  p = jrb_painting;      break;
+        case 4:  p = ccm_painting;      break;
+        // BBH and HMC are skipped here
+        case 7:  p = lll_painting;      break;
+        case 8:  p = ssl_painting;      break;
+        case 9:  p = ddd_painting;      break;
+        case 10: p = sl_painting;       break;
+        case 11: p = wdw_painting;      break;
+        case 12: p = ttm_painting;      break;
+        case 13:
+            p = destArea == 1 ? thi_huge_painting : thi_tiny_painting;
+            break;
+        case 14: p = ttc_painting;      break;
+    }
+    newYaw = p.yaw;
+    // Painting placement is by the bottom left corner
+    vec3f_set(ejectPos, gMarioState->pos[0], gMarioState->pos[1] < p.posY+minYDiff? p.posY+minYDiff : gMarioState->pos[1], gMarioState->pos[2]);
+    // Adjust it out of the painting slightly; sin/cosf use radians, convert the yaw to radians
+    ejectPos[0] += ejectDistance * sinf(newYaw * M_PI / 180.0);
+    ejectPos[2] += ejectDistance * cosf(newYaw * M_PI / 180.0);
+
+    if(gMarioState->forwardVel > 0.0f) {
+        // Eject mario backward, which means face him toward the painting rather than away
+        newYaw = (((s16)newYaw + 180) % 360) + 0.0f;
+    }
+    // Convert to s16 representation of the angle; -2^15 = -180 degree, 2^15-1 = 180 degree, 0 = 0
+    rejectAngle[1] =  (s16)((newYaw > 180.0f? 180.0f-newYaw : newYaw)/180.0f*0x7FFF);
+    vec3s_copy(gMarioState->faceAngle, rejectAngle);
+    vec3f_copy(gMarioState->pos, ejectPos);
+
+    gMarioState->marioObj->oPosX = gMarioState->pos[0];
+    gMarioState->marioObj->oPosZ = gMarioState->pos[2];
+
+    vec3f_copy(gMarioState->marioObj->header.gfx.pos, gMarioState->pos);
+
+    if(gMarioState->forwardVel > 0.0f) {
+        set_mario_action(gMarioState, ACT_HARD_BACKWARD_AIR_KB, 0);
+    } else {
+        set_mario_action(gMarioState, ACT_HARD_FORWARD_AIR_KB, 0);
+    }
+    play_sound(SOUND_GENERAL_PAINTING_EJECT, gDefaultSoundArgs);
+}
+
 /**
  * Check is Mario has entered a painting, and if so, initiate a warp.
  */
@@ -697,8 +751,18 @@ void initiate_painting_warp(void) {
             } else if (pWarpNode->id != 0) {
                 warpNode = *pWarpNode;
 
+                // If we don't have the painting for this course, kick Mario out
+                // The function takes care of handling if painting locking is not enabled
+                s16 destCourse = gLevelToCourseNumTable[warpNode.destLevel - 1];
+                // Only check for paintings when in the castle, otherwise they could be interior warps and we don't want to block those
+                if(gCurrLevelNum == LEVEL_CASTLE && !SM64AP_HavePainting(destCourse)) {
+                    // If we're not allowed we need to be ejected forcefully enough not to fall back in
+                    reject_mario_from_painting(destCourse, warpNode.destArea);
+                    return;
+                }
+
                 if (!(warpNode.destLevel & 0x80)) {
-                    D_8032C9E0 = check_warp_checkpoint(&warpNode);
+                    D_8032C9E0 = FALSE;
                 }
 
                 initiate_warp_with_source(warpNode.destLevel & 0x7F, warpNode.destArea, warpNode.destNode, 0,
@@ -783,6 +847,7 @@ s16 level_trigger_warp(struct MarioState *m, s32 warpOp) {
                 break;
 
             case WARP_OP_UNKNOWN_01: // enter totwc
+                SM64AP_SetClockToTTCState();
                 sDelayedWarpTimer = 30;
                 sSourceWarpNodeId = WARP_NODE_F2;
                 play_transition(WARP_TRANSITION_FADE_INTO_COLOR, 0x1E, 0xFF, 0xFF, 0xFF);
@@ -812,7 +877,8 @@ s16 level_trigger_warp(struct MarioState *m, s32 warpOp) {
                 play_transition(WARP_TRANSITION_FADE_INTO_CIRCLE, 0x14, 0x00, 0x00, 0x00);
                 break;
 
-            case WARP_OP_WARP_OBJECT:
+            case WARP_OP_WARP_OBJECT: // Secret star entrance
+                SM64AP_SetClockToTTCState();
                 sDelayedWarpTimer = 20;
                 sSourceWarpNodeId = (m->usedObj->oBehParams & 0x00FF0000) >> 16;
                 val04 = !music_changed_through_warp(sSourceWarpNodeId);
@@ -867,6 +933,7 @@ void initiate_delayed_warp(void) {
                 case WARP_OP_GAME_OVER:
                     save_file_reload();
                     warp_special(-3);
+                    SM64AP_DeathLinkSend();
                     break;
 
                 case WARP_OP_CREDITS_END:

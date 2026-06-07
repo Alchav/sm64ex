@@ -1235,6 +1235,7 @@ s32 act_unused_death_exit(struct MarioState *m) {
         play_sound(SOUND_MARIO_OOOF2, m->marioObj->header.gfx.cameraToObject);
 #endif
         m->numLives--;
+        SM64AP_DeathLinkSend();
         // restore 7.75 units of health
         m->healCounter = 31;
     }

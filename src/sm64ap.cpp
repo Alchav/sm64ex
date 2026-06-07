@@ -10,6 +10,16 @@ extern "C" {
     #include "game/level_update.h"
     #include "game/object_list_processor.h"
     #include "object_constants.h"
+
+    void SM64AP_SetMarioShirtColor(u8 r, u8 g, u8 b);
+    void SM64AP_SetMarioOverallsColor(u8 r, u8 g, u8 b);
+    void SM64AP_SetMarioGlovesColor(u8 r, u8 g, u8 b);
+    void SM64AP_SetMarioShoesColor(u8 r, u8 g, u8 b);
+    void SM64AP_SetMarioSkinColor(u8 r, u8 g, u8 b);
+    void SM64AP_SetMarioHairColor(u8 r, u8 g, u8 b);
+    void SM64AP_SetMarioCapShirtColor(u8 r, u8 g, u8 b);
+    void SM64AP_SetMarioCapGlovesColor(u8 r, u8 g, u8 b);
+    void SM64AP_SetMarioCapHairColor(u8 r, u8 g, u8 b);
 }
 
 #include <string>
@@ -18,11 +28,15 @@ extern "C" {
 #include <cstdio>
 #include <bitset>
 #include <set>
+#include <queue>
+#include <cctype>
 
 #define WARP_NODE_CREDITS_MIN 0xF8 // level_update.c
+#define NUM_PAINTING_LOCKS SM64AP_NUM_PAINTING_LOCKS
 
 // Set to false on some branch for compat with patches
 static constexpr bool SM64AP_SUPPORT_MOVE_RANDO = true;
+static constexpr const char *SM64AP_GAME_NAME = "Spicy Mycena 64";
 
 int starsCollected = 0;
 bool sm64_locations[SM64AP_NUM_LOCS];
@@ -40,6 +54,7 @@ bool sm64_have_metalcap = false;
 bool sm64_have_vanishcap = false;
 int sm64_moat_state = 0;
 bool sm64_have_cannon[15];
+bool sm64_have_painting[NUM_PAINTING_LOCKS];
 int sm64_completion_type = 0;
 std::bitset<SM64AP_NUM_ABILITIES> sm64_have_abilities;
 std::bitset<SM64AP_NUM_FEATURES> sm64_have_features;
@@ -52,6 +67,7 @@ int sm64_cost_mips1 = 15;
 int sm64_cost_mips2 = 50;
 int msg_frame_duration = 90; // 3 Secounds at 30F/s
 int cur_msg_frame_duration = msg_frame_duration;
+std::queue<int64_t> delayed_queue;
 
 std::map<int,int> map_entrances;
 std::set<int> course_dest_supported;
@@ -128,8 +144,20 @@ void SM64AP_RecvItem(int64_t idx, bool notify) {
         case SM64AP_ID_CANNONUNLOCK(0) ... SM64AP_ID_CANNONUNLOCK(15-1):
             sm64_have_cannon[idx-(SM64AP_ID_CANNONUNLOCK(0))] = true;
             break;
-        case SM64AP_ID_ABILITY(0) ... SM64AP_ID_ABILITY(SM64AP_NUM_ABILITIES-1):
-            sm64_have_abilities[idx-(SM64AP_ID_ABILITY(0))] = true;
+        case SM64AP_ID_PAINTINGUNLOCK(0) ... SM64AP_ID_PAINTINGUNLOCK(NUM_PAINTING_LOCKS-1):
+            // We don't have a painting unlock for BoB, so (0) will never appear; index 1 corresponds to WF, and so on
+            sm64_have_painting[idx-(SM64AP_ID_PAINTINGUNLOCK(0))] = true;
+            break;
+        case SM64AP_ID_ABILITY(0):
+            sm64_have_abilities[idx-SM64AP_ABILITY_OFFSET+1] = sm64_have_abilities[idx-SM64AP_ABILITY_OFFSET];
+            sm64_have_abilities[idx-SM64AP_ABILITY_OFFSET] = true;
+            break;
+        case SM64AP_ID_ABILITY(1) ... SM64AP_ID_ABILITY(SM64AP_NUM_ABILITIES-1):
+            sm64_have_abilities[idx-SM64AP_ABILITY_OFFSET] = true;
+            break;
+        case SM64AP_ID_1_HEALTH_PIP ... SM64AP_ID_GUST_TRAP:
+            if(!notify) break;
+            delayed_queue.push(idx);
             break;
         case SM64AP_ID_FEATURE(0) ... SM64AP_ID_FEATURE(SM64AP_NUM_FEATURES-1):
             sm64_have_features[idx-(SM64AP_ID_FEATURE(0))] = true;
@@ -578,8 +606,8 @@ void SM64AP_RedirectWarp(s16* curLevel, s16* destLevel, s8* curArea, s16* destAr
     }
 }
 
-int SM64AP_CourseToTTC() {
-    return LEVEL_TTC;
+int SM64AP_EntranceToTTC() {
+    return SM64AP_ENTRANCE_ID(LEVEL_TTC, 1);
 }
 
 void SM64AP_SetClockToTTCAction(int* action) {
@@ -663,9 +691,115 @@ void SM64AP_SetCourseMap(std::map<int,int> map) {
     map_entrances = map;
 }
 
+static void SM64AP_SkipJsonWhitespace(const std::string &text, std::string::size_type &pos) {
+    while (pos < text.size() && std::isspace((unsigned char) text[pos])) {
+        pos++;
+    }
+}
+
+static bool SM64AP_ParseJsonByte(const std::string &text, std::string::size_type &pos, u8 &value) {
+    SM64AP_SkipJsonWhitespace(text, pos);
+    if (pos >= text.size() || !std::isdigit((unsigned char) text[pos])) {
+        return false;
+    }
+
+    int parsed = 0;
+    while (pos < text.size() && std::isdigit((unsigned char) text[pos])) {
+        parsed = parsed * 10 + text[pos] - '0';
+        if (parsed > 255) {
+            return false;
+        }
+        pos++;
+    }
+
+    value = parsed;
+    return true;
+}
+
+static bool SM64AP_ConsumeJsonChar(const std::string &text, std::string::size_type &pos, char expected) {
+    SM64AP_SkipJsonWhitespace(text, pos);
+    if (pos >= text.size() || text[pos] != expected) {
+        return false;
+    }
+    pos++;
+    return true;
+}
+
+static bool SM64AP_ReadMarioColor(const std::string &rawColors, const char *key, u8 color[3]) {
+    std::string quotedKey = std::string("\"") + key + "\"";
+    std::string::size_type keyPos = rawColors.find(quotedKey);
+    if (keyPos == std::string::npos) {
+        return false;
+    }
+
+    std::string::size_type pos = rawColors.find(':', keyPos + quotedKey.size());
+    if (pos == std::string::npos) {
+        return false;
+    }
+    pos++;
+
+    if (!SM64AP_ConsumeJsonChar(rawColors, pos, '[')
+        || !SM64AP_ParseJsonByte(rawColors, pos, color[0])
+        || !SM64AP_ConsumeJsonChar(rawColors, pos, ',')
+        || !SM64AP_ParseJsonByte(rawColors, pos, color[1])
+        || !SM64AP_ConsumeJsonChar(rawColors, pos, ',')
+        || !SM64AP_ParseJsonByte(rawColors, pos, color[2])
+        || !SM64AP_ConsumeJsonChar(rawColors, pos, ']')) {
+        return false;
+    }
+
+    return true;
+}
+
+static void SM64AP_ResetMarioColors() {
+    SM64AP_SetMarioShirtColor(255, 0, 0);
+    SM64AP_SetMarioCapShirtColor(255, 0, 0);
+    SM64AP_SetMarioOverallsColor(0, 0, 255);
+    SM64AP_SetMarioGlovesColor(255, 255, 255);
+    SM64AP_SetMarioCapGlovesColor(255, 255, 255);
+    SM64AP_SetMarioShoesColor(114, 28, 14);
+    SM64AP_SetMarioSkinColor(254, 193, 121);
+    SM64AP_SetMarioHairColor(115, 6, 0);
+    SM64AP_SetMarioCapHairColor(115, 6, 0);
+}
+
+static void SM64AP_SetMarioColors(std::string rawColors) {
+    SM64AP_ResetMarioColors();
+
+    u8 color[3];
+    if (SM64AP_ReadMarioColor(rawColors, "shirt", color)) {
+        SM64AP_SetMarioShirtColor(color[0], color[1], color[2]);
+        SM64AP_SetMarioCapShirtColor(color[0], color[1], color[2]);
+    }
+    if (SM64AP_ReadMarioColor(rawColors, "overalls", color)) {
+        SM64AP_SetMarioOverallsColor(color[0], color[1], color[2]);
+    }
+    if (SM64AP_ReadMarioColor(rawColors, "gloves", color)) {
+        SM64AP_SetMarioGlovesColor(color[0], color[1], color[2]);
+        SM64AP_SetMarioCapGlovesColor(color[0], color[1], color[2]);
+    }
+    if (SM64AP_ReadMarioColor(rawColors, "shoes", color)) {
+        SM64AP_SetMarioShoesColor(color[0], color[1], color[2]);
+    }
+    if (SM64AP_ReadMarioColor(rawColors, "skin", color)) {
+        SM64AP_SetMarioSkinColor(color[0], color[1], color[2]);
+    }
+    if (SM64AP_ReadMarioColor(rawColors, "hair", color)) {
+        SM64AP_SetMarioHairColor(color[0], color[1], color[2]);
+        SM64AP_SetMarioCapHairColor(color[0], color[1], color[2]);
+    }
+}
+
 void SM64AP_SetMoveRandoVec(int vec) {
-    for (int i = 0; i < SM64AP_NUM_ABILITIES; i++) {
+    for (int i = 1; i < SM64AP_NUM_ABILITIES; i++) { // Start at 1, DJ bit is unnecessary
         sm64_have_abilities[i] = !std::bitset<SM64AP_NUM_ABILITIES>(vec).test(i) || sm64_have_abilities[i];
+    }
+}
+void SM64AP_SetPaintingRando(int enabled) {
+    if(!enabled) {
+        // Not enabled, so unlock all paintings
+        for (int i = 0; i < NUM_PAINTING_LOCKS; i++)
+            sm64_have_painting[i] = true;
     }
 }
 
@@ -675,6 +809,9 @@ void SM64AP_ResetItems() {
     }
     for (int i = 0; i < 15; i++) {
         sm64_have_cannon[i] = false;
+    }
+    for (int i = 0; i < NUM_PAINTING_LOCKS; i++) {
+        sm64_have_painting[i] = false;
     }
     sm64_have_abilities.reset();
     sm64_have_features.reset();
@@ -718,8 +855,6 @@ void SM64AP_SetReplyHandler(AP_SetReply reply) {
 }
 
 void SM64AP_GenericInit() {
-    AP_NetworkVersion version = {0,3,5};
-    AP_SetClientVersion(&version);
     AP_SetDeathLinkSupported(true);
     AP_SetItemClearCallback(&SM64AP_ResetItems);
     AP_SetLocationCheckedCallback(&SM64AP_CheckLocation);
@@ -736,7 +871,9 @@ void SM64AP_GenericInit() {
     AP_RegisterSlotDataIntCallback("StarsToFinish", &SM64AP_SetStarsToFinish);
     AP_RegisterSlotDataIntCallback("CompletionType", &SM64AP_SetCompletionType);
     AP_RegisterSlotDataIntCallback("MoveRandoVec", &SM64AP_SetMoveRandoVec);
+    AP_RegisterSlotDataIntCallback("PaintingRando", &SM64AP_SetPaintingRando);
     AP_RegisterSlotDataMapIntIntCallback("AreaRando", &SM64AP_SetCourseMap);
+    AP_RegisterSlotDataRawCallback("MarioColors", &SM64AP_SetMarioColors);
 
     course_dest_supported = {
         LEVEL_BOB, LEVEL_WF, LEVEL_JRB, LEVEL_CCM, LEVEL_BBH, LEVEL_HMC, LEVEL_LLL, LEVEL_SSL, LEVEL_DDD, LEVEL_SL,
@@ -776,7 +913,7 @@ void SM64AP_GenericInit() {
 }
 
 void SM64AP_InitMW(const char* ip, const char* player_name, const char* passwd) {
-    AP_Init(ip, "Super Mario 64", player_name, passwd);
+    AP_Init(ip, SM64AP_GAME_NAME, player_name, passwd);
     SM64AP_GenericInit();
     AP_Start();
 }
@@ -793,6 +930,14 @@ void SM64AP_SendByBoxID(int id) {
 
 void SM64AP_SendItem(int idx) {
     AP_SendItem(idx);
+}
+
+// If an item exists on the stack, return it, otherwise 0
+int64_t SM64AP_PopDelayedStack() {
+    if(delayed_queue.empty()) return 0;
+    int64_t item = delayed_queue.front();
+    delayed_queue.pop();
+    return item;
 }
 
 void SM64AP_FinishBowser(int i) {
@@ -928,6 +1073,19 @@ bool SM64AP_HaveCannon(int courseIdx) {
     return true;
 }
 
+bool SM64AP_HavePainting(int courseIdx) {
+    switch(courseIdx) {
+        case 1:  // BOB painting is always unlocked
+        case 5:  // BBH doesn't have a painting
+        case 6:  // HMC has a painting but you get stuck in an infinite loop of falling in and getting pushed out, so let's not do that :)
+        case 15: // RR doesn't have a painting
+            return true;
+        default:
+            // courses are 1-indexed, the items are 0-indexed
+            return sm64_have_painting[courseIdx-1];
+    }
+}
+
 bool SM64AP_MoatDrained() {
     return sm64_moat_state != 0;
 }
@@ -949,8 +1107,8 @@ void SM64AP_DeathLinkSend() {
 }
 
 bool SM64AP_CanDoubleJump() {
-    #warning Use doublejump logic once implemented
-    return sm64_have_abilities[SM64AP_ID_TRIPLEJUMP - SM64AP_ABILITY_OFFSET];
+    return sm64_have_abilities[SM64AP_ID_DOUBLEJUMP - SM64AP_ABILITY_OFFSET]
+           || sm64_have_abilities[SM64AP_ID_TRIPLEJUMP - SM64AP_ABILITY_OFFSET];
 }
 
 bool SM64AP_CanTripleJump() {

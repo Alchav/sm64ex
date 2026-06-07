@@ -1104,56 +1104,55 @@ void render_star_count_dialog_text(struct DialogEntry *dialog, s8 *linePos)
 void render_star_count_dialog_text(s8 *xMatrix, s16 *linePos)
 #endif
 {
-    s8 tensDigit = gDialogVariable / 10;
-    s8 onesDigit = gDialogVariable - (tensDigit * 10); // remainder
+    s8 hundredsDigit = gDialogVariable / 100;
+    s8 tensDigit = gDialogVariable % 100 / 10;
+    s8 onesDigit = gDialogVariable % 10;
 
-    if (tensDigit != 0) {
-#if defined(VERSION_JP) || defined(VERSION_SH)
-        create_dl_translation_matrix(MENU_MTX_NOPUSH, xMatrix[0] * 10, 0, 0);
-        render_generic_char(tensDigit);
-#elif defined(VERSION_EU)
-        render_generic_dialog_char_at_pos(dialog, gDialogX, gDialogY, tensDigit);
-        gDialogX += gDialogCharWidths[tensDigit];
-        linePos[0] = 1;
+    if (hundredsDigit != 0) {
+#ifdef VERSION_EU
+        render_digit(dialog, linePos, hundredsDigit);
 #else
-        if (xMatrix[0] != 1) {
-            create_dl_translation_matrix(MENU_MTX_NOPUSH, (f32)(gDialogCharWidths[DIALOG_CHAR_SPACE] * xMatrix[0]), 0, 0);
-        }
+        render_digit(xMatrix, linePos, hundredsDigit);
+#endif
+    }
 
-        render_generic_char(tensDigit);
-        create_dl_translation_matrix(MENU_MTX_NOPUSH, (f32) gDialogCharWidths[tensDigit], 0, 0);
-        xMatrix[0] = 1;
-        linePos[0]++;
+    if (hundredsDigit != 0 || tensDigit != 0) {
+#ifdef VERSION_EU
+        render_digit(dialog, linePos, tensDigit);
+#else
+        render_digit(xMatrix, linePos, tensDigit);
 #endif
     }
-#ifndef VERSION_EU
-    else {
-#if defined(VERSION_JP) || defined(VERSION_SH)
-        xMatrix[0]++;
-#endif
-    }
-#endif
 
 #ifdef VERSION_EU
-    render_generic_dialog_char_at_pos(dialog, gDialogX, gDialogY, onesDigit);
-    gDialogX += gDialogCharWidths[onesDigit];
-    linePos[0] = 1;
+    render_digit(dialog, linePos, onesDigit);
 #else
+    render_digit(xMatrix, linePos, onesDigit);
+#endif
+}
 
+#ifdef VERSION_EU
+void render_digit(struct DialogEntry *dialog, s8 *linePos, int i)
+#else
+void render_digit(s8 *xMatrix, s16 *linePos, int i)
+#endif
+{
 #if defined(VERSION_JP) || defined(VERSION_SH)
     create_dl_translation_matrix(MENU_MTX_NOPUSH, xMatrix[0] * 10, 0, 0);
-    render_generic_char(onesDigit);
+    render_generic_char(i);
+#elif defined(VERSION_EU)
+    render_generic_dialog_char_at_pos(dialog, gDialogX, gDialogY, i);
+    gDialogX += gDialogCharWidths[i];
+    linePos[0] = 1;
 #else
     if (xMatrix[0] != 1) {
-        create_dl_translation_matrix(MENU_MTX_NOPUSH, (f32)(gDialogCharWidths[DIALOG_CHAR_SPACE] * (xMatrix[0] - 1)), 0, 0);
+        create_dl_translation_matrix(MENU_MTX_NOPUSH,
+                                     (f32) (gDialogCharWidths[DIALOG_CHAR_SPACE] * xMatrix[0]), 0, 0);
     }
-
-    render_generic_char(onesDigit);
-    create_dl_translation_matrix(MENU_MTX_NOPUSH, (f32) gDialogCharWidths[onesDigit], 0, 0);
-#endif
-
-    linePos[0]++;
+    render_generic_char(i);
+    create_dl_translation_matrix(MENU_MTX_NOPUSH, (f32) gDialogCharWidths[i], 0, 0);
     xMatrix[0] = 1;
+    linePos[0]++;
 #endif
 }
 
@@ -2715,15 +2714,68 @@ s16 render_pause_courses_and_castle(void) {
     print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(78), 209-70, SM64AP_HaveCap(2) ? "Y" : "N");
     print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(78)+13, 209-70, SM64AP_HaveCap(4) ? "Y" : "N");
     print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(78)+26, 209-70, SM64AP_HaveCap(8) ? "Y" : "N");
+    print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(78), 209-70-20, "PAINT");
+
+    u8 txt_y[] = { TEXT_PAINTING_Y };
+    u8 txt_n[] = { TEXT_PAINTING_N };
+    u8 lvlnames[][4] = {
+        { TEXT_PAINTING_UNK },
+        { TEXT_PAINTING_BOB },
+        { TEXT_PAINTING_WF  },
+        { TEXT_PAINTING_JRB },
+        { TEXT_PAINTING_CCM },
+        { TEXT_PAINTING_BBH },
+        { TEXT_PAINTING_HMC },
+        { TEXT_PAINTING_LLL },
+        { TEXT_PAINTING_SSL },
+        { TEXT_PAINTING_DDD },
+        { TEXT_PAINTING_SL  },
+        { TEXT_PAINTING_WDW },
+        { TEXT_PAINTING_TTM },
+        { TEXT_PAINTING_THI },
+        { TEXT_PAINTING_TTC },
+        { TEXT_PAINTING_RR  },
+    };
+
+    gSPDisplayList(gDisplayListHead++, dl_rgba16_text_begin);
+    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
+    for(u8 i = 2; i < 15; i++) {
+        s16 line = (i<5 ? i : i-2)/2; // Adjust for the absence of courses 5 and 6
+        s16 liney = 209-70-26-(13*line);
+        s16 linex = GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(78) + (i%2 == 0? 0: 40);
+        switch(i) {
+            case 5: // BBH doesn't have a painting
+            case 6: // HMC has a painting but we don't lock it
+            case 15: // RR doesn't have a painting
+                continue;
+            case 2:
+            case 3:
+            case 4:
+            case 7:
+            case 8:
+            case 9:
+            case 10:
+            case 11:
+            case 12:
+            case 13:
+            case 14:
+                print_generic_string(linex, liney, lvlnames[i]);
+                print_generic_string(linex + 26, liney, SM64AP_HavePainting(i)? txt_y : txt_n);
+                break;
+            default:
+                print_generic_string(linex, liney, lvlnames[0]);
+        }
+    }
     s16 x = -32;
     s16 y = 170;
     s16 spacing = 18;
     print_text(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(20), 209-20, "ABILITIES");
-    gSPDisplayList(gDisplayListHead++, dl_rgba16_text_begin);
-    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
     if (SM64AP_CanTripleJump()) {
         u8 str_triple_jump[] = { TEXT_TRIPLE_JUMP };
         print_generic_string(x, y, str_triple_jump);
+    } else if (SM64AP_CanDoubleJump()) {
+        u8 str_double_jump[] = { TEXT_DOUBLE_JUMP };
+        print_generic_string(x, y, str_double_jump);
     }
     if (SM64AP_CanLongJump()) {
         u8 str_long_jump[] = { TEXT_LONG_JUMP };
