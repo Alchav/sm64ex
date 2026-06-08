@@ -201,6 +201,7 @@ AP_EXTERN_C void SM64AP_SetClockToTTCState();
 AP_EXTERN_C void SM64AP_SetTTCEntranceSpeed(int speed);
 AP_EXTERN_C int SM64AP_GetTTCEntranceVariant();
 AP_EXTERN_C s16 SM64AP_GetWDWEntranceWaterLevel(s16 vanillaWaterLevel);
+AP_EXTERN_C s16 SM64AP_ResolveAreaMusic(s16 level, s16 area, s16 vanillaSeq);
 AP_EXTERN_C bool SM64AP_CheckedLoc(int);
 AP_EXTERN_C bool SM64AP_HaveKey1();
 AP_EXTERN_C bool SM64AP_HaveKey2();

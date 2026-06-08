@@ -8,6 +8,8 @@ extern "C" {
     #include "gfx_dimensions.h"
     #include "level_table.h"
     #include "model_ids.h"
+    #include "seq_ids.h"
+    #include "engine/behavior_script.h"
     #include "game/level_update.h"
     #include "game/object_list_processor.h"
     #include "object_constants.h"
@@ -84,6 +86,32 @@ int sm64_exit_return_to;
 int sm64_exit_orig_entrancelvl;
 int sm64_wdw_entrance_variant = 0;
 int sm64_ttc_entrance_variant = SM64AP_ENTRANCE_TTC_STOPPED;
+int sm64_music_shuffle_mode = 0;
+std::map<int,int> map_music;
+
+static constexpr int SM64AP_MUSIC_SHUFFLE_OFF = 0;
+static constexpr int SM64AP_MUSIC_SHUFFLE_MAP = 1;
+static constexpr int SM64AP_MUSIC_SHUFFLE_RANDOM_ON_LOAD = 2;
+
+static constexpr int SM64AP_RANDOM_MUSIC_POOL[] = {
+    SEQ_LEVEL_GRASS,
+    SEQ_LEVEL_INSIDE_CASTLE,
+    SEQ_LEVEL_WATER,
+    SEQ_LEVEL_WATER | SEQ_VARIATION,
+    SEQ_LEVEL_HOT,
+    SEQ_LEVEL_BOSS_KOOPA,
+    SEQ_LEVEL_SNOW,
+    SEQ_LEVEL_SLIDE,
+    SEQ_LEVEL_SPOOKY,
+    SEQ_LEVEL_UNDERGROUND,
+    SEQ_LEVEL_KOOPA_ROAD,
+    SEQ_EVENT_MERRY_GO_ROUND,
+    SEQ_EVENT_RACE,
+    SEQ_EVENT_BOSS,
+    SEQ_EVENT_ENDLESS_STAIRS,
+    SEQ_LEVEL_BOSS_KOOPA_FINAL,
+    SEQ_MENU_FILE_SELECT,
+};
 
 static void SM64AP_IncrementClamped(int &value, int maxValue) {
     if (value < maxValue) {
@@ -751,6 +779,111 @@ void SM64AP_SetCourseMap(std::map<int,int> map) {
     map_entrances = map;
 }
 
+void SM64AP_SetMusicShuffleMode(int mode) {
+    switch (mode) {
+        case SM64AP_MUSIC_SHUFFLE_MAP:
+        case SM64AP_MUSIC_SHUFFLE_RANDOM_ON_LOAD:
+            sm64_music_shuffle_mode = mode;
+            break;
+        default:
+            sm64_music_shuffle_mode = SM64AP_MUSIC_SHUFFLE_OFF;
+            break;
+    }
+}
+
+static void SM64AP_SkipJsonWhitespace(const std::string &text, std::string::size_type &pos);
+static bool SM64AP_ConsumeJsonChar(const std::string &text, std::string::size_type &pos, char expected);
+
+static bool SM64AP_ParseJsonInt(const std::string &text, std::string::size_type &pos, int &value) {
+    SM64AP_SkipJsonWhitespace(text, pos);
+    if (pos >= text.size()) {
+        return false;
+    }
+
+    int sign = 1;
+    if (text[pos] == '-') {
+        sign = -1;
+        pos++;
+    }
+    if (pos >= text.size() || !std::isdigit((unsigned char) text[pos])) {
+        return false;
+    }
+
+    int parsed = 0;
+    while (pos < text.size() && std::isdigit((unsigned char) text[pos])) {
+        parsed = parsed * 10 + text[pos] - '0';
+        pos++;
+    }
+
+    value = parsed * sign;
+    return true;
+}
+
+static bool SM64AP_ParseJsonQuotedIntKey(const std::string &text, std::string::size_type &pos, int &key) {
+    SM64AP_SkipJsonWhitespace(text, pos);
+    if (pos >= text.size() || text[pos] != '"') {
+        return false;
+    }
+    pos++;
+
+    int parsed = 0;
+    if (pos >= text.size() || !std::isdigit((unsigned char) text[pos])) {
+        return false;
+    }
+    while (pos < text.size() && std::isdigit((unsigned char) text[pos])) {
+        parsed = parsed * 10 + text[pos] - '0';
+        pos++;
+    }
+    if (pos >= text.size() || text[pos] != '"') {
+        return false;
+    }
+    pos++;
+
+    key = parsed;
+    return true;
+}
+
+static void SM64AP_SetMusicMap(std::string rawMap) {
+    map_music.clear();
+
+    std::string::size_type pos = 0;
+    if (!SM64AP_ConsumeJsonChar(rawMap, pos, '{')) {
+        return;
+    }
+
+    SM64AP_SkipJsonWhitespace(rawMap, pos);
+    if (pos < rawMap.size() && rawMap[pos] == '}') {
+        return;
+    }
+
+    while (pos < rawMap.size()) {
+        int key = 0;
+        int value = 0;
+        if (!SM64AP_ParseJsonQuotedIntKey(rawMap, pos, key)
+            || !SM64AP_ConsumeJsonChar(rawMap, pos, ':')
+            || !SM64AP_ParseJsonInt(rawMap, pos, value)) {
+            map_music.clear();
+            return;
+        }
+
+        map_music[key] = value;
+
+        SM64AP_SkipJsonWhitespace(rawMap, pos);
+        if (pos < rawMap.size() && rawMap[pos] == ',') {
+            pos++;
+            continue;
+        }
+        if (pos < rawMap.size() && rawMap[pos] == '}') {
+            return;
+        }
+
+        map_music.clear();
+        return;
+    }
+
+    map_music.clear();
+}
+
 static void SM64AP_SkipJsonWhitespace(const std::string &text, std::string::size_type &pos) {
     while (pos < text.size() && std::isspace((unsigned char) text[pos])) {
         pos++;
@@ -938,6 +1071,8 @@ void SM64AP_GenericInit() {
     AP_RegisterSlotDataIntCallback("MoveRandoVec", &SM64AP_SetMoveRandoVec);
     AP_RegisterSlotDataIntCallback("PaintingRando", &SM64AP_SetPaintingRando);
     AP_RegisterSlotDataMapIntIntCallback("AreaRando", &SM64AP_SetCourseMap);
+    AP_RegisterSlotDataIntCallback("MusicShuffleMode", &SM64AP_SetMusicShuffleMode);
+    AP_RegisterSlotDataRawCallback("MusicMap", static_cast<void (*)(std::string)>(&SM64AP_SetMusicMap));
     AP_RegisterSlotDataRawCallback("MarioColors", &SM64AP_SetMarioColors);
 
     course_dest_supported = {
@@ -1053,6 +1188,101 @@ int SM64AP_GetRequiredStars(int idprx) {
 
 bool SM64AP_CheckedLoc(int x) {
     return sm64_locations[x - SM64AP_ID_OFFSET];
+}
+
+static bool SM64AP_IsMusicAreaKey(int key) {
+    switch (key) {
+        case SM64AP_ENTRANCE_ID(LEVEL_BBH, 1):
+        case SM64AP_ENTRANCE_ID(LEVEL_CCM, 1):
+        case SM64AP_ENTRANCE_ID(LEVEL_CCM, 2):
+        case SM64AP_ENTRANCE_ID(LEVEL_CASTLE, 1):
+        case SM64AP_ENTRANCE_ID(LEVEL_CASTLE, 2):
+        case SM64AP_ENTRANCE_ID(LEVEL_CASTLE, 3):
+        case SM64AP_ENTRANCE_ID(LEVEL_HMC, 1):
+        case SM64AP_ENTRANCE_ID(LEVEL_SSL, 1):
+        case SM64AP_ENTRANCE_ID(LEVEL_SSL, 2):
+        case SM64AP_ENTRANCE_ID(LEVEL_SSL, 3):
+        case SM64AP_ENTRANCE_ID(LEVEL_BOB, 1):
+        case SM64AP_ENTRANCE_ID(LEVEL_SL, 1):
+        case SM64AP_ENTRANCE_ID(LEVEL_SL, 2):
+        case SM64AP_ENTRANCE_ID(LEVEL_WDW, 1):
+        case SM64AP_ENTRANCE_ID(LEVEL_WDW, 2):
+        case SM64AP_ENTRANCE_ID(LEVEL_JRB, 1):
+        case SM64AP_ENTRANCE_ID(LEVEL_JRB, 2):
+        case SM64AP_ENTRANCE_ID(LEVEL_THI, 1):
+        case SM64AP_ENTRANCE_ID(LEVEL_THI, 2):
+        case SM64AP_ENTRANCE_ID(LEVEL_THI, 3):
+        case SM64AP_ENTRANCE_ID(LEVEL_TTC, 1):
+        case SM64AP_ENTRANCE_ID(LEVEL_RR, 1):
+        case SM64AP_ENTRANCE_ID(LEVEL_CASTLE_GROUNDS, 1):
+        case SM64AP_ENTRANCE_ID(LEVEL_BITDW, 1):
+        case SM64AP_ENTRANCE_ID(LEVEL_VCUTM, 1):
+        case SM64AP_ENTRANCE_ID(LEVEL_BITFS, 1):
+        case SM64AP_ENTRANCE_ID(LEVEL_SA, 1):
+        case SM64AP_ENTRANCE_ID(LEVEL_BITS, 1):
+        case SM64AP_ENTRANCE_ID(LEVEL_LLL, 1):
+        case SM64AP_ENTRANCE_ID(LEVEL_LLL, 2):
+        case SM64AP_ENTRANCE_ID(LEVEL_DDD, 1):
+        case SM64AP_ENTRANCE_ID(LEVEL_DDD, 2):
+        case SM64AP_ENTRANCE_ID(LEVEL_WF, 1):
+        case SM64AP_ENTRANCE_ID(LEVEL_CASTLE_COURTYARD, 1):
+        case SM64AP_ENTRANCE_ID(LEVEL_PSS, 1):
+        case SM64AP_ENTRANCE_ID(LEVEL_COTMC, 1):
+        case SM64AP_ENTRANCE_ID(LEVEL_TOTWC, 1):
+        case SM64AP_ENTRANCE_ID(LEVEL_BOWSER_1, 1):
+        case SM64AP_ENTRANCE_ID(LEVEL_WMOTR, 1):
+        case SM64AP_ENTRANCE_ID(LEVEL_BOWSER_2, 1):
+        case SM64AP_ENTRANCE_ID(LEVEL_BOWSER_3, 1):
+        case SM64AP_ENTRANCE_ID(LEVEL_TTM, 1):
+        case SM64AP_ENTRANCE_ID(LEVEL_TTM, 2):
+        case SM64AP_ENTRANCE_ID(LEVEL_TTM, 3):
+        case SM64AP_ENTRANCE_ID(LEVEL_TTM, 4):
+            return true;
+        default:
+            return false;
+    }
+}
+
+static bool SM64AP_IsValidMusicSeq(int seq) {
+    if (seq < 0 || seq > 0xFF) {
+        return false;
+    }
+
+    int seqId = seq & 0x7F;
+    if (seqId >= SEQ_COUNT) {
+        return false;
+    }
+#ifdef VERSION_JP
+    if (seqId == SEQ_EVENT_CUTSCENE_LAKITU) {
+        return false;
+    }
+#endif
+    return true;
+}
+
+s16 SM64AP_ResolveAreaMusic(s16 level, s16 area, s16 vanillaSeq) {
+    int key = SM64AP_ENTRANCE_ID(level, area);
+    if (!SM64AP_IsMusicAreaKey(key)) {
+        return vanillaSeq;
+    }
+
+    switch (sm64_music_shuffle_mode) {
+        case SM64AP_MUSIC_SHUFFLE_MAP: {
+            auto entry = map_music.find(key);
+            if (entry != map_music.end() && SM64AP_IsValidMusicSeq(entry->second)) {
+                return static_cast<s16>(entry->second);
+            }
+            return vanillaSeq;
+        }
+
+        case SM64AP_MUSIC_SHUFFLE_RANDOM_ON_LOAD: {
+            constexpr int poolSize = sizeof(SM64AP_RANDOM_MUSIC_POOL) / sizeof(SM64AP_RANDOM_MUSIC_POOL[0]);
+            return static_cast<s16>(SM64AP_RANDOM_MUSIC_POOL[random_u16() % poolSize]);
+        }
+
+        default:
+            return vanillaSeq;
+    }
 }
 
 bool SM64AP_HaveKey1() {
