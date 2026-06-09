@@ -219,6 +219,8 @@ AP_EXTERN_C bool SM64AP_HaveAnyCap(int);
 AP_EXTERN_C int SM64AP_CountLevelCaps(int);
 AP_EXTERN_C bool SM64AP_HaveCannon(int);
 AP_EXTERN_C bool SM64AP_HaveFeature(int);
+AP_EXTERN_C bool SM64AP_HaveObjectItem(int);
+AP_EXTERN_C bool SM64AP_HaveLevelCapOrGlobal(int);
 AP_EXTERN_C bool SM64AP_CollectedCourseStar(int, int);
 AP_EXTERN_C bool SM64AP_ShouldSpawnLevelObject(s16, s16, s16, s16, s16, s16, u32, const void *);
 AP_EXTERN_C bool SM64AP_ShouldCreateWhirlpool(s16, s16, s8, s8, s16, s16, s16, s16);

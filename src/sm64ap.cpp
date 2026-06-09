@@ -260,7 +260,7 @@ bool SM64AP_HaveFeature(int feature) {
     return feature >= 0 && feature < SM64AP_NUM_FEATURES && sm64_have_features[feature];
 }
 
-static bool SM64AP_HaveObjectItem(int item) {
+bool SM64AP_HaveObjectItem(int item) {
     return item >= 0 && item < SM64AP_NUM_OBJECT_ITEMS && sm64_have_object_items[item];
 }
 
@@ -1502,6 +1502,20 @@ bool SM64AP_HaveYoshi() {
 
 static bool SM64AP_HaveLevelCap(int cap) {
     return cap >= 0 && cap < SM64AP_NUM_LEVEL_CAPS && sm64_have_level_caps[cap];
+}
+
+bool SM64AP_HaveLevelCapOrGlobal(int cap) {
+    if (cap >= SM64AP_LEVEL_CAP_BOB_WING && cap <= SM64AP_LEVEL_CAP_WMOTR_WING) {
+        return sm64_have_wingcap || SM64AP_HaveLevelCap(cap);
+    }
+    if (cap >= SM64AP_LEVEL_CAP_WF_METAL && cap <= SM64AP_LEVEL_CAP_BITDW_METAL) {
+        return sm64_have_metalcap || SM64AP_HaveLevelCap(cap);
+    }
+    if (cap >= SM64AP_LEVEL_CAP_BBH_VANISH && cap <= SM64AP_LEVEL_CAP_WDW_VANISH) {
+        return sm64_have_vanishcap || SM64AP_HaveLevelCap(cap);
+    }
+
+    return false;
 }
 
 static int SM64AP_LevelCapForCurrentLevel(int flag) {
