@@ -60,6 +60,7 @@ bool sm64_have_yoshi = false;
 bool sm64_have_wingcap = false;
 bool sm64_have_metalcap = false;
 bool sm64_have_vanishcap = false;
+bool sm64_show_global_cap_display = false;
 int sm64_moat_state = 0;
 bool sm64_have_cannon[15];
 bool sm64_have_painting[NUM_PAINTING_LOCKS];
@@ -817,6 +818,10 @@ void SM64AP_SetMusicShuffleMode(int mode) {
     }
 }
 
+void SM64AP_SetGlobalCapDisplay(int enabled) {
+    sm64_show_global_cap_display = enabled != 0;
+}
+
 static void SM64AP_ResetCoinStarRequirements() {
     for (int i = 0; i < SM64AP_NUM_COIN_STAR_REQUIREMENTS; i++) {
         sm64_coin_star_requirements[i] = SM64AP_DEFAULT_COIN_STAR_REQUIREMENT;
@@ -1225,6 +1230,8 @@ void SM64AP_GenericInit() {
     AP_RegisterSlotDataIntCallback("CompletionType", &SM64AP_SetCompletionType);
     AP_RegisterSlotDataIntCallback("MoveRandoVec", &SM64AP_SetMoveRandoVec);
     AP_RegisterSlotDataIntCallback("PaintingRando", &SM64AP_SetPaintingRando);
+    AP_RegisterSlotDataIntCallback("GlobalCapItems", &SM64AP_SetGlobalCapDisplay);
+    AP_RegisterSlotDataIntCallback("ShowGlobalCapDisplay", &SM64AP_SetGlobalCapDisplay);
     AP_RegisterSlotDataMapIntIntCallback("AreaRando", &SM64AP_SetCourseMap);
     AP_RegisterSlotDataIntCallback("MusicShuffleMode", &SM64AP_SetMusicShuffleMode);
     AP_RegisterSlotDataRawCallback("MusicMap", static_cast<void (*)(std::string)>(&SM64AP_SetMusicMap));
@@ -1635,6 +1642,23 @@ bool SM64AP_HaveAnyCap(int flag) {
         default:
             return true;
     }
+}
+
+bool SM64AP_HaveGlobalCap(int flag) {
+    switch (flag) {
+        case 2:
+            return sm64_have_wingcap;
+        case 4:
+            return sm64_have_metalcap;
+        case 8:
+            return sm64_have_vanishcap;
+        default:
+            return true;
+    }
+}
+
+bool SM64AP_ShowGlobalCapDisplay() {
+    return sm64_show_global_cap_display;
 }
 
 bool SM64AP_PressedSwitch(int flag) {

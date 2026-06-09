@@ -217,6 +217,8 @@ AP_EXTERN_C bool SM64AP_HaveYoshi();
 AP_EXTERN_C bool SM64AP_HaveCap(int);
 AP_EXTERN_C bool SM64AP_HaveAnyCap(int);
 AP_EXTERN_C int SM64AP_CountLevelCaps(int);
+AP_EXTERN_C bool SM64AP_HaveGlobalCap(int);
+AP_EXTERN_C bool SM64AP_ShowGlobalCapDisplay();
 AP_EXTERN_C bool SM64AP_HaveCannon(int);
 AP_EXTERN_C bool SM64AP_HaveFeature(int);
 AP_EXTERN_C bool SM64AP_HaveObjectItem(int);

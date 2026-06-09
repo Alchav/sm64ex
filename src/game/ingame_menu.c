@@ -2460,9 +2460,9 @@ void print_hud_pause_colorful_str(void) {
 
 #ifdef VERSION_EU
     print_hud_lut_string(HUD_LUT_GLOBAL, get_str_x_pos_from_center_scale(
-                         SCREEN_WIDTH / 2, textPause, 12.0f), 102, textPause);
+                         SCREEN_WIDTH / 2, textPause, 12.0f), 35, textPause);
 #else
-    print_hud_lut_string(HUD_LUT_GLOBAL, 123, 102, textPause);
+    print_hud_lut_string(HUD_LUT_GLOBAL, 123, 35, textPause);
 
 #endif
 
@@ -2867,23 +2867,25 @@ s16 render_pause_courses_and_castle(void) {
     optmenu_draw_prompt();
 #endif
 
-    s16 keyX = GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(78);
+    s16 rightX = GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(78);
+    s16 paintTitleY = 209 - 70 - 20;
+    s16 keyX = rightX;
     for (s16 i = 0; i < SM64AP_NUM_CASTLE_KEYS; i++) {
         print_text(keyX + i * 13, 209-35, SM64AP_HaveCastleKey(i) ? "Y" : "N");
     }
     print_text(keyX, 209-20, "KEYS");
-    print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(78), 209-35-20, "CAPS");
-    s8 wingCapCount = SM64AP_CountLevelCaps(2);
-    s8 metalCapCount = SM64AP_CountLevelCaps(4);
-    s8 vanishCapCount = SM64AP_CountLevelCaps(8);
-    char wingCaps[] = { wingCapCount > 0 ? '0' + wingCapCount : (SM64AP_HaveAnyCap(2) ? 'Y' : 'N'), '\0' };
-    char metalCaps[] = { metalCapCount > 0 ? '0' + metalCapCount : (SM64AP_HaveAnyCap(4) ? 'Y' : 'N'), '\0' };
-    char vanishCaps[] = { vanishCapCount > 0 ? '0' + vanishCapCount : (SM64AP_HaveAnyCap(8) ? 'Y' : 'N'), '\0' };
-    print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(78), 209-70, wingCaps);
-    print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(78)+13, 209-70, metalCaps);
-    print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(78)+26, 209-70, vanishCaps);
+
+    if (SM64AP_ShowGlobalCapDisplay()) {
+        print_text(rightX, 209-35-20, "CAPS");
+        print_text(rightX, 209-70, SM64AP_HaveGlobalCap(2) ? "Y" : "N");
+        print_text(rightX + 13, 209-70, SM64AP_HaveGlobalCap(4) ? "Y" : "N");
+        print_text(rightX + 26, 209-70, SM64AP_HaveGlobalCap(8) ? "Y" : "N");
+    } else {
+        paintTitleY = 209 - 70 + 20;
+    }
+
     if (SM64AP_PaintingRandoEnabled()) {
-        print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(78), 209-70-20, "PAINT");
+        print_text(rightX, paintTitleY, "PAINT");
 
         u8 txt_none[] = { TEXT_PAINTING_NONE };
         u8 lvlnames[][4] = {
@@ -2907,7 +2909,7 @@ s16 render_pause_courses_and_castle(void) {
 
         gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
         gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
-        s16 paintListStartY = 209-70-40;
+        s16 paintListStartY = paintTitleY - 20;
         u8 unlockedCount = 0;
         for(u8 i = 2; i < 15; i++) {
             switch(i) {
@@ -2922,12 +2924,12 @@ s16 render_pause_courses_and_castle(void) {
 
             s16 line = unlockedCount / 2;
             s16 liney = paintListStartY-(13*line);
-            s16 linex = GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(78) + (unlockedCount % 2 == 0 ? 0 : 40);
+            s16 linex = rightX + (unlockedCount % 2 == 0 ? 0 : 40);
             print_generic_string(linex, liney, lvlnames[i]);
             unlockedCount++;
         }
         if (unlockedCount == 0) {
-            print_generic_string(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(78), paintListStartY, txt_none);
+            print_generic_string(rightX, paintListStartY, txt_none);
         }
         gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
     }

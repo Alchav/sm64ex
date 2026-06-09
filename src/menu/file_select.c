@@ -1708,28 +1708,12 @@ static s8 get_received_castle_key_count(void) {
     return keyCount;
 }
 
-static s8 get_received_cap_count(void) {
-    s8 capCount = 0;
-
-    if (SM64AP_HaveAnyCap(2)) {
-        capCount++;
-    }
-    if (SM64AP_HaveAnyCap(4)) {
-        capCount++;
-    }
-    if (SM64AP_HaveAnyCap(8)) {
-        capCount++;
-    }
-
-    return capCount;
-}
-
 /**
- * Prints AP key/cap counts for an existing save file.
+ * Prints AP key count for an existing save file.
  * If a save doesn't exist, print "NEW" instead.
  */
 void print_save_file_star_count(s8 fileIndex, s16 x, s16 y) {
-    u8 progressionText[5];
+    u8 progressionText[3];
 
     if (save_file_exists(fileIndex) == TRUE) {
 #if defined(VERSION_JP) || defined(VERSION_SH)
@@ -1738,9 +1722,7 @@ void print_save_file_star_count(s8 fileIndex, s16 x, s16 y) {
         progressionText[0] = ASCII_TO_DIALOG('K');
 #endif
         progressionText[1] = get_received_castle_key_count();
-        progressionText[2] = ASCII_TO_DIALOG('C');
-        progressionText[3] = get_received_cap_count();
-        progressionText[4] = GLOBAR_CHAR_TERMINATOR;
+        progressionText[2] = GLOBAR_CHAR_TERMINATOR;
         print_hud_lut_string(HUD_LUT_GLOBAL, x, y, progressionText);
     } else {
         // Print "new" text
