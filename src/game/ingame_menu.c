@@ -2697,7 +2697,7 @@ static void render_pause_castle_course_unlocks(s16 x, s16 y, s16 courseNum) {
         }
 
         s16 lineY = y + 30 - unlockCount * 12;
-        render_pause_unlock_status(x - 43, lineY, x + 88, unlock->label,
+        render_pause_unlock_status(x - 43, lineY, x + 118, unlock->label,
                                    pause_course_unlock_collected(unlock, courseNum));
         unlockCount++;
     }
@@ -2931,7 +2931,7 @@ s16 render_pause_courses_and_castle(void) {
         }
         gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
     }
-    s16 x = -40;
+    s16 x = -62;
     s16 y = 170;
     s16 spacing = 18;
     print_text(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(20), 209-20, "ABILITIES");
