@@ -1,9 +1,11 @@
 #include <PR/ultratypes.h>
 
 #include "sm64.h"
+#include "area.h"
 #include "object_helpers.h"
 #include "macro_special_objects.h"
 #include "object_list_processor.h"
+#include "sm64ap.h"
 
 #include "behavior_data.h"
 
@@ -145,7 +147,13 @@ void spawn_macro_objects(s16 areaIndex, s16 *macroObjList) {
 
         // If object has been killed, prevent it from respawning
         if (((macroObject[MACRO_OBJ_PARAMS] >> 8) & RESPAWN_INFO_DONT_RESPAWN)
-            != RESPAWN_INFO_DONT_RESPAWN) {
+            != RESPAWN_INFO_DONT_RESPAWN
+            && SM64AP_ShouldSpawnLevelObject(gCurrLevelNum, areaIndex, preset.model,
+                                             macroObject[MACRO_OBJ_X], macroObject[MACRO_OBJ_Y],
+                                             macroObject[MACRO_OBJ_Z],
+                                             ((macroObject[MACRO_OBJ_PARAMS] & 0x00FF) << 16)
+                                                 + (macroObject[MACRO_OBJ_PARAMS] & 0xFF00),
+                                             preset.behavior)) {
             // Spawn the new macro object.
             newObj =
                 spawn_object_abs_with_rot(&gMacroObjectDefaultParent, // Parent object

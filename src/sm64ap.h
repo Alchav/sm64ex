@@ -161,7 +161,8 @@ enum {
     SM64AP_OBJECT_ITEM_CCM_BABY_PENGUINS,
     SM64AP_OBJECT_ITEM_SL_PENGUIN,
     SM64AP_OBJECT_ITEM_SSL_PYRAMID_ELEVATOR,
-    SM64AP_OBJECT_ITEM_LLL_ROLLING_LOG,
+    SM64AP_OBJECT_ITEM_ROLLING_LOGS,
+    SM64AP_OBJECT_ITEM_PURPLE_SWITCHES,
     SM64AP_NUM_OBJECT_ITEMS
 };
 
@@ -193,6 +194,7 @@ AP_EXTERN_C void SM64AP_InitSP(const char*);
 // Local Stars, Keys and Caps
 AP_EXTERN_C int SM64AP_GetStars();
 AP_EXTERN_C int SM64AP_GetRequiredStars(int);
+AP_EXTERN_C int SM64AP_GetCoinStarRequirement(int);
 AP_EXTERN_C u32 SM64AP_CourseStarFlags(s32);
 AP_EXTERN_C void SM64AP_RedirectWarp(s16*,s16*,s8*,s16*,s16*,bool,int,s32);
 AP_EXTERN_C int SM64AP_EntranceToTTC();
@@ -214,12 +216,14 @@ AP_EXTERN_C bool SM64AP_HaveCastleCannon();
 AP_EXTERN_C bool SM64AP_HaveYoshi();
 AP_EXTERN_C bool SM64AP_HaveCap(int);
 AP_EXTERN_C bool SM64AP_HaveAnyCap(int);
+AP_EXTERN_C int SM64AP_CountLevelCaps(int);
 AP_EXTERN_C bool SM64AP_HaveCannon(int);
 AP_EXTERN_C bool SM64AP_HaveFeature(int);
 AP_EXTERN_C bool SM64AP_CollectedCourseStar(int, int);
 AP_EXTERN_C bool SM64AP_ShouldSpawnLevelObject(s16, s16, s16, s16, s16, s16, u32, const void *);
 AP_EXTERN_C bool SM64AP_ShouldCreateWhirlpool(s16, s16, s8, s8, s16, s16, s16, s16);
 AP_EXTERN_C bool SM64AP_HavePainting(int);
+AP_EXTERN_C bool SM64AP_PaintingRandoEnabled();
 AP_EXTERN_C bool SM64AP_DeathLinkPending();
 AP_EXTERN_C void SM64AP_DeathLinkClear();
 AP_EXTERN_C void SM64AP_DeathLinkSend();

@@ -2711,65 +2711,70 @@ s16 render_pause_courses_and_castle(void) {
     }
     print_text(keyX, 209-20, "KEYS");
     print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(78), 209-35-20, "CAPS");
-    print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(78), 209-70, SM64AP_HaveAnyCap(2) ? "Y" : "N");
-    print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(78)+13, 209-70, SM64AP_HaveAnyCap(4) ? "Y" : "N");
-    print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(78)+26, 209-70, SM64AP_HaveAnyCap(8) ? "Y" : "N");
-    print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(78), 209-70-20, "PAINT");
+    s8 wingCapCount = SM64AP_CountLevelCaps(2);
+    s8 metalCapCount = SM64AP_CountLevelCaps(4);
+    s8 vanishCapCount = SM64AP_CountLevelCaps(8);
+    char wingCaps[] = { wingCapCount > 0 ? '0' + wingCapCount : (SM64AP_HaveAnyCap(2) ? 'Y' : 'N'), '\0' };
+    char metalCaps[] = { metalCapCount > 0 ? '0' + metalCapCount : (SM64AP_HaveAnyCap(4) ? 'Y' : 'N'), '\0' };
+    char vanishCaps[] = { vanishCapCount > 0 ? '0' + vanishCapCount : (SM64AP_HaveAnyCap(8) ? 'Y' : 'N'), '\0' };
+    print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(78), 209-70, wingCaps);
+    print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(78)+13, 209-70, metalCaps);
+    print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(78)+26, 209-70, vanishCaps);
+    if (SM64AP_PaintingRandoEnabled()) {
+        print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(78), 209-70-20, "PAINT");
 
-    u8 txt_y[] = { TEXT_PAINTING_Y };
-    u8 txt_n[] = { TEXT_PAINTING_N };
-    u8 lvlnames[][4] = {
-        { TEXT_PAINTING_UNK },
-        { TEXT_PAINTING_BOB },
-        { TEXT_PAINTING_WF  },
-        { TEXT_PAINTING_JRB },
-        { TEXT_PAINTING_CCM },
-        { TEXT_PAINTING_BBH },
-        { TEXT_PAINTING_HMC },
-        { TEXT_PAINTING_LLL },
-        { TEXT_PAINTING_SSL },
-        { TEXT_PAINTING_DDD },
-        { TEXT_PAINTING_SL  },
-        { TEXT_PAINTING_WDW },
-        { TEXT_PAINTING_TTM },
-        { TEXT_PAINTING_THI },
-        { TEXT_PAINTING_TTC },
-        { TEXT_PAINTING_RR  },
-    };
+        u8 txt_none[] = { TEXT_PAINTING_NONE };
+        u8 lvlnames[][4] = {
+            { TEXT_PAINTING_UNK },
+            { TEXT_PAINTING_BOB },
+            { TEXT_PAINTING_WF  },
+            { TEXT_PAINTING_JRB },
+            { TEXT_PAINTING_CCM },
+            { TEXT_PAINTING_BBH },
+            { TEXT_PAINTING_HMC },
+            { TEXT_PAINTING_LLL },
+            { TEXT_PAINTING_SSL },
+            { TEXT_PAINTING_DDD },
+            { TEXT_PAINTING_SL  },
+            { TEXT_PAINTING_WDW },
+            { TEXT_PAINTING_TTM },
+            { TEXT_PAINTING_THI },
+            { TEXT_PAINTING_TTC },
+            { TEXT_PAINTING_RR  },
+        };
 
-    gSPDisplayList(gDisplayListHead++, dl_rgba16_text_begin);
-    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
-    for(u8 i = 2; i < 15; i++) {
-        s16 line = (i<5 ? i : i-2)/2; // Adjust for the absence of courses 5 and 6
-        s16 liney = 209-70-26-(13*line);
-        s16 linex = GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(78) + (i%2 == 0? 0: 40);
-        switch(i) {
-            case 5: // BBH doesn't have a painting
-            case 6: // HMC has a painting but we don't lock it
-            case 15: // RR doesn't have a painting
+        gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
+        gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
+        s16 paintListStartY = 209-70-40;
+        u8 unlockedCount = 0;
+        for(u8 i = 2; i < 15; i++) {
+            switch(i) {
+                case 5: // BBH doesn't have a painting
+                case 6: // HMC has a painting but we don't lock it
+                case 15: // RR doesn't have a painting
+                    continue;
+            }
+            if (!SM64AP_HavePainting(i)) {
                 continue;
-            case 2:
-            case 3:
-            case 4:
-            case 7:
-            case 8:
-            case 9:
-            case 10:
-            case 11:
-            case 12:
-            case 13:
-            case 14:
-                print_generic_string(linex, liney, lvlnames[i]);
-                print_generic_string(linex + 26, liney, SM64AP_HavePainting(i)? txt_y : txt_n);
-                break;
-            default:
-                print_generic_string(linex, liney, lvlnames[0]);
+            }
+
+            s16 line = unlockedCount / 2;
+            s16 liney = paintListStartY-(13*line);
+            s16 linex = GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(78) + (unlockedCount % 2 == 0 ? 0 : 40);
+            print_generic_string(linex, liney, lvlnames[i]);
+            unlockedCount++;
         }
+        if (unlockedCount == 0) {
+            print_generic_string(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(78), paintListStartY, txt_none);
+        }
+        gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
     }
     s16 x = -32;
     s16 y = 170;
     s16 spacing = 18;
     print_text(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(20), 209-20, "ABILITIES");
+    gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
+    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
     if (SM64AP_CanTripleJump()) {
         u8 str_triple_jump[] = { TEXT_TRIPLE_JUMP };
         print_generic_string(x, y, str_triple_jump);
@@ -2813,6 +2818,7 @@ s16 render_pause_courses_and_castle(void) {
         u8 str_ledge_grab[] = { TEXT_LEDGE_GRAB };
         print_generic_string(x, y - spacing*9, str_ledge_grab);
     }
+    gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
     return 0;
 }
 

@@ -64,6 +64,7 @@
 #define TEXT_PAINTING_TTC _("TTC")
 #define TEXT_PAINTING_RR  _("RR ")
 #define TEXT_PAINTING_UNK _("UNK")
+#define TEXT_PAINTING_NONE _("NONE")
 #define TEXT_PAINTING_Y   _("Y")
 #define TEXT_PAINTING_N   _("N")
 

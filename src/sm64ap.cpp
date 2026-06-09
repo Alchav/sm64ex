@@ -7,6 +7,7 @@ extern "C" {
     #include "behavior_data.h"
     #include "gfx_dimensions.h"
     #include "level_table.h"
+    #include "course_table.h"
     #include "model_ids.h"
     #include "seq_ids.h"
     #include "engine/behavior_script.h"
@@ -35,6 +36,7 @@ extern "C" {
 #include <set>
 #include <queue>
 #include <cctype>
+#include <utility>
 
 #define WARP_NODE_CREDITS_MIN 0xF8 // level_update.c
 #define NUM_PAINTING_LOCKS SM64AP_NUM_PAINTING_LOCKS
@@ -61,6 +63,7 @@ bool sm64_have_vanishcap = false;
 int sm64_moat_state = 0;
 bool sm64_have_cannon[15];
 bool sm64_have_painting[NUM_PAINTING_LOCKS];
+bool sm64_painting_rando_enabled = false;
 int sm64_completion_type = 0;
 std::bitset<SM64AP_NUM_ABILITIES> sm64_have_abilities;
 std::bitset<SM64AP_NUM_FEATURES> sm64_have_features;
@@ -88,10 +91,17 @@ int sm64_wdw_entrance_variant = 0;
 int sm64_ttc_entrance_variant = SM64AP_ENTRANCE_TTC_STOPPED;
 int sm64_music_shuffle_mode = 0;
 std::map<int,int> map_music;
+int sm64_coin_star_requirements[15] = {
+    100, 100, 100, 100, 100,
+    100, 100, 100, 100, 100,
+    100, 100, 100, 100, 100,
+};
 
 static constexpr int SM64AP_MUSIC_SHUFFLE_OFF = 0;
 static constexpr int SM64AP_MUSIC_SHUFFLE_MAP = 1;
 static constexpr int SM64AP_MUSIC_SHUFFLE_RANDOM_ON_LOAD = 2;
+static constexpr int SM64AP_NUM_COIN_STAR_REQUIREMENTS = 15;
+static constexpr int SM64AP_DEFAULT_COIN_STAR_REQUIREMENT = 100;
 
 static constexpr int SM64AP_RANDOM_MUSIC_POOL[] = {
     SEQ_LEVEL_GRASS,
@@ -434,7 +444,20 @@ static bool SM64AP_IsCheckerboardPlatformObject(s16 level, s16 model, const void
         && (level == LEVEL_LLL || level == LEVEL_HMC);
 }
 
+static bool SM64AP_IsPurpleSwitchObject(s16 model, const void *behavior) {
+    return model == MODEL_PURPLE_SWITCH
+        && (behavior_is(behavior, bhvFloorSwitchAnimatesObject)
+            || behavior_is(behavior, bhvFloorSwitchGrills)
+            || behavior_is(behavior, bhvFloorSwitchHardcodedModel)
+            || behavior_is(behavior, bhvFloorSwitchHiddenObjects)
+            || behavior_is(behavior, bhvPurpleSwitchHiddenBoxes));
+}
+
 bool SM64AP_ShouldSpawnLevelObject(s16 level, s16, s16 model, s16 x, s16 y, s16 z, u32 behParam, const void *behavior) {
+    if (SM64AP_IsPurpleSwitchObject(model, behavior)) {
+        return SM64AP_HaveObjectItem(SM64AP_OBJECT_ITEM_PURPLE_SWITCHES);
+    }
+
     if (SM64AP_IsCheckerboardPlatformObject(level, model, behavior)) {
         return SM64AP_HaveObjectItem(SM64AP_OBJECT_ITEM_CHECKERBOARD_PLATFORMS);
     }
@@ -453,7 +476,7 @@ bool SM64AP_ShouldSpawnLevelObject(s16 level, s16, s16 model, s16 x, s16 y, s16 
                 return SM64AP_HaveFeature(SM64AP_FEATURE_LLL_KOOPA_SHELL);
             }
             if (behavior_is(behavior, bhvLllRollingLog)) {
-                return SM64AP_HaveObjectItem(SM64AP_OBJECT_ITEM_LLL_ROLLING_LOG);
+                return SM64AP_HaveObjectItem(SM64AP_OBJECT_ITEM_ROLLING_LOGS);
             }
             return true;
         case LEVEL_SSL:
@@ -482,6 +505,9 @@ bool SM64AP_ShouldSpawnLevelObject(s16 level, s16, s16 model, s16 x, s16 y, s16 
             }
             return true;
         case LEVEL_TTM:
+            if (behavior_is(behavior, bhvTtmRollingLog)) {
+                return SM64AP_HaveObjectItem(SM64AP_OBJECT_ITEM_ROLLING_LOGS);
+            }
             if (behavior_is(behavior, bhvUkiki) || behavior_is(behavior, bhvUkikiCage)) {
                 return SM64AP_HaveFeature(SM64AP_FEATURE_TTM_UKIKI);
             }
@@ -791,6 +817,24 @@ void SM64AP_SetMusicShuffleMode(int mode) {
     }
 }
 
+static void SM64AP_ResetCoinStarRequirements() {
+    for (int i = 0; i < SM64AP_NUM_COIN_STAR_REQUIREMENTS; i++) {
+        sm64_coin_star_requirements[i] = SM64AP_DEFAULT_COIN_STAR_REQUIREMENT;
+    }
+}
+
+static bool SM64AP_IsValidCoinStarRequirement(int amount) {
+    return amount >= 1 && amount <= 999;
+}
+
+static void SM64AP_SetCoinStarRequirementByIndex(int courseIndex, int amount) {
+    if (courseIndex >= 0
+        && courseIndex < SM64AP_NUM_COIN_STAR_REQUIREMENTS
+        && SM64AP_IsValidCoinStarRequirement(amount)) {
+        sm64_coin_star_requirements[courseIndex] = amount;
+    }
+}
+
 static void SM64AP_SkipJsonWhitespace(const std::string &text, std::string::size_type &pos);
 static bool SM64AP_ConsumeJsonChar(const std::string &text, std::string::size_type &pos, char expected);
 
@@ -841,6 +885,115 @@ static bool SM64AP_ParseJsonQuotedIntKey(const std::string &text, std::string::s
 
     key = parsed;
     return true;
+}
+
+static bool SM64AP_ParseCoinStarRequirementArray(const std::string &rawRequirements, std::string::size_type &pos) {
+    if (!SM64AP_ConsumeJsonChar(rawRequirements, pos, '[')) {
+        return false;
+    }
+
+    SM64AP_SkipJsonWhitespace(rawRequirements, pos);
+    if (pos < rawRequirements.size() && rawRequirements[pos] == ']') {
+        pos++;
+        return true;
+    }
+
+    for (int courseIndex = 0; courseIndex < SM64AP_NUM_COIN_STAR_REQUIREMENTS; courseIndex++) {
+        int amount = SM64AP_DEFAULT_COIN_STAR_REQUIREMENT;
+        if (!SM64AP_ParseJsonInt(rawRequirements, pos, amount)) {
+            return false;
+        }
+        SM64AP_SetCoinStarRequirementByIndex(courseIndex, amount);
+
+        SM64AP_SkipJsonWhitespace(rawRequirements, pos);
+        if (pos < rawRequirements.size() && rawRequirements[pos] == ',') {
+            pos++;
+            continue;
+        }
+        if (pos < rawRequirements.size() && rawRequirements[pos] == ']') {
+            pos++;
+            return true;
+        }
+        return false;
+    }
+
+    SM64AP_SkipJsonWhitespace(rawRequirements, pos);
+    if (pos < rawRequirements.size() && rawRequirements[pos] == ']') {
+        pos++;
+        return true;
+    }
+
+    return false;
+}
+
+static bool SM64AP_ParseCoinStarRequirementMap(const std::string &rawRequirements, std::string::size_type &pos) {
+    if (!SM64AP_ConsumeJsonChar(rawRequirements, pos, '{')) {
+        return false;
+    }
+
+    SM64AP_SkipJsonWhitespace(rawRequirements, pos);
+    if (pos < rawRequirements.size() && rawRequirements[pos] == '}') {
+        pos++;
+        return true;
+    }
+
+    std::vector<std::pair<int, int>> entries;
+    bool usesZeroBasedKeys = false;
+
+    while (pos < rawRequirements.size()) {
+        int key = 0;
+        int amount = SM64AP_DEFAULT_COIN_STAR_REQUIREMENT;
+        if (!SM64AP_ParseJsonQuotedIntKey(rawRequirements, pos, key)
+            || !SM64AP_ConsumeJsonChar(rawRequirements, pos, ':')
+            || !SM64AP_ParseJsonInt(rawRequirements, pos, amount)) {
+            return false;
+        }
+
+        if (key == 0) {
+            usesZeroBasedKeys = true;
+        }
+        entries.push_back(std::make_pair(key, amount));
+
+        SM64AP_SkipJsonWhitespace(rawRequirements, pos);
+        if (pos < rawRequirements.size() && rawRequirements[pos] == ',') {
+            pos++;
+            continue;
+        }
+        if (pos < rawRequirements.size() && rawRequirements[pos] == '}') {
+            pos++;
+            break;
+        }
+        return false;
+    }
+
+    for (const auto &entry : entries) {
+        int courseIndex = usesZeroBasedKeys ? entry.first : entry.first - COURSE_MIN;
+        SM64AP_SetCoinStarRequirementByIndex(courseIndex, entry.second);
+    }
+
+    return true;
+}
+
+static void SM64AP_SetCoinStarRequirements(std::string rawRequirements) {
+    SM64AP_ResetCoinStarRequirements();
+
+    std::string::size_type pos = 0;
+    SM64AP_SkipJsonWhitespace(rawRequirements, pos);
+    if (pos >= rawRequirements.size() || rawRequirements.compare(pos, 4, "null") == 0) {
+        return;
+    }
+
+    bool parsed = false;
+    if (rawRequirements[pos] == '[') {
+        parsed = SM64AP_ParseCoinStarRequirementArray(rawRequirements, pos);
+    } else if (rawRequirements[pos] == '{') {
+        parsed = SM64AP_ParseCoinStarRequirementMap(rawRequirements, pos);
+    }
+
+    SM64AP_SkipJsonWhitespace(rawRequirements, pos);
+    if (!parsed || pos != rawRequirements.size()) {
+        SM64AP_ResetCoinStarRequirements();
+    }
 }
 
 static void SM64AP_SetMusicMap(std::string rawMap) {
@@ -991,7 +1144,8 @@ void SM64AP_SetMoveRandoVec(int vec) {
     }
 }
 void SM64AP_SetPaintingRando(int enabled) {
-    if(!enabled) {
+    sm64_painting_rando_enabled = enabled != 0;
+    if(!sm64_painting_rando_enabled) {
         // Not enabled, so unlock all paintings
         for (int i = 0; i < NUM_PAINTING_LOCKS; i++)
             sm64_have_painting[i] = true;
@@ -1008,6 +1162,7 @@ void SM64AP_ResetItems() {
     for (int i = 0; i < NUM_PAINTING_LOCKS; i++) {
         sm64_have_painting[i] = false;
     }
+    sm64_painting_rando_enabled = false;
     sm64_have_abilities.reset();
     sm64_have_features.reset();
     sm64_have_level_caps.reset();
@@ -1074,6 +1229,7 @@ void SM64AP_GenericInit() {
     AP_RegisterSlotDataIntCallback("MusicShuffleMode", &SM64AP_SetMusicShuffleMode);
     AP_RegisterSlotDataRawCallback("MusicMap", static_cast<void (*)(std::string)>(&SM64AP_SetMusicMap));
     AP_RegisterSlotDataRawCallback("MarioColors", &SM64AP_SetMarioColors);
+    AP_RegisterSlotDataRawCallback("CoinStarRequirements", &SM64AP_SetCoinStarRequirements);
 
     course_dest_supported = {
         LEVEL_BOB, LEVEL_WF, LEVEL_JRB, LEVEL_CCM, LEVEL_BBH, LEVEL_HMC, LEVEL_LLL, LEVEL_SSL, LEVEL_DDD, LEVEL_SL,
@@ -1165,6 +1321,14 @@ void SM64AP_SetMoatDrained() {
 
 int SM64AP_GetStars() {
     return starsCollected;
+}
+
+int SM64AP_GetCoinStarRequirement(int courseNum) {
+    int courseIndex = courseNum - COURSE_MIN;
+    if (courseIndex >= 0 && courseIndex < SM64AP_NUM_COIN_STAR_REQUIREMENTS) {
+        return sm64_coin_star_requirements[courseIndex];
+    }
+    return SM64AP_DEFAULT_COIN_STAR_REQUIREMENT;
 }
 
 int SM64AP_GetRequiredStars(int idprx) {
@@ -1405,6 +1569,17 @@ static bool SM64AP_HaveAnyLevelCap(int first, int last) {
     return false;
 }
 
+static int SM64AP_CountLevelCapRange(int first, int last) {
+    int count = 0;
+    for (int cap = first; cap <= last; cap++) {
+        if (SM64AP_HaveLevelCap(cap)) {
+            count++;
+        }
+    }
+
+    return count;
+}
+
 bool SM64AP_HaveCap(int flag) {
     switch (flag) {
         case 2:
@@ -1416,6 +1591,19 @@ bool SM64AP_HaveCap(int flag) {
         default:
             //Probably coin/1up or something
             return true;
+    }
+}
+
+int SM64AP_CountLevelCaps(int flag) {
+    switch (flag) {
+        case 2:
+            return SM64AP_CountLevelCapRange(SM64AP_LEVEL_CAP_BOB_WING, SM64AP_LEVEL_CAP_WMOTR_WING);
+        case 4:
+            return SM64AP_CountLevelCapRange(SM64AP_LEVEL_CAP_WF_METAL, SM64AP_LEVEL_CAP_BITDW_METAL);
+        case 8:
+            return SM64AP_CountLevelCapRange(SM64AP_LEVEL_CAP_BBH_VANISH, SM64AP_LEVEL_CAP_WDW_VANISH);
+        default:
+            return 0;
     }
 }
 
@@ -1465,6 +1653,10 @@ bool SM64AP_HavePainting(int courseIdx) {
             // courses are 1-indexed, the items are 0-indexed
             return sm64_have_painting[courseIdx-1];
     }
+}
+
+bool SM64AP_PaintingRandoEnabled() {
+    return sm64_painting_rando_enabled;
 }
 
 bool SM64AP_MoatDrained() {
