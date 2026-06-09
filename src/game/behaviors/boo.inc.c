@@ -583,7 +583,7 @@ static void big_boo_act_2(void) {
 }
 
 static void big_boo_spawn_ghost_hunt_star(void) {
-    spawn_default_star(980.0f, 1100.0f, 250.0f);
+    spawn_default_star(500.0f, 281.0f, 500.0f);
 }
 
 static void big_boo_spawn_balcony_star(void) {
@@ -641,17 +641,7 @@ static void big_boo_act_4(void) {
 #endif
 
     if (o->oBehParams2ndByte == 0) {
-        obj_set_pos(o, 973, 0, 626);
-
-        if (o->oTimer > 60 && o->oDistanceToMario < 600.0f) {
-            obj_set_pos(o,  973, 0, 717);
-
-            spawn_object_relative(0, 0, 0,    0, o, MODEL_BBH_STAIRCASE_STEP, bhvBooBossSpawnedBridge);
-            spawn_object_relative(1, 0, 0, -200, o, MODEL_BBH_STAIRCASE_STEP, bhvBooBossSpawnedBridge);
-            spawn_object_relative(2, 0, 0,  200, o, MODEL_BBH_STAIRCASE_STEP, bhvBooBossSpawnedBridge);
-
-            obj_mark_for_deletion(o);
-        }
+        obj_mark_for_deletion(o);
     } else {
         obj_mark_for_deletion(o);
     }
