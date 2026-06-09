@@ -2491,6 +2491,7 @@ enum PauseCastleUnlockType {
     PAUSE_CASTLE_UNLOCK_TOADS,
     PAUSE_CASTLE_UNLOCK_CANNON,
     PAUSE_CASTLE_UNLOCK_YOSHI,
+    PAUSE_CASTLE_UNLOCK_BITFS,
 };
 
 struct PauseCastleUnlock {
@@ -2502,6 +2503,7 @@ struct PauseCastleUnlock {
 static const u8 sUnlockBaby[] = { TEXT_UNLOCK_BABY };
 static const u8 sUnlockBeast[] = { TEXT_UNLOCK_BEAST };
 static const u8 sUnlockBbh[] = { TEXT_UNLOCK_BBH };
+static const u8 sUnlockBitfs[] = { TEXT_UNLOCK_BITFS };
 static const u8 sUnlockBuddy[] = { TEXT_UNLOCK_BUDDY };
 static const u8 sUnlockCannon[] = { TEXT_UNLOCK_CANNON };
 static const u8 sUnlockCarpet[] = { TEXT_UNLOCK_CARPET };
@@ -2636,6 +2638,7 @@ static const struct PauseCastleUnlock sPauseCastleUnlocks[] = {
     { PAUSE_CASTLE_UNLOCK_TOADS, 0, sUnlockToads },
     { PAUSE_CASTLE_UNLOCK_CANNON, 0, sUnlockCastleCannon },
     { PAUSE_CASTLE_UNLOCK_YOSHI, 0, sUnlockYoshi },
+    { PAUSE_CASTLE_UNLOCK_BITFS, 0, sUnlockBitfs },
 };
 
 static bool pause_course_unlock_collected(const struct PauseCourseUnlock *unlock, s16 courseNum) {
@@ -2669,6 +2672,8 @@ static bool pause_castle_unlock_collected(const struct PauseCastleUnlock *unlock
             return SM64AP_HaveCastleCannon();
         case PAUSE_CASTLE_UNLOCK_YOSHI:
             return SM64AP_HaveYoshi();
+        case PAUSE_CASTLE_UNLOCK_BITFS:
+            return SM64AP_HaveBITFS();
     }
 
     return false;

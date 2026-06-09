@@ -1085,9 +1085,9 @@ void reset_painting(struct Painting *painting) {
 /**
  * Controls the x coordinate of the DDD painting.
  *
- * Before Mario gets the "Board Bowser's Sub" star in DDD, the painting spawns at frontPos.
+ * Before Mario gets the BITFS Archipelago item, the painting spawns at frontPos.
  *
- * If Mario just got the star, the painting's x coordinate moves to backPos at a rate of `speed` units.
+ * If Mario just got the item, the painting's x coordinate moves to backPos at a rate of `speed` units.
  *
  * When the painting reaches backPos, a save flag is set so that the painting will spawn at backPos
  * whenever it loads.
@@ -1098,31 +1098,21 @@ void reset_painting(struct Painting *painting) {
  *  3 (0b11): same as 2. Bit 0 is ignored
  */
 void move_ddd_painting(struct Painting *painting, f32 frontPos, f32 backPos, f32 speed) {
-    // Obtain the DDD star flags
-    u32 dddFlags = save_file_get_star_flags(gCurrSaveFileNum - 1, COURSE_DDD - 1);
-    // Get the other save file flags
-    u32 saveFileFlags = save_file_get_flags();
-    // Find out whether Board Bowser's Sub was collected
-    u32 bowsersSubBeaten = dddFlags & BOARD_BOWSERS_SUB;
-    // Check whether DDD has already moved back
-    u32 dddBack = saveFileFlags & SAVE_FLAG_DDD_MOVED_BACK;
+    u32 bitfsUnlocked = SM64AP_HaveBITFS();
+    u32 dddBack = bitfsUnlocked && (save_file_get_flags() & SAVE_FLAG_DDD_MOVED_BACK);
 
-    if (!bowsersSubBeaten && !dddBack) {
-        // If we haven't collected the star or moved the painting, put the painting at the front
+    if (!bitfsUnlocked) {
         painting->posX = frontPos;
         gDddPaintingStatus = 0;
-    } else if (bowsersSubBeaten && !dddBack) {
-        // If we've collected the star but not moved the painting back,
-        // Each frame, move the painting by a certain speed towards the back area.
+    } else if (!dddBack) {
         painting->posX += speed;
         gDddPaintingStatus = BOWSERS_SUB_BEATEN;
         if (painting->posX >= backPos) {
             painting->posX = backPos;
-            // Tell the save file that we've moved DDD back.
+            gDddPaintingStatus = BOWSERS_SUB_BEATEN | DDD_BACK;
             save_file_set_flags(SAVE_FLAG_DDD_MOVED_BACK);
         }
-    } else if (bowsersSubBeaten && dddBack) {
-        // If the painting has already moved back, place it in the back position.
+    } else {
         painting->posX = backPos;
         gDddPaintingStatus = BOWSERS_SUB_BEATEN | DDD_BACK;
     }

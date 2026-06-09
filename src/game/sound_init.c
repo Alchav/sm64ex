@@ -201,8 +201,6 @@ void play_infinite_stairs_music(void) {
 }
 
 void set_background_music(u16 a, u16 seqArgs, s16 fadeTimer) {
-    seqArgs = SM64AP_ResolveAreaMusic(gCurrLevelNum, gCurrAreaIndex, seqArgs);
-
     if (gResetTimer == 0 && seqArgs != sCurrentMusic) {
         if (gCurrCreditsEntry != 0) {
             sound_reset(7);

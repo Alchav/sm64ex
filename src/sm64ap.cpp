@@ -57,6 +57,7 @@ bool sm64_have_bbh = false;
 bool sm64_have_toads = false;
 bool sm64_have_castle_cannon = false;
 bool sm64_have_yoshi = false;
+bool sm64_have_bitfs = false;
 bool sm64_have_wingcap = false;
 bool sm64_have_metalcap = false;
 bool sm64_have_vanishcap = false;
@@ -177,6 +178,9 @@ void SM64AP_RecvItem(int64_t idx, bool notify) {
         case SM64AP_ID_YOSHI:
             sm64_have_yoshi = true;
             break;
+        case SM64AP_ID_BITFS:
+            sm64_have_bitfs = true;
+            break;
         case SM64AP_ID_WINGCAP:
             sm64_have_wingcap = true;
             break;
@@ -263,6 +267,10 @@ bool SM64AP_HaveFeature(int feature) {
 
 bool SM64AP_HaveObjectItem(int item) {
     return item >= 0 && item < SM64AP_NUM_OBJECT_ITEMS && sm64_have_object_items[item];
+}
+
+bool SM64AP_HaveBITFS() {
+    return sm64_have_bitfs;
 }
 
 bool SM64AP_CollectedCourseStar(int courseIdx, int starIdx) {
@@ -1182,6 +1190,7 @@ void SM64AP_ResetItems() {
     sm64_have_toads = false;
     sm64_have_castle_cannon = false;
     sm64_have_yoshi = false;
+    sm64_have_bitfs = false;
     sm64_have_wingcap = false;
     sm64_have_metalcap = false;
     sm64_have_vanishcap = false;

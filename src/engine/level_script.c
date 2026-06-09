@@ -707,7 +707,8 @@ static void level_cmd_show_dialog(void) {
 static void level_cmd_set_music(void) {
     if (sCurrAreaIndex != -1) {
         gAreas[sCurrAreaIndex].musicParam = CMD_GET(s16, 2);
-        gAreas[sCurrAreaIndex].musicParam2 = CMD_GET(s16, 4);
+        gAreas[sCurrAreaIndex].musicParam2 =
+            SM64AP_ResolveAreaMusic(gCurrLevelNum, sCurrAreaIndex, CMD_GET(s16, 4));
     }
     sCurrentCmd = CMD_NEXT;
 }
