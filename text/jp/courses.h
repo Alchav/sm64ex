@@ -69,7 +69,7 @@ SECRET_STAR(COURSE_WMOTR,    _("　　　にじ　かける　はねマリオ"))
 SECRET_STAR(COURSE_SA,       _("　　　おさかなと　いっしょ"))
 SECRET_STAR(COURSE_CAKE_END, _("　　　おいしいケーキ"))
 
-CASTLE_SECRET_STARS(_("　　　おしろのかくれスター"))
+CASTLE_SECRET_STARS(_("　　　おしろ"))
 
 EXTRA_TEXT(0, _("おしろのかくれスター"))
 EXTRA_TEXT(1, _("１００まいコインの　スター"))
