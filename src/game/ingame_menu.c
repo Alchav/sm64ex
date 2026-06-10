@@ -2537,6 +2537,7 @@ static const u8 sUnlockPurple[] = { TEXT_UNLOCK_PURPLE };
 static const u8 sUnlockRaised[] = { TEXT_UNLOCK_RAISED };
 static const u8 sUnlockShell[] = { TEXT_UNLOCK_SHELL };
 static const u8 sUnlockSnow[] = { TEXT_UNLOCK_SNOW };
+static const u8 sUnlockSpinners[] = { TEXT_UNLOCK_SPINNERS };
 static const u8 sUnlockStair[] = { TEXT_UNLOCK_STAIR };
 static const u8 sUnlockSub[] = { TEXT_UNLOCK_SUB };
 static const u8 sUnlockSunken[] = { TEXT_UNLOCK_SUNKEN };
@@ -2621,6 +2622,8 @@ static const struct PauseCourseUnlock sPauseCourseUnlocks[] = {
     { COURSE_THI - 1, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_THI_KOOPA_THE_QUICK, sUnlockKoopa },
     { COURSE_THI - 1, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_THI_WARP_PIPES, sUnlockPipes },
     { COURSE_THI - 1, PAUSE_COURSE_UNLOCK_CANNON, 0, sUnlockCannon },
+
+    { COURSE_TTC - 1, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_TTC_SPINNERS, sUnlockSpinners },
 
     { COURSE_RR - 1, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_RR_CARPETS, sUnlockCarpet },
     { COURSE_RR - 1, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_PURPLE_SWITCHES, sUnlockPurple },

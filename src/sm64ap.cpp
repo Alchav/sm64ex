@@ -630,6 +630,11 @@ bool SM64AP_ShouldSpawnLevelObject(s16 level, s16, s16 model, s16 x, s16 y, s16 
                 return SM64AP_HaveFeature(SM64AP_FEATURE_TTM_UKIKI);
             }
             return true;
+        case LEVEL_TTC:
+            if (behavior_is(behavior, bhvTTCSpinner) && model == MODEL_TTC_SPINNER) {
+                return SM64AP_HaveObjectItem(SM64AP_OBJECT_ITEM_TTC_SPINNERS);
+            }
+            return true;
         case LEVEL_DDD:
             return SM64AP_ShouldSpawnDddObject(behParam, behavior);
         case LEVEL_BBH:
