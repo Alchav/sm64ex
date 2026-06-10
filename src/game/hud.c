@@ -273,20 +273,21 @@ void render_hud_mario_lives(void) {
     print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(54), HUD_TOP_Y, "%d", gHudDisplay.lives);
 }
 
+#ifdef VERSION_JP
+#define HUD_TOP_RIGHT_COUNTER_X 73
+#else
+#define HUD_TOP_RIGHT_COUNTER_X 78
+#endif
+
 /**
  * Renders the amount of coins collected.
  */
 void render_hud_coins(void) {
-    print_text(168, HUD_TOP_Y, "+"); // 'Coin' glyph
-    print_text(184, HUD_TOP_Y, "*"); // 'X' glyph
-    print_text_fmt_int(198, HUD_TOP_Y, "%d", gHudDisplay.coins);
+    print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_TOP_RIGHT_COUNTER_X), HUD_TOP_Y, "+"); // 'Coin' glyph
+    print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_TOP_RIGHT_COUNTER_X) + 16, HUD_TOP_Y, "*"); // 'X' glyph
+    print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_TOP_RIGHT_COUNTER_X - 16) + 14,
+                       HUD_TOP_Y, "%d", gHudDisplay.coins);
 }
-
-#ifdef VERSION_JP
-#define HUD_STARS_X 73
-#else
-#define HUD_STARS_X 78
-#endif
 
 /**
  * Renders the amount of stars collected.
@@ -303,11 +304,11 @@ void render_hud_stars(void) {
         showX = 1;
     }
 
-    print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X), HUD_TOP_Y, "-"); // 'Star' glyph
+    print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_TOP_RIGHT_COUNTER_X), HUD_TOP_Y, "-"); // 'Star' glyph
     if (showX == 1) {
-        print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X) + 16, HUD_TOP_Y, "*"); // 'X' glyph
+        print_text(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_TOP_RIGHT_COUNTER_X) + 16, HUD_TOP_Y, "*"); // 'X' glyph
     }
-    print_text_fmt_int((showX * 14) + GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_STARS_X - 16),
+    print_text_fmt_int((showX * 14) + GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(HUD_TOP_RIGHT_COUNTER_X - 16),
                        HUD_TOP_Y, "%d", gHudDisplay.stars);
 }
 
