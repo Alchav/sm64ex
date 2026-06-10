@@ -138,6 +138,13 @@ static void SM64AP_SetMin(int &value, int minValue) {
 }
 
 void SM64AP_RecvItem(int64_t idx, bool notify) {
+    if (idx >= SM64AP_ID_OBJECT_ITEM(0)
+        && idx <= SM64AP_ID_OBJECT_ITEM(SM64AP_NUM_OBJECT_ITEMS - 1)
+        && idx != SM64AP_ID_BITFS) {
+        sm64_have_object_items[idx - SM64AP_OBJECT_ITEM_OFFSET] = true;
+        return;
+    }
+
     switch (idx) {
         case SM64AP_ITEMID_STAR:
             starsCollected++;
@@ -192,9 +199,6 @@ void SM64AP_RecvItem(int64_t idx, bool notify) {
             break;
         case SM64AP_ID_LEVEL_CAP(0) ... SM64AP_ID_LEVEL_CAP(SM64AP_NUM_LEVEL_CAPS - 1):
             sm64_have_level_caps[idx - SM64AP_LEVEL_CAP_OFFSET] = true;
-            break;
-        case SM64AP_ID_OBJECT_ITEM(0) ... SM64AP_ID_OBJECT_ITEM(SM64AP_NUM_OBJECT_ITEMS - 1):
-            sm64_have_object_items[idx - SM64AP_OBJECT_ITEM_OFFSET] = true;
             break;
         case SM64AP_ITEMID_1UP:
             gMarioState->numLives++;
@@ -267,6 +271,105 @@ bool SM64AP_HaveFeature(int feature) {
 
 bool SM64AP_HaveObjectItem(int item) {
     return item >= 0 && item < SM64AP_NUM_OBJECT_ITEMS && sm64_have_object_items[item];
+}
+
+static int SM64AP_LevelSpecificObjectItemForLevel(int item, s16 level) {
+    switch (item) {
+        case SM64AP_OBJECT_ITEM_CHECKERBOARD_PLATFORMS:
+            switch (level) {
+                case LEVEL_BOB:
+                    return SM64AP_OBJECT_ITEM_BOB_CHECKERBOARD_PLATFORMS;
+                case LEVEL_WF:
+                    return SM64AP_OBJECT_ITEM_WF_CHECKERBOARD_PLATFORMS;
+                case LEVEL_LLL:
+                    return SM64AP_OBJECT_ITEM_LLL_CHECKERBOARD_PLATFORMS;
+                case LEVEL_HMC:
+                    return SM64AP_OBJECT_ITEM_HMC_CHECKERBOARD_PLATFORMS;
+                case LEVEL_VCUTM:
+                    return SM64AP_OBJECT_ITEM_VCUTM_CHECKERBOARD_PLATFORMS;
+            }
+            break;
+
+        case SM64AP_OBJECT_ITEM_ROLLING_LOGS:
+            switch (level) {
+                case LEVEL_LLL:
+                    return SM64AP_OBJECT_ITEM_LLL_ROLLING_LOGS;
+                case LEVEL_TTM:
+                    return SM64AP_OBJECT_ITEM_TTM_ROLLING_LOGS;
+            }
+            break;
+
+        case SM64AP_OBJECT_ITEM_PURPLE_SWITCHES:
+            switch (level) {
+                case LEVEL_BOB:
+                    return SM64AP_OBJECT_ITEM_BOB_PURPLE_SWITCHES;
+                case LEVEL_HMC:
+                    return SM64AP_OBJECT_ITEM_HMC_PURPLE_SWITCHES;
+                case LEVEL_WDW:
+                    return SM64AP_OBJECT_ITEM_WDW_PURPLE_SWITCHES;
+                case LEVEL_RR:
+                    return SM64AP_OBJECT_ITEM_RR_PURPLE_SWITCHES;
+                case LEVEL_BITDW:
+                    return SM64AP_OBJECT_ITEM_BITDW_PURPLE_SWITCHES;
+                case LEVEL_BITS:
+                    return SM64AP_OBJECT_ITEM_BITS_PURPLE_SWITCHES;
+            }
+            break;
+    }
+
+    return -1;
+}
+
+static int SM64AP_LevelForCourseIndex(int courseIdx) {
+    switch (courseIdx) {
+        case COURSE_BOB - 1:
+            return LEVEL_BOB;
+        case COURSE_WF - 1:
+            return LEVEL_WF;
+        case COURSE_JRB - 1:
+            return LEVEL_JRB;
+        case COURSE_CCM - 1:
+            return LEVEL_CCM;
+        case COURSE_BBH - 1:
+            return LEVEL_BBH;
+        case COURSE_HMC - 1:
+            return LEVEL_HMC;
+        case COURSE_LLL - 1:
+            return LEVEL_LLL;
+        case COURSE_SSL - 1:
+            return LEVEL_SSL;
+        case COURSE_DDD - 1:
+            return LEVEL_DDD;
+        case COURSE_SL - 1:
+            return LEVEL_SL;
+        case COURSE_WDW - 1:
+            return LEVEL_WDW;
+        case COURSE_TTM - 1:
+            return LEVEL_TTM;
+        case COURSE_THI - 1:
+            return LEVEL_THI;
+        case COURSE_TTC - 1:
+            return LEVEL_TTC;
+        case COURSE_RR - 1:
+            return LEVEL_RR;
+    }
+
+    return 0;
+}
+
+static bool SM64AP_HaveObjectItemForLevel(int item, s16 level) {
+    return SM64AP_HaveObjectItem(item)
+        || SM64AP_HaveObjectItem(SM64AP_LevelSpecificObjectItemForLevel(item, level));
+}
+
+bool SM64AP_HaveObjectItemForCourse(int item, int courseIdx) {
+    int level = SM64AP_LevelForCourseIndex(courseIdx);
+
+    if (level != 0) {
+        return SM64AP_HaveObjectItemForLevel(item, level);
+    }
+
+    return SM64AP_HaveObjectItem(item);
 }
 
 bool SM64AP_HaveBITFS() {
@@ -464,11 +567,11 @@ static bool SM64AP_IsPurpleSwitchObject(s16 model, const void *behavior) {
 
 bool SM64AP_ShouldSpawnLevelObject(s16 level, s16, s16 model, s16 x, s16 y, s16 z, u32 behParam, const void *behavior) {
     if (SM64AP_IsPurpleSwitchObject(model, behavior)) {
-        return SM64AP_HaveObjectItem(SM64AP_OBJECT_ITEM_PURPLE_SWITCHES);
+        return SM64AP_HaveObjectItemForLevel(SM64AP_OBJECT_ITEM_PURPLE_SWITCHES, level);
     }
 
     if (SM64AP_IsCheckerboardPlatformObject(level, model, behavior)) {
-        return SM64AP_HaveObjectItem(SM64AP_OBJECT_ITEM_CHECKERBOARD_PLATFORMS);
+        return SM64AP_HaveObjectItemForLevel(SM64AP_OBJECT_ITEM_CHECKERBOARD_PLATFORMS, level);
     }
 
     switch (level) {
@@ -485,7 +588,7 @@ bool SM64AP_ShouldSpawnLevelObject(s16 level, s16, s16 model, s16 x, s16 y, s16 
                 return SM64AP_HaveFeature(SM64AP_FEATURE_LLL_KOOPA_SHELL);
             }
             if (behavior_is(behavior, bhvLllRollingLog)) {
-                return SM64AP_HaveObjectItem(SM64AP_OBJECT_ITEM_ROLLING_LOGS);
+                return SM64AP_HaveObjectItemForLevel(SM64AP_OBJECT_ITEM_ROLLING_LOGS, level);
             }
             return true;
         case LEVEL_SSL:
@@ -508,6 +611,11 @@ bool SM64AP_ShouldSpawnLevelObject(s16 level, s16, s16 model, s16 x, s16 y, s16 
                 return SM64AP_HaveObjectItem(SM64AP_OBJECT_ITEM_SL_PENGUIN);
             }
             return true;
+        case LEVEL_WDW:
+            if (behavior_is(behavior, bhvWaterLevelDiamond)) {
+                return SM64AP_HaveObjectItem(SM64AP_OBJECT_ITEM_WDW_WATER_LEVEL_DIAMONDS);
+            }
+            return true;
         case LEVEL_RR:
             if (behavior_is(behavior, bhvPlatformOnTrack) && model == MODEL_RR_FLYING_CARPET) {
                 return SM64AP_HaveObjectItem(SM64AP_OBJECT_ITEM_RR_CARPETS);
@@ -515,7 +623,7 @@ bool SM64AP_ShouldSpawnLevelObject(s16 level, s16, s16 model, s16 x, s16 y, s16 
             return true;
         case LEVEL_TTM:
             if (behavior_is(behavior, bhvTtmRollingLog)) {
-                return SM64AP_HaveObjectItem(SM64AP_OBJECT_ITEM_ROLLING_LOGS);
+                return SM64AP_HaveObjectItemForLevel(SM64AP_OBJECT_ITEM_ROLLING_LOGS, level);
             }
             if (behavior_is(behavior, bhvUkiki) || behavior_is(behavior, bhvUkikiCage)) {
                 return SM64AP_HaveFeature(SM64AP_FEATURE_TTM_UKIKI);

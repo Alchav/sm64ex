@@ -2543,6 +2543,7 @@ static const u8 sUnlockToads[] = { TEXT_UNLOCK_TOADS };
 static const u8 sUnlockUkiki[] = { TEXT_UNLOCK_UKIKI };
 static const u8 sUnlockUnagi[] = { TEXT_UNLOCK_UNAGI };
 static const u8 sUnlockVanish[] = { TEXT_UNLOCK_VANISH };
+static const u8 sUnlockWaterDiamonds[] = { TEXT_UNLOCK_WATER_DIAMONDS };
 static const u8 sUnlockWhomp[] = { TEXT_UNLOCK_WHOMP };
 static const u8 sUnlockWing[] = { TEXT_UNLOCK_WING };
 static const u8 sUnlockYoshi[] = { TEXT_UNLOCK_YOSHI };
@@ -2607,6 +2608,7 @@ static const struct PauseCourseUnlock sPauseCourseUnlocks[] = {
     { COURSE_SL - 1, PAUSE_COURSE_UNLOCK_CANNON, 0, sUnlockCannon },
 
     { COURSE_WDW - 1, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_PURPLE_SWITCHES, sUnlockPurple },
+    { COURSE_WDW - 1, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_WDW_WATER_LEVEL_DIAMONDS, sUnlockWaterDiamonds },
     { COURSE_WDW - 1, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_WDW_METAL, sUnlockMetal },
     { COURSE_WDW - 1, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_WDW_VANISH, sUnlockVanish },
     { COURSE_WDW - 1, PAUSE_COURSE_UNLOCK_CANNON, 0, sUnlockCannon },
@@ -2646,7 +2648,7 @@ static bool pause_course_unlock_collected(const struct PauseCourseUnlock *unlock
         case PAUSE_COURSE_UNLOCK_FEATURE:
             return SM64AP_HaveFeature(unlock->id);
         case PAUSE_COURSE_UNLOCK_OBJECT_ITEM:
-            return SM64AP_HaveObjectItem(unlock->id);
+            return SM64AP_HaveObjectItemForCourse(unlock->id, courseNum);
         case PAUSE_COURSE_UNLOCK_LEVEL_CAP:
             return SM64AP_HaveLevelCapOrGlobal(unlock->id);
         case PAUSE_COURSE_UNLOCK_CANNON:

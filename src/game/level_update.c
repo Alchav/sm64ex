@@ -663,9 +663,11 @@ struct WarpNode *get_painting_warp_node(void) {
 }
 
 static s32 get_ap_wdw_painting_source_entrance(void) {
-    if (gPaintingMarioYEntry <= SM64AP_WDW_LOW_ENTRY_MAX) {
+    f32 marioY = gMarioState->pos[1];
+
+    if (marioY <= SM64AP_WDW_LOW_ENTRY_MAX) {
         return SM64AP_ENTRANCE_ID(LEVEL_WDW, SM64AP_ENTRANCE_WDW_LOW);
-    } else if (gPaintingMarioYEntry >= SM64AP_WDW_HIGH_ENTRY_MIN) {
+    } else if (marioY >= SM64AP_WDW_HIGH_ENTRY_MIN) {
         return SM64AP_ENTRANCE_ID(LEVEL_WDW, SM64AP_ENTRANCE_WDW_HIGH);
     }
 
