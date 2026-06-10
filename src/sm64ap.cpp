@@ -93,6 +93,7 @@ int sm64_wdw_entrance_variant = 0;
 int sm64_ttc_entrance_variant = SM64AP_ENTRANCE_TTC_STOPPED;
 int sm64_music_shuffle_mode = 0;
 std::map<int,int> map_music;
+std::map<int,int> map_start_inventory;
 int sm64_coin_star_requirements[15] = {
     100, 100, 100, 100, 100,
     100, 100, 100, 100, 100,
@@ -922,6 +923,19 @@ void SM64AP_SetCourseMap(std::map<int,int> map) {
     map_entrances = map;
 }
 
+static void SM64AP_ApplyStartInventory() {
+    for (auto item : map_start_inventory) {
+        for (int i = 0; i < item.second; i++) {
+            SM64AP_RecvItem(item.first, false);
+        }
+    }
+}
+
+void SM64AP_SetStartInventory(std::map<int,int> map) {
+    map_start_inventory = map;
+    SM64AP_ApplyStartInventory();
+}
+
 void SM64AP_SetMusicShuffleMode(int mode) {
     switch (mode) {
         case SM64AP_MUSIC_SHUFFLE_MAP:
@@ -1350,6 +1364,7 @@ void SM64AP_GenericInit() {
     AP_RegisterSlotDataIntCallback("GlobalCapItems", &SM64AP_SetGlobalCapDisplay);
     AP_RegisterSlotDataIntCallback("ShowGlobalCapDisplay", &SM64AP_SetGlobalCapDisplay);
     AP_RegisterSlotDataMapIntIntCallback("AreaRando", &SM64AP_SetCourseMap);
+    AP_RegisterSlotDataMapIntIntCallback("StartInventory", &SM64AP_SetStartInventory);
     AP_RegisterSlotDataIntCallback("MusicShuffleMode", &SM64AP_SetMusicShuffleMode);
     AP_RegisterSlotDataRawCallback("MusicMap", static_cast<void (*)(std::string)>(&SM64AP_SetMusicMap));
     AP_RegisterSlotDataRawCallback("MarioColors", &SM64AP_SetMarioColors);
