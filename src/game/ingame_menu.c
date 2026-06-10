@@ -2509,6 +2509,7 @@ static const u8 sUnlockCannon[] = { TEXT_UNLOCK_CANNON };
 static const u8 sUnlockCarpet[] = { TEXT_UNLOCK_CARPET };
 static const u8 sUnlockCastleCannon[] = { TEXT_UNLOCK_CASTLE_CANNON };
 static const u8 sUnlockCheck[] = { TEXT_UNLOCK_CHECK };
+static const u8 sUnlockCoinStar[] = { TEXT_UNLOCK_COIN_STAR };
 static const u8 sUnlockElev[] = { TEXT_UNLOCK_ELEV };
 static const u8 sUnlockFort[] = { TEXT_UNLOCK_FORT };
 static const u8 sUnlockHoot[] = { TEXT_UNLOCK_HOOT };
@@ -2689,9 +2690,19 @@ static void render_pause_unlock_status(s16 x, s16 y, s16 statusX, const u8 *labe
     print_generic_string(statusX, y, unlocked ? textYes : textNo);
 }
 
+static void render_pause_coin_star_requirement(s16 x, s16 y, s16 valueX, s16 courseNum) {
+    u8 strCoinRequirement[4];
+
+    int_to_str(SM64AP_GetCoinStarRequirement(courseNum + COURSE_MIN), strCoinRequirement);
+    print_generic_string(x, y, sUnlockCoinStar);
+    print_generic_string(valueX, y, strCoinRequirement);
+}
+
 static void render_pause_castle_course_unlocks(s16 x, s16 y, s16 courseNum) {
     static const u8 textNoItems[] = { TEXT_UNLOCK_NO_ITEMS };
     s16 unlockCount = 0;
+
+    render_pause_coin_star_requirement(x - 43, y + 30, x + 108, courseNum);
 
     for (u16 i = 0; i < sizeof(sPauseCourseUnlocks) / sizeof(sPauseCourseUnlocks[0]); i++) {
         const struct PauseCourseUnlock *unlock = &sPauseCourseUnlocks[i];
@@ -2699,18 +2710,18 @@ static void render_pause_castle_course_unlocks(s16 x, s16 y, s16 courseNum) {
             continue;
         }
 
-        if (unlockCount >= 8) {
+        if (unlockCount >= 7) {
             break;
         }
 
-        s16 lineY = y + 30 - unlockCount * 12;
+        s16 lineY = y + 18 - unlockCount * 12;
         render_pause_unlock_status(x - 43, lineY, x + 118, unlock->label,
                                    pause_course_unlock_collected(unlock, courseNum));
         unlockCount++;
     }
 
     if (unlockCount == 0) {
-        print_generic_string(x - 43, y + 30, textNoItems);
+        print_generic_string(x - 43, y + 18, textNoItems);
     }
 }
 
