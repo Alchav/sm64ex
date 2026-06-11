@@ -1743,6 +1743,51 @@ void func_sh_8025574C(void) {
     }
 }
 
+static void sm64ap_clear_cap_loss_flags(void) {
+    save_file_clear_flags(SAVE_FLAG_CAP_ON_GROUND | SAVE_FLAG_CAP_ON_KLEPTO
+                          | SAVE_FLAG_CAP_ON_UKIKI | SAVE_FLAG_CAP_ON_MR_BLIZZARD);
+}
+
+static void sm64ap_set_mario_hat_on_immediately(struct MarioState *m) {
+    sm64ap_clear_cap_loss_flags();
+    m->flags &= ~MARIO_CAP_IN_HAND;
+    m->flags |= MARIO_NORMAL_CAP | MARIO_CAP_ON_HEAD;
+}
+
+static bool sm64ap_mario_can_restore_hat_with_animation(struct MarioState *m) {
+    if (m->heldObj != NULL || m->riddenObj != NULL) {
+        return false;
+    }
+
+    return (m->action & ACT_FLAG_IDLE) || m->action == ACT_WALKING;
+}
+
+static void sm64ap_update_mario_hat_restore(struct MarioState *m) {
+    if (!SM64AP_HaveHat()) {
+        return;
+    }
+
+    if ((m->flags & (MARIO_NORMAL_CAP | MARIO_CAP_ON_HEAD))
+        == (MARIO_NORMAL_CAP | MARIO_CAP_ON_HEAD)) {
+        SM64AP_HatRestoreComplete();
+        return;
+    }
+
+    if (SM64AP_HatRestoreWithoutAnimationPending()) {
+        sm64ap_set_mario_hat_on_immediately(m);
+        SM64AP_HatRestoreComplete();
+        return;
+    }
+
+    if (SM64AP_HatRestoreWithAnimationPending() && sm64ap_mario_can_restore_hat_with_animation(m)) {
+        sm64ap_clear_cap_loss_flags();
+        m->flags &= ~MARIO_CAP_ON_HEAD;
+        m->flags |= MARIO_NORMAL_CAP | MARIO_CAP_IN_HAND;
+        SM64AP_HatRestoreComplete();
+        set_mario_action(m, ACT_PUTTING_ON_CAP, 0);
+    }
+}
+
 /**
  * Main function for executing Mario's behavior.
  */
@@ -1777,6 +1822,8 @@ s32 execute_mario_action(UNUSED struct Object *o) {
         if (gMarioState->floor == NULL) {
             return 0;
         }
+
+        sm64ap_update_mario_hat_restore(gMarioState);
 
         // The function can loop through many action shifts in one frame,
         // which can lead to unexpected sub-frame behavior. Could potentially hang
@@ -1862,9 +1909,16 @@ void init_mario(void) {
 
     gMarioState->invincTimer = 0;
 
-    if (save_file_get_flags()
-        & (SAVE_FLAG_CAP_ON_GROUND | SAVE_FLAG_CAP_ON_KLEPTO | SAVE_FLAG_CAP_ON_UKIKI
-           | SAVE_FLAG_CAP_ON_MR_BLIZZARD)) {
+    if (!SM64AP_HaveHat()) {
+        gMarioState->flags = 0;
+    } else if (SM64AP_HatRestoreWithAnimationPending()
+               || SM64AP_HatRestoreWithoutAnimationPending()) {
+        gMarioState->flags = 0;
+        sm64ap_set_mario_hat_on_immediately(gMarioState);
+        SM64AP_HatRestoreComplete();
+    } else if (save_file_get_flags()
+               & (SAVE_FLAG_CAP_ON_GROUND | SAVE_FLAG_CAP_ON_KLEPTO | SAVE_FLAG_CAP_ON_UKIKI
+                  | SAVE_FLAG_CAP_ON_MR_BLIZZARD)) {
         switch(save_file_get_cap_level()) {
             case LEVEL_SSL:
             case LEVEL_SL:
@@ -1930,7 +1984,7 @@ void init_mario(void) {
     vec3f_copy(gMarioState->marioObj->header.gfx.pos, gMarioState->pos);
     vec3s_set(gMarioState->marioObj->header.gfx.angle, 0, gMarioState->faceAngle[1], 0);
 
-    if (save_file_get_cap_pos(capPos)) {
+    if (SM64AP_HaveHat() && save_file_get_cap_pos(capPos)) {
         capObject = spawn_object(gMarioState->marioObj, MODEL_MARIOS_CAP, bhvNormalCap);
 
         capObject->oPosX = capPos[0];

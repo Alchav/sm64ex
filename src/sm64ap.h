@@ -186,6 +186,8 @@ enum {
 
 #define SM64AP_ID_OBJECT_ITEM(x) (SM64AP_OBJECT_ITEM_OFFSET + (x))
 
+#define SM64AP_ID_HAT 3626320
+
 #define SM64AP_CASTLE_DOOR_FIRST_FLOOR 0xF0
 #define SM64AP_CASTLE_DOOR_BASEMENT_STAR 0xF1
 #define SM64AP_CASTLE_DOOR_UPSTAIRS_50 0xF2
@@ -233,6 +235,10 @@ AP_EXTERN_C bool SM64AP_HaveToads();
 AP_EXTERN_C bool SM64AP_HaveCastleCannon();
 AP_EXTERN_C bool SM64AP_HaveYoshi();
 AP_EXTERN_C bool SM64AP_HaveBITFS();
+AP_EXTERN_C bool SM64AP_HaveHat();
+AP_EXTERN_C bool SM64AP_HatRestoreWithAnimationPending();
+AP_EXTERN_C bool SM64AP_HatRestoreWithoutAnimationPending();
+AP_EXTERN_C void SM64AP_HatRestoreComplete();
 AP_EXTERN_C bool SM64AP_HaveCap(int);
 AP_EXTERN_C bool SM64AP_HaveAnyCap(int);
 AP_EXTERN_C int SM64AP_CountLevelCaps(int);

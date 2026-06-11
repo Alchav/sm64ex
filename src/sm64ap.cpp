@@ -58,6 +58,9 @@ bool sm64_have_toads = false;
 bool sm64_have_castle_cannon = false;
 bool sm64_have_yoshi = false;
 bool sm64_have_bitfs = false;
+bool sm64_have_hat = false;
+bool sm64_hat_restore_with_animation_pending = false;
+bool sm64_hat_restore_without_animation_pending = false;
 bool sm64_have_wingcap = false;
 bool sm64_have_metalcap = false;
 bool sm64_have_vanishcap = false;
@@ -188,6 +191,16 @@ void SM64AP_RecvItem(int64_t idx, bool notify) {
             break;
         case SM64AP_ID_BITFS:
             sm64_have_bitfs = true;
+            break;
+        case SM64AP_ID_HAT:
+            if (!sm64_have_hat) {
+                sm64_have_hat = true;
+                if (notify) {
+                    sm64_hat_restore_with_animation_pending = true;
+                } else {
+                    sm64_hat_restore_without_animation_pending = true;
+                }
+            }
             break;
         case SM64AP_ID_WINGCAP:
             sm64_have_wingcap = true;
@@ -375,6 +388,23 @@ bool SM64AP_HaveObjectItemForCourse(int item, int courseIdx) {
 
 bool SM64AP_HaveBITFS() {
     return sm64_have_bitfs;
+}
+
+bool SM64AP_HaveHat() {
+    return sm64_have_hat;
+}
+
+bool SM64AP_HatRestoreWithAnimationPending() {
+    return sm64_hat_restore_with_animation_pending;
+}
+
+bool SM64AP_HatRestoreWithoutAnimationPending() {
+    return sm64_hat_restore_without_animation_pending;
+}
+
+void SM64AP_HatRestoreComplete() {
+    sm64_hat_restore_with_animation_pending = false;
+    sm64_hat_restore_without_animation_pending = false;
 }
 
 bool SM64AP_CollectedCourseStar(int courseIdx, int starIdx) {
@@ -1380,6 +1410,9 @@ void SM64AP_ResetItems() {
     sm64_have_castle_cannon = false;
     sm64_have_yoshi = false;
     sm64_have_bitfs = false;
+    sm64_have_hat = false;
+    sm64_hat_restore_with_animation_pending = false;
+    sm64_hat_restore_without_animation_pending = false;
     sm64_have_wingcap = false;
     sm64_have_metalcap = false;
     sm64_have_vanishcap = false;
