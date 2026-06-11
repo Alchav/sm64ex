@@ -38,8 +38,3 @@ Allows Mario to stay within the level after collecting a star.
 Holding `L` while the star dance is playing disables nonstop mode and allows you to leave the level normally.
 
 Any map changes require you to leave the level to take effect.
-
-## Skip Intro - `skip_intro.patch`
-
-Skips the intro cutscenes that normally play on a new file: Peach's letter, Lakitu on the bridge, and Bowser's message
-when you enter the castle.
