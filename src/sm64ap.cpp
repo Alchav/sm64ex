@@ -567,7 +567,8 @@ static bool SM64AP_IsPurpleSwitchObject(s16 model, const void *behavior) {
 }
 
 bool SM64AP_ShouldSpawnLevelObject(s16 level, s16, s16 model, s16 x, s16 y, s16 z, u32 behParam, const void *behavior) {
-    if (SM64AP_IsPurpleSwitchObject(model, behavior)) {
+    if (SM64AP_IsPurpleSwitchObject(model, behavior)
+        || behavior_is(behavior, bhvAnimatesOnFloorSwitchPress)) {
         return SM64AP_HaveObjectItemForLevel(SM64AP_OBJECT_ITEM_PURPLE_SWITCHES, level);
     }
 
@@ -1136,6 +1137,67 @@ static void SM64AP_SetCoinStarRequirements(std::string rawRequirements) {
     }
 }
 
+static bool SM64AP_ParseJsonIntMap(const std::string &rawMap, std::map<int,int> &parsedMap) {
+    parsedMap.clear();
+
+    std::string::size_type pos = 0;
+    SM64AP_SkipJsonWhitespace(rawMap, pos);
+    if (pos >= rawMap.size() || rawMap.compare(pos, 4, "null") == 0) {
+        return true;
+    }
+
+    if (!SM64AP_ConsumeJsonChar(rawMap, pos, '{')) {
+        return false;
+    }
+
+    SM64AP_SkipJsonWhitespace(rawMap, pos);
+    if (pos < rawMap.size() && rawMap[pos] == '}') {
+        pos++;
+    } else {
+        while (pos < rawMap.size()) {
+            int key = 0;
+            int value = 0;
+            if (!SM64AP_ParseJsonQuotedIntKey(rawMap, pos, key)
+                || !SM64AP_ConsumeJsonChar(rawMap, pos, ':')
+                || !SM64AP_ParseJsonInt(rawMap, pos, value)) {
+                return false;
+            }
+
+            parsedMap[key] = value;
+
+            SM64AP_SkipJsonWhitespace(rawMap, pos);
+            if (pos < rawMap.size() && rawMap[pos] == ',') {
+                pos++;
+                continue;
+            }
+            if (pos < rawMap.size() && rawMap[pos] == '}') {
+                pos++;
+                break;
+            }
+            return false;
+        }
+    }
+
+    SM64AP_SkipJsonWhitespace(rawMap, pos);
+    return pos == rawMap.size();
+}
+
+static void SM64AP_SetStartInventory(std::string rawMap) {
+    std::map<int,int> parsedMap;
+    if (!SM64AP_ParseJsonIntMap(rawMap, parsedMap)) {
+        parsedMap.clear();
+    }
+    SM64AP_SetStartInventory(parsedMap);
+}
+
+static void SM64AP_SetCourseMap(std::string rawMap) {
+    std::map<int,int> parsedMap;
+    if (!SM64AP_ParseJsonIntMap(rawMap, parsedMap)) {
+        parsedMap.clear();
+    }
+    SM64AP_SetCourseMap(parsedMap);
+}
+
 static void SM64AP_SetMusicMap(std::string rawMap) {
     map_music.clear();
 
@@ -1368,8 +1430,8 @@ void SM64AP_GenericInit() {
     AP_RegisterSlotDataIntCallback("PaintingRando", &SM64AP_SetPaintingRando);
     AP_RegisterSlotDataIntCallback("GlobalCapItems", &SM64AP_SetGlobalCapDisplay);
     AP_RegisterSlotDataIntCallback("ShowGlobalCapDisplay", &SM64AP_SetGlobalCapDisplay);
-    AP_RegisterSlotDataMapIntIntCallback("AreaRando", &SM64AP_SetCourseMap);
-    AP_RegisterSlotDataMapIntIntCallback("StartInventory", &SM64AP_SetStartInventory);
+    AP_RegisterSlotDataRawCallback("AreaRando", static_cast<void (*)(std::string)>(&SM64AP_SetCourseMap));
+    AP_RegisterSlotDataRawCallback("StartInventory", static_cast<void (*)(std::string)>(&SM64AP_SetStartInventory));
     AP_RegisterSlotDataIntCallback("MusicShuffleMode", &SM64AP_SetMusicShuffleMode);
     AP_RegisterSlotDataRawCallback("MusicMap", static_cast<void (*)(std::string)>(&SM64AP_SetMusicMap));
     AP_RegisterSlotDataRawCallback("MarioColors", &SM64AP_SetMarioColors);

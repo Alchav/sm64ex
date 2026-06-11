@@ -36,6 +36,10 @@ void bhv_animates_on_floor_switch_press_init(void) {
 }
 
 void bhv_animates_on_floor_switch_press_loop(void) {
+    if (o->parentObj == NULL) {
+        return;
+    }
+
     if (o->oFloorSwitchPressAnimationUnk100 != 0) {
         if (o->parentObj->oAction != 2) {
             o->oFloorSwitchPressAnimationUnk100 = 0;
