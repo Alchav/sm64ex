@@ -28,6 +28,7 @@
 // Ingame Menu
 #define TEXT_PAUSE _("PAUSE") // Pause text, Castle Courses
 #define TEXT_HUD_CONGRATULATIONS _("CONGRATULATIONS") // Course Complete Text, Bowser Courses
+#define TEXT_LEVEL_ITEMS _("LEVEL ITEMS")
 
 #if defined(VERSION_JP) || defined(VERSION_SH)
 #define TEXT_CANYON _("CANNON GOT")
