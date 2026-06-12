@@ -31,12 +31,49 @@ struct Struct80331A54 D_80331A54[][5] = {
 
 s16 D_80331ACC[] = { 250, 200, 200 };
 
+static s32 floor_switch_press_animation_default_frame(void) {
+    switch (o->oBehParams2ndByte) {
+        case 1:
+            return 0;
+        case 0:
+        case 2:
+        default:
+            return 4;
+    }
+}
+
+static void reset_floor_switch_press_animation_to_default_frame(void) {
+    o->oFloorSwitchPressAnimationUnkF4 = 0;
+    o->oFloorSwitchPressAnimationUnkF8 = floor_switch_press_animation_default_frame() * 2;
+    o->oFloorSwitchPressAnimationUnkFC = 0;
+    o->oFloorSwitchPressAnimationUnk100 = 0;
+}
+
+static void set_floor_switch_press_animation_frame(void) {
+    s32 frame = o->oFloorSwitchPressAnimationUnkF8 / 2;
+
+    if (frame < 0) {
+        frame = 0;
+    } else if (frame > 4) {
+        frame = 4;
+    }
+
+    o->collisionData = segmented_to_virtual(D_80331A54[o->oBehParams2ndByte][frame].unk00);
+    cur_obj_set_model(D_80331A54[o->oBehParams2ndByte][frame].unk04);
+}
+
 void bhv_animates_on_floor_switch_press_init(void) {
     o->parentObj = cur_obj_nearest_object_with_behavior(bhvFloorSwitchAnimatesObject);
+    if (o->parentObj == NULL) {
+        reset_floor_switch_press_animation_to_default_frame();
+    }
+    set_floor_switch_press_animation_frame();
 }
 
 void bhv_animates_on_floor_switch_press_loop(void) {
     if (o->parentObj == NULL) {
+        reset_floor_switch_press_animation_to_default_frame();
+        set_floor_switch_press_animation_frame();
         return;
     }
 
@@ -74,8 +111,5 @@ void bhv_animates_on_floor_switch_press_loop(void) {
         o->oFloorSwitchPressAnimationUnkFC = 1;
     }
 
-    o->collisionData = segmented_to_virtual(
-        D_80331A54[o->oBehParams2ndByte][o->oFloorSwitchPressAnimationUnkF8 / 2].unk00);
-
-    cur_obj_set_model(D_80331A54[o->oBehParams2ndByte][o->oFloorSwitchPressAnimationUnkF8 / 2].unk04);
+    set_floor_switch_press_animation_frame();
 }
