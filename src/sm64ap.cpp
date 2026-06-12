@@ -436,11 +436,29 @@ bool SM64AP_CollectedCourseStar(int courseIdx, int starIdx) {
         && (SM64AP_CourseStarFlags(courseIdx) & (1 << starIdx));
 }
 
+static bool SM64AP_IsKoopaTheQuick(u32 behParam, const void *behavior) {
+    if (behavior_is(behavior, bhvKoopaRaceEndpoint)) {
+        return true;
+    }
+
+    if (!behavior_is(behavior, bhvKoopa)) {
+        return false;
+    }
+
+    switch (beh_param_second_byte(behParam)) {
+        case KOOPA_BP_KOOPA_THE_QUICK_BOB:
+        case KOOPA_BP_KOOPA_THE_QUICK_THI:
+            return true;
+        default:
+            return false;
+    }
+}
+
 static bool SM64AP_ShouldSpawnBobObject(s16 x, s16, s16, u32 behParam, const void *behavior) {
     if (behavior_is(behavior, bhvKingBobomb)) {
         return SM64AP_HaveFeature(SM64AP_FEATURE_BOB_KING_BOBOMB);
     }
-    if (behavior_is(behavior, bhvKoopaRaceEndpoint) || behavior_is(behavior, bhvKoopa)) {
+    if (SM64AP_IsKoopaTheQuick(behParam, behavior)) {
         return SM64AP_HaveFeature(SM64AP_FEATURE_BOB_KOOPA_THE_QUICK);
     }
     if (behavior_is(behavior, bhvBobombBuddyOpensCannon) || behavior_is(behavior, bhvCannonClosed)) {
@@ -621,8 +639,7 @@ static bool SM64AP_IsPurpleSwitchObject(s16 model, const void *behavior) {
 }
 
 bool SM64AP_ShouldSpawnLevelObject(s16 level, s16, s16 model, s16 x, s16 y, s16 z, u32 behParam, const void *behavior) {
-    if (SM64AP_IsPurpleSwitchObject(model, behavior)
-        || behavior_is(behavior, bhvAnimatesOnFloorSwitchPress)) {
+    if (SM64AP_IsPurpleSwitchObject(model, behavior)) {
         return SM64AP_HaveObjectItemForLevel(SM64AP_OBJECT_ITEM_PURPLE_SWITCHES, level);
     }
 
@@ -653,7 +670,7 @@ bool SM64AP_ShouldSpawnLevelObject(s16 level, s16, s16 model, s16 x, s16 y, s16 
             if (behavior_is(behavior, bhvWarpPipe)) {
                 return SM64AP_HaveObjectItem(SM64AP_OBJECT_ITEM_THI_WARP_PIPES);
             }
-            if (behavior_is(behavior, bhvKoopa) || behavior_is(behavior, bhvKoopaRaceEndpoint)) {
+            if (SM64AP_IsKoopaTheQuick(behParam, behavior)) {
                 return SM64AP_HaveFeature(SM64AP_FEATURE_THI_KOOPA_THE_QUICK);
             }
             return true;
