@@ -143,7 +143,7 @@ static void SM64AP_SetMin(int &value, int minValue) {
 
 void SM64AP_RecvItem(int64_t idx, bool notify) {
     if (idx >= SM64AP_ID_OBJECT_ITEM(0)
-        && idx <= SM64AP_ID_OBJECT_ITEM(SM64AP_NUM_OBJECT_ITEMS - 1)
+        && idx <= SM64AP_ID_OBJECT_ITEM(SM64AP_NUM_CONTIGUOUS_OBJECT_ITEMS - 1)
         && idx != SM64AP_ID_BITFS) {
         sm64_have_object_items[idx - SM64AP_OBJECT_ITEM_OFFSET] = true;
         return;
@@ -201,6 +201,18 @@ void SM64AP_RecvItem(int64_t idx, bool notify) {
                     sm64_hat_restore_without_animation_pending = true;
                 }
             }
+            break;
+        case SM64AP_ID_JRB_PURPLE_SWITCHES:
+            sm64_have_object_items[SM64AP_OBJECT_ITEM_JRB_PURPLE_SWITCHES] = true;
+            break;
+        case SM64AP_ID_DDD_PURPLE_SWITCHES:
+            sm64_have_object_items[SM64AP_OBJECT_ITEM_DDD_PURPLE_SWITCHES] = true;
+            break;
+        case SM64AP_ID_TTM_PURPLE_SWITCHES:
+            sm64_have_object_items[SM64AP_OBJECT_ITEM_TTM_PURPLE_SWITCHES] = true;
+            break;
+        case SM64AP_ID_THI_PURPLE_SWITCHES:
+            sm64_have_object_items[SM64AP_OBJECT_ITEM_THI_PURPLE_SWITCHES] = true;
             break;
         case SM64AP_ID_WINGCAP:
             sm64_have_wingcap = true;
@@ -317,10 +329,18 @@ static int SM64AP_LevelSpecificObjectItemForLevel(int item, s16 level) {
             switch (level) {
                 case LEVEL_BOB:
                     return SM64AP_OBJECT_ITEM_BOB_PURPLE_SWITCHES;
+                case LEVEL_JRB:
+                    return SM64AP_OBJECT_ITEM_JRB_PURPLE_SWITCHES;
                 case LEVEL_HMC:
                     return SM64AP_OBJECT_ITEM_HMC_PURPLE_SWITCHES;
+                case LEVEL_DDD:
+                    return SM64AP_OBJECT_ITEM_DDD_PURPLE_SWITCHES;
                 case LEVEL_WDW:
                     return SM64AP_OBJECT_ITEM_WDW_PURPLE_SWITCHES;
+                case LEVEL_TTM:
+                    return SM64AP_OBJECT_ITEM_TTM_PURPLE_SWITCHES;
+                case LEVEL_THI:
+                    return SM64AP_OBJECT_ITEM_THI_PURPLE_SWITCHES;
                 case LEVEL_RR:
                     return SM64AP_OBJECT_ITEM_RR_PURPLE_SWITCHES;
                 case LEVEL_BITDW:

@@ -2580,6 +2580,7 @@ static const struct PauseCourseUnlock sPauseCourseUnlocks[] = {
     { COURSE_JRB - 1, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_JRB_JET_STREAM, sUnlockJet },
     { COURSE_JRB - 1, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_JRB_UNAGI, sUnlockUnagi },
     { COURSE_JRB - 1, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_JRB_METAL, sUnlockMetal },
+    { COURSE_JRB - 1, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_PURPLE_SWITCHES, sUnlockPurple },
 
     { COURSE_CCM - 1, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_CCM_SNOWMANS_HEAD, sUnlockSnow },
     { COURSE_CCM - 1, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_CCM_BIG_PENGUIN, sUnlockPeng },
@@ -2610,6 +2611,7 @@ static const struct PauseCourseUnlock sPauseCourseUnlocks[] = {
     { COURSE_DDD - 1, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_DDD_POLES, sUnlockPoles },
     { COURSE_DDD - 1, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_DDD_METAL, sUnlockMetal },
     { COURSE_DDD - 1, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_DDD_VANISH, sUnlockVanish },
+    { COURSE_DDD - 1, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_PURPLE_SWITCHES, sUnlockPurple },
 
     { COURSE_SL - 1, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_SL_PENGUIN, sUnlockPeng },
     { COURSE_SL - 1, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_SL_VANISH, sUnlockVanish },
@@ -2623,10 +2625,12 @@ static const struct PauseCourseUnlock sPauseCourseUnlocks[] = {
 
     { COURSE_TTM - 1, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_TTM_UKIKI, sUnlockUkiki },
     { COURSE_TTM - 1, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_ROLLING_LOGS, sUnlockLogs },
+    { COURSE_TTM - 1, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_PURPLE_SWITCHES, sUnlockPurple },
     { COURSE_TTM - 1, PAUSE_COURSE_UNLOCK_CANNON, 0, sUnlockCannon },
 
     { COURSE_THI - 1, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_THI_KOOPA_THE_QUICK, sUnlockKoopa },
     { COURSE_THI - 1, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_THI_WARP_PIPES, sUnlockPipes },
+    { COURSE_THI - 1, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_PURPLE_SWITCHES, sUnlockPurple },
     { COURSE_THI - 1, PAUSE_COURSE_UNLOCK_CANNON, 0, sUnlockCannon },
 
     { COURSE_TTC - 1, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_TTC_SPINNERS, sUnlockSpinners },
@@ -2719,7 +2723,7 @@ static void render_pause_castle_course_unlocks(s16 x, s16 y, s16 courseNum) {
             continue;
         }
 
-        if (unlockCount >= 7) {
+        if (unlockCount >= 8) {
             break;
         }
 
@@ -2753,7 +2757,7 @@ static void **get_pause_course_name_table(void) {
 static void render_pause_course_unlock_page(s16 x, s16 y, s16 courseNum) {
     void **courseNameTbl = get_pause_course_name_table();
     void *courseName = segmented_to_virtual(courseNameTbl[courseNum]);
-    s16 textY = y + 12;
+    s16 textY = y + 24;
 
     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
