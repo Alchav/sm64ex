@@ -59,6 +59,7 @@ bool sm64_have_castle_cannon = false;
 bool sm64_have_yoshi = false;
 bool sm64_have_bitfs = false;
 bool sm64_have_hat = false;
+bool sm64_have_vcutm_entrance = false;
 bool sm64_hat_restore_with_animation_pending = false;
 bool sm64_hat_restore_without_animation_pending = false;
 bool sm64_have_wingcap = false;
@@ -192,6 +193,9 @@ void SM64AP_RecvItem(int64_t idx, bool notify) {
             break;
         case SM64AP_ID_BITFS:
             sm64_have_bitfs = true;
+            break;
+        case SM64AP_ID_VCUTM_ENTRANCE:
+            sm64_have_vcutm_entrance = true;
             break;
         case SM64AP_ID_HAT:
             if (!sm64_have_hat) {
@@ -416,6 +420,10 @@ bool SM64AP_HaveBITFS() {
 
 bool SM64AP_HaveHat() {
     return sm64_have_hat;
+}
+
+bool SM64AP_HaveVcutmEntrance() {
+    return sm64_have_vcutm_entrance;
 }
 
 bool SM64AP_HatRestoreWithAnimationPending() {
@@ -1453,6 +1461,7 @@ void SM64AP_ResetItems() {
     sm64_have_yoshi = false;
     sm64_have_bitfs = false;
     sm64_have_hat = false;
+    sm64_have_vcutm_entrance = false;
     sm64_hat_restore_with_animation_pending = false;
     sm64_hat_restore_without_animation_pending = false;
     sm64_have_wingcap = false;

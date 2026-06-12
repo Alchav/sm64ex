@@ -2519,6 +2519,7 @@ enum PauseCastleUnlockType {
     PAUSE_CASTLE_UNLOCK_CANNON,
     PAUSE_CASTLE_UNLOCK_YOSHI,
     PAUSE_CASTLE_UNLOCK_BITFS,
+    PAUSE_CASTLE_UNLOCK_VCUTM_ENTRANCE,
 };
 
 struct PauseCastleUnlock {
@@ -2598,6 +2599,7 @@ static const u8 sUnlockToads[] = { TEXT_UNLOCK_TOADS };
 static const u8 sUnlockUkiki[] = { TEXT_UNLOCK_UKIKI };
 static const u8 sUnlockUnagi[] = { TEXT_UNLOCK_UNAGI };
 static const u8 sUnlockVanish[] = { TEXT_UNLOCK_VANISH };
+static const u8 sUnlockVcutm[] = { TEXT_UNLOCK_VCUTM };
 static const u8 sUnlockWaterDiamonds[] = { TEXT_UNLOCK_WATER_DIAMONDS };
 static const u8 sUnlockWhomp[] = { TEXT_UNLOCK_WHOMP };
 static const u8 sUnlockWing[] = { TEXT_UNLOCK_WING };
@@ -2750,6 +2752,7 @@ static const struct PauseCastleUnlock sPauseCastleUnlocks[] = {
     { PAUSE_CASTLE_UNLOCK_CANNON, 0, sUnlockCastleCannon },
     { PAUSE_CASTLE_UNLOCK_YOSHI, 0, sUnlockYoshi },
     { PAUSE_CASTLE_UNLOCK_BITFS, 0, sUnlockBitfs },
+    { PAUSE_CASTLE_UNLOCK_VCUTM_ENTRANCE, 0, sUnlockVcutm },
 };
 
 static bool pause_course_unlock_collected(const struct PauseCourseUnlock *unlock, const struct PauseUnlockView *view) {
@@ -2785,6 +2788,8 @@ static bool pause_castle_unlock_collected(const struct PauseCastleUnlock *unlock
             return SM64AP_HaveYoshi();
         case PAUSE_CASTLE_UNLOCK_BITFS:
             return SM64AP_HaveBITFS();
+        case PAUSE_CASTLE_UNLOCK_VCUTM_ENTRANCE:
+            return SM64AP_HaveVcutmEntrance();
     }
 
     return false;
@@ -2927,9 +2932,9 @@ static void render_pause_castle_unlocks(s16 x, s16 y) {
 
     for (u16 i = 0; i < sizeof(sPauseCastleUnlocks) / sizeof(sPauseCastleUnlocks[0]); i++) {
         const struct PauseCastleUnlock *unlock = &sPauseCastleUnlocks[i];
-        s16 column = i / 7;
-        s16 row = i % 7;
-        s16 lineY = y + 30 - row * 12;
+        s16 column = i / 8;
+        s16 row = i % 8;
+        s16 lineY = y + 36 - row * 11;
         render_pause_unlock_status(labelX[column], lineY, statusX[column], unlock->label,
                                    pause_castle_unlock_collected(unlock));
     }

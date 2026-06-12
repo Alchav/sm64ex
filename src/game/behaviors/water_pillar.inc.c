@@ -29,6 +29,10 @@ void water_level_pillar_undrained(void) {
                 if (sp1C->oAction > 1) {
                     o->oAction++;
 
+                    if (!SM64AP_CheckedLoc(SM64AP_LOCATIONID_MOAT_DRAIN)) {
+                        SM64AP_SendItem(SM64AP_LOCATIONID_MOAT_DRAIN);
+                    }
+
                     SM64AP_SetMoatDrained();
                     play_puzzle_jingle();
                 }
