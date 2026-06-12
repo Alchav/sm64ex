@@ -122,7 +122,7 @@ u8 gMenuHoldKeyIndex = 0;
 u8 gMenuHoldKeyTimer = 0;
 s32 gDialogResponse = 0;
 static bool sPauseCourseUnlockViewOpen = false;
-static s8 sPauseCourseUnlockViewCourse = 0;
+static s8 sPauseUnlockViewIndex = 0;
 
 #if !defined(EXTERNAL_DATA) && (defined(VERSION_JP) || defined(VERSION_SH) || defined(VERSION_EU))
 #ifdef VERSION_EU
@@ -2424,19 +2424,19 @@ void render_pause_course_options(s16 x, s16 y, s8 *index, s16 yIndex) {
 }
 
 void render_pause_castle_menu_box(s16 x, s16 y) {
-    create_dl_translation_matrix(MENU_MTX_PUSH, x - 111, y + 1, 0);
-    create_dl_scale_matrix(MENU_MTX_NOPUSH, 1.75f, 1.55f, 1.0f);
+    create_dl_translation_matrix(MENU_MTX_PUSH, x - 176, y + 16, 0);
+    create_dl_scale_matrix(MENU_MTX_NOPUSH, 2.55f, 1.85f, 1.0f);
     gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 105);
     gSPDisplayList(gDisplayListHead++, dl_draw_text_bg_box);
     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 
-    create_dl_translation_matrix(MENU_MTX_PUSH, x + 95, y + 3, 0);
+    create_dl_translation_matrix(MENU_MTX_PUSH, x + 150, y + 18, 0);
     create_dl_rotation_matrix(MENU_MTX_NOPUSH, DEFAULT_DIALOG_BOX_ANGLE, 0, 0, 1.0f);
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
     gSPDisplayList(gDisplayListHead++, dl_draw_triangle);
     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 
-    create_dl_translation_matrix(MENU_MTX_PUSH, x + 79, y - 120, 0);
+    create_dl_translation_matrix(MENU_MTX_PUSH, x + 150, y - 145, 0);
     create_dl_rotation_matrix(MENU_MTX_NOPUSH, 270.0f, 0, 0, 1.0f);
     gSPDisplayList(gDisplayListHead++, dl_draw_triangle);
     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
@@ -2483,9 +2483,23 @@ enum PauseCourseUnlockType {
 };
 
 struct PauseCourseUnlock {
-    s16 courseNum;
+    s16 moveArea;
     s16 type;
     s16 id;
+    const u8 *label;
+};
+
+enum PauseUnlockViewType {
+    PAUSE_UNLOCK_VIEW_COURSE,
+    PAUSE_UNLOCK_VIEW_CASTLE,
+    PAUSE_UNLOCK_VIEW_SECRET,
+};
+
+struct PauseUnlockView {
+    s16 type;
+    s16 courseNum;
+    s16 levelNum;
+    s16 moveArea;
     const u8 *label;
 };
 
@@ -2505,6 +2519,32 @@ struct PauseCastleUnlock {
     s16 id;
     const u8 *label;
 };
+
+struct PauseMoveUnlock {
+    s16 move;
+    const u8 *label;
+};
+
+static const u8 sPauseViewCastle[] = { TEXT_PAUSE_VIEW_CASTLE };
+static const u8 sPauseViewBitdw[] = { TEXT_PAUSE_VIEW_BITDW };
+static const u8 sPauseViewBitfs[] = { TEXT_PAUSE_VIEW_BITFS };
+static const u8 sPauseViewBits[] = { TEXT_PAUSE_VIEW_BITS };
+static const u8 sPauseViewVcutm[] = { TEXT_PAUSE_VIEW_VCUTM };
+static const u8 sPauseViewCotmc[] = { TEXT_PAUSE_VIEW_COTMC };
+static const u8 sPauseViewTotwc[] = { TEXT_PAUSE_VIEW_TOTWC };
+static const u8 sPauseViewWmotr[] = { TEXT_PAUSE_VIEW_WMOTR };
+
+static const u8 sMoveDouble[] = { TEXT_DOUBLE_JUMP };
+static const u8 sMoveTriple[] = { TEXT_TRIPLE_JUMP };
+static const u8 sMoveLong[] = { TEXT_LONG_JUMP };
+static const u8 sMoveBackflip[] = { TEXT_BACKFLIP };
+static const u8 sMoveSideFlip[] = { TEXT_SIDE_FLIP };
+static const u8 sMoveWallKick[] = { TEXT_WALL_KICK };
+static const u8 sMoveDive[] = { TEXT_DIVE };
+static const u8 sMoveGroundPound[] = { TEXT_GROUND_POUND };
+static const u8 sMoveKick[] = { TEXT_KICK };
+static const u8 sMoveClimb[] = { TEXT_CLIMB };
+static const u8 sMoveLedgeGrab[] = { TEXT_LEDGE_GRAB };
 
 static const u8 sUnlockBaby[] = { TEXT_UNLOCK_BABY };
 static const u8 sUnlockBeast[] = { TEXT_UNLOCK_BEAST };
@@ -2556,88 +2596,136 @@ static const u8 sUnlockWhomp[] = { TEXT_UNLOCK_WHOMP };
 static const u8 sUnlockWing[] = { TEXT_UNLOCK_WING };
 static const u8 sUnlockYoshi[] = { TEXT_UNLOCK_YOSHI };
 
+static const struct PauseUnlockView sPauseUnlockViews[] = {
+    { PAUSE_UNLOCK_VIEW_COURSE, COURSE_BOB - 1, LEVEL_BOB, SM64AP_LEVEL_MOVE_AREA_BOB, NULL },
+    { PAUSE_UNLOCK_VIEW_COURSE, COURSE_WF - 1, LEVEL_WF, SM64AP_LEVEL_MOVE_AREA_WF, NULL },
+    { PAUSE_UNLOCK_VIEW_COURSE, COURSE_JRB - 1, LEVEL_JRB, SM64AP_LEVEL_MOVE_AREA_JRB, NULL },
+    { PAUSE_UNLOCK_VIEW_COURSE, COURSE_CCM - 1, LEVEL_CCM, SM64AP_LEVEL_MOVE_AREA_CCM, NULL },
+    { PAUSE_UNLOCK_VIEW_COURSE, COURSE_BBH - 1, LEVEL_BBH, SM64AP_LEVEL_MOVE_AREA_BBH, NULL },
+    { PAUSE_UNLOCK_VIEW_COURSE, COURSE_HMC - 1, LEVEL_HMC, SM64AP_LEVEL_MOVE_AREA_HMC, NULL },
+    { PAUSE_UNLOCK_VIEW_COURSE, COURSE_LLL - 1, LEVEL_LLL, SM64AP_LEVEL_MOVE_AREA_LLL, NULL },
+    { PAUSE_UNLOCK_VIEW_COURSE, COURSE_SSL - 1, LEVEL_SSL, SM64AP_LEVEL_MOVE_AREA_SSL, NULL },
+    { PAUSE_UNLOCK_VIEW_COURSE, COURSE_DDD - 1, LEVEL_DDD, SM64AP_LEVEL_MOVE_AREA_DDD, NULL },
+    { PAUSE_UNLOCK_VIEW_COURSE, COURSE_SL - 1, LEVEL_SL, SM64AP_LEVEL_MOVE_AREA_SL, NULL },
+    { PAUSE_UNLOCK_VIEW_COURSE, COURSE_WDW - 1, LEVEL_WDW, SM64AP_LEVEL_MOVE_AREA_WDW, NULL },
+    { PAUSE_UNLOCK_VIEW_COURSE, COURSE_TTM - 1, LEVEL_TTM, SM64AP_LEVEL_MOVE_AREA_TTM, NULL },
+    { PAUSE_UNLOCK_VIEW_COURSE, COURSE_THI - 1, LEVEL_THI, SM64AP_LEVEL_MOVE_AREA_THI, NULL },
+    { PAUSE_UNLOCK_VIEW_COURSE, COURSE_TTC - 1, LEVEL_TTC, SM64AP_LEVEL_MOVE_AREA_TTC, NULL },
+    { PAUSE_UNLOCK_VIEW_COURSE, COURSE_RR - 1, LEVEL_RR, SM64AP_LEVEL_MOVE_AREA_RR, NULL },
+    { PAUSE_UNLOCK_VIEW_CASTLE, COURSE_NONE, LEVEL_CASTLE, SM64AP_LEVEL_MOVE_AREA_CASTLE, sPauseViewCastle },
+    { PAUSE_UNLOCK_VIEW_SECRET, COURSE_BITDW - 1, LEVEL_BITDW, SM64AP_LEVEL_MOVE_AREA_BITDW, sPauseViewBitdw },
+    { PAUSE_UNLOCK_VIEW_SECRET, COURSE_BITFS - 1, LEVEL_BITFS, SM64AP_LEVEL_MOVE_AREA_BITFS, sPauseViewBitfs },
+    { PAUSE_UNLOCK_VIEW_SECRET, COURSE_BITS - 1, LEVEL_BITS, SM64AP_LEVEL_MOVE_AREA_BITS, sPauseViewBits },
+    { PAUSE_UNLOCK_VIEW_SECRET, COURSE_VCUTM - 1, LEVEL_VCUTM, SM64AP_LEVEL_MOVE_AREA_VCUTM, sPauseViewVcutm },
+    { PAUSE_UNLOCK_VIEW_SECRET, COURSE_COTMC - 1, LEVEL_COTMC, SM64AP_LEVEL_MOVE_AREA_COTMC, sPauseViewCotmc },
+    { PAUSE_UNLOCK_VIEW_SECRET, COURSE_TOTWC - 1, LEVEL_TOTWC, SM64AP_LEVEL_MOVE_AREA_TOTWC, sPauseViewTotwc },
+    { PAUSE_UNLOCK_VIEW_SECRET, COURSE_WMOTR - 1, LEVEL_WMOTR, SM64AP_LEVEL_MOVE_AREA_WMOTR, sPauseViewWmotr },
+};
+
+static const struct PauseMoveUnlock sPauseMoveUnlocks[] = {
+    { SM64AP_LEVEL_MOVE_TRIPLE_JUMP, sMoveTriple },
+    { SM64AP_LEVEL_MOVE_LONG_JUMP, sMoveLong },
+    { SM64AP_LEVEL_MOVE_BACKFLIP, sMoveBackflip },
+    { SM64AP_LEVEL_MOVE_SIDE_FLIP, sMoveSideFlip },
+    { SM64AP_LEVEL_MOVE_WALL_KICK, sMoveWallKick },
+    { SM64AP_LEVEL_MOVE_DIVE, sMoveDive },
+    { SM64AP_LEVEL_MOVE_GROUND_POUND, sMoveGroundPound },
+    { SM64AP_LEVEL_MOVE_KICK, sMoveKick },
+    { SM64AP_LEVEL_MOVE_CLIMB, sMoveClimb },
+    { SM64AP_LEVEL_MOVE_LEDGE_GRAB, sMoveLedgeGrab },
+};
+
 static const struct PauseCourseUnlock sPauseCourseUnlocks[] = {
-    { COURSE_BOB - 1, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_BOB_KING_BOBOMB, sUnlockKing },
-    { COURSE_BOB - 1, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_BOB_KOOPA_THE_QUICK, sUnlockKoopa },
-    { COURSE_BOB - 1, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_BOB_BOBOMB_BUDDY, sUnlockBuddy },
-    { COURSE_BOB - 1, PAUSE_COURSE_UNLOCK_CANNON, 0, sUnlockCannon },
-    { COURSE_BOB - 1, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_BOB_WING, sUnlockWing },
-    { COURSE_BOB - 1, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_CHECKERBOARD_PLATFORMS, sUnlockCheck },
-    { COURSE_BOB - 1, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_PURPLE_SWITCHES, sUnlockPurple },
+    { SM64AP_LEVEL_MOVE_AREA_BOB, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_BOB_KING_BOBOMB, sUnlockKing },
+    { SM64AP_LEVEL_MOVE_AREA_BOB, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_BOB_KOOPA_THE_QUICK, sUnlockKoopa },
+    { SM64AP_LEVEL_MOVE_AREA_BOB, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_BOB_BOBOMB_BUDDY, sUnlockBuddy },
+    { SM64AP_LEVEL_MOVE_AREA_BOB, PAUSE_COURSE_UNLOCK_CANNON, 0, sUnlockCannon },
+    { SM64AP_LEVEL_MOVE_AREA_BOB, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_BOB_WING, sUnlockWing },
+    { SM64AP_LEVEL_MOVE_AREA_BOB, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_CHECKERBOARD_PLATFORMS, sUnlockCheck },
+    { SM64AP_LEVEL_MOVE_AREA_BOB, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_PURPLE_SWITCHES, sUnlockPurple },
 
-    { COURSE_WF - 1, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_WF_WHOMP_KING, sUnlockWhomp },
-    { COURSE_WF - 1, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_WF_FORTRESS, sUnlockFort },
-    { COURSE_WF - 1, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_WF_BOBOMB_BUDDY, sUnlockBuddy },
-    { COURSE_WF - 1, PAUSE_COURSE_UNLOCK_CANNON, 0, sUnlockCannon },
-    { COURSE_WF - 1, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_WF_HOOT, sUnlockHoot },
-    { COURSE_WF - 1, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_WF_METAL, sUnlockMetal },
-    { COURSE_WF - 1, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_CHECKERBOARD_PLATFORMS, sUnlockCheck },
+    { SM64AP_LEVEL_MOVE_AREA_WF, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_WF_WHOMP_KING, sUnlockWhomp },
+    { SM64AP_LEVEL_MOVE_AREA_WF, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_WF_FORTRESS, sUnlockFort },
+    { SM64AP_LEVEL_MOVE_AREA_WF, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_WF_BOBOMB_BUDDY, sUnlockBuddy },
+    { SM64AP_LEVEL_MOVE_AREA_WF, PAUSE_COURSE_UNLOCK_CANNON, 0, sUnlockCannon },
+    { SM64AP_LEVEL_MOVE_AREA_WF, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_WF_HOOT, sUnlockHoot },
+    { SM64AP_LEVEL_MOVE_AREA_WF, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_WF_METAL, sUnlockMetal },
+    { SM64AP_LEVEL_MOVE_AREA_WF, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_CHECKERBOARD_PLATFORMS, sUnlockCheck },
 
-    { COURSE_JRB - 1, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_JRB_SUNKEN_SHIP, sUnlockSunken },
-    { COURSE_JRB - 1, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_JRB_RAISED_SHIP, sUnlockRaised },
-    { COURSE_JRB - 1, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_JRB_BOBOMB_BUDDY, sUnlockBuddy },
-    { COURSE_JRB - 1, PAUSE_COURSE_UNLOCK_CANNON, 0, sUnlockCannon },
-    { COURSE_JRB - 1, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_JRB_JET_STREAM, sUnlockJet },
-    { COURSE_JRB - 1, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_JRB_UNAGI, sUnlockUnagi },
-    { COURSE_JRB - 1, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_JRB_METAL, sUnlockMetal },
-    { COURSE_JRB - 1, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_PURPLE_SWITCHES, sUnlockPurple },
+    { SM64AP_LEVEL_MOVE_AREA_JRB, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_JRB_SUNKEN_SHIP, sUnlockSunken },
+    { SM64AP_LEVEL_MOVE_AREA_JRB, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_JRB_RAISED_SHIP, sUnlockRaised },
+    { SM64AP_LEVEL_MOVE_AREA_JRB, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_JRB_BOBOMB_BUDDY, sUnlockBuddy },
+    { SM64AP_LEVEL_MOVE_AREA_JRB, PAUSE_COURSE_UNLOCK_CANNON, 0, sUnlockCannon },
+    { SM64AP_LEVEL_MOVE_AREA_JRB, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_JRB_JET_STREAM, sUnlockJet },
+    { SM64AP_LEVEL_MOVE_AREA_JRB, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_JRB_UNAGI, sUnlockUnagi },
+    { SM64AP_LEVEL_MOVE_AREA_JRB, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_JRB_METAL, sUnlockMetal },
+    { SM64AP_LEVEL_MOVE_AREA_JRB, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_PURPLE_SWITCHES, sUnlockPurple },
 
-    { COURSE_CCM - 1, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_CCM_SNOWMANS_HEAD, sUnlockSnow },
-    { COURSE_CCM - 1, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_CCM_BIG_PENGUIN, sUnlockPeng },
-    { COURSE_CCM - 1, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_CCM_BABY_PENGUINS, sUnlockBaby },
-    { COURSE_CCM - 1, PAUSE_COURSE_UNLOCK_CANNON, 0, sUnlockCannon },
+    { SM64AP_LEVEL_MOVE_AREA_CCM, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_CCM_SNOWMANS_HEAD, sUnlockSnow },
+    { SM64AP_LEVEL_MOVE_AREA_CCM, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_CCM_BIG_PENGUIN, sUnlockPeng },
+    { SM64AP_LEVEL_MOVE_AREA_CCM, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_CCM_BABY_PENGUINS, sUnlockBaby },
+    { SM64AP_LEVEL_MOVE_AREA_CCM, PAUSE_COURSE_UNLOCK_CANNON, 0, sUnlockCannon },
 
-    { COURSE_BBH - 1, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_BBH_STAIRCASE, sUnlockStair },
-    { COURSE_BBH - 1, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_BBH_MERRY_GO_ROUND, sUnlockMerry },
-    { COURSE_BBH - 1, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_BBH_VANISH, sUnlockVanish },
+    { SM64AP_LEVEL_MOVE_AREA_BBH, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_BBH_STAIRCASE, sUnlockStair },
+    { SM64AP_LEVEL_MOVE_AREA_BBH, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_BBH_MERRY_GO_ROUND, sUnlockMerry },
+    { SM64AP_LEVEL_MOVE_AREA_BBH, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_BBH_VANISH, sUnlockVanish },
 
-    { COURSE_HMC - 1, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_HMC_SWIMMING_BEAST, sUnlockBeast },
-    { COURSE_HMC - 1, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_CHECKERBOARD_PLATFORMS, sUnlockCheck },
-    { COURSE_HMC - 1, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_PURPLE_SWITCHES, sUnlockPurple },
-    { COURSE_HMC - 1, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_HMC_METAL, sUnlockMetal },
+    { SM64AP_LEVEL_MOVE_AREA_HMC, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_HMC_SWIMMING_BEAST, sUnlockBeast },
+    { SM64AP_LEVEL_MOVE_AREA_HMC, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_CHECKERBOARD_PLATFORMS, sUnlockCheck },
+    { SM64AP_LEVEL_MOVE_AREA_HMC, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_PURPLE_SWITCHES, sUnlockPurple },
+    { SM64AP_LEVEL_MOVE_AREA_HMC, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_HMC_METAL, sUnlockMetal },
 
-    { COURSE_LLL - 1, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_LLL_KOOPA_SHELL, sUnlockShell },
-    { COURSE_LLL - 1, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_CHECKERBOARD_PLATFORMS, sUnlockCheck },
-    { COURSE_LLL - 1, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_ROLLING_LOGS, sUnlockLogs },
-    { COURSE_LLL - 1, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_LLL_WING, sUnlockWing },
+    { SM64AP_LEVEL_MOVE_AREA_LLL, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_LLL_KOOPA_SHELL, sUnlockShell },
+    { SM64AP_LEVEL_MOVE_AREA_LLL, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_CHECKERBOARD_PLATFORMS, sUnlockCheck },
+    { SM64AP_LEVEL_MOVE_AREA_LLL, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_ROLLING_LOGS, sUnlockLogs },
+    { SM64AP_LEVEL_MOVE_AREA_LLL, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_LLL_WING, sUnlockWing },
 
-    { COURSE_SSL - 1, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_SSL_KLEPTO_STAR, sUnlockKlepto },
-    { COURSE_SSL - 1, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_SSL_PYRAMID_ELEVATOR, sUnlockElev },
-    { COURSE_SSL - 1, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_SSL_WING, sUnlockWing },
-    { COURSE_SSL - 1, PAUSE_COURSE_UNLOCK_CANNON, 0, sUnlockCannon },
+    { SM64AP_LEVEL_MOVE_AREA_SSL, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_SSL_KLEPTO_STAR, sUnlockKlepto },
+    { SM64AP_LEVEL_MOVE_AREA_SSL, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_SSL_PYRAMID_ELEVATOR, sUnlockElev },
+    { SM64AP_LEVEL_MOVE_AREA_SSL, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_SSL_WING, sUnlockWing },
+    { SM64AP_LEVEL_MOVE_AREA_SSL, PAUSE_COURSE_UNLOCK_CANNON, 0, sUnlockCannon },
 
-    { COURSE_DDD - 1, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_DDD_MANTA_RAY, sUnlockManta },
-    { COURSE_DDD - 1, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_DDD_BOWSERS_SUB, sUnlockSub },
-    { COURSE_DDD - 1, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_DDD_POLES, sUnlockPoles },
-    { COURSE_DDD - 1, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_DDD_METAL, sUnlockMetal },
-    { COURSE_DDD - 1, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_DDD_VANISH, sUnlockVanish },
-    { COURSE_DDD - 1, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_PURPLE_SWITCHES, sUnlockPurple },
+    { SM64AP_LEVEL_MOVE_AREA_DDD, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_DDD_MANTA_RAY, sUnlockManta },
+    { SM64AP_LEVEL_MOVE_AREA_DDD, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_DDD_BOWSERS_SUB, sUnlockSub },
+    { SM64AP_LEVEL_MOVE_AREA_DDD, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_DDD_POLES, sUnlockPoles },
+    { SM64AP_LEVEL_MOVE_AREA_DDD, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_DDD_METAL, sUnlockMetal },
+    { SM64AP_LEVEL_MOVE_AREA_DDD, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_DDD_VANISH, sUnlockVanish },
+    { SM64AP_LEVEL_MOVE_AREA_DDD, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_PURPLE_SWITCHES, sUnlockPurple },
 
-    { COURSE_SL - 1, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_SL_PENGUIN, sUnlockPeng },
-    { COURSE_SL - 1, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_SL_VANISH, sUnlockVanish },
-    { COURSE_SL - 1, PAUSE_COURSE_UNLOCK_CANNON, 0, sUnlockCannon },
+    { SM64AP_LEVEL_MOVE_AREA_SL, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_SL_PENGUIN, sUnlockPeng },
+    { SM64AP_LEVEL_MOVE_AREA_SL, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_SL_VANISH, sUnlockVanish },
+    { SM64AP_LEVEL_MOVE_AREA_SL, PAUSE_COURSE_UNLOCK_CANNON, 0, sUnlockCannon },
 
-    { COURSE_WDW - 1, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_PURPLE_SWITCHES, sUnlockPurple },
-    { COURSE_WDW - 1, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_WDW_WATER_LEVEL_DIAMONDS, sUnlockWaterDiamonds },
-    { COURSE_WDW - 1, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_WDW_METAL, sUnlockMetal },
-    { COURSE_WDW - 1, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_WDW_VANISH, sUnlockVanish },
-    { COURSE_WDW - 1, PAUSE_COURSE_UNLOCK_CANNON, 0, sUnlockCannon },
+    { SM64AP_LEVEL_MOVE_AREA_WDW, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_PURPLE_SWITCHES, sUnlockPurple },
+    { SM64AP_LEVEL_MOVE_AREA_WDW, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_WDW_WATER_LEVEL_DIAMONDS, sUnlockWaterDiamonds },
+    { SM64AP_LEVEL_MOVE_AREA_WDW, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_WDW_METAL, sUnlockMetal },
+    { SM64AP_LEVEL_MOVE_AREA_WDW, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_WDW_VANISH, sUnlockVanish },
+    { SM64AP_LEVEL_MOVE_AREA_WDW, PAUSE_COURSE_UNLOCK_CANNON, 0, sUnlockCannon },
 
-    { COURSE_TTM - 1, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_TTM_UKIKI, sUnlockUkiki },
-    { COURSE_TTM - 1, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_ROLLING_LOGS, sUnlockLogs },
-    { COURSE_TTM - 1, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_PURPLE_SWITCHES, sUnlockPurple },
-    { COURSE_TTM - 1, PAUSE_COURSE_UNLOCK_CANNON, 0, sUnlockCannon },
+    { SM64AP_LEVEL_MOVE_AREA_TTM, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_TTM_UKIKI, sUnlockUkiki },
+    { SM64AP_LEVEL_MOVE_AREA_TTM, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_ROLLING_LOGS, sUnlockLogs },
+    { SM64AP_LEVEL_MOVE_AREA_TTM, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_PURPLE_SWITCHES, sUnlockPurple },
+    { SM64AP_LEVEL_MOVE_AREA_TTM, PAUSE_COURSE_UNLOCK_CANNON, 0, sUnlockCannon },
 
-    { COURSE_THI - 1, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_THI_KOOPA_THE_QUICK, sUnlockKoopa },
-    { COURSE_THI - 1, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_THI_WARP_PIPES, sUnlockPipes },
-    { COURSE_THI - 1, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_PURPLE_SWITCHES, sUnlockPurple },
-    { COURSE_THI - 1, PAUSE_COURSE_UNLOCK_CANNON, 0, sUnlockCannon },
+    { SM64AP_LEVEL_MOVE_AREA_THI, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_THI_KOOPA_THE_QUICK, sUnlockKoopa },
+    { SM64AP_LEVEL_MOVE_AREA_THI, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_THI_WARP_PIPES, sUnlockPipes },
+    { SM64AP_LEVEL_MOVE_AREA_THI, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_PURPLE_SWITCHES, sUnlockPurple },
+    { SM64AP_LEVEL_MOVE_AREA_THI, PAUSE_COURSE_UNLOCK_CANNON, 0, sUnlockCannon },
 
-    { COURSE_TTC - 1, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_TTC_SPINNERS, sUnlockSpinners },
+    { SM64AP_LEVEL_MOVE_AREA_TTC, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_TTC_SPINNERS, sUnlockSpinners },
 
-    { COURSE_RR - 1, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_RR_CARPETS, sUnlockCarpet },
-    { COURSE_RR - 1, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_PURPLE_SWITCHES, sUnlockPurple },
-    { COURSE_RR - 1, PAUSE_COURSE_UNLOCK_CANNON, 0, sUnlockCannon },
+    { SM64AP_LEVEL_MOVE_AREA_RR, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_RR_CARPETS, sUnlockCarpet },
+    { SM64AP_LEVEL_MOVE_AREA_RR, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_PURPLE_SWITCHES, sUnlockPurple },
+    { SM64AP_LEVEL_MOVE_AREA_RR, PAUSE_COURSE_UNLOCK_CANNON, 0, sUnlockCannon },
+
+    { SM64AP_LEVEL_MOVE_AREA_BITDW, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_BITDW_METAL, sUnlockMetal },
+    { SM64AP_LEVEL_MOVE_AREA_BITDW, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_PURPLE_SWITCHES, sUnlockPurple },
+    { SM64AP_LEVEL_MOVE_AREA_BITS, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_PURPLE_SWITCHES, sUnlockPurple },
+    { SM64AP_LEVEL_MOVE_AREA_VCUTM, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_VCUTM_VANISH, sUnlockVanish },
+    { SM64AP_LEVEL_MOVE_AREA_VCUTM, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_CHECKERBOARD_PLATFORMS, sUnlockCheck },
+    { SM64AP_LEVEL_MOVE_AREA_COTMC, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_COTMC_METAL, sUnlockMetal },
+    { SM64AP_LEVEL_MOVE_AREA_TOTWC, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_TOTWC_WING, sUnlockWing },
+    { SM64AP_LEVEL_MOVE_AREA_WMOTR, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_WMOTR_WING, sUnlockWing },
 };
 
 static const struct PauseCastleUnlock sPauseCastleUnlocks[] = {
@@ -2657,16 +2745,16 @@ static const struct PauseCastleUnlock sPauseCastleUnlocks[] = {
     { PAUSE_CASTLE_UNLOCK_BITFS, 0, sUnlockBitfs },
 };
 
-static bool pause_course_unlock_collected(const struct PauseCourseUnlock *unlock, s16 courseNum) {
+static bool pause_course_unlock_collected(const struct PauseCourseUnlock *unlock, const struct PauseUnlockView *view) {
     switch (unlock->type) {
         case PAUSE_COURSE_UNLOCK_FEATURE:
             return SM64AP_HaveFeature(unlock->id);
         case PAUSE_COURSE_UNLOCK_OBJECT_ITEM:
-            return SM64AP_HaveObjectItemForCourse(unlock->id, courseNum);
+            return SM64AP_HaveObjectItemForLevel(unlock->id, view->levelNum);
         case PAUSE_COURSE_UNLOCK_LEVEL_CAP:
             return SM64AP_HaveLevelCapOrGlobal(unlock->id);
         case PAUSE_COURSE_UNLOCK_CANNON:
-            return SM64AP_HaveCannon(courseNum);
+            return SM64AP_HaveCannon(view->courseNum);
     }
 
     return false;
@@ -2705,36 +2793,71 @@ static void render_pause_unlock_status(s16 x, s16 y, s16 statusX, const u8 *labe
 
 static void render_pause_coin_star_requirement(s16 x, s16 y, s16 valueX, s16 courseNum) {
     u8 strCoinRequirement[4];
+    s16 digitCount = 0;
 
     int_to_str(SM64AP_GetCoinStarRequirement(courseNum + COURSE_MIN), strCoinRequirement);
+    while (strCoinRequirement[digitCount] != DIALOG_CHAR_TERMINATOR) {
+        digitCount++;
+    }
+
     print_generic_string(x, y, sUnlockCoinStar);
-    print_generic_string(valueX, y, strCoinRequirement);
+    print_generic_string(valueX - (digitCount - 1) * 8, y, strCoinRequirement);
 }
 
-static void render_pause_castle_course_unlocks(s16 x, s16 y, s16 courseNum) {
+static s16 pause_unlock_view_count(void) {
+    return sizeof(sPauseUnlockViews) / sizeof(sPauseUnlockViews[0]);
+}
+
+static const struct PauseUnlockView *pause_unlock_view_at(s16 viewIndex) {
+    if (viewIndex < 0 || viewIndex >= pause_unlock_view_count()) {
+        return &sPauseUnlockViews[0];
+    }
+
+    return &sPauseUnlockViews[viewIndex];
+}
+
+static void render_pause_move_unlocks(s16 x, s16 y, s16 moveArea) {
+    for (u16 i = 0; i < sizeof(sPauseMoveUnlocks) / sizeof(sPauseMoveUnlocks[0]); i++) {
+        const struct PauseMoveUnlock *unlock = &sPauseMoveUnlocks[i];
+        const u8 *label = unlock->label;
+        bool unlocked = SM64AP_HaveLevelMoveOrGlobal(moveArea, unlock->move);
+
+        if (unlock->move == SM64AP_LEVEL_MOVE_TRIPLE_JUMP && !unlocked && SM64AP_CanDoubleJumpForArea(moveArea)) {
+            label = sMoveDouble;
+            unlocked = true;
+        }
+
+        render_pause_unlock_status(x, y - i * 11, 112, label, unlocked);
+    }
+}
+
+static void render_pause_area_unlocks(s16 x, s16 y, const struct PauseUnlockView *view) {
     static const u8 textNoItems[] = { TEXT_UNLOCK_NO_ITEMS };
     s16 unlockCount = 0;
 
-    render_pause_coin_star_requirement(x - 43, y + 30, x + 108, courseNum);
+    if (view->type == PAUSE_UNLOCK_VIEW_COURSE) {
+        render_pause_coin_star_requirement(x, y, x + 170, view->courseNum);
+        y -= 11;
+    }
 
     for (u16 i = 0; i < sizeof(sPauseCourseUnlocks) / sizeof(sPauseCourseUnlocks[0]); i++) {
         const struct PauseCourseUnlock *unlock = &sPauseCourseUnlocks[i];
-        if (unlock->courseNum != courseNum) {
+        if (unlock->moveArea != view->moveArea) {
             continue;
         }
 
-        if (unlockCount >= 8) {
+        if (unlockCount >= 10) {
             break;
         }
 
-        s16 lineY = y + 18 - unlockCount * 12;
-        render_pause_unlock_status(x - 43, lineY, x + 118, unlock->label,
-                                   pause_course_unlock_collected(unlock, courseNum));
+        s16 lineY = y - unlockCount * 11;
+        render_pause_unlock_status(x, lineY, x + 170, unlock->label,
+                                   pause_course_unlock_collected(unlock, view));
         unlockCount++;
     }
 
-    if (unlockCount == 0) {
-        print_generic_string(x - 43, y + 18, textNoItems);
+    if (unlockCount == 0 && view->type != PAUSE_UNLOCK_VIEW_COURSE) {
+        print_generic_string(x, y, textNoItems);
     }
 }
 
@@ -2754,78 +2877,96 @@ static void **get_pause_course_name_table(void) {
 #endif
 }
 
-static void render_pause_course_unlock_page(s16 x, s16 y, s16 courseNum) {
+static const u8 *pause_unlock_view_title(const struct PauseUnlockView *view) {
     void **courseNameTbl = get_pause_course_name_table();
-    void *courseName = segmented_to_virtual(courseNameTbl[courseNum]);
-    s16 textY = y + 24;
+
+    if (view->type == PAUSE_UNLOCK_VIEW_COURSE) {
+        return segmented_to_virtual(courseNameTbl[view->courseNum]);
+    }
+
+    return view->label;
+}
+
+static void render_pause_castle_unlocks(s16 x, s16 y);
+
+static void render_pause_unlock_view_page(s16 viewIndex) {
+    const struct PauseUnlockView *view = pause_unlock_view_at(viewIndex);
 
     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
 
-    print_generic_string(x - 43, textY + 50, courseName);
-    render_pause_castle_course_unlocks(x, textY, courseNum);
+    print_generic_string(116, 140, pause_unlock_view_title(view));
+    render_pause_move_unlocks(-8, 122, view->moveArea);
 
     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
+
+    if (view->type == PAUSE_UNLOCK_VIEW_CASTLE) {
+        gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
+        gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
+        render_pause_castle_unlocks(160, 92);
+        gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
+    } else {
+        gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
+        gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
+        render_pause_area_unlocks(126, 122, view);
+        gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
+    }
 }
 
 static void render_pause_castle_unlocks(s16 x, s16 y) {
+    static const s16 labelX[] = { 124, 226 };
+    static const s16 statusX[] = { 184, 304 };
+    (void) x;
+
     for (u16 i = 0; i < sizeof(sPauseCastleUnlocks) / sizeof(sPauseCastleUnlocks[0]); i++) {
         const struct PauseCastleUnlock *unlock = &sPauseCastleUnlocks[i];
         s16 column = i / 7;
         s16 row = i % 7;
-        s16 lineX = x - 43 + column * 96;
         s16 lineY = y + 30 - row * 12;
-        render_pause_unlock_status(lineX, lineY, lineX + 84, unlock->label,
+        render_pause_unlock_status(labelX[column], lineY, statusX[column], unlock->label,
                                    pause_castle_unlock_collected(unlock));
     }
 }
 
 void render_pause_castle_main_strings(s16 x, s16 y) {
-    void **courseNameTbl = get_pause_course_name_table();
-    void *courseName;
+    (void) x;
+    (void) y;
 
-    handle_menu_scrolling(MENU_SCROLL_VERTICAL, &gDialogLineNum, -1, COURSE_STAGES_COUNT + 1);
+    handle_menu_scrolling(MENU_SCROLL_VERTICAL, &gDialogLineNum, -1, pause_unlock_view_count());
 
-    if (gDialogLineNum == COURSE_STAGES_COUNT + 1) {
+    if (gDialogLineNum == pause_unlock_view_count()) {
         gDialogLineNum = 0;
     }
 
     if (gDialogLineNum == -1) {
-        gDialogLineNum = COURSE_STAGES_COUNT;
+        gDialogLineNum = pause_unlock_view_count() - 1;
     }
 
-    if (gDialogLineNum < COURSE_STAGES_COUNT) {
-        render_pause_course_unlock_page(x, y, gDialogLineNum);
-    } else {
-        courseName = segmented_to_virtual(courseNameTbl[COURSE_MAX]);
-
-        gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
-        gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
-
-        print_generic_string(x - 43, y + 50, courseName);
-        render_pause_castle_unlocks(x, y);
-
-        gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
-    }
+    render_pause_unlock_view_page(gDialogLineNum);
 }
 
 static void set_pause_course_unlock_view_to_current_course(void) {
-    if (COURSE_IS_MAIN_COURSE(gCurrCourseNum)) {
-        sPauseCourseUnlockViewCourse = gCurrCourseNum - COURSE_MIN;
-    } else {
-        sPauseCourseUnlockViewCourse = 0;
+    s16 moveArea = SM64AP_LevelMoveAreaForLevel(gCurrLevelNum);
+
+    for (s16 i = 0; i < pause_unlock_view_count(); i++) {
+        if (sPauseUnlockViews[i].moveArea == moveArea) {
+            sPauseUnlockViewIndex = i;
+            return;
+        }
     }
+
+    sPauseUnlockViewIndex = 0;
 }
 
 static void handle_pause_course_unlock_view_scrolling(void) {
-    handle_menu_scrolling(MENU_SCROLL_VERTICAL, &sPauseCourseUnlockViewCourse, -1, COURSE_STAGES_COUNT);
+    handle_menu_scrolling(MENU_SCROLL_VERTICAL, &sPauseUnlockViewIndex, -1, pause_unlock_view_count());
 
-    if (sPauseCourseUnlockViewCourse == COURSE_STAGES_COUNT) {
-        sPauseCourseUnlockViewCourse = 0;
+    if (sPauseUnlockViewIndex == pause_unlock_view_count()) {
+        sPauseUnlockViewIndex = 0;
     }
 
-    if (sPauseCourseUnlockViewCourse == -1) {
-        sPauseCourseUnlockViewCourse = COURSE_STAGES_COUNT - 1;
+    if (sPauseUnlockViewIndex == -1) {
+        sPauseUnlockViewIndex = pause_unlock_view_count() - 1;
     }
 }
 
@@ -2853,7 +2994,7 @@ static void render_pause_course_unlock_view(void) {
     handle_pause_course_unlock_view_scrolling();
     print_hud_pause_colorful_str();
     render_pause_castle_menu_box(160, 143);
-    render_pause_course_unlock_page(104, 60, sPauseCourseUnlockViewCourse);
+    render_pause_unlock_view_page(sPauseUnlockViewIndex);
 }
 
 s8 gCourseCompleteCoinsEqual = 0;
@@ -3036,56 +3177,6 @@ s16 render_pause_courses_and_castle(void) {
         }
         gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
     }
-    s16 x = -62;
-    s16 y = 170;
-    s16 spacing = 18;
-    print_text(GFX_DIMENSIONS_RECT_FROM_LEFT_EDGE(20), 209-20, "ABILITIES");
-    gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
-    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
-    if (SM64AP_CanTripleJump()) {
-        u8 str_triple_jump[] = { TEXT_TRIPLE_JUMP };
-        print_generic_string(x, y, str_triple_jump);
-    } else if (SM64AP_CanDoubleJump()) {
-        u8 str_double_jump[] = { TEXT_DOUBLE_JUMP };
-        print_generic_string(x, y, str_double_jump);
-    }
-    if (SM64AP_CanLongJump()) {
-        u8 str_long_jump[] = { TEXT_LONG_JUMP };
-        print_generic_string(x, y - spacing, str_long_jump);
-    }
-    if (SM64AP_CanBackflip()) {
-        u8 str_backflip[] = { TEXT_BACKFLIP };
-        print_generic_string(x, y - spacing*2, str_backflip);
-    }
-    if (SM64AP_CanSideFlip()) {
-        u8 str_side_flip[] = { TEXT_SIDE_FLIP };
-        print_generic_string(x, y - spacing*3, str_side_flip);
-    }
-    if (SM64AP_CanWallKick()) {
-        u8 str_wall_kick[] = { TEXT_WALL_KICK };
-        print_generic_string(x, y - spacing*4, str_wall_kick);
-    }
-    if (SM64AP_CanDive()) {
-        u8 str_dive[] = { TEXT_DIVE };
-        print_generic_string(x, y - spacing*5, str_dive);
-    }
-    if (SM64AP_CanGroundPound()) {
-        u8 str_ground_pound[] = { TEXT_GROUND_POUND };
-        print_generic_string(x, y - spacing*6, str_ground_pound);
-    }
-    if (SM64AP_CanKick()) {
-        u8 str_kick[] = { TEXT_KICK };
-        print_generic_string(x, y - spacing*7, str_kick);
-    }
-    if (SM64AP_CanClimb()) {
-        u8 str_climb[] = { TEXT_CLIMB };
-        print_generic_string(x, y - spacing*8, str_climb);
-    }
-    if (SM64AP_CanLedgeGrab()) {
-        u8 str_ledge_grab[] = { TEXT_LEDGE_GRAB };
-        print_generic_string(x, y - spacing*9, str_ledge_grab);
-    }
-    gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
     return 0;
 }
 

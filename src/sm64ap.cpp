@@ -71,6 +71,7 @@ bool sm64_have_painting[NUM_PAINTING_LOCKS];
 bool sm64_painting_rando_enabled = false;
 int sm64_completion_type = 0;
 std::bitset<SM64AP_NUM_ABILITIES> sm64_have_abilities;
+std::bitset<SM64AP_NUM_LEVEL_MOVE_AREAS * SM64AP_NUM_LEVEL_MOVES> sm64_have_level_moves;
 std::bitset<SM64AP_NUM_FEATURES> sm64_have_features;
 std::bitset<SM64AP_NUM_LEVEL_CAPS> sm64_have_level_caps;
 std::bitset<SM64AP_NUM_OBJECT_ITEMS> sm64_have_object_items;
@@ -243,6 +244,9 @@ void SM64AP_RecvItem(int64_t idx, bool notify) {
         case SM64AP_ID_ABILITY(1) ... SM64AP_ID_ABILITY(SM64AP_NUM_ABILITIES-1):
             sm64_have_abilities[idx-SM64AP_ABILITY_OFFSET] = true;
             break;
+        case SM64AP_ID_LEVEL_MOVE(0, 0) ... SM64AP_ID_LEVEL_MOVE_END:
+            sm64_have_level_moves[idx - SM64AP_LEVEL_MOVE_OFFSET] = true;
+            break;
         case SM64AP_ID_1_HEALTH_PIP ... SM64AP_ID_GUST_TRAP:
             if(!notify) break;
             delayed_queue.push(idx);
@@ -391,7 +395,7 @@ static int SM64AP_LevelForCourseIndex(int courseIdx) {
     return 0;
 }
 
-static bool SM64AP_HaveObjectItemForLevel(int item, s16 level) {
+bool SM64AP_HaveObjectItemForLevel(int item, s16 level) {
     return SM64AP_HaveObjectItem(item)
         || SM64AP_HaveObjectItem(SM64AP_LevelSpecificObjectItemForLevel(item, level));
 }
@@ -1416,6 +1420,7 @@ void SM64AP_ResetItems() {
     }
     sm64_painting_rando_enabled = false;
     sm64_have_abilities.reset();
+    sm64_have_level_moves.reset();
     sm64_have_features.reset();
     sm64_have_level_caps.reset();
     sm64_have_object_items.reset();
@@ -1969,49 +1974,167 @@ void SM64AP_DeathLinkSend() {
     }
 }
 
-bool SM64AP_CanDoubleJump() {
+int SM64AP_LevelMoveAreaForLevel(s16 level) {
+    switch (level) {
+        case LEVEL_BOB:
+            return SM64AP_LEVEL_MOVE_AREA_BOB;
+        case LEVEL_WF:
+            return SM64AP_LEVEL_MOVE_AREA_WF;
+        case LEVEL_JRB:
+            return SM64AP_LEVEL_MOVE_AREA_JRB;
+        case LEVEL_CCM:
+            return SM64AP_LEVEL_MOVE_AREA_CCM;
+        case LEVEL_BBH:
+            return SM64AP_LEVEL_MOVE_AREA_BBH;
+        case LEVEL_HMC:
+            return SM64AP_LEVEL_MOVE_AREA_HMC;
+        case LEVEL_LLL:
+            return SM64AP_LEVEL_MOVE_AREA_LLL;
+        case LEVEL_SSL:
+            return SM64AP_LEVEL_MOVE_AREA_SSL;
+        case LEVEL_DDD:
+            return SM64AP_LEVEL_MOVE_AREA_DDD;
+        case LEVEL_SL:
+            return SM64AP_LEVEL_MOVE_AREA_SL;
+        case LEVEL_WDW:
+            return SM64AP_LEVEL_MOVE_AREA_WDW;
+        case LEVEL_TTM:
+            return SM64AP_LEVEL_MOVE_AREA_TTM;
+        case LEVEL_THI:
+            return SM64AP_LEVEL_MOVE_AREA_THI;
+        case LEVEL_TTC:
+            return SM64AP_LEVEL_MOVE_AREA_TTC;
+        case LEVEL_RR:
+            return SM64AP_LEVEL_MOVE_AREA_RR;
+        case LEVEL_CASTLE:
+        case LEVEL_CASTLE_GROUNDS:
+        case LEVEL_CASTLE_COURTYARD:
+        case LEVEL_PSS:
+        case LEVEL_SA:
+            return SM64AP_LEVEL_MOVE_AREA_CASTLE;
+        case LEVEL_BITDW:
+        case LEVEL_BOWSER_1:
+            return SM64AP_LEVEL_MOVE_AREA_BITDW;
+        case LEVEL_BITFS:
+        case LEVEL_BOWSER_2:
+            return SM64AP_LEVEL_MOVE_AREA_BITFS;
+        case LEVEL_BITS:
+        case LEVEL_BOWSER_3:
+            return SM64AP_LEVEL_MOVE_AREA_BITS;
+        case LEVEL_VCUTM:
+            return SM64AP_LEVEL_MOVE_AREA_VCUTM;
+        case LEVEL_COTMC:
+            return SM64AP_LEVEL_MOVE_AREA_COTMC;
+        case LEVEL_TOTWC:
+            return SM64AP_LEVEL_MOVE_AREA_TOTWC;
+        case LEVEL_WMOTR:
+            return SM64AP_LEVEL_MOVE_AREA_WMOTR;
+    }
+
+    return SM64AP_LEVEL_MOVE_AREA_CASTLE;
+}
+
+static int SM64AP_LevelMoveForAbility(int ability) {
+    switch (ability) {
+        case SM64AP_ID_TRIPLEJUMP - SM64AP_ABILITY_OFFSET:
+            return SM64AP_LEVEL_MOVE_TRIPLE_JUMP;
+        case SM64AP_ID_LONGJUMP - SM64AP_ABILITY_OFFSET:
+            return SM64AP_LEVEL_MOVE_LONG_JUMP;
+        case SM64AP_ID_BACKFLIP - SM64AP_ABILITY_OFFSET:
+            return SM64AP_LEVEL_MOVE_BACKFLIP;
+        case SM64AP_ID_SIDEFLIP - SM64AP_ABILITY_OFFSET:
+            return SM64AP_LEVEL_MOVE_SIDE_FLIP;
+        case SM64AP_ID_WALLKICK - SM64AP_ABILITY_OFFSET:
+            return SM64AP_LEVEL_MOVE_WALL_KICK;
+        case SM64AP_ID_DIVE - SM64AP_ABILITY_OFFSET:
+            return SM64AP_LEVEL_MOVE_DIVE;
+        case SM64AP_ID_GROUNDPOUND - SM64AP_ABILITY_OFFSET:
+            return SM64AP_LEVEL_MOVE_GROUND_POUND;
+        case SM64AP_ID_KICK - SM64AP_ABILITY_OFFSET:
+            return SM64AP_LEVEL_MOVE_KICK;
+        case SM64AP_ID_CLIMB - SM64AP_ABILITY_OFFSET:
+            return SM64AP_LEVEL_MOVE_CLIMB;
+        case SM64AP_ID_LEDGEGRAB - SM64AP_ABILITY_OFFSET:
+            return SM64AP_LEVEL_MOVE_LEDGE_GRAB;
+    }
+
+    return -1;
+}
+
+static bool SM64AP_HaveLevelMove(int area, int move) {
+    if (area < 0 || area >= SM64AP_NUM_LEVEL_MOVE_AREAS
+        || move < 0 || move >= SM64AP_NUM_LEVEL_MOVES) {
+        return false;
+    }
+
+    return sm64_have_level_moves[area * SM64AP_NUM_LEVEL_MOVES + move];
+}
+
+bool SM64AP_HaveLevelMoveOrGlobal(int area, int move) {
+    int ability = move + (SM64AP_ID_TRIPLEJUMP - SM64AP_ABILITY_OFFSET);
+    if (move < 0 || move >= SM64AP_NUM_LEVEL_MOVES) {
+        return false;
+    }
+
+    return sm64_have_abilities[ability] || SM64AP_HaveLevelMove(area, move);
+}
+
+static bool SM64AP_HaveAbilityForCurrentLevel(int ability) {
+    int move = SM64AP_LevelMoveForAbility(ability);
+    if (move < 0) {
+        return sm64_have_abilities[ability];
+    }
+
+    return SM64AP_HaveLevelMoveOrGlobal(SM64AP_LevelMoveAreaForLevel(gCurrLevelNum), move);
+}
+
+bool SM64AP_CanDoubleJumpForArea(int area) {
     return sm64_have_abilities[SM64AP_ID_DOUBLEJUMP - SM64AP_ABILITY_OFFSET]
-           || sm64_have_abilities[SM64AP_ID_TRIPLEJUMP - SM64AP_ABILITY_OFFSET];
+           || SM64AP_HaveLevelMoveOrGlobal(area, SM64AP_LEVEL_MOVE_TRIPLE_JUMP);
+}
+
+bool SM64AP_CanDoubleJump() {
+    return SM64AP_CanDoubleJumpForArea(SM64AP_LevelMoveAreaForLevel(gCurrLevelNum));
 }
 
 bool SM64AP_CanTripleJump() {
-    return sm64_have_abilities[SM64AP_ID_TRIPLEJUMP - SM64AP_ABILITY_OFFSET];
+    return SM64AP_HaveAbilityForCurrentLevel(SM64AP_ID_TRIPLEJUMP - SM64AP_ABILITY_OFFSET);
 }
 
 bool SM64AP_CanLongJump() {
-    return sm64_have_abilities[SM64AP_ID_LONGJUMP - SM64AP_ABILITY_OFFSET];
+    return SM64AP_HaveAbilityForCurrentLevel(SM64AP_ID_LONGJUMP - SM64AP_ABILITY_OFFSET);
 }
 
 bool SM64AP_CanBackflip() {
-    return sm64_have_abilities[SM64AP_ID_BACKFLIP - SM64AP_ABILITY_OFFSET];
+    return SM64AP_HaveAbilityForCurrentLevel(SM64AP_ID_BACKFLIP - SM64AP_ABILITY_OFFSET);
 }
 
 bool SM64AP_CanSideFlip() {
-    return sm64_have_abilities[SM64AP_ID_SIDEFLIP - SM64AP_ABILITY_OFFSET];
+    return SM64AP_HaveAbilityForCurrentLevel(SM64AP_ID_SIDEFLIP - SM64AP_ABILITY_OFFSET);
 }
 
 bool SM64AP_CanWallKick() {
-    return sm64_have_abilities[SM64AP_ID_WALLKICK - SM64AP_ABILITY_OFFSET];
+    return SM64AP_HaveAbilityForCurrentLevel(SM64AP_ID_WALLKICK - SM64AP_ABILITY_OFFSET);
 }
 
 bool SM64AP_CanDive() {
-    return sm64_have_abilities[SM64AP_ID_DIVE - SM64AP_ABILITY_OFFSET];
+    return SM64AP_HaveAbilityForCurrentLevel(SM64AP_ID_DIVE - SM64AP_ABILITY_OFFSET);
 }
 
 bool SM64AP_CanGroundPound() {
-    return sm64_have_abilities[SM64AP_ID_GROUNDPOUND - SM64AP_ABILITY_OFFSET];
+    return SM64AP_HaveAbilityForCurrentLevel(SM64AP_ID_GROUNDPOUND - SM64AP_ABILITY_OFFSET);
 }
 
 bool SM64AP_CanKick() {
-    return sm64_have_abilities[SM64AP_ID_KICK - SM64AP_ABILITY_OFFSET];
+    return SM64AP_HaveAbilityForCurrentLevel(SM64AP_ID_KICK - SM64AP_ABILITY_OFFSET);
 }
 
 bool SM64AP_CanClimb() {
-    return sm64_have_abilities[SM64AP_ID_CLIMB - SM64AP_ABILITY_OFFSET];
+    return SM64AP_HaveAbilityForCurrentLevel(SM64AP_ID_CLIMB - SM64AP_ABILITY_OFFSET);
 }
 
 bool SM64AP_CanLedgeGrab() {
-    return sm64_have_abilities[SM64AP_ID_LEDGEGRAB - SM64AP_ABILITY_OFFSET];
+    return SM64AP_HaveAbilityForCurrentLevel(SM64AP_ID_LEDGEGRAB - SM64AP_ABILITY_OFFSET);
 }
 
 
