@@ -76,6 +76,7 @@ std::bitset<SM64AP_NUM_LEVEL_MOVE_AREAS * SM64AP_NUM_LEVEL_MOVES> sm64_have_leve
 std::bitset<SM64AP_NUM_FEATURES> sm64_have_features;
 std::bitset<SM64AP_NUM_LEVEL_CAPS> sm64_have_level_caps;
 std::bitset<SM64AP_NUM_OBJECT_ITEMS> sm64_have_object_items;
+std::bitset<SM64AP_NUM_COIN_CHECKS> sm64_sent_coin_checks;
 int* sm64_clockaction = nullptr;
 int sm64_cost_firstbowserdoor = 8;
 int sm64_cost_basementdoor = 30;
@@ -110,6 +111,16 @@ static constexpr int SM64AP_MUSIC_SHUFFLE_MAP = 1;
 static constexpr int SM64AP_MUSIC_SHUFFLE_RANDOM_ON_LOAD = 2;
 static constexpr int SM64AP_NUM_COIN_STAR_REQUIREMENTS = 15;
 static constexpr int SM64AP_DEFAULT_COIN_STAR_REQUIREMENT = 100;
+static constexpr int SM64AP_COIN_CHECK_MAX_COUNTS[15] = {
+    146, 141, 104, 154, 151,
+    139, 133, 136, 106, 127,
+    152, 137, 191, 128, 146,
+};
+static constexpr int SM64AP_COIN_CHECK_OFFSETS[15] = {
+    0, 146, 287, 391, 545,
+    696, 835, 968, 1104, 1210,
+    1337, 1489, 1626, 1817, 1945,
+};
 
 static constexpr int SM64AP_RANDOM_MUSIC_POOL[] = {
     SEQ_LEVEL_GRASS,
@@ -262,7 +273,16 @@ void SM64AP_RecvItem(int64_t idx, bool notify) {
 }
 
 void SM64AP_CheckLocation(int64_t loc_id) {
+    if (loc_id < SM64AP_ID_OFFSET || loc_id >= SM64AP_ID_OFFSET + SM64AP_NUM_LOCS) {
+        return;
+    }
+
     sm64_locations[loc_id - SM64AP_ID_OFFSET] = true;
+
+    int coinOffset = loc_id - SM64AP_LOCATIONID_COIN_CHECK_START;
+    if (coinOffset >= 0 && coinOffset < SM64AP_NUM_COIN_CHECKS) {
+        sm64_sent_coin_checks[coinOffset] = true;
+    }
 }
 
 u32 SM64AP_CourseStarFlags(s32 courseIdx) {
@@ -1449,6 +1469,7 @@ void SM64AP_ResetItems() {
     sm64_have_features.reset();
     sm64_have_level_caps.reset();
     sm64_have_object_items.reset();
+    sm64_sent_coin_checks.reset();
     sm64_have_first_floor_key = false;
     sm64_have_progressive_basement_keys = 0;
     sm64_have_progressive_upstairs_keys = 0;
@@ -1640,8 +1661,66 @@ int SM64AP_GetRequiredStars(int idprx) {
     }
 }
 
+static int SM64AP_CoinCheckCourseIndex(int courseNum) {
+    if (courseNum < COURSE_MIN || courseNum > COURSE_STAGES_MAX) {
+        return -1;
+    }
+
+    return courseNum - COURSE_MIN;
+}
+
+static int SM64AP_CoinCheckOffset(int courseIndex, int coinCount) {
+    if (courseIndex < 0 || courseIndex >= SM64AP_NUM_COIN_STAR_REQUIREMENTS
+        || coinCount <= 0 || coinCount > SM64AP_COIN_CHECK_MAX_COUNTS[courseIndex]) {
+        return -1;
+    }
+
+    return SM64AP_COIN_CHECK_OFFSETS[courseIndex] + coinCount - 1;
+}
+
+static int SM64AP_CoinCheckLocationId(int courseIndex, int coinCount) {
+    int offset = SM64AP_CoinCheckOffset(courseIndex, coinCount);
+    return offset < 0 ? 0 : SM64AP_LOCATIONID_COIN_CHECK_START + offset;
+}
+
+static int SM64AP_CoinCheckOffsetFromLocationId(int locId) {
+    int offset = locId - SM64AP_LOCATIONID_COIN_CHECK_START;
+
+    if (offset < 0 || offset >= SM64AP_NUM_COIN_CHECKS) {
+        return -1;
+    }
+
+    return offset;
+}
+
 bool SM64AP_CheckedLoc(int x) {
+    if (x < SM64AP_ID_OFFSET || x >= SM64AP_ID_OFFSET + SM64AP_NUM_LOCS) {
+        return false;
+    }
+
     return sm64_locations[x - SM64AP_ID_OFFSET];
+}
+
+void SM64AP_CheckCoinCount(int courseNum, int coinCount) {
+    int courseIndex = SM64AP_CoinCheckCourseIndex(courseNum);
+
+    if (courseIndex < 0) {
+        return;
+    }
+
+    if (coinCount > SM64AP_COIN_CHECK_MAX_COUNTS[courseIndex]) {
+        coinCount = SM64AP_COIN_CHECK_MAX_COUNTS[courseIndex];
+    }
+
+    for (int count = 1; count <= coinCount; count++) {
+        int locId = SM64AP_CoinCheckLocationId(courseIndex, count);
+        int offset = SM64AP_CoinCheckOffsetFromLocationId(locId);
+
+        if (offset >= 0 && !sm64_sent_coin_checks[offset] && !SM64AP_CheckedLoc(locId)) {
+            sm64_sent_coin_checks[offset] = true;
+            SM64AP_SendItem(locId);
+        }
+    }
 }
 
 static bool SM64AP_IsMusicAreaKey(int key) {
