@@ -749,6 +749,7 @@ u32 interact_coin(struct MarioState *m, UNUSED u32 interactType, struct Object *
 
     s32 coinStarRequirement = SM64AP_GetCoinStarRequirement(gCurrCourseNum);
     if (COURSE_IS_MAIN_COURSE(gCurrCourseNum)
+        && !SM64AP_CollectedCourseStar(gCurrCourseNum - COURSE_MIN, 6)
         && m->numCoins - o->oDamageOrCoinValue < coinStarRequirement
         && m->numCoins >= coinStarRequirement) {
         bhv_spawn_star_no_level_exit(6);
