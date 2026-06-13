@@ -56,6 +56,7 @@ bool sm64_have_wing_cap_light = false;
 bool sm64_have_bbh = false;
 bool sm64_have_toads = false;
 bool sm64_have_castle_cannon = false;
+bool sm64_have_wmotr_cannon = false;
 bool sm64_have_yoshi = false;
 bool sm64_have_bitfs = false;
 bool sm64_have_hat = false;
@@ -198,6 +199,9 @@ void SM64AP_RecvItem(int64_t idx, bool notify) {
             break;
         case SM64AP_ID_CASTLE_CANNON:
             sm64_have_castle_cannon = true;
+            break;
+        case SM64AP_ID_WMOTR_CANNON:
+            sm64_have_wmotr_cannon = true;
             break;
         case SM64AP_ID_YOSHI:
             sm64_have_yoshi = true;
@@ -1485,6 +1489,7 @@ void SM64AP_ResetItems() {
     sm64_have_bbh = false;
     sm64_have_toads = false;
     sm64_have_castle_cannon = false;
+    sm64_have_wmotr_cannon = false;
     sm64_have_yoshi = false;
     sm64_have_bitfs = false;
     sm64_have_hat = false;
@@ -1869,6 +1874,10 @@ bool SM64AP_HaveToads() {
 
 bool SM64AP_HaveCastleCannon() {
     return sm64_have_castle_cannon;
+}
+
+bool SM64AP_HaveWmotrCannon() {
+    return sm64_have_wmotr_cannon;
 }
 
 bool SM64AP_HaveYoshi() {

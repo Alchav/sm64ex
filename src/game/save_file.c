@@ -649,6 +649,10 @@ s32 save_file_get_course_coin_score(s32 fileIndex, s32 courseIndex) {
  * Return TRUE if the cannon is unlocked in the current course.
  */
 s32 save_file_is_cannon_unlocked(void) {
+    if (gCurrLevelNum == LEVEL_WMOTR || gCurrCourseNum == COURSE_WMOTR) {
+        return SM64AP_HaveWmotrCannon();
+    }
+
     return SM64AP_HaveCannon(gCurrCourseNum-1);
 }
 
@@ -656,7 +660,12 @@ s32 save_file_is_cannon_unlocked(void) {
  * Sets the cannon status to unlocked in the current course.
  */
 void save_file_set_cannon_unlocked(void) {
-    if (gCurrCourseNum <= 15 ) SM64AP_SendItem(200 + gCurrCourseNum - 1 + SM64AP_ID_OFFSET);
+    if (gCurrLevelNum == LEVEL_WMOTR || gCurrCourseNum == COURSE_WMOTR) {
+        SM64AP_SendItem(SM64AP_LOCATIONID_WMOTR_BOBOMB_BUDDY);
+    } else if (gCurrCourseNum <= 15) {
+        SM64AP_SendItem(200 + gCurrCourseNum - 1 + SM64AP_ID_OFFSET);
+    }
+
     gSaveBuffer.files[gCurrSaveFileNum - 1][0].courseStars[gCurrCourseNum] |= 0x80;
     gSaveBuffer.files[gCurrSaveFileNum - 1][0].flags |= SAVE_FLAG_FILE_EXISTS;
     gSaveFileModified = TRUE;

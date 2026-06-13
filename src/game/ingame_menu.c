@@ -2480,6 +2480,7 @@ enum PauseCourseUnlockType {
     PAUSE_COURSE_UNLOCK_OBJECT_ITEM,
     PAUSE_COURSE_UNLOCK_LEVEL_CAP,
     PAUSE_COURSE_UNLOCK_CANNON,
+    PAUSE_COURSE_UNLOCK_WMOTR_CANNON,
 };
 
 enum PauseCourseUnlockArea {
@@ -2735,6 +2736,7 @@ static const struct PauseCourseUnlock sPauseCourseUnlocks[] = {
     { PAUSE_COURSE_UNLOCK_AREA_COTMC, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_COTMC_METAL, sUnlockMetal },
     { PAUSE_COURSE_UNLOCK_AREA_TOTWC, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_TOTWC_WING, sUnlockWing },
     { PAUSE_COURSE_UNLOCK_AREA_WMOTR, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_WMOTR_WING, sUnlockWing },
+    { PAUSE_COURSE_UNLOCK_AREA_WMOTR, PAUSE_COURSE_UNLOCK_WMOTR_CANNON, 0, sUnlockCannon },
 };
 
 static const struct PauseCastleUnlock sPauseCastleUnlocks[] = {
@@ -2765,6 +2767,8 @@ static bool pause_course_unlock_collected(const struct PauseCourseUnlock *unlock
             return SM64AP_HaveLevelCapOrGlobal(unlock->id);
         case PAUSE_COURSE_UNLOCK_CANNON:
             return SM64AP_HaveCannon(view->courseNum);
+        case PAUSE_COURSE_UNLOCK_WMOTR_CANNON:
+            return SM64AP_HaveWmotrCannon();
     }
 
     return false;
