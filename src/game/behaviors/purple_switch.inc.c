@@ -70,7 +70,7 @@ void bhv_purple_switch_loop(void) {
             }
             break;
         case PURPLE_SWITCH_WAIT_FOR_TIMED_ANIMATION:
-            cur_obj_scale(0.2f);
+            obj_scale_xyz(o, 1.5f, 0.2f, 1.5f);
             if (o->oTimer < purple_switch_timed_animation_duration() - 40) {
                 play_sound(SOUND_GENERAL2_SWITCH_TICK_FAST, gDefaultSoundArgs);
             } else {
