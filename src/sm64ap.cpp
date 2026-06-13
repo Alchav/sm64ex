@@ -483,22 +483,28 @@ static bool SM64AP_IsKoopaTheQuick(u32 behParam, const void *behavior) {
 }
 
 static bool SM64AP_ShouldSpawnBobObject(s16 x, s16, s16, u32 behParam, const void *behavior) {
+    bool haveBobombBuddy = SM64AP_HaveFeature(SM64AP_FEATURE_BOB_BOBOMB_BUDDY);
+    bool haveBobCannon = SM64AP_HaveCannon(AP_COURSE_BOB);
+
     if (behavior_is(behavior, bhvKingBobomb)) {
         return SM64AP_HaveFeature(SM64AP_FEATURE_BOB_KING_BOBOMB);
     }
     if (SM64AP_IsKoopaTheQuick(behParam, behavior)) {
         return SM64AP_HaveFeature(SM64AP_FEATURE_BOB_KOOPA_THE_QUICK);
     }
-    if (behavior_is(behavior, bhvBobombBuddyOpensCannon) || behavior_is(behavior, bhvCannonClosed)) {
-        return SM64AP_HaveFeature(SM64AP_FEATURE_BOB_BOBOMB_BUDDY);
+    if (behavior_is(behavior, bhvBobombBuddyOpensCannon)) {
+        return haveBobombBuddy;
     }
-    if (behavior_is(behavior, bhvWaterBombCannon)) {
-        return !SM64AP_HaveFeature(SM64AP_FEATURE_BOB_BOBOMB_BUDDY);
+    if (behavior_is(behavior, bhvCannonClosed)) {
+        return true;
+    }
+    if (behavior_is(behavior, bhvWaterBombCannon) || behavior_is(behavior, bhvWaterBombSpawner)) {
+        return !haveBobCannon;
     }
     if (behavior_is(behavior, bhvBobombBuddy)) {
         return beh_param_second_byte(behParam) == 3
-            ? SM64AP_HaveFeature(SM64AP_FEATURE_BOB_BOBOMB_BUDDY)
-            : !SM64AP_HaveFeature(SM64AP_FEATURE_BOB_BOBOMB_BUDDY);
+            ? haveBobombBuddy
+            : !haveBobombBuddy;
     }
     if (behavior_is(behavior, bhvBobBowlingBallSpawner)) {
         return SM64AP_CollectedCourseStar(AP_COURSE_BOB, 0);
@@ -2038,8 +2044,10 @@ bool SM64AP_PressedSwitch(int flag) {
 }
 
 bool SM64AP_HaveCannon(int courseIdx) {
-    if (courseIdx < 15) return sm64_have_cannon[courseIdx];
-    return true;
+    if (courseIdx >= 0 && courseIdx < 15) {
+        return sm64_have_cannon[courseIdx];
+    }
+    return false;
 }
 
 bool SM64AP_HavePainting(int courseIdx) {
