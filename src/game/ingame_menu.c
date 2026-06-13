@@ -2404,10 +2404,10 @@ void render_pause_course_options(s16 x, s16 y, s8 *index, s16 yIndex) {
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
 
     print_generic_string(x + 10, y - 2, textContinue);
-    print_generic_string(x + 10, y - 17, textExitCourse);
+    print_generic_string(x + 10, y - 17, textLevelItems);
 
     if (index[0] != 4) {
-        print_generic_string(x + 10, y - 33, textLevelItems);
+        print_generic_string(x + 10, y - 33, textExitCourse);
         print_generic_string(x + 10, y - 48, textCameraAngleR);
         gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
 
@@ -2417,7 +2417,7 @@ void render_pause_course_options(s16 x, s16 y, s8 *index, s16 yIndex) {
         gSPDisplayList(gDisplayListHead++, dl_draw_triangle);
         gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
     } else {
-        print_generic_string(x + 10, y - 33, textLevelItems);
+        print_generic_string(x + 10, y - 33, textExitCourse);
         gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
         render_pause_camera_options(x - 42, y - 57, &gDialogCameraAngleIndex, 110);
     }
@@ -3066,7 +3066,7 @@ s16 render_pause_courses_and_castle(void) {
                 } else if (pause_course_unlock_view_close_pressed()) {
                     play_sound(SOUND_MENU_CHANGE_SELECT, gDefaultSoundArgs);
                     sPauseCourseUnlockViewOpen = false;
-                    gDialogLineNum = 3;
+                    gDialogLineNum = 2;
                 }
                 break;
             }
@@ -3080,7 +3080,7 @@ s16 render_pause_courses_and_castle(void) {
             }
 
             if (pause_menu_confirm_pressed()) {
-                if (gDialogLineNum == 3) {
+                if (gDialogLineNum == 2) {
                     play_sound(SOUND_MENU_CHANGE_SELECT, gDefaultSoundArgs);
                     sPauseCourseUnlockViewOpen = true;
                     set_pause_course_unlock_view_to_current_course();
@@ -3092,8 +3092,8 @@ s16 render_pause_courses_and_castle(void) {
                 gDialogBoxState = DIALOG_STATE_OPENING;
                 gMenuMode = -1;
 
-                if (gDialogLineNum == 2) {
-                    num = gDialogLineNum;
+                if (gDialogLineNum == 3) {
+                    num = 2;
                 } else {
                     num = 1;
                 }
