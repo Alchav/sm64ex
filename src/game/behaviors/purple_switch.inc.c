@@ -6,6 +6,18 @@
  * the environment.
  */
 
+static s32 purple_switch_timed_animation_duration(void) {
+    switch (gCurrLevelNum) {
+        case LEVEL_BITS:
+            return 250;
+        case LEVEL_BITDW:
+        case LEVEL_RR:
+            return 200;
+        default:
+            return 200;
+    }
+}
+
 void bhv_purple_switch_loop(void) {
     UNUSED s32 unused;
     switch (o->oAction) {
@@ -41,8 +53,10 @@ void bhv_purple_switch_loop(void) {
          */
         case PURPLE_SWITCH_TICKING:
             if (o->oBehParams2ndByte != 0) {
-                if (o->oBehParams2ndByte == 1 && gMarioObject->platform != o) {
-                    o->oAction++;
+                if (o->oBehParams2ndByte == 1) {
+                    if (o->oTimer > 1) {
+                        o->oAction = PURPLE_SWITCH_WAIT_FOR_TIMED_ANIMATION;
+                    }
                 } else {
                     if (o->oTimer < 360) {
                         play_sound(SOUND_GENERAL2_SWITCH_TICK_FAST, gDefaultSoundArgs);
@@ -52,6 +66,21 @@ void bhv_purple_switch_loop(void) {
                     if (o->oTimer > 400) {
                         o->oAction = PURPLE_SWITCH_WAIT_FOR_MARIO_TO_GET_OFF;
                     }
+                }
+            }
+            break;
+        case PURPLE_SWITCH_WAIT_FOR_TIMED_ANIMATION:
+            cur_obj_scale(0.2f);
+            if (o->oTimer < purple_switch_timed_animation_duration() - 40) {
+                play_sound(SOUND_GENERAL2_SWITCH_TICK_FAST, gDefaultSoundArgs);
+            } else {
+                play_sound(SOUND_GENERAL2_SWITCH_TICK_SLOW, gDefaultSoundArgs);
+            }
+            if (o->oTimer > purple_switch_timed_animation_duration() + 10) {
+                if (cur_obj_is_mario_on_platform()) {
+                    o->oAction = PURPLE_SWITCH_WAIT_FOR_MARIO_TO_GET_OFF;
+                } else {
+                    o->oAction = PURPLE_SWITCH_UNPRESSED;
                 }
             }
             break;

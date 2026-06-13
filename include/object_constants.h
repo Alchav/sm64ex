@@ -723,6 +723,7 @@
     #define PURPLE_SWITCH_TICKING                   2
     #define PURPLE_SWITCH_UNPRESSED                 3
     #define PURPLE_SWITCH_WAIT_FOR_MARIO_TO_GET_OFF 4
+    #define PURPLE_SWITCH_WAIT_FOR_TIMED_ANIMATION  5
 
 /* Pyramid elevator */
     #define PYRAMID_ELEVATOR_IDLE              0
