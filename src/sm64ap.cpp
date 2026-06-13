@@ -2124,20 +2124,15 @@ int SM64AP_LevelMoveAreaForLevel(s16 level) {
         case LEVEL_CASTLE_COURTYARD:
         case LEVEL_PSS:
         case LEVEL_SA:
-            return SM64AP_LEVEL_MOVE_AREA_CASTLE;
         case LEVEL_BITDW:
         case LEVEL_BOWSER_1:
-            return SM64AP_LEVEL_MOVE_AREA_BITDW;
         case LEVEL_BITFS:
         case LEVEL_BOWSER_2:
-            return SM64AP_LEVEL_MOVE_AREA_BITFS;
         case LEVEL_BITS:
         case LEVEL_BOWSER_3:
-            return SM64AP_LEVEL_MOVE_AREA_BITS;
         case LEVEL_VCUTM:
         case LEVEL_COTMC:
         case LEVEL_TOTWC:
-            return SM64AP_LEVEL_MOVE_AREA_VCUTM;
         case LEVEL_WMOTR:
             return SM64AP_LEVEL_MOVE_AREA_CASTLE;
     }
