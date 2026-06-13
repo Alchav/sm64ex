@@ -32,14 +32,7 @@ struct Struct80331A54 D_80331A54[][5] = {
 s16 D_80331ACC[] = { 250, 200, 200 };
 
 static s32 floor_switch_press_animation_default_frame(void) {
-    switch (o->oBehParams2ndByte) {
-        case 1:
-            return 0;
-        case 0:
-        case 2:
-        default:
-            return 4;
-    }
+    return 0;
 }
 
 static void reset_floor_switch_press_animation_to_default_frame(void) {
