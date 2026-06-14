@@ -63,6 +63,18 @@ static bool bhv_coin_should_collect_on_no_despawn_floor(void) {
     return o->oFloorHeight < -10000.0f && o->oPosY <= o->oFloorHeight;
 }
 
+static bool bhv_coin_should_collect_on_no_despawn_death_barrier(void) {
+    if (!SM64AP_NoDespawn()) {
+        return false;
+    }
+
+    if (o->oFloor != NULL && o->oFloor->type == SURFACE_DEATH_PLANE) {
+        return o->oPosY < o->oFloorHeight + 2048.0f;
+    }
+
+    return o->oFloor == NULL && o->oFloorHeight < -10000.0f && o->oPosY <= -10000.0f;
+}
+
 s32 bhv_coin_sparkles_init(void) {
     if (o->oInteractStatus & INT_STATUS_INTERACTED && !(o->oInteractStatus & INT_STATUS_TOUCHED_BOB_OMB)) {
         spawn_object(o, MODEL_SPARKLES, bhvGoldenCoinSparkles);
@@ -111,6 +123,10 @@ void bhv_coin_loop(void) {
     cur_obj_update_floor_and_walls();
     cur_obj_if_hit_wall_bounce_away();
     cur_obj_move_standard(-62);
+    if (bhv_coin_should_collect_on_no_despawn_death_barrier()) {
+        bhv_coin_collect_without_contact();
+        return;
+    }
     if ((sp1C = o->oFloor) != NULL) {
         if (o->oMoveFlags & OBJ_MOVE_ON_GROUND)
             o->oSubAction = 1;

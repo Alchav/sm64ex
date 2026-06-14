@@ -31,7 +31,22 @@ static struct ObjectHitbox sMovingBlueCoinHitbox = {
 static void moving_coin_collect_without_contact(void);
 
 static bool moving_coin_collect_on_no_despawn_floor(s16 collisionFlags) {
-    if (!SM64AP_NoDespawn() || !(collisionFlags & OBJ_COL_FLAG_GROUNDED)) {
+    if (!SM64AP_NoDespawn()) {
+        return false;
+    }
+
+    if (sObjFloor != NULL && sObjFloor->type == SURFACE_DEATH_PLANE
+        && o->oPosY < o->oFloorHeight + 2048.0f) {
+        moving_coin_collect_without_contact();
+        return true;
+    }
+
+    if (sObjFloor == NULL && o->oPosY <= -10000.0f) {
+        moving_coin_collect_without_contact();
+        return true;
+    }
+
+    if (!(collisionFlags & OBJ_COL_FLAG_GROUNDED)) {
         return false;
     }
 
@@ -44,9 +59,6 @@ static bool moving_coin_collect_on_no_despawn_floor(s16 collisionFlags) {
             default:
                 break;
         }
-    } else if (o->oPosY <= -10000.0f) {
-        moving_coin_collect_without_contact();
-        return true;
     }
 
     return false;

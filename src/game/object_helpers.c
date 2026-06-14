@@ -36,6 +36,7 @@ static s8 sLevelsWithRooms[] = { LEVEL_BBH, LEVEL_CASTLE, LEVEL_HMC, -1 };
 
 static s32 clear_move_flag(u32 *, s32);
 static s32 cur_obj_collect_loot_if_no_despawn_void(void);
+static s32 cur_obj_is_bits_mystery_goomba(void);
 
 #define o gCurrentObject
 
@@ -1847,7 +1848,13 @@ static s32 cur_obj_collect_loot_if_no_despawn_void(void) {
         return FALSE;
     }
 
-    if (o->oFloor != NULL && o->oFloor->type == SURFACE_DEATH_PLANE) {
+    if (cur_obj_is_bits_mystery_goomba()) {
+        obj_mark_for_deletion(o);
+        return TRUE;
+    }
+
+    if (o->oFloor != NULL && o->oFloor->type == SURFACE_DEATH_PLANE
+        && o->oPosY < o->oFloorHeight + 2048.0f) {
         obj_collect_loot_coins_without_contact(o, o->oNumLootCoins);
         obj_mark_for_deletion(o);
         return TRUE;
@@ -1860,6 +1867,20 @@ static s32 cur_obj_collect_loot_if_no_despawn_void(void) {
     }
 
     return FALSE;
+}
+
+static s32 cur_obj_is_bits_mystery_goomba(void) {
+    struct Object *parent = o->parentObj;
+
+    // The BITS "Mystery Goomba" is a vanilla-inaccessible triplet Goomba that
+    // spawns on the death barrier. NoDespawn should not add its impossible coin.
+    if (gCurrLevelNum != LEVEL_BITS || parent == NULL || parent == o
+        || !cur_obj_has_behavior(bhvGoomba) || !obj_has_behavior(parent, bhvGoombaTripletSpawner)) {
+        return FALSE;
+    }
+
+    return parent->oPosX == -5239.0f && parent->oPosZ == -999.0f
+        && (o->oBehParams2ndByte & GOOMBA_BP_TRIPLET_FLAG_MASK) == 0x10;
 }
 
 void cur_obj_move_standard(s16 steepSlopeAngleDegrees) {
