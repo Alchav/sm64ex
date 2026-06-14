@@ -271,6 +271,8 @@ static void SM64AP_SetMin(int &value, int minValue) {
 }
 
 void SM64AP_RecvItem(int64_t idx, bool notify) {
+    AP_EnableQueueItemRecvMsgs(true);
+
     if (idx >= SM64AP_ID_OBJECT_ITEM(0)
         && idx <= SM64AP_ID_OBJECT_ITEM(SM64AP_NUM_CONTIGUOUS_OBJECT_ITEMS - 1)
         && idx != SM64AP_ID_BITFS) {
@@ -372,6 +374,7 @@ void SM64AP_RecvItem(int64_t idx, bool notify) {
             break;
         case SM64AP_ITEMID_1UP:
             gMarioState->numLives++;
+            AP_EnableQueueItemRecvMsgs(false);
             break;
         case SM64AP_ID_CANNONUNLOCK(0) ... SM64AP_ID_CANNONUNLOCK(15-1):
             sm64_have_cannon[idx-(SM64AP_ID_CANNONUNLOCK(0))] = true;
