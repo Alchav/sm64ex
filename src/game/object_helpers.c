@@ -1,10 +1,12 @@
 #include <PR/ultratypes.h>
 
+#include "sm64ap.h"
 #include "sm64.h"
 #include "area.h"
 #include "behavior_actions.h"
 #include "behavior_data.h"
 #include "camera.h"
+#include "course_table.h"
 #include "debug.h"
 #include "dialog_ids.h"
 #include "engine/behavior_script.h"
@@ -26,12 +28,14 @@
 #include "rendering_graph_node.h"
 #include "spawn_object.h"
 #include "spawn_sound.h"
+#include "thread6.h"
 
 s8 D_8032F0A0[] = { 0xF8, 0x08, 0xFC, 0x04 };
 s16 D_8032F0A4[] = { 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80 };
 static s8 sLevelsWithRooms[] = { LEVEL_BBH, LEVEL_CASTLE, LEVEL_HMC, -1 };
 
 static s32 clear_move_flag(u32 *, s32);
+static s32 cur_obj_collect_loot_if_no_despawn_void(void);
 
 #define o gCurrentObject
 
@@ -1636,6 +1640,46 @@ void obj_spawn_loot_yellow_coins(struct Object *obj, s32 numCoins, f32 sp28) {
     obj_spawn_loot_coins(obj, numCoins, sp28, bhvSingleCoinGetsSpawned, 0, MODEL_YELLOW_COIN);
 }
 
+static void obj_collect_coin_value_without_contact(s32 coinValue) {
+    s32 coinStarRequirement;
+
+    if (coinValue <= 0 || gMarioState == NULL) {
+        return;
+    }
+
+    gMarioState->numCoins += coinValue;
+    gMarioState->healCounter += 4 * coinValue;
+    SM64AP_CheckCoinCount(gCurrCourseNum, gMarioState->numCoins);
+
+    coinStarRequirement = SM64AP_GetCoinStarRequirement(gCurrCourseNum);
+    if (COURSE_IS_MAIN_COURSE(gCurrCourseNum)
+        && !SM64AP_CollectedCourseStar(gCurrCourseNum - COURSE_MIN, 6)
+        && gMarioState->numCoins - coinValue < coinStarRequirement
+        && gMarioState->numCoins >= coinStarRequirement) {
+        bhv_spawn_star_no_level_exit(6);
+    }
+
+    if (coinValue >= 2) {
+        queue_rumble_data(5, 80);
+    }
+}
+
+void obj_collect_loot_coins_without_contact(struct Object *obj, s32 numCoins) {
+    if (!SM64AP_NoDespawn()) {
+        return;
+    }
+
+    if (numCoins < 0) {
+        obj_collect_coin_value_without_contact(5);
+    } else if (numCoins > 0) {
+        obj_collect_coin_value_without_contact(numCoins);
+    } else {
+        return;
+    }
+
+    obj->oNumLootCoins = 0;
+}
+
 void cur_obj_spawn_loot_coin_at_mario_pos(void) {
     struct Object *coin;
     if (o->oNumLootCoins <= 0) {
@@ -1798,6 +1842,26 @@ void cur_obj_update_floor_and_walls(void) {
     cur_obj_update_floor_and_resolve_wall_collisions(60);
 }
 
+static s32 cur_obj_collect_loot_if_no_despawn_void(void) {
+    if (!SM64AP_NoDespawn() || o->oNumLootCoins == 0) {
+        return FALSE;
+    }
+
+    if (o->oFloor != NULL && o->oFloor->type == SURFACE_DEATH_PLANE) {
+        obj_collect_loot_coins_without_contact(o, o->oNumLootCoins);
+        obj_mark_for_deletion(o);
+        return TRUE;
+    }
+
+    if (o->oFloor == NULL && o->oFloorHeight < -10000.0f && o->oPosY <= -10000.0f) {
+        obj_collect_loot_coins_without_contact(o, o->oNumLootCoins);
+        obj_mark_for_deletion(o);
+        return TRUE;
+    }
+
+    return FALSE;
+}
+
 void cur_obj_move_standard(s16 steepSlopeAngleDegrees) {
     f32 gravity = o->oGravity;
     f32 bounciness = o->oBounciness;
@@ -1827,6 +1891,10 @@ void cur_obj_move_standard(s16 steepSlopeAngleDegrees) {
 
         cur_obj_move_xz(steepSlopeNormalY, careAboutEdgesAndSteepSlopes);
         cur_obj_move_y(gravity, bounciness, buoyancy);
+
+        if (cur_obj_collect_loot_if_no_despawn_void()) {
+            return;
+        }
 
         if (o->oForwardVel < 0) {
             negativeSpeed = TRUE;

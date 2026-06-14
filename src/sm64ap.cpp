@@ -69,6 +69,8 @@ bool sm64_have_bitdw_1ups = false;
 bool sm64_have_bitfs_1ups = false;
 bool sm64_hat_restore_with_animation_pending = false;
 bool sm64_hat_restore_without_animation_pending = false;
+bool sm64_easy_butterflies = false;
+bool sm64_no_despawn = false;
 bool sm64_have_wingcap = false;
 bool sm64_have_metalcap = false;
 bool sm64_have_vanishcap = false;
@@ -1219,14 +1221,16 @@ void SM64AP_SetOneUpChecks(int enabled) {
     sm64_1up_checks_enabled = enabled != 0;
 }
 
-void SM64AP_SetOneUpChecksAlias(int enabled) {
-    if (enabled != 0) {
-        sm64_1up_checks_enabled = true;
-    }
-}
-
 void SM64AP_SetBowserStageOneUpBehavior(int behavior) {
     sm64_bowser_stage_1up_item_behavior = behavior != 0;
+}
+
+void SM64AP_SetEasyButterflies(int enabled) {
+    sm64_easy_butterflies = enabled != 0;
+}
+
+void SM64AP_SetNoDespawn(int enabled) {
+    sm64_no_despawn = enabled != 0;
 }
 
 static void SM64AP_ResetCoinStarRequirements() {
@@ -1715,8 +1719,9 @@ void SM64AP_GenericInit() {
     AP_RegisterSlotDataIntCallback("GlobalCapItems", &SM64AP_SetGlobalCapDisplay);
     AP_RegisterSlotDataIntCallback("ShowGlobalCapDisplay", &SM64AP_SetGlobalCapDisplay);
     AP_RegisterSlotDataIntCallback("OneUpChecks", &SM64AP_SetOneUpChecks);
-    AP_RegisterSlotDataIntCallback("1UpChecks", &SM64AP_SetOneUpChecksAlias);
     AP_RegisterSlotDataIntCallback("BowserStage1UpBehavior", &SM64AP_SetBowserStageOneUpBehavior);
+    AP_RegisterSlotDataIntCallback("EasyButterflies", &SM64AP_SetEasyButterflies);
+    AP_RegisterSlotDataIntCallback("NoDespawn", &SM64AP_SetNoDespawn);
     AP_RegisterSlotDataRawCallback("AreaRando", static_cast<void (*)(std::string)>(&SM64AP_SetCourseMap));
     AP_RegisterSlotDataRawCallback("StartInventory", static_cast<void (*)(std::string)>(&SM64AP_SetStartInventory));
     AP_RegisterSlotDataIntCallback("MusicShuffleMode", &SM64AP_SetMusicShuffleMode);
@@ -2326,6 +2331,14 @@ bool SM64AP_HavePainting(int courseIdx) {
 
 bool SM64AP_PaintingRandoEnabled() {
     return sm64_painting_rando_enabled;
+}
+
+bool SM64AP_EasyButterflies() {
+    return sm64_easy_butterflies;
+}
+
+bool SM64AP_NoDespawn() {
+    return sm64_no_despawn;
 }
 
 bool SM64AP_MoatDrained() {

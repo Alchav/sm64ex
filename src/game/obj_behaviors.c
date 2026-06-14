@@ -32,6 +32,7 @@
 #include "save_file.h"
 #include "spawn_object.h"
 #include "spawn_sound.h"
+#include "thread6.h"
 
 /**
  * @file obj_behaviors.c
@@ -722,6 +723,7 @@ void obj_check_floor_death(s16 collisionFlags, struct Surface *floor) {
                 break;
             //! @BUG Doesn't check for the vertical wind death floor.
             case SURFACE_DEATH_PLANE:
+                obj_collect_loot_coins_without_contact(o, o->oNumLootCoins);
                 o->oAction = OBJ_ACT_DEATH_PLANE_DEATH;
                 break;
             default:

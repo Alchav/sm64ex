@@ -4,6 +4,8 @@
  * you press a blue coin switch (a.k.a. bhvBlueCoinSwitch).
  */
 
+#include "../../sm64ap.h"
+
 /**
  * Update function for bhvHiddenBlueCoin.
  */
@@ -46,7 +48,7 @@ void bhv_hidden_blue_coin_loop(void) {
 
             // After 200 frames of waiting and 20 2-frame blinks (for 240 frames total),
             // delete the object.
-            if (cur_obj_wait_then_blink(200, 20)) {
+            if (!SM64AP_NoDespawn() && cur_obj_wait_then_blink(200, 20)) {
                 obj_mark_for_deletion(o);
             }
 

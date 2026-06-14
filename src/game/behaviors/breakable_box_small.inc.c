@@ -81,6 +81,7 @@ void breakable_box_small_idle_loop(void) {
             break;
 
         case 101:
+            obj_collect_loot_coins_without_contact(o, 3);
             o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
             create_respawner(MODEL_BREAKABLE_BOX_SMALL, bhvBreakableBoxSmall, 3000);
             break;

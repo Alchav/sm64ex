@@ -63,6 +63,42 @@ void bhv_1up_interact(void) {
     }
 }
 
+static void bhv_1up_collect_without_contact(void) {
+    bhv_1up_assign_ap_location();
+    if (SM64AP_ShouldSuppressOneUp(o->o1UpApLocationId)) {
+        o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
+        return;
+    }
+
+    play_sound(SOUND_GENERAL_COLLECT_1UP, gDefaultSoundArgs);
+    if (!SM64AP_CollectOneUp(o->o1UpApLocationId)) {
+        gMarioState->numLives++;
+    }
+    o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
+}
+
+static bool bhv_1up_collect_on_no_despawn_floor(s16 collisionFlags) {
+    if (!SM64AP_NoDespawn() || !(collisionFlags & OBJ_COL_FLAG_GROUNDED)) {
+        return false;
+    }
+
+    if (sObjFloor != NULL) {
+        switch (sObjFloor->type) {
+            case SURFACE_BURNING:
+            case SURFACE_DEATH_PLANE:
+                bhv_1up_collect_without_contact();
+                return true;
+            default:
+                break;
+        }
+    } else if (o->oPosY <= -10000.0f) {
+        bhv_1up_collect_without_contact();
+        return true;
+    }
+
+    return false;
+}
+
 void bhv_1up_common_init(void) {
     bhv_1up_assign_ap_location();
     if (SM64AP_ShouldSuppressOneUp(o->o1UpApLocationId)) {
@@ -110,18 +146,27 @@ void pole_1up_move_towards_mario(void) {
 }
 
 void one_up_move_away_from_mario(s16 sp1A) {
+    if (bhv_1up_collect_on_no_despawn_floor(sp1A)) {
+        return;
+    }
+
     o->oForwardVel = 8.0f;
     o->oMoveAngleYaw = o->oAngleToMario + 0x8000;
     bhv_1up_interact();
-    if (sp1A & 0x02)
+    if (!SM64AP_NoDespawn() && (sp1A & 0x02))
         o->oAction = 2;
 
-    if (!is_point_within_radius_of_mario(o->oPosX, o->oPosY, o->oPosZ, 3000))
+    if (!SM64AP_NoDespawn()
+        && !is_point_within_radius_of_mario(o->oPosX, o->oPosY, o->oPosZ, 3000))
         o->oAction = 2;
 }
 
 void bhv_1up_walking_loop(void) {
-    object_step();
+    s16 collisionFlags = object_step();
+
+    if (bhv_1up_collect_on_no_despawn_floor(collisionFlags)) {
+        return;
+    }
 
     switch (o->oAction) {
         case 0:
@@ -141,14 +186,16 @@ void bhv_1up_walking_loop(void) {
             break;
 
         case 1:
-            if (o->oTimer > 300)
+            if (!SM64AP_NoDespawn() && o->oTimer > 300)
                 o->oAction = 2;
 
             bhv_1up_interact();
             break;
 
         case 2:
-            obj_flicker_and_disappear(o, 30);
+            if (!SM64AP_NoDespawn()) {
+                obj_flicker_and_disappear(o, 30);
+            }
             bhv_1up_interact();
             break;
     }
@@ -183,7 +230,9 @@ void bhv_1up_running_away_loop(void) {
             break;
 
         case 2:
-            obj_flicker_and_disappear(o, 30);
+            if (!SM64AP_NoDespawn()) {
+                obj_flicker_and_disappear(o, 30);
+            }
             bhv_1up_interact();
             break;
     }
@@ -195,6 +244,10 @@ void sliding_1up_move(void) {
     s16 sp1E;
 
     sp1E = object_step();
+    if (bhv_1up_collect_on_no_despawn_floor(sp1E)) {
+        return;
+    }
+
     if (sp1E & 0x01) {
         o->oForwardVel += 25.0f;
         o->oVelY = 0;
@@ -205,7 +258,8 @@ void sliding_1up_move(void) {
     if (o->oForwardVel > 40.0)
         o->oForwardVel = 40.0f;
 
-    if (!is_point_within_radius_of_mario(o->oPosX, o->oPosY, o->oPosZ, 5000))
+    if (!SM64AP_NoDespawn()
+        && !is_point_within_radius_of_mario(o->oPosX, o->oPosY, o->oPosZ, 5000))
         o->oAction = 2;
 }
 
@@ -222,7 +276,9 @@ void bhv_1up_sliding_loop(void) {
             break;
 
         case 2:
-            obj_flicker_and_disappear(o, 30);
+            if (!SM64AP_NoDespawn()) {
+                obj_flicker_and_disappear(o, 30);
+            }
             bhv_1up_interact();
             break;
     }
@@ -255,8 +311,13 @@ void bhv_1up_jump_on_approach_loop(void) {
 
         case 2:
             sp26 = object_step();
+            if (bhv_1up_collect_on_no_despawn_floor(sp26)) {
+                break;
+            }
             bhv_1up_interact();
-            obj_flicker_and_disappear(o, 30);
+            if (!SM64AP_NoDespawn()) {
+                obj_flicker_and_disappear(o, 30);
+            }
             break;
     }
 
@@ -284,8 +345,13 @@ void bhv_1up_hidden_loop(void) {
 
         case 2:
             sp26 = object_step();
+            if (bhv_1up_collect_on_no_despawn_floor(sp26)) {
+                break;
+            }
             bhv_1up_interact();
-            obj_flicker_and_disappear(o, 30);
+            if (!SM64AP_NoDespawn()) {
+                obj_flicker_and_disappear(o, 30);
+            }
             break;
 
         case 3:
@@ -331,10 +397,14 @@ void bhv_1up_hidden_in_pole_loop(void) {
         case 1:
             pole_1up_move_towards_mario();
             sp26 = object_step();
+            bhv_1up_collect_on_no_despawn_floor(sp26);
             break;
 
         case 3:
             sp26 = object_step();
+            if (bhv_1up_collect_on_no_despawn_floor(sp26)) {
+                break;
+            }
             if (o->oTimer >= 18)
                 spawn_object(o, MODEL_NONE, bhvSparkleSpawn);
 

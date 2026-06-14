@@ -343,6 +343,8 @@ AP_EXTERN_C bool SM64AP_ShouldSpawnLevelObject(s16, s16, s16, s16, s16, s16, u32
 AP_EXTERN_C bool SM64AP_ShouldCreateWhirlpool(s16, s16, s8, s8, s16, s16, s16, s16);
 AP_EXTERN_C bool SM64AP_HavePainting(int);
 AP_EXTERN_C bool SM64AP_PaintingRandoEnabled();
+AP_EXTERN_C bool SM64AP_EasyButterflies();
+AP_EXTERN_C bool SM64AP_NoDespawn();
 AP_EXTERN_C bool SM64AP_DeathLinkPending();
 AP_EXTERN_C void SM64AP_DeathLinkClear();
 AP_EXTERN_C void SM64AP_DeathLinkSend();

@@ -23,8 +23,15 @@ static struct TripletButterflyActivationData sTripletButterflyActivationData[] =
     { MODEL_1UP, bhv1upWalking, 1.0f },
 };
 
+static bool triplet_butterfly_is_easy_1up(void) {
+    return SM64AP_EasyButterflies()
+        && o->oTripletButterflyType == TRIPLET_BUTTERFLY_TYPE_SPAWN_1UP;
+}
+
 static void triplet_butterfly_act_init(void) {
     s32 butterflyNum;
+    s32 selectedButterfly;
+    s32 matchedButterfly;
     s32 i;
 
     butterflyNum = o->oBehParams2ndByte & TRIPLET_BUTTERFLY_BP_BUTTERFLY_NUM;
@@ -38,7 +45,9 @@ static void triplet_butterfly_act_init(void) {
         }
 
         //! TODO: Describe this glitch
-        if (o->parentObj->oTripletButterflySelectedButterfly == o->oBehParams2ndByte) {
+        selectedButterfly = o->parentObj->oTripletButterflySelectedButterfly;
+        matchedButterfly = SM64AP_EasyButterflies() ? butterflyNum : o->oBehParams2ndByte;
+        if (selectedButterfly == matchedButterfly) {
             o->oTripletButterflyType = TRIPLET_BUTTERFLY_TYPE_SPAWN_1UP;
         } else if (o->parentObj->oBehParams2ndByte & TRIPLET_BUTTERFLY_BP_NO_BOMBS) {
             o->oTripletButterflyType = TRIPLET_BUTTERFLY_TYPE_NORMAL;
@@ -56,8 +65,10 @@ static void triplet_butterfly_act_init(void) {
 }
 
 static void triplet_butterfly_act_wander(void) {
+    bool easyOneUp = triplet_butterfly_is_easy_1up();
+
 #ifndef NODRAWINGDISTANCE
-    if (o->oDistanceToMario > 1500.0f) {
+    if (o->oDistanceToMario > 1500.0f && !easyOneUp) {
         obj_mark_for_deletion(o);
     } else {
 #endif
@@ -67,7 +78,7 @@ static void triplet_butterfly_act_wander(void) {
         } else {
             o->oTripletButterflyTargetYaw = (s32) o->oTripletButterflyBaseYaw;
 
-            if (o->oTimer > 110 && o->oDistanceToMario < 200.0f
+            if (o->oTimer > 110 && (o->oDistanceToMario < 200.0f || easyOneUp)
                 && o->oTripletButterflyType > TRIPLET_BUTTERFLY_TYPE_NORMAL) {
                 o->oAction = TRIPLET_BUTTERFLY_ACT_ACTIVATE;
                 o->oTripletButterflySpeed = 0.0f;

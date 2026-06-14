@@ -1,5 +1,7 @@
 // coin.c.inc
 
+#include "../../sm64ap.h"
+
 // sp18 = collisionFlagsPtr
 
 static struct ObjectHitbox sMovingYellowCoinHitbox = {
@@ -26,10 +28,37 @@ static struct ObjectHitbox sMovingBlueCoinHitbox = {
     /* hurtboxHeight:     */ 0,
 };
 
+static void moving_coin_collect_without_contact(void);
+
+static bool moving_coin_collect_on_no_despawn_floor(s16 collisionFlags) {
+    if (!SM64AP_NoDespawn() || !(collisionFlags & OBJ_COL_FLAG_GROUNDED)) {
+        return false;
+    }
+
+    if (sObjFloor != NULL) {
+        switch (sObjFloor->type) {
+            case SURFACE_BURNING:
+            case SURFACE_DEATH_PLANE:
+                moving_coin_collect_without_contact();
+                return true;
+            default:
+                break;
+        }
+    } else if (o->oPosY <= -10000.0f) {
+        moving_coin_collect_without_contact();
+        return true;
+    }
+
+    return false;
+}
+
 s32 coin_step(s16 *collisionFlagsPtr) {
     *collisionFlagsPtr = object_step();
 
     obj_check_floor_death(*collisionFlagsPtr, sObjFloor);
+    if (moving_coin_collect_on_no_despawn_floor(*collisionFlagsPtr)) {
+        return 0;
+    }
 
     if ((*collisionFlagsPtr & 0x1) != 0 && (*collisionFlagsPtr & 0x8) == 0) /* bit 0, bit 3 */
     {
@@ -44,12 +73,41 @@ void moving_coin_flicker(void) {
     s16 collisionFlags;
 
     coin_step(&collisionFlags);
-    obj_flicker_and_disappear(o, 0);
+    if (!SM64AP_NoDespawn()) {
+        obj_flicker_and_disappear(o, 0);
+    }
 }
 
 void coin_collected(void) {
     spawn_object(o, MODEL_SPARKLES, bhvGoldenCoinSparkles);
     o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
+}
+
+static void moving_coin_collect_without_contact(void) {
+    s32 coinValue = o->oDamageOrCoinValue;
+    s32 coinStarRequirement;
+
+    if (coinValue <= 0) {
+        coinValue = cur_obj_has_model(MODEL_BLUE_COIN) ? 5 : 1;
+    }
+
+    gMarioState->numCoins += coinValue;
+    gMarioState->healCounter += 4 * coinValue;
+    SM64AP_CheckCoinCount(gCurrCourseNum, gMarioState->numCoins);
+
+    coinStarRequirement = SM64AP_GetCoinStarRequirement(gCurrCourseNum);
+    if (COURSE_IS_MAIN_COURSE(gCurrCourseNum)
+        && !SM64AP_CollectedCourseStar(gCurrCourseNum - COURSE_MIN, 6)
+        && gMarioState->numCoins - coinValue < coinStarRequirement
+        && gMarioState->numCoins >= coinStarRequirement) {
+        bhv_spawn_star_no_level_exit(6);
+    }
+
+    if (coinValue >= 2) {
+        queue_rumble_data(5, 80);
+    }
+
+    coin_collected();
 }
 
 void bhv_moving_yellow_coin_init(void) {
@@ -71,7 +129,7 @@ void bhv_moving_yellow_coin_loop(void) {
             else
                 cur_obj_become_tangible();
 
-            if (o->oTimer >= 301)
+            if (!SM64AP_NoDespawn() && o->oTimer >= 301)
                 o->oAction = 1;
             break;
 
@@ -80,10 +138,18 @@ void bhv_moving_yellow_coin_loop(void) {
             break;
 
         case MOV_YCOIN_ACT_LAVA_DEATH:
+            if (SM64AP_NoDespawn()) {
+                moving_coin_collect_without_contact();
+                break;
+            }
             o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
             break;
 
         case MOV_YCOIN_ACT_DEATH_PLANE_DEATH:
+            if (SM64AP_NoDespawn()) {
+                moving_coin_collect_without_contact();
+                break;
+            }
             o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
             break;
     }
@@ -129,7 +195,9 @@ void bhv_moving_blue_coin_loop(void) {
             if (o->oForwardVel > 75.0)
                 o->oForwardVel = 75.0f;
 
-            obj_flicker_and_disappear(o, 600);
+            if (!SM64AP_NoDespawn()) {
+                obj_flicker_and_disappear(o, 600);
+            }
             break;
     }
 
@@ -171,7 +239,7 @@ void blue_coin_sliding_slow_down(void) {
     if (is_point_within_radius_of_mario(o->oPosX, o->oPosY, o->oPosZ, 500) == 1)
         o->oAction = 1;
 
-    if (o->oTimer >= 151)
+    if (!SM64AP_NoDespawn() && o->oTimer >= 151)
         o->oAction = 3;
 }
 
@@ -197,7 +265,7 @@ void bhv_blue_coin_sliding_loop(void) {
 
         case 3:
             coin_step(&collisionFlags);
-            if (o->oTimer >= 61)
+            if (!SM64AP_NoDespawn() && o->oTimer >= 61)
                 o->oAction = 4;
             break;
 
@@ -206,10 +274,18 @@ void bhv_blue_coin_sliding_loop(void) {
             break;
 
         case 100:
+            if (SM64AP_NoDespawn()) {
+                moving_coin_collect_without_contact();
+                break;
+            }
             o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
             break;
 
         case 101:
+            if (SM64AP_NoDespawn()) {
+                moving_coin_collect_without_contact();
+                break;
+            }
             o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
             break;
     }
@@ -250,7 +326,7 @@ void bhv_blue_coin_jumping_loop(void) {
 
         case 3:
             coin_step(&collisionFlags);
-            if (o->oTimer >= 61)
+            if (!SM64AP_NoDespawn() && o->oTimer >= 61)
                 o->oAction = 4;
             break;
 
