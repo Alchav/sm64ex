@@ -1,16 +1,75 @@
 // mushroom_1up.c.inc
 
+#include "../../sm64ap.h"
+
+static s16 bhv_1up_ap_source_type(void) {
+    if (cur_obj_has_behavior(bhv1Up)) {
+        return SM64AP_1UP_SOURCE_OBJECT;
+    }
+    if (cur_obj_has_behavior(bhv1upSliding)) {
+        return SM64AP_1UP_SOURCE_SLIDING;
+    }
+    if (cur_obj_has_behavior(bhv1upJumpOnApproach)) {
+        return SM64AP_1UP_SOURCE_JUMP_ON_APPROACH;
+    }
+    if (cur_obj_has_behavior(bhvHidden1up)) {
+        return SM64AP_1UP_SOURCE_HIDDEN;
+    }
+    if (cur_obj_has_behavior(bhvHidden1upInPole)) {
+        return SM64AP_1UP_SOURCE_HIDDEN_POLE;
+    }
+    if (cur_obj_has_behavior(bhv1upWalking)) {
+        return SM64AP_1UP_SOURCE_WALKING;
+    }
+    if (cur_obj_has_behavior(bhv1upRunningAway)) {
+        return SM64AP_1UP_SOURCE_RUNNING_AWAY;
+    }
+
+    return -1;
+}
+
+static void bhv_1up_assign_ap_location(void) {
+    s16 sourceType;
+
+    if (o->o1UpApLocationId != 0) {
+        return;
+    }
+
+    sourceType = bhv_1up_ap_source_type();
+    if (sourceType < 0) {
+        return;
+    }
+
+    o->o1UpApLocationId = SM64AP_ResolveOneUpLocation(
+        gCurrLevelNum, gCurrAreaIndex, sourceType, o->oBehParams2ndByte,
+        (s16) o->oPosX, (s16) o->oPosY, (s16) o->oPosZ);
+}
+
 void bhv_1up_interact(void) {
     UNUSED s32 sp1C;
 
+    bhv_1up_assign_ap_location();
+    if (SM64AP_ShouldSuppressOneUp(o->o1UpApLocationId)) {
+        o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
+        return;
+    }
+
     if (obj_check_if_collided_with_object(o, gMarioObject) == 1) {
         play_sound(SOUND_GENERAL_COLLECT_1UP, gDefaultSoundArgs);
-        gMarioState->numLives++;
+        if (!SM64AP_CollectOneUp(o->o1UpApLocationId)) {
+            gMarioState->numLives++;
+        }
         o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
     }
 }
 
 void bhv_1up_common_init(void) {
+    bhv_1up_assign_ap_location();
+    if (SM64AP_ShouldSuppressOneUp(o->o1UpApLocationId)) {
+        o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
+        return;
+    }
+
     o->oMoveAnglePitch = -0x4000;
     o->oGravity = 3.0f;
     o->oFriction = 1.0f;
@@ -19,12 +78,10 @@ void bhv_1up_common_init(void) {
 
 void bhv_1up_init(void) {
     bhv_1up_common_init();
-    if (o->oBehParams2ndByte == 1) {
-        if ((save_file_get_flags() & 0x50) == 0)
+    if (o->oBehParams2ndByte == 1 || o->oBehParams2ndByte == 2) {
+        if (!SM64AP_ShouldSpawnBowserStageOneUp(gCurrLevelNum, o->oBehParams2ndByte, save_file_get_flags())) {
             o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
-    } else if (o->oBehParams2ndByte == 2) {
-        if ((save_file_get_flags() & 0xa0) == 0)
-            o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
+        }
     }
 }
 
@@ -308,11 +365,20 @@ void bhv_1up_hidden_in_pole_trigger_loop(void) {
 
 void bhv_1up_hidden_in_pole_spawner_loop(void) {
     s8 sp2F;
+    s32 oneUpLocId;
+    struct Object *oneUp;
 
     if (is_point_within_radius_of_mario(o->oPosX, o->oPosY, o->oPosZ, 700)) {
-        spawn_object_relative(2, 0, 50, 0, o, MODEL_1UP, bhvHidden1upInPole);
-        for (sp2F = 0; sp2F < 2; sp2F++) {
-            spawn_object_relative(0, 0, sp2F * -200, 0, o, MODEL_NONE, bhvHidden1upInPoleTrigger);
+        oneUpLocId = SM64AP_ResolveOneUpLocation(
+            gCurrLevelNum, gCurrAreaIndex, SM64AP_1UP_SOURCE_HIDDEN_POLE, 0,
+            (s16) o->oPosX, (s16) o->oPosY, (s16) o->oPosZ);
+
+        if (!SM64AP_ShouldSuppressOneUp(oneUpLocId)) {
+            oneUp = spawn_object_relative(2, 0, 50, 0, o, MODEL_1UP, bhvHidden1upInPole);
+            oneUp->o1UpApLocationId = oneUpLocId;
+            for (sp2F = 0; sp2F < 2; sp2F++) {
+                spawn_object_relative(0, 0, sp2F * -200, 0, o, MODEL_NONE, bhvHidden1upInPoleTrigger);
+            }
         }
 
         o->activeFlags = ACTIVE_FLAG_DEACTIVATED;

@@ -5,6 +5,8 @@
  * search for an available hole to pop out of.
  */
 
+#include "../../sm64ap.h"
+
 /**
  * The first hole in the list of monty mole holes. The list is a singly linked
  * list using the parentObj field.
@@ -327,6 +329,17 @@ static struct ObjectHitbox sMontyMoleHitbox = {
     /* hurtboxHeight:     */ 40,
 };
 
+static s16 monty_mole_ap_1up_group(void) {
+    switch (gCurrLevelNum) {
+        case LEVEL_HMC:
+            return o->oPosZ < -2500.0f ? 0 : 1;
+        case LEVEL_TTM:
+            return o->oPosY > -1800.0f ? 0 : 1;
+        default:
+            return 0;
+    }
+}
+
 /**
  * Update function for bhvMontyMole.
  */
@@ -379,8 +392,15 @@ void bhv_monty_mole_update(void) {
             //  attack moles in these holes consecutively.
             if (distToLastKill < 1500.0f) {
                 if (sMontyMoleKillStreak == 7) {
-                    play_puzzle_jingle();
-                    spawn_object(o, MODEL_1UP, bhv1upWalking);
+                    s32 oneUpLocId = SM64AP_ResolveOneUpLocation(
+                        gCurrLevelNum, gCurrAreaIndex, SM64AP_1UP_SOURCE_MONTY_MOLES,
+                        monty_mole_ap_1up_group(), 0, 0, 0);
+                    if (!SM64AP_ShouldSuppressOneUp(oneUpLocId)) {
+                        struct Object *oneUp;
+                        play_puzzle_jingle();
+                        oneUp = spawn_object(o, MODEL_1UP, bhv1upWalking);
+                        oneUp->o1UpApLocationId = oneUpLocId;
+                    }
                 }
             } else {
                 sMontyMoleKillStreak = 0;

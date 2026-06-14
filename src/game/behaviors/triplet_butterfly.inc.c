@@ -1,3 +1,5 @@
+#include "../../sm64ap.h"
+
 struct TripletButterflyActivationData {
     s32 model;
     const BehaviorScript *behavior;
@@ -101,8 +103,17 @@ static void triplet_butterfly_act_activate(void) {
         } else if (o->oTripletButterflyScale
                    >= sTripletButterflyActivationData[o->oTripletButterflyType].scale) {
             if (o->oTripletButterflyType != TRIPLET_BUTTERFLY_TYPE_EXPLODES) {
-                spawn_object(o, o->oTripletButterflyModel,
-                             sTripletButterflyActivationData[o->oTripletButterflyType].behavior);
+                struct Object *source = o->parentObj;
+                s32 oneUpLocId = SM64AP_ResolveOneUpLocation(
+                    gCurrLevelNum, gCurrAreaIndex, SM64AP_1UP_SOURCE_BUTTERFLY,
+                    source->oBehParams2ndByte & TRIPLET_BUTTERFLY_BP_NO_BOMBS,
+                    (s16) source->oHomeX, (s16) source->oHomeY, (s16) source->oHomeZ);
+                if (!SM64AP_ShouldSuppressOneUp(oneUpLocId)) {
+                    struct Object *oneUp = spawn_object(
+                        o, o->oTripletButterflyModel,
+                        sTripletButterflyActivationData[o->oTripletButterflyType].behavior);
+                    oneUp->o1UpApLocationId = oneUpLocId;
+                }
                 obj_mark_for_deletion(o);
             } else {
                 o->oAction = TRIPLET_BUTTERFLY_ACT_EXPLODE;
