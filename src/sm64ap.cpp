@@ -120,16 +120,28 @@ static constexpr int SM64AP_MUSIC_SHUFFLE_OFF = 0;
 static constexpr int SM64AP_MUSIC_SHUFFLE_MAP = 1;
 static constexpr int SM64AP_MUSIC_SHUFFLE_RANDOM_ON_LOAD = 2;
 static constexpr int SM64AP_NUM_COIN_STAR_REQUIREMENTS = 15;
+static constexpr int SM64AP_NUM_COIN_CHECK_COURSES = 24;
 static constexpr int SM64AP_DEFAULT_COIN_STAR_REQUIREMENT = 100;
-static constexpr int SM64AP_COIN_CHECK_MAX_COUNTS[15] = {
+static constexpr int SM64AP_COIN_CHECK_MAX_COUNTS[SM64AP_NUM_COIN_CHECK_COURSES] = {
     146, 141, 104, 154, 151,
     139, 133, 136, 106, 127,
     152, 137, 191, 128, 146,
+    80, 56, 56, 63, 27,
+    47, 80, 80, 76,
 };
-static constexpr int SM64AP_COIN_CHECK_OFFSETS[15] = {
+static constexpr int SM64AP_COIN_CHECK_OFFSETS[SM64AP_NUM_COIN_CHECK_COURSES] = {
     0, 146, 287, 391, 545,
     696, 835, 968, 1104, 1210,
     1337, 1489, 1626, 1817, 1945,
+    SM64AP_NUM_MAIN_COIN_CHECKS,
+    SM64AP_NUM_MAIN_COIN_CHECKS + 80,
+    SM64AP_NUM_MAIN_COIN_CHECKS + 136,
+    SM64AP_NUM_MAIN_COIN_CHECKS + 192,
+    SM64AP_NUM_MAIN_COIN_CHECKS + 255,
+    SM64AP_NUM_MAIN_COIN_CHECKS + 282,
+    SM64AP_NUM_MAIN_COIN_CHECKS + 329,
+    SM64AP_NUM_MAIN_COIN_CHECKS + 409,
+    SM64AP_NUM_MAIN_COIN_CHECKS + 489,
 };
 
 struct SM64APOneUpSource {
@@ -269,6 +281,8 @@ static void SM64AP_SetMin(int &value, int minValue) {
         value = minValue;
     }
 }
+
+static int SM64AP_CoinCheckOffsetFromLocationId(int locId);
 
 void SM64AP_RecvItem(int64_t idx, bool notify) {
     AP_EnableQueueItemRecvMsgs(true);
@@ -410,8 +424,8 @@ void SM64AP_CheckLocation(int64_t loc_id) {
 
     sm64_locations[loc_id - SM64AP_ID_OFFSET] = true;
 
-    int coinOffset = loc_id - SM64AP_LOCATIONID_COIN_CHECK_START;
-    if (coinOffset >= 0 && coinOffset < SM64AP_NUM_COIN_CHECKS) {
+    int coinOffset = SM64AP_CoinCheckOffsetFromLocationId(loc_id);
+    if (coinOffset >= 0) {
         sm64_sent_coin_checks[coinOffset] = true;
     }
 
@@ -1852,15 +1866,36 @@ int SM64AP_GetRequiredStars(int idprx) {
 }
 
 static int SM64AP_CoinCheckCourseIndex(int courseNum) {
-    if (courseNum < COURSE_MIN || courseNum > COURSE_STAGES_MAX) {
-        return -1;
+    if (courseNum >= COURSE_MIN && courseNum <= COURSE_STAGES_MAX) {
+        return courseNum - COURSE_MIN;
     }
 
-    return courseNum - COURSE_MIN;
+    switch (courseNum) {
+        case COURSE_PSS:
+            return 15;
+        case COURSE_SA:
+            return 16;
+        case COURSE_WMOTR:
+            return 17;
+        case COURSE_TOTWC:
+            return 18;
+        case COURSE_VCUTM:
+            return 19;
+        case COURSE_COTMC:
+            return 20;
+        case COURSE_BITDW:
+            return 21;
+        case COURSE_BITFS:
+            return 22;
+        case COURSE_BITS:
+            return 23;
+        default:
+            return -1;
+    }
 }
 
 static int SM64AP_CoinCheckOffset(int courseIndex, int coinCount) {
-    if (courseIndex < 0 || courseIndex >= SM64AP_NUM_COIN_STAR_REQUIREMENTS
+    if (courseIndex < 0 || courseIndex >= SM64AP_NUM_COIN_CHECK_COURSES
         || coinCount <= 0 || coinCount > SM64AP_COIN_CHECK_MAX_COUNTS[courseIndex]) {
         return -1;
     }
@@ -1870,17 +1905,32 @@ static int SM64AP_CoinCheckOffset(int courseIndex, int coinCount) {
 
 static int SM64AP_CoinCheckLocationId(int courseIndex, int coinCount) {
     int offset = SM64AP_CoinCheckOffset(courseIndex, coinCount);
-    return offset < 0 ? 0 : SM64AP_LOCATIONID_COIN_CHECK_START + offset;
+
+    if (offset < 0) {
+        return 0;
+    }
+
+    if (offset < SM64AP_NUM_MAIN_COIN_CHECKS) {
+        return SM64AP_LOCATIONID_COIN_CHECK_START + offset;
+    }
+
+    return SM64AP_LOCATIONID_SECRET_COIN_CHECK_START + (offset - SM64AP_NUM_MAIN_COIN_CHECKS);
 }
 
 static int SM64AP_CoinCheckOffsetFromLocationId(int locId) {
-    int offset = locId - SM64AP_LOCATIONID_COIN_CHECK_START;
+    int offset;
 
-    if (offset < 0 || offset >= SM64AP_NUM_COIN_CHECKS) {
-        return -1;
+    if (locId >= SM64AP_LOCATIONID_COIN_CHECK_START && locId <= SM64AP_LOCATIONID_COIN_CHECK_END) {
+        return locId - SM64AP_LOCATIONID_COIN_CHECK_START;
     }
 
-    return offset;
+    if (locId >= SM64AP_LOCATIONID_SECRET_COIN_CHECK_START
+        && locId <= SM64AP_LOCATIONID_SECRET_COIN_CHECK_END) {
+        offset = SM64AP_NUM_MAIN_COIN_CHECKS + locId - SM64AP_LOCATIONID_SECRET_COIN_CHECK_START;
+        return offset < SM64AP_NUM_COIN_CHECKS ? offset : -1;
+    }
+
+    return -1;
 }
 
 bool SM64AP_CheckedLoc(int x) {
