@@ -2885,17 +2885,26 @@ static const struct PauseUnlockView *pause_unlock_view_at(s16 viewIndex) {
 }
 
 static void render_pause_move_unlocks(s16 x, s16 y, s16 moveArea) {
+    static const u8 textNotApplicable[] = { TEXT_PAINTING_NA };
+    static const s16 statusX = 112;
+
     for (u16 i = 0; i < sizeof(sPauseMoveUnlocks) / sizeof(sPauseMoveUnlocks[0]); i++) {
         const struct PauseMoveUnlock *unlock = &sPauseMoveUnlocks[i];
         const u8 *label = unlock->label;
         bool unlocked = SM64AP_HaveLevelMoveOrGlobal(moveArea, unlock->move);
+        bool notApplicable = moveArea == SM64AP_LEVEL_MOVE_AREA_BBH && unlock->move == SM64AP_LEVEL_MOVE_CLIMB;
 
         if (unlock->move == SM64AP_LEVEL_MOVE_TRIPLE_JUMP && !unlocked && SM64AP_CanDoubleJumpForArea(moveArea)) {
             label = sMoveDouble;
             unlocked = true;
         }
 
-        render_pause_unlock_status(x, y - i * 11, 112, label, unlocked);
+        if (notApplicable) {
+            print_generic_string(x, y - i * 11, label);
+            print_generic_string(statusX - 8, y - i * 11, textNotApplicable);
+        } else {
+            render_pause_unlock_status(x, y - i * 11, statusX, label, unlocked);
+        }
     }
 }
 
