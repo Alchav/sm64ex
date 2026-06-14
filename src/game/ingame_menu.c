@@ -2436,7 +2436,7 @@ void render_pause_castle_menu_box(s16 x, s16 y) {
     gSPDisplayList(gDisplayListHead++, dl_draw_triangle);
     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 
-    create_dl_translation_matrix(MENU_MTX_PUSH, x + 150, y - 145, 0);
+    create_dl_translation_matrix(MENU_MTX_PUSH, x + 134, y - 124, 0);
     create_dl_rotation_matrix(MENU_MTX_NOPUSH, 270.0f, 0, 0, 1.0f);
     gSPDisplayList(gDisplayListHead++, dl_draw_triangle);
     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
@@ -2631,6 +2631,7 @@ static const u8 sPaintingThi[] = { TEXT_PAINTING_THI };
 static const u8 sPaintingTtc[] = { TEXT_PAINTING_TTC };
 
 static const struct PauseUnlockView sPauseUnlockViews[] = {
+    { PAUSE_UNLOCK_VIEW_CASTLE, COURSE_NONE, LEVEL_CASTLE, SM64AP_LEVEL_MOVE_AREA_CASTLE, SM64AP_LEVEL_MOVE_AREA_CASTLE, sPauseViewCastle },
     { PAUSE_UNLOCK_VIEW_COURSE, COURSE_BOB - 1, LEVEL_BOB, SM64AP_LEVEL_MOVE_AREA_BOB, SM64AP_LEVEL_MOVE_AREA_BOB, NULL },
     { PAUSE_UNLOCK_VIEW_COURSE, COURSE_WF - 1, LEVEL_WF, SM64AP_LEVEL_MOVE_AREA_WF, SM64AP_LEVEL_MOVE_AREA_WF, NULL },
     { PAUSE_UNLOCK_VIEW_COURSE, COURSE_JRB - 1, LEVEL_JRB, SM64AP_LEVEL_MOVE_AREA_JRB, SM64AP_LEVEL_MOVE_AREA_JRB, NULL },
@@ -2646,8 +2647,6 @@ static const struct PauseUnlockView sPauseUnlockViews[] = {
     { PAUSE_UNLOCK_VIEW_COURSE, COURSE_THI - 1, LEVEL_THI, SM64AP_LEVEL_MOVE_AREA_THI, SM64AP_LEVEL_MOVE_AREA_THI, NULL },
     { PAUSE_UNLOCK_VIEW_COURSE, COURSE_TTC - 1, LEVEL_TTC, SM64AP_LEVEL_MOVE_AREA_TTC, SM64AP_LEVEL_MOVE_AREA_TTC, NULL },
     { PAUSE_UNLOCK_VIEW_COURSE, COURSE_RR - 1, LEVEL_RR, SM64AP_LEVEL_MOVE_AREA_RR, SM64AP_LEVEL_MOVE_AREA_RR, NULL },
-    { PAUSE_UNLOCK_VIEW_CASTLE, COURSE_NONE, LEVEL_CASTLE, SM64AP_LEVEL_MOVE_AREA_CASTLE, SM64AP_LEVEL_MOVE_AREA_CASTLE, sPauseViewCastle },
-    { PAUSE_UNLOCK_VIEW_LEVELS, COURSE_NONE, LEVEL_CASTLE, SM64AP_LEVEL_MOVE_AREA_CASTLE, SM64AP_LEVEL_MOVE_AREA_CASTLE, sPauseViewLevels },
     { PAUSE_UNLOCK_VIEW_SECRET, COURSE_BITDW - 1, LEVEL_BITDW, SM64AP_LEVEL_MOVE_AREA_CASTLE, SM64AP_LEVEL_MOVE_AREA_BITDW, sPauseViewBitdw },
     { PAUSE_UNLOCK_VIEW_SECRET, COURSE_BITFS - 1, LEVEL_BITFS, SM64AP_LEVEL_MOVE_AREA_CASTLE, SM64AP_LEVEL_MOVE_AREA_BITFS, sPauseViewBitfs },
     { PAUSE_UNLOCK_VIEW_SECRET, COURSE_BITS - 1, LEVEL_BITS, SM64AP_LEVEL_MOVE_AREA_CASTLE, SM64AP_LEVEL_MOVE_AREA_BITS, sPauseViewBits },
@@ -2655,6 +2654,7 @@ static const struct PauseUnlockView sPauseUnlockViews[] = {
     { PAUSE_UNLOCK_VIEW_SECRET, COURSE_COTMC - 1, LEVEL_COTMC, SM64AP_LEVEL_MOVE_AREA_CASTLE, PAUSE_COURSE_UNLOCK_AREA_COTMC, sPauseViewCotmc },
     { PAUSE_UNLOCK_VIEW_SECRET, COURSE_TOTWC - 1, LEVEL_TOTWC, SM64AP_LEVEL_MOVE_AREA_CASTLE, PAUSE_COURSE_UNLOCK_AREA_TOTWC, sPauseViewTotwc },
     { PAUSE_UNLOCK_VIEW_SECRET, COURSE_WMOTR - 1, LEVEL_WMOTR, SM64AP_LEVEL_MOVE_AREA_CASTLE, PAUSE_COURSE_UNLOCK_AREA_WMOTR, sPauseViewWmotr },
+    { PAUSE_UNLOCK_VIEW_LEVELS, COURSE_NONE, LEVEL_CASTLE, SM64AP_LEVEL_MOVE_AREA_CASTLE, SM64AP_LEVEL_MOVE_AREA_CASTLE, sPauseViewLevels },
 };
 
 static const struct PauseMoveUnlock sPauseMoveUnlocks[] = {
@@ -2973,7 +2973,7 @@ static void render_pause_unlock_view_page(s16 viewIndex) {
     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
 
-    print_generic_string(68, 140, pause_unlock_view_title(view));
+    print_generic_string(-8, 140, pause_unlock_view_title(view));
     if (view->type != PAUSE_UNLOCK_VIEW_LEVELS) {
         render_pause_move_unlocks(-8, 122, view->moveArea);
     }
