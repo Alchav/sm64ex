@@ -119,7 +119,9 @@ void bhv_flying_bookend_loop(void) {
 
         obj_check_attacks(&sFlyingBookendHitbox, -1);
         if (o->oAction == -1 || (o->oMoveFlags & (OBJ_MOVE_MASK_ON_GROUND | OBJ_MOVE_HIT_WALL))) {
-            o->oNumLootCoins = 0;
+            if (!SM64AP_NoDespawn() || o->oNumLootCoins >= 0) {
+                o->oNumLootCoins = 0;
+            }
             obj_die_if_health_non_positive();
         }
 
