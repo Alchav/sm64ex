@@ -352,6 +352,10 @@ AP_EXTERN_C bool SM64AP_NoDespawn();
 AP_EXTERN_C bool SM64AP_DeathLinkPending();
 AP_EXTERN_C void SM64AP_DeathLinkClear();
 AP_EXTERN_C void SM64AP_DeathLinkSend();
+AP_EXTERN_C int SM64AP_CheatItemCount();
+AP_EXTERN_C const char *SM64AP_CheatItemName(int);
+AP_EXTERN_C bool SM64AP_CheatItemEnabled(int);
+AP_EXTERN_C void SM64AP_CheatSetItemEnabled(int, bool);
 
 // Local Moves
 AP_EXTERN_C bool SM64AP_CanDoubleJumpForArea(int);

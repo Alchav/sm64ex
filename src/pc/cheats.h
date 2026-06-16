@@ -5,6 +5,7 @@
 
 struct CheatList {
     bool         EnableCheats;
+    bool         LaunchCheats;
     bool         MoonJump;
     bool         GodMode;
     bool         InfiniteLives;

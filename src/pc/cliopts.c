@@ -58,8 +58,10 @@ void parse_cli_opts(int argc, char* argv[]) {
         else if (strcmp(argv[i], "--windowed") == 0) // Open game in windowed mode
             gCLIOpts.FullScreen = 2;
 
-        else if (strcmp(argv[i], "--cheats") == 0) // Enable cheats menu
+        else if (strcmp(argv[i], "--cheats") == 0) { // Enable cheats menu
             Cheats.EnableCheats = true;
+            Cheats.LaunchCheats = true;
+        }
 
         else if (strcmp(argv[i], "--poolsize") == 0) // Main pool size
             arg_uint("--poolsize", argv[++i], &gCLIOpts.PoolSize);

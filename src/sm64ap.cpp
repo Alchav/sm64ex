@@ -2471,6 +2471,492 @@ void SM64AP_DeathLinkSend() {
     }
 }
 
+enum SM64APCheatItemKind {
+    SM64AP_CHEAT_ITEM_BOOL,
+    SM64AP_CHEAT_ITEM_CASTLE_KEY,
+    SM64AP_CHEAT_ITEM_MIPS,
+    SM64AP_CHEAT_ITEM_CANNON,
+    SM64AP_CHEAT_ITEM_PAINTING,
+    SM64AP_CHEAT_ITEM_FEATURE,
+    SM64AP_CHEAT_ITEM_LEVEL_CAP,
+    SM64AP_CHEAT_ITEM_OBJECT,
+    SM64AP_CHEAT_ITEM_ABILITY,
+    SM64AP_CHEAT_ITEM_LEVEL_MOVE,
+};
+
+enum SM64APCheatBoolItem {
+    SM64AP_CHEAT_BOOL_WING_CAP_LIGHT,
+    SM64AP_CHEAT_BOOL_BBH,
+    SM64AP_CHEAT_BOOL_TOADS,
+    SM64AP_CHEAT_BOOL_CASTLE_CANNON,
+    SM64AP_CHEAT_BOOL_WMOTR_CANNON,
+    SM64AP_CHEAT_BOOL_YOSHI,
+    SM64AP_CHEAT_BOOL_BITFS,
+    SM64AP_CHEAT_BOOL_HAT,
+    SM64AP_CHEAT_BOOL_VCUTM_ENTRANCE,
+    SM64AP_CHEAT_BOOL_BOWSER_STAGE_1UPS,
+    SM64AP_CHEAT_BOOL_BITDW_1UPS,
+    SM64AP_CHEAT_BOOL_BITFS_1UPS,
+    SM64AP_CHEAT_BOOL_WING_CAP,
+    SM64AP_CHEAT_BOOL_METAL_CAP,
+    SM64AP_CHEAT_BOOL_VANISH_CAP,
+};
+
+struct SM64APCheatItem {
+    std::string name;
+    int kind;
+    int index;
+};
+
+static std::vector<SM64APCheatItem> sm64ap_cheat_items;
+
+static constexpr const char *SM64AP_CHEAT_COURSE_NAMES[15] = {
+    "BOB", "WF", "JRB", "CCM", "BBH",
+    "HMC", "LLL", "SSL", "DDD", "SL",
+    "WDW", "TTM", "THI", "TTC", "RR",
+};
+
+static constexpr const char *SM64AP_CHEAT_CASTLE_KEY_NAMES[SM64AP_NUM_CASTLE_KEYS] = {
+    "FIRST FLOOR KEY",
+    "BASEMENT KEY",
+    "KEY 30",
+    "SECOND FLOOR KEY",
+    "KEY 50",
+    "KEY 70",
+};
+
+static constexpr const char *SM64AP_CHEAT_FEATURE_NAMES[SM64AP_NUM_FEATURES] = {
+    "BOB KING BOBOMB",
+    "BOB KOOPA QUICK",
+    "BOB BUDDY",
+    "WF WHOMP KING",
+    "WF FORTRESS",
+    "WF BUDDY",
+    "WF HOOT",
+    "CCM SNOWMAN HEAD",
+    "CCM BIG PENGUIN",
+    "JRB SUNKEN SHIP",
+    "JRB RAISED SHIP",
+    "JRB BUDDY",
+    "JRB JET STREAM",
+    "JRB UNAGI",
+    "LLL KOOPA SHELL",
+    "SSL KLEPTO STAR",
+    "THI KOOPA QUICK",
+    "TTM UKIKI",
+    "DDD MANTA RAY",
+    "DDD BOWSERS SUB",
+    "DDD POLES",
+    "BBH STAIRCASE",
+    "BBH MERRY GO ROUND",
+};
+
+static constexpr const char *SM64AP_CHEAT_LEVEL_CAP_NAMES[SM64AP_NUM_LEVEL_CAPS] = {
+    "BOB WING CAP",
+    "CASTLE WING CAP",
+    "LLL WING CAP",
+    "SSL WING CAP",
+    "TOTWC WING CAP",
+    "WMOTR WING CAP",
+    "WF METAL CAP",
+    "JRB METAL CAP",
+    "HMC METAL CAP",
+    "DDD METAL CAP",
+    "WDW METAL CAP",
+    "COTMC METAL CAP",
+    "BITDW METAL CAP",
+    "BBH VANISH CAP",
+    "DDD VANISH CAP",
+    "SL VANISH CAP",
+    "VCUTM VANISH CAP",
+    "WDW VANISH CAP",
+};
+
+static constexpr const char *SM64AP_CHEAT_OBJECT_ITEM_NAMES[SM64AP_NUM_OBJECT_ITEMS] = {
+    "HMC SWIMMING BEAST",
+    "RR CARPETS",
+    "CHECKERBOARDS",
+    "THI WARP PIPES",
+    "CCM BABY PENGUINS",
+    "SL PENGUIN",
+    "SSL PYRAMID ELEVATOR",
+    "ROLLING LOGS",
+    "PURPLE SWITCHES",
+    "RESERVED BITFS",
+    "WDW WATER DIAMONDS",
+    "BOB CHECKERBOARDS",
+    "WF CHECKERBOARDS",
+    "LLL CHECKERBOARDS",
+    "HMC CHECKERBOARDS",
+    "VCUTM CHECKERBOARDS",
+    "LLL ROLLING LOGS",
+    "TTM ROLLING LOGS",
+    "BOB PURPLE SWITCH",
+    "HMC PURPLE SWITCH",
+    "WDW PURPLE SWITCH",
+    "RR PURPLE SWITCH",
+    "BITDW PURPLE SWITCH",
+    "BITS PURPLE SWITCH",
+    "TTC SPINNERS",
+    "JRB PURPLE SWITCH",
+    "DDD PURPLE SWITCH",
+    "TTM PURPLE SWITCH",
+    "THI PURPLE SWITCH",
+};
+
+static constexpr const char *SM64AP_CHEAT_ABILITY_NAMES[SM64AP_NUM_ABILITIES] = {
+    "DOUBLE JUMP",
+    "TRIPLE JUMP",
+    "LONG JUMP",
+    "BACKFLIP",
+    "SIDE FLIP",
+    "WALL KICK",
+    "DIVE",
+    "GROUND POUND",
+    "KICK",
+    "CLIMB",
+    "LEDGE GRAB",
+};
+
+static constexpr const char *SM64AP_CHEAT_LEVEL_MOVE_AREA_NAMES[SM64AP_NUM_LEVEL_MOVE_AREAS] = {
+    "BOB",
+    "WF",
+    "JRB",
+    "CCM",
+    "BBH",
+    "HMC",
+    "LLL",
+    "SSL",
+    "DDD",
+    "SL",
+    "WDW",
+    "TTM",
+    "THI",
+    "TTC",
+    "RR",
+    "CASTLE",
+    "BITDW",
+    "BITFS",
+    "BITS",
+    "VCUTM",
+};
+
+static constexpr const char *SM64AP_CHEAT_LEVEL_MOVE_NAMES[SM64AP_NUM_LEVEL_MOVES] = {
+    "TRIPLE JUMP",
+    "LONG JUMP",
+    "BACKFLIP",
+    "SIDE FLIP",
+    "WALL KICK",
+    "DIVE",
+    "GROUND POUND",
+    "KICK",
+    "CLIMB",
+    "LEDGE GRAB",
+};
+
+static void SM64AP_CheatAdd(int kind, int index, const std::string &name) {
+    sm64ap_cheat_items.push_back({ name, kind, index });
+}
+
+static void SM64AP_InitCheatItems() {
+    if (!sm64ap_cheat_items.empty()) {
+        return;
+    }
+
+    for (int i = 0; i < SM64AP_NUM_CASTLE_KEYS; i++) {
+        SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_CASTLE_KEY, i, SM64AP_CHEAT_CASTLE_KEY_NAMES[i]);
+    }
+    SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_MIPS, 1, "MIPS 1");
+    SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_MIPS, 2, "MIPS 2");
+
+    SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_BOOL, SM64AP_CHEAT_BOOL_WING_CAP_LIGHT, "WING CAP LIGHT");
+    SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_BOOL, SM64AP_CHEAT_BOOL_BBH, "BBH");
+    SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_BOOL, SM64AP_CHEAT_BOOL_TOADS, "TOADS");
+    SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_BOOL, SM64AP_CHEAT_BOOL_CASTLE_CANNON, "CASTLE CANNON");
+    SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_BOOL, SM64AP_CHEAT_BOOL_WMOTR_CANNON, "WMOTR CANNON");
+    SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_BOOL, SM64AP_CHEAT_BOOL_YOSHI, "YOSHI");
+    SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_BOOL, SM64AP_CHEAT_BOOL_BITFS, "BITFS");
+    SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_BOOL, SM64AP_CHEAT_BOOL_HAT, "HAT");
+    SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_BOOL, SM64AP_CHEAT_BOOL_VCUTM_ENTRANCE, "VCUTM ENTRANCE");
+    SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_BOOL, SM64AP_CHEAT_BOOL_BOWSER_STAGE_1UPS, "BOWSER 1UPS");
+    SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_BOOL, SM64AP_CHEAT_BOOL_BITDW_1UPS, "BITDW 1UPS");
+    SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_BOOL, SM64AP_CHEAT_BOOL_BITFS_1UPS, "BITFS 1UPS");
+    SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_BOOL, SM64AP_CHEAT_BOOL_WING_CAP, "GLOBAL WING CAP");
+    SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_BOOL, SM64AP_CHEAT_BOOL_METAL_CAP, "GLOBAL METAL CAP");
+    SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_BOOL, SM64AP_CHEAT_BOOL_VANISH_CAP, "GLOBAL VANISH CAP");
+
+    for (int i = 0; i < 15; i++) {
+        SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_CANNON, i, std::string(SM64AP_CHEAT_COURSE_NAMES[i]) + " CANNON");
+    }
+    for (int i = 0; i < SM64AP_NUM_PAINTING_LOCKS; i++) {
+        SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_PAINTING, i, std::string(SM64AP_CHEAT_COURSE_NAMES[i]) + " PAINTING");
+    }
+    for (int i = 0; i < SM64AP_NUM_FEATURES; i++) {
+        SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_FEATURE, i, SM64AP_CHEAT_FEATURE_NAMES[i]);
+    }
+    for (int i = 0; i < SM64AP_NUM_LEVEL_CAPS; i++) {
+        SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_LEVEL_CAP, i, SM64AP_CHEAT_LEVEL_CAP_NAMES[i]);
+    }
+    for (int i = 0; i < SM64AP_NUM_OBJECT_ITEMS; i++) {
+        if (i != SM64AP_OBJECT_ITEM_RESERVED_BITFS) {
+            SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_OBJECT, i, SM64AP_CHEAT_OBJECT_ITEM_NAMES[i]);
+        }
+    }
+    for (int i = 0; i < SM64AP_NUM_ABILITIES; i++) {
+        SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_ABILITY, i, std::string("GLOBAL ") + SM64AP_CHEAT_ABILITY_NAMES[i]);
+    }
+    for (int area = 0; area < SM64AP_NUM_LEVEL_MOVE_AREAS; area++) {
+        for (int move = 0; move < SM64AP_NUM_LEVEL_MOVES; move++) {
+            SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_LEVEL_MOVE,
+                            area * SM64AP_NUM_LEVEL_MOVES + move,
+                            std::string(SM64AP_CHEAT_LEVEL_MOVE_AREA_NAMES[area]) + " " + SM64AP_CHEAT_LEVEL_MOVE_NAMES[move]);
+        }
+    }
+}
+
+static bool SM64AP_CheatBoolEnabled(int index) {
+    switch (index) {
+        case SM64AP_CHEAT_BOOL_WING_CAP_LIGHT:
+            return sm64_have_wing_cap_light;
+        case SM64AP_CHEAT_BOOL_BBH:
+            return sm64_have_bbh;
+        case SM64AP_CHEAT_BOOL_TOADS:
+            return sm64_have_toads;
+        case SM64AP_CHEAT_BOOL_CASTLE_CANNON:
+            return sm64_have_castle_cannon;
+        case SM64AP_CHEAT_BOOL_WMOTR_CANNON:
+            return sm64_have_wmotr_cannon;
+        case SM64AP_CHEAT_BOOL_YOSHI:
+            return sm64_have_yoshi;
+        case SM64AP_CHEAT_BOOL_BITFS:
+            return sm64_have_bitfs;
+        case SM64AP_CHEAT_BOOL_HAT:
+            return sm64_have_hat;
+        case SM64AP_CHEAT_BOOL_VCUTM_ENTRANCE:
+            return sm64_have_vcutm_entrance;
+        case SM64AP_CHEAT_BOOL_BOWSER_STAGE_1UPS:
+            return sm64_have_bowser_stage_1ups;
+        case SM64AP_CHEAT_BOOL_BITDW_1UPS:
+            return sm64_have_bitdw_1ups;
+        case SM64AP_CHEAT_BOOL_BITFS_1UPS:
+            return sm64_have_bitfs_1ups;
+        case SM64AP_CHEAT_BOOL_WING_CAP:
+            return sm64_have_wingcap;
+        case SM64AP_CHEAT_BOOL_METAL_CAP:
+            return sm64_have_metalcap;
+        case SM64AP_CHEAT_BOOL_VANISH_CAP:
+            return sm64_have_vanishcap;
+    }
+
+    return false;
+}
+
+static void SM64AP_CheatSetBool(int index, bool enabled) {
+    switch (index) {
+        case SM64AP_CHEAT_BOOL_WING_CAP_LIGHT:
+            sm64_have_wing_cap_light = enabled;
+            break;
+        case SM64AP_CHEAT_BOOL_BBH:
+            sm64_have_bbh = enabled;
+            break;
+        case SM64AP_CHEAT_BOOL_TOADS:
+            sm64_have_toads = enabled;
+            break;
+        case SM64AP_CHEAT_BOOL_CASTLE_CANNON:
+            sm64_have_castle_cannon = enabled;
+            break;
+        case SM64AP_CHEAT_BOOL_WMOTR_CANNON:
+            sm64_have_wmotr_cannon = enabled;
+            break;
+        case SM64AP_CHEAT_BOOL_YOSHI:
+            sm64_have_yoshi = enabled;
+            break;
+        case SM64AP_CHEAT_BOOL_BITFS:
+            sm64_have_bitfs = enabled;
+            break;
+        case SM64AP_CHEAT_BOOL_HAT:
+            sm64_have_hat = enabled;
+            sm64_hat_restore_with_animation_pending = false;
+            sm64_hat_restore_without_animation_pending = enabled;
+            break;
+        case SM64AP_CHEAT_BOOL_VCUTM_ENTRANCE:
+            sm64_have_vcutm_entrance = enabled;
+            break;
+        case SM64AP_CHEAT_BOOL_BOWSER_STAGE_1UPS:
+            sm64_have_bowser_stage_1ups = enabled;
+            break;
+        case SM64AP_CHEAT_BOOL_BITDW_1UPS:
+            sm64_have_bitdw_1ups = enabled;
+            break;
+        case SM64AP_CHEAT_BOOL_BITFS_1UPS:
+            sm64_have_bitfs_1ups = enabled;
+            break;
+        case SM64AP_CHEAT_BOOL_WING_CAP:
+            sm64_have_wingcap = enabled;
+            break;
+        case SM64AP_CHEAT_BOOL_METAL_CAP:
+            sm64_have_metalcap = enabled;
+            break;
+        case SM64AP_CHEAT_BOOL_VANISH_CAP:
+            sm64_have_vanishcap = enabled;
+            break;
+    }
+}
+
+static void SM64AP_CheatSetCastleKey(int key, bool enabled) {
+    if (enabled) {
+        switch (key) {
+            case SM64AP_CASTLE_KEY_FIRST_FLOOR:
+                sm64_have_first_floor_key = true;
+                SM64AP_SetMin(sm64_have_progressive_keys, 1);
+                break;
+            case SM64AP_CASTLE_KEY_BASEMENT:
+                SM64AP_SetMin(sm64_have_progressive_basement_keys, 1);
+                SM64AP_SetMin(sm64_have_progressive_keys, 2);
+                break;
+            case SM64AP_CASTLE_KEY_BASEMENT_STAR:
+                SM64AP_SetMin(sm64_have_progressive_basement_keys, 2);
+                SM64AP_SetMin(sm64_have_progressive_keys, 3);
+                break;
+            case SM64AP_CASTLE_KEY_UPSTAIRS:
+                SM64AP_SetMin(sm64_have_progressive_upstairs_keys, 1);
+                SM64AP_SetMin(sm64_have_progressive_keys, 4);
+                break;
+            case SM64AP_CASTLE_KEY_50_STAR:
+                SM64AP_SetMin(sm64_have_progressive_upstairs_keys, 2);
+                SM64AP_SetMin(sm64_have_progressive_keys, 5);
+                break;
+            case SM64AP_CASTLE_KEY_70_STAR:
+                SM64AP_SetMin(sm64_have_progressive_upstairs_keys, 3);
+                SM64AP_SetMin(sm64_have_progressive_keys, 6);
+                break;
+        }
+        return;
+    }
+
+    switch (key) {
+        case SM64AP_CASTLE_KEY_FIRST_FLOOR:
+            sm64_have_first_floor_key = false;
+            if (sm64_have_progressive_keys >= 1) sm64_have_progressive_keys = 0;
+            break;
+        case SM64AP_CASTLE_KEY_BASEMENT:
+            if (sm64_have_progressive_basement_keys >= 1) sm64_have_progressive_basement_keys = 0;
+            if (sm64_have_progressive_keys >= 2) sm64_have_progressive_keys = 1;
+            break;
+        case SM64AP_CASTLE_KEY_BASEMENT_STAR:
+            if (sm64_have_progressive_basement_keys >= 2) sm64_have_progressive_basement_keys = 1;
+            if (sm64_have_progressive_keys >= 3) sm64_have_progressive_keys = 2;
+            break;
+        case SM64AP_CASTLE_KEY_UPSTAIRS:
+            if (sm64_have_progressive_upstairs_keys >= 1) sm64_have_progressive_upstairs_keys = 0;
+            if (sm64_have_progressive_keys >= 4) sm64_have_progressive_keys = 3;
+            break;
+        case SM64AP_CASTLE_KEY_50_STAR:
+            if (sm64_have_progressive_upstairs_keys >= 2) sm64_have_progressive_upstairs_keys = 1;
+            if (sm64_have_progressive_keys >= 5) sm64_have_progressive_keys = 4;
+            break;
+        case SM64AP_CASTLE_KEY_70_STAR:
+            if (sm64_have_progressive_upstairs_keys >= 3) sm64_have_progressive_upstairs_keys = 2;
+            if (sm64_have_progressive_keys >= 6) sm64_have_progressive_keys = 5;
+            break;
+    }
+}
+
+int SM64AP_CheatItemCount() {
+    SM64AP_InitCheatItems();
+    return static_cast<int>(sm64ap_cheat_items.size());
+}
+
+const char *SM64AP_CheatItemName(int index) {
+    SM64AP_InitCheatItems();
+    if (index < 0 || index >= static_cast<int>(sm64ap_cheat_items.size())) {
+        return "";
+    }
+    return sm64ap_cheat_items[index].name.c_str();
+}
+
+bool SM64AP_CheatItemEnabled(int index) {
+    SM64AP_InitCheatItems();
+    if (index < 0 || index >= static_cast<int>(sm64ap_cheat_items.size())) {
+        return false;
+    }
+
+    const SM64APCheatItem &item = sm64ap_cheat_items[index];
+    switch (item.kind) {
+        case SM64AP_CHEAT_ITEM_BOOL:
+            return SM64AP_CheatBoolEnabled(item.index);
+        case SM64AP_CHEAT_ITEM_CASTLE_KEY:
+            return SM64AP_HaveCastleKey(item.index);
+        case SM64AP_CHEAT_ITEM_MIPS:
+            return SM64AP_HaveProgressiveMips(item.index);
+        case SM64AP_CHEAT_ITEM_CANNON:
+            return item.index >= 0 && item.index < 15 && sm64_have_cannon[item.index];
+        case SM64AP_CHEAT_ITEM_PAINTING:
+            return item.index >= 0 && item.index < SM64AP_NUM_PAINTING_LOCKS && sm64_have_painting[item.index];
+        case SM64AP_CHEAT_ITEM_FEATURE:
+            return item.index >= 0 && item.index < SM64AP_NUM_FEATURES && sm64_have_features[item.index];
+        case SM64AP_CHEAT_ITEM_LEVEL_CAP:
+            return item.index >= 0 && item.index < SM64AP_NUM_LEVEL_CAPS && sm64_have_level_caps[item.index];
+        case SM64AP_CHEAT_ITEM_OBJECT:
+            return item.index >= 0 && item.index < SM64AP_NUM_OBJECT_ITEMS && sm64_have_object_items[item.index];
+        case SM64AP_CHEAT_ITEM_ABILITY:
+            return item.index >= 0 && item.index < SM64AP_NUM_ABILITIES && sm64_have_abilities[item.index];
+        case SM64AP_CHEAT_ITEM_LEVEL_MOVE:
+            return item.index >= 0
+                && item.index < SM64AP_NUM_LEVEL_MOVE_AREAS * SM64AP_NUM_LEVEL_MOVES
+                && sm64_have_level_moves[item.index];
+    }
+
+    return false;
+}
+
+void SM64AP_CheatSetItemEnabled(int index, bool enabled) {
+    SM64AP_InitCheatItems();
+    if (index < 0 || index >= static_cast<int>(sm64ap_cheat_items.size())) {
+        return;
+    }
+
+    const SM64APCheatItem &item = sm64ap_cheat_items[index];
+    switch (item.kind) {
+        case SM64AP_CHEAT_ITEM_BOOL:
+            SM64AP_CheatSetBool(item.index, enabled);
+            break;
+        case SM64AP_CHEAT_ITEM_CASTLE_KEY:
+            SM64AP_CheatSetCastleKey(item.index, enabled);
+            break;
+        case SM64AP_CHEAT_ITEM_MIPS:
+            if (enabled) {
+                SM64AP_SetMin(sm64_have_progressive_mips, item.index);
+            } else if (sm64_have_progressive_mips >= item.index) {
+                sm64_have_progressive_mips = item.index - 1;
+            }
+            break;
+        case SM64AP_CHEAT_ITEM_CANNON:
+            if (item.index >= 0 && item.index < 15) sm64_have_cannon[item.index] = enabled;
+            break;
+        case SM64AP_CHEAT_ITEM_PAINTING:
+            if (item.index >= 0 && item.index < SM64AP_NUM_PAINTING_LOCKS) sm64_have_painting[item.index] = enabled;
+            break;
+        case SM64AP_CHEAT_ITEM_FEATURE:
+            if (item.index >= 0 && item.index < SM64AP_NUM_FEATURES) sm64_have_features[item.index] = enabled;
+            break;
+        case SM64AP_CHEAT_ITEM_LEVEL_CAP:
+            if (item.index >= 0 && item.index < SM64AP_NUM_LEVEL_CAPS) sm64_have_level_caps[item.index] = enabled;
+            break;
+        case SM64AP_CHEAT_ITEM_OBJECT:
+            if (item.index >= 0 && item.index < SM64AP_NUM_OBJECT_ITEMS) sm64_have_object_items[item.index] = enabled;
+            break;
+        case SM64AP_CHEAT_ITEM_ABILITY:
+            if (item.index >= 0 && item.index < SM64AP_NUM_ABILITIES) sm64_have_abilities[item.index] = enabled;
+            break;
+        case SM64AP_CHEAT_ITEM_LEVEL_MOVE:
+            if (item.index >= 0 && item.index < SM64AP_NUM_LEVEL_MOVE_AREAS * SM64AP_NUM_LEVEL_MOVES) {
+                sm64_have_level_moves[item.index] = enabled;
+            }
+            break;
+    }
+}
+
 int SM64AP_LevelMoveAreaForLevel(s16 level) {
     switch (level) {
         case LEVEL_BOB:

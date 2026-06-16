@@ -16,6 +16,7 @@
 #include "game/game_init.h"
 #include "game/ingame_menu.h"
 #include "game/options_menu.h"
+#include "sm64ap.h"
 #include "pc/pc_main.h"
 #include "pc/cliopts.h"
 #include "pc/cheats.h"
@@ -62,6 +63,12 @@ static const u8 menuStr[][32] = {
     { TEXT_OPT_CHEATS },
 };
 
+static const u8 menuApItemsStr[] = {
+    ASCII_TO_DIALOG('A'), ASCII_TO_DIALOG('P'), DIALOG_CHAR_SPACE,
+    ASCII_TO_DIALOG('I'), ASCII_TO_DIALOG('T'), ASCII_TO_DIALOG('E'), ASCII_TO_DIALOG('M'), ASCII_TO_DIALOG('S'),
+    DIALOG_CHAR_TERMINATOR
+};
+
 static const u8 optsCameraStr[][32] = {
     { TEXT_OPT_CAMX },
     { TEXT_OPT_CAMY },
@@ -105,6 +112,14 @@ static const u8 optsCheatsStr[][64] = {
     { TEXT_OPT_CHEAT7 },
     { TEXT_OPT_CHEAT8 },
     { TEXT_OPT_CHEAT9 },
+};
+
+static const u8 apToggleNoStr[] = {
+    ASCII_TO_DIALOG('N'), ASCII_TO_DIALOG('O'), DIALOG_CHAR_TERMINATOR
+};
+
+static const u8 apToggleYesStr[] = {
+    ASCII_TO_DIALOG('Y'), ASCII_TO_DIALOG('E'), ASCII_TO_DIALOG('S'), DIALOG_CHAR_TERMINATOR
 };
 
 static const u8 bindStr[][32] = {
@@ -272,6 +287,8 @@ static struct Option optsAudio[] = {
     DEF_OPT_SCROLL( optsAudioStr[3], &configEnvVolume, 0, MAX_VOLUME, 1),
 };
 
+static struct SubMenu menuApItems;
+
 static struct Option optsCheats[] = {
     DEF_OPT_TOGGLE( optsCheatsStr[0], &Cheats.EnableCheats ),
     DEF_OPT_TOGGLE( optsCheatsStr[1], &Cheats.MoonJump ),
@@ -282,6 +299,7 @@ static struct Option optsCheats[] = {
     DEF_OPT_TOGGLE( optsCheatsStr[6], &Cheats.ExitAnywhere ),
     DEF_OPT_TOGGLE( optsCheatsStr[7], &Cheats.HugeMario ),
     DEF_OPT_TOGGLE( optsCheatsStr[8], &Cheats.TinyMario ),
+    DEF_OPT_SUBMENU( menuApItemsStr, &menuApItems ),
 
 };
 
@@ -293,6 +311,7 @@ static struct SubMenu menuCamera   = DEF_SUBMENU( menuStr[1], optsCamera );
 static struct SubMenu menuControls = DEF_SUBMENU( menuStr[2], optsControls );
 static struct SubMenu menuVideo    = DEF_SUBMENU( menuStr[3], optsVideo );
 static struct SubMenu menuAudio    = DEF_SUBMENU( menuStr[4], optsAudio );
+static struct SubMenu menuApItems  = { .label = menuApItemsStr, .opts = NULL, .numOpts = 0 };
 static struct SubMenu menuCheats   = DEF_SUBMENU( menuStr[6], optsCheats );
 
 /* main options menu definition */
@@ -358,6 +377,40 @@ static void optmenu_draw_text(s16 x, s16 y, const u8 *str, u8 col) {
     print_generic_string(textX, y, str);
 }
 
+static void optmenu_draw_text_left(s16 x, s16 y, const u8 *str, u8 col) {
+    gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 255);
+    print_generic_string(x + 1, y - 1, str);
+    if (col == 0) {
+        gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
+    } else {
+        gDPSetEnvColor(gDisplayListHead++, 255, 32, 32, 255);
+    }
+    print_generic_string(x, y, str);
+}
+
+static void optmenu_encode_ascii(const char *src, u8 *dst, s32 dstSize) {
+    s32 pos = 0;
+    while (*src && pos < dstSize - 1) {
+        char c = *src++;
+        if (c >= 'a' && c <= 'z') {
+            c -= 32;
+        }
+
+        if (c == ' ' || c == '-' || c == '\'') {
+            dst[pos++] = DIALOG_CHAR_SPACE;
+        } else if (c == '.') {
+            dst[pos++] = DIALOG_CHAR_PERIOD;
+        } else if (c == ',') {
+            dst[pos++] = DIALOG_CHAR_COMMA;
+        } else if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z')) {
+            dst[pos++] = ASCII_TO_DIALOG(c);
+        } else {
+            dst[pos++] = DIALOG_CHAR_SPACE;
+        }
+    }
+    dst[pos] = DIALOG_CHAR_TERMINATOR;
+}
+
 static void optmenu_draw_opt(const struct Option *opt, s16 x, s16 y, u8 sel) {
     u8 buf[32] = { 0 };
 
@@ -401,6 +454,37 @@ static void optmenu_draw_opt(const struct Option *opt, s16 x, s16 y, u8 sel) {
     };
 }
 
+static void optmenu_refresh_ap_item_menu(void) {
+    menuApItems.numOpts = SM64AP_CheatItemCount();
+    if (menuApItems.numOpts <= 0) {
+        menuApItems.select = 0;
+        menuApItems.scroll = 0;
+        return;
+    }
+    if (menuApItems.select >= menuApItems.numOpts) {
+        menuApItems.select = menuApItems.numOpts - 1;
+    }
+    if (menuApItems.select < 0) {
+        menuApItems.select = 0;
+    }
+    if (menuApItems.scroll > menuApItems.select) {
+        menuApItems.scroll = menuApItems.select;
+    }
+    if (menuApItems.scroll < menuApItems.select - 3) {
+        menuApItems.scroll = menuApItems.select - 3;
+    }
+    if (menuApItems.scroll < 0) {
+        menuApItems.scroll = 0;
+    }
+}
+
+static void optmenu_draw_ap_item(s32 index, s16 y, u8 sel) {
+    u8 label[64];
+    optmenu_encode_ascii(SM64AP_CheatItemName(index), label, sizeof(label));
+    optmenu_draw_text_left(20, y, label, sel);
+    optmenu_draw_text_left(260, y, SM64AP_CheatItemEnabled(index) ? apToggleYesStr : apToggleNoStr, sel);
+}
+
 static void optmenu_opt_change(struct Option *opt, s32 val) {
     switch (opt->type) {
         case OPT_TOGGLE:
@@ -418,6 +502,9 @@ static void optmenu_opt_change(struct Option *opt, s32 val) {
         case OPT_SUBMENU:
             opt->nextMenu->prev = currentMenu;
             currentMenu = opt->nextMenu;
+            if (currentMenu == &menuApItems) {
+                optmenu_refresh_ap_item_menu();
+            }
             break;
 
         case OPT_BUTTON:
@@ -442,6 +529,18 @@ static void optmenu_opt_change(struct Option *opt, s32 val) {
     }
 }
 
+static void optmenu_selected_change(s32 val) {
+    if (currentMenu == &menuApItems) {
+        if (currentMenu->numOpts > 0) {
+            const s32 index = currentMenu->select;
+            SM64AP_CheatSetItemEnabled(index, !SM64AP_CheatItemEnabled(index));
+        }
+        return;
+    }
+
+    optmenu_opt_change(&currentMenu->opts[currentMenu->select], val);
+}
+
 static inline s16 get_hudstr_centered_x(const s16 sx, const u8 *str) {
     const u8 *chr = str;
     s16 len = 0;
@@ -454,6 +553,10 @@ void optmenu_draw(void) {
     s16 scroll;
     s16 scrollpos;
 
+    if (currentMenu == &menuApItems) {
+        optmenu_refresh_ap_item_menu();
+    }
+
     const s16 labelX = get_hudstr_centered_x(160, currentMenu->label);
     gSPDisplayList(gDisplayListHead++, dl_rgba16_text_begin);
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
@@ -461,25 +564,33 @@ void optmenu_draw(void) {
     gSPDisplayList(gDisplayListHead++, dl_rgba16_text_end);
 
     if (currentMenu->numOpts > 4) {
-        optmenu_draw_box(272, 90, 280, 208, 0x80, 0x80, 0x80);
+        const s16 scrollBarX = (currentMenu == &menuApItems) ? 304 : 272;
+        optmenu_draw_box(scrollBarX, 90, scrollBarX + 8, 208, 0x80, 0x80, 0x80);
         scrollpos = 54 * ((f32)currentMenu->scroll / (currentMenu->numOpts-4));
-        optmenu_draw_box(272, 90+scrollpos, 280, 154+scrollpos, 0xFF, 0xFF, 0xFF);
+        optmenu_draw_box(scrollBarX, 90+scrollpos, scrollBarX + 8, 154+scrollpos, 0xFF, 0xFF, 0xFF);
     }
 
     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
     gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 80, SCREEN_WIDTH, SCREEN_HEIGHT);
     
-    for (u8 i = 0; i < currentMenu->numOpts; i++) {
+    for (s32 i = 0; i < currentMenu->numOpts; i++) {
         scroll = 140 - 32 * i + currentMenu->scroll * 32;
         // FIXME: just start from the first visible option bruh
-        if (scroll <= 140 && scroll > 32)
-            optmenu_draw_opt(&currentMenu->opts[i], 160, scroll, (currentMenu->select == i));
+        if (scroll <= 140 && scroll > 32) {
+            if (currentMenu == &menuApItems) {
+                optmenu_draw_ap_item(i, scroll, (currentMenu->select == i));
+            } else {
+                optmenu_draw_opt(&currentMenu->opts[i], 160, scroll, (currentMenu->select == i));
+            }
+        }
     }
 
     gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
-    print_generic_string(72, 132 - (32 * (currentMenu->select - currentMenu->scroll)), optSmallStr[2]);
-    print_generic_string(232, 132 - (32 * (currentMenu->select - currentMenu->scroll)), optSmallStr[3]);
+    if (currentMenu != &menuApItems) {
+        gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, 255);
+        print_generic_string(72, 132 - (32 * (currentMenu->select - currentMenu->scroll)), optSmallStr[2]);
+        print_generic_string(232, 132 - (32 * (currentMenu->select - currentMenu->scroll)), optSmallStr[3]);
+    }
     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
 }
 
@@ -503,6 +614,14 @@ void optmenu_toggle(void) {
             if (menuMain.select >= menuMain.numOpts) {
                 menuMain.select = 0; // don't bother
                 menuMain.scroll = 0;
+            }
+        }
+        menuCheats.numOpts = sizeof(optsCheats) / sizeof(optsCheats[0]);
+        if (!Cheats.LaunchCheats) {
+            menuCheats.numOpts--;
+            if (menuCheats.select >= menuCheats.numOpts) {
+                menuCheats.select = 0;
+                menuCheats.scroll = 0;
             }
         }
 
@@ -594,16 +713,16 @@ void optmenu_check_buttons(void) {
             play_sound(SOUND_MENU_CHANGE_SELECT, gDefaultSoundArgs);
             #endif
             if (gPlayer1Controller->stickX >= 60)
-                optmenu_opt_change(&currentMenu->opts[currentMenu->select], 1);
+                optmenu_selected_change(1);
             else
-                optmenu_opt_change(&currentMenu->opts[currentMenu->select], -1);
+                optmenu_selected_change(-1);
         }
     } else if (gPlayer1Controller->buttonPressed & A_BUTTON) {
         if (allowInput) {
             #ifndef nosound
             play_sound(SOUND_MENU_CHANGE_SELECT, gDefaultSoundArgs);
             #endif
-            optmenu_opt_change(&currentMenu->opts[currentMenu->select], 0);
+            optmenu_selected_change(0);
         }
     } else if (gPlayer1Controller->buttonPressed & B_BUTTON) {
         if (allowInput) {
@@ -619,7 +738,7 @@ void optmenu_check_buttons(void) {
         }
     } else if (gPlayer1Controller->buttonPressed & Z_TRIG) {
         // HACK: clear binds with Z
-        if (allowInput && currentMenu->opts[currentMenu->select].type == OPT_BIND)
+        if (allowInput && currentMenu != &menuApItems && currentMenu->opts[currentMenu->select].type == OPT_BIND)
             optmenu_opt_change(&currentMenu->opts[currentMenu->select], 0xFF);
     } else if (gPlayer1Controller->buttonPressed & START_BUTTON) {
         if (allowInput) optmenu_toggle();
