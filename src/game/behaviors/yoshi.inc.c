@@ -134,7 +134,6 @@ void yoshi_give_present_loop(void) {
         SM64AP_SendItem(SM64AP_LOCATIONID_YOSHI);
     }
 
-    gSpecialTripleJump = 1;
     o->oAction = YOSHI_ACT_WALK_JUMP_OFF_ROOF;
 }
 
