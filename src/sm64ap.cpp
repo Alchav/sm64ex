@@ -88,6 +88,7 @@ std::bitset<SM64AP_NUM_LEVEL_CAPS> sm64_have_level_caps;
 std::bitset<SM64AP_NUM_OBJECT_ITEMS> sm64_have_object_items;
 std::bitset<SM64AP_NUM_COIN_CHECKS> sm64_sent_coin_checks;
 std::bitset<SM64AP_NUM_1UP_CHECKS> sm64_sent_1up_checks;
+std::set<int> sm64_sent_box_checks;
 int* sm64_clockaction = nullptr;
 int sm64_cost_firstbowserdoor = 8;
 int sm64_cost_basementdoor = 30;
@@ -1669,6 +1670,7 @@ void SM64AP_ResetItems() {
     sm64_have_object_items.reset();
     sm64_sent_coin_checks.reset();
     sm64_sent_1up_checks.reset();
+    sm64_sent_box_checks.clear();
     sm64_have_first_floor_key = false;
     sm64_have_progressive_basement_keys = 0;
     sm64_have_progressive_upstairs_keys = 0;
@@ -1800,8 +1802,22 @@ void SM64AP_InitSP(const char * filename) {
     AP_Start();
 }
 
+int SM64AP_BoxLocationId(int id) {
+    auto it = map_boxid_locid.find(id);
+
+    if (it == map_boxid_locid.end()) {
+        return 0;
+    }
+
+    return it->second;
+}
+
 void SM64AP_SendByBoxID(int id) {
-    SM64AP_SendItem(map_boxid_locid[id]);
+    int locId = SM64AP_BoxLocationId(id);
+
+    if (locId != 0) {
+        SM64AP_SendItem(locId);
+    }
 }
 
 void SM64AP_SendItem(int idx) {
@@ -1968,6 +1984,16 @@ static int SM64AP_OneUpCheckOffsetFromLocationId(int locId) {
     return offset;
 }
 
+static bool SM64AP_IsOneUpBoxLocation(int locId) {
+    for (const auto &boxLocation : map_boxid_locid) {
+        if (boxLocation.second == locId) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 int SM64AP_ResolveOneUpLocation(s16 level, s16 area, s16 sourceType, s16 sourceParam, s16 x, s16 y, s16 z) {
     for (int i = 0; i < SM64AP_NUM_1UP_CHECKS; i++) {
         const SM64APOneUpSource &source = SM64AP_1UP_SOURCES[i];
@@ -2013,6 +2039,10 @@ int SM64AP_ResolveOneUpLocation(s16 level, s16 area, s16 sourceType, s16 sourceP
 bool SM64AP_ShouldSuppressOneUp(int locId) {
     int offset = SM64AP_OneUpCheckOffsetFromLocationId(locId);
 
+    if (SM64AP_IsOneUpBoxLocation(locId)) {
+        return sm64_sent_box_checks.count(locId) != 0 || SM64AP_CheckedLoc(locId);
+    }
+
     if (!sm64_1up_checks_enabled || offset < 0) {
         return false;
     }
@@ -2022,6 +2052,16 @@ bool SM64AP_ShouldSuppressOneUp(int locId) {
 
 bool SM64AP_CollectOneUp(int locId) {
     int offset = SM64AP_OneUpCheckOffsetFromLocationId(locId);
+
+    if (SM64AP_IsOneUpBoxLocation(locId)) {
+        if (SM64AP_CanReportProgress()
+            && sm64_sent_box_checks.count(locId) == 0
+            && !SM64AP_CheckedLoc(locId)) {
+            sm64_sent_box_checks.insert(locId);
+            SM64AP_SendItem(locId);
+        }
+        return true;
+    }
 
     if (!SM64AP_CanReportProgress() || !sm64_1up_checks_enabled || offset < 0) {
         return false;

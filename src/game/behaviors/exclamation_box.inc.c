@@ -107,13 +107,22 @@ void exclamation_box_act_3(void) {
 }
 
 void exclamation_box_spawn_contents(struct Struct802C0DF0 *a0, u8 a1) {
-    if ((o->oBehParams >> 16) == 0x1404) {
-        SM64AP_SendByBoxID(o->oBehParams & 0xFFFF);
-        return;
-    }
-
     struct Object *sp1C = NULL;
     s32 oneUpLocId = 0;
+
+    if ((o->oBehParams >> 16) == 0x1404) {
+        oneUpLocId = SM64AP_BoxLocationId(o->oBehParams & 0xFFFF);
+        if (SM64AP_ShouldSuppressOneUp(oneUpLocId)) {
+            return;
+        }
+
+        sp1C = spawn_object(o, MODEL_1UP, bhv1upWalking);
+        sp1C->o1UpApLocationId = oneUpLocId;
+        sp1C->oVelY = 20.0f;
+        sp1C->oForwardVel = 3.0f;
+        sp1C->oMoveAngleYaw = gMarioObject->oMoveAngleYaw;
+        return;
+    }
 
     while (a0->unk0 != 99) {
         if (a1 == a0->unk0) {

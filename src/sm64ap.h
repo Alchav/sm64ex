@@ -368,6 +368,7 @@ AP_EXTERN_C bool SM64AP_CanClimb();
 AP_EXTERN_C bool SM64AP_CanLedgeGrab();
 
 // Send Item
+AP_EXTERN_C int SM64AP_BoxLocationId(int);
 AP_EXTERN_C void SM64AP_SendByBoxID(int);
 AP_EXTERN_C void SM64AP_SendItem(int);
 
