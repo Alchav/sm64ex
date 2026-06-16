@@ -3,6 +3,7 @@
 
 extern "C" {
     #include "game/area.h"
+    #include "game/game_init.h"
     #include "game/print.h"
     #include "game/save_file.h"
     #include "behavior_data.h"
@@ -129,6 +130,10 @@ static constexpr int SM64AP_COIN_CHECK_MAX_COUNTS[SM64AP_NUM_COIN_CHECK_COURSES]
     80, 56, 56, 63, 27,
     47, 80, 80, 76,
 };
+
+static bool SM64AP_CanReportProgress() {
+    return gCurrDemoInput == nullptr && gCurrCreditsEntry == nullptr;
+}
 static constexpr int SM64AP_COIN_CHECK_OFFSETS[SM64AP_NUM_COIN_CHECK_COURSES] = {
     0, 146, 287, 391, 545,
     696, 835, 968, 1104, 1210,
@@ -1800,6 +1805,10 @@ void SM64AP_SendByBoxID(int id) {
 }
 
 void SM64AP_SendItem(int idx) {
+    if (!SM64AP_CanReportProgress()) {
+        return;
+    }
+
     AP_SendItem(idx);
 }
 
@@ -1812,6 +1821,10 @@ int64_t SM64AP_PopDelayedStack() {
 }
 
 void SM64AP_FinishBowser(int i) {
+    if (!SM64AP_CanReportProgress()) {
+        return;
+    }
+
     AP_SetServerDataRequest req;
     req.key = AP_GetPrivateServerDataPrefix() + "FinishedBowser";
     int def_val = 0;
@@ -2010,7 +2023,7 @@ bool SM64AP_ShouldSuppressOneUp(int locId) {
 bool SM64AP_CollectOneUp(int locId) {
     int offset = SM64AP_OneUpCheckOffsetFromLocationId(locId);
 
-    if (!sm64_1up_checks_enabled || offset < 0) {
+    if (!SM64AP_CanReportProgress() || !sm64_1up_checks_enabled || offset < 0) {
         return false;
     }
 
@@ -2023,6 +2036,10 @@ bool SM64AP_CollectOneUp(int locId) {
 }
 
 void SM64AP_CheckCoinCount(int courseNum, int coinCount) {
+    if (!SM64AP_CanReportProgress()) {
+        return;
+    }
+
     int courseIndex = SM64AP_CoinCheckCourseIndex(courseNum);
 
     if (courseIndex < 0) {
