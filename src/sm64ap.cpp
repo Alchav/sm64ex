@@ -65,6 +65,7 @@ bool sm64_have_hat = false;
 bool sm64_have_vcutm_entrance = false;
 bool sm64_1up_checks_enabled = false;
 bool sm64_buddy_checks_enabled = true;
+bool sm64_blocksanity_enabled = false;
 bool sm64_bowser_stage_1up_item_behavior = false;
 bool sm64_have_bowser_stage_1ups = false;
 bool sm64_have_bitdw_1ups = false;
@@ -89,6 +90,7 @@ std::bitset<SM64AP_NUM_LEVEL_CAPS> sm64_have_level_caps;
 std::bitset<SM64AP_NUM_OBJECT_ITEMS> sm64_have_object_items;
 std::bitset<SM64AP_NUM_COIN_CHECKS> sm64_sent_coin_checks;
 std::bitset<SM64AP_NUM_1UP_CHECKS> sm64_sent_1up_checks;
+std::bitset<SM64AP_NUM_BLOCKSANITY_CHECKS> sm64_sent_blocksanity_checks;
 std::set<int> sm64_sent_box_checks;
 int* sm64_clockaction = nullptr;
 int sm64_cost_firstbowserdoor = 8;
@@ -150,6 +152,125 @@ static constexpr int SM64AP_COIN_CHECK_OFFSETS[SM64AP_NUM_COIN_CHECK_COURSES] = 
     SM64AP_NUM_MAIN_COIN_CHECKS + 409,
     SM64AP_NUM_MAIN_COIN_CHECKS + 489,
 };
+
+struct SM64APBlocksanitySource {
+    s16 level;
+    s16 area;
+    s32 behParams;
+    s16 x;
+    s16 y;
+    s16 z;
+};
+
+static constexpr SM64APBlocksanitySource SM64AP_BLOCKSANITY_SOURCES[SM64AP_NUM_BLOCKSANITY_CHECKS] = {
+    { LEVEL_BBH, 1, 0x00020000, -1960, 300, -120 },
+    { LEVEL_BBH, 1, 0x00020000, 460, 2140, -560 },
+    { LEVEL_BBH, 1, (0x14040000 + LEVEL_BBH * 10 + 1), 660, 3200, 1160 },
+    { LEVEL_BBH, 1, 0x00060000, 700, 80, -2800 },
+    { LEVEL_BBH, 1, 0x00020000, 1268, 1050, 1860 },
+    { LEVEL_BITDW, 1, 0x00010000, -6420, -2900, 3880 },
+    { LEVEL_BITDW, 1, 0x00050000, -5120, 1460, -2140 },
+    { LEVEL_BITDW, 1, (0x14040000 + LEVEL_BITDW * 10 + 1), -4860, 1380, -300 },
+    { LEVEL_BITDW, 1, (0x14040000 + LEVEL_BITDW * 10 + 2), -2420, -1140, 3700 },
+    { LEVEL_BITFS, 1, (0x14040000 + LEVEL_BITFS * 10 + 1), -7400, 1500, 0 },
+    { LEVEL_BITFS, 1, 0x00060000, -5340, 4000, 100 },
+    { LEVEL_BITFS, 1, (0x14040000 + LEVEL_BITFS * 10 + 2), 2440, 5520, 140 },
+    { LEVEL_BITFS, 1, 0x00050000, 7220, -1800, 260 },
+    { LEVEL_BITS, 1, (0x14040000 + LEVEL_BITS * 10 + 1), 4100, -1050, -1800 },
+    { LEVEL_BOB, 1, 0x00000000, -6710, 1300, -2170 },
+    { LEVEL_BOB, 1, 0x00000000, 400, 350, 6500 },
+    { LEVEL_BOB, 1, 0x00000000, 3789, 3340, 1818 },
+    { LEVEL_BOB, 1, 0x000B0000, 5540, 3350, 1200 },
+    { LEVEL_CASTLE_GROUNDS, 1, 0x00000000, 13, 3476, -5646 },
+    { LEVEL_CCM, 1, (0x14040000 + LEVEL_CCM * 10 + 1), -4887, -1300, -4003 },
+    { LEVEL_CCM, 1, (0x14040000 + LEVEL_CCM * 10 + 2), -1557, -205, 1794 },
+    { LEVEL_CCM, 2, (0x14040000 + LEVEL_CCM * 10 + 3), -5600, -4500, -6644 },
+    { LEVEL_COTMC, 1, 0x00010000, -360, 300, -200 },
+    { LEVEL_COTMC, 1, (0x14040000 + LEVEL_COTMC * 10 + 1), -20, 180, 2060 },
+    { LEVEL_COTMC, 1, 0x00010000, 300, 620, -5280 },
+    { LEVEL_DDD, 2, 0x00010000, 6800, 500, -850 },
+    { LEVEL_DDD, 2, 0x00020000, 6800, 500, -150 },
+    { LEVEL_HMC, 1, 0x00010000, -6924, 2440, 7364 },
+    { LEVEL_HMC, 1, (0x14040000 + LEVEL_HMC * 10 + 1), -4960, 2700, 80 },
+    { LEVEL_HMC, 1, 0x00010000, -3000, -2250, -6400 },
+    { LEVEL_HMC, 1, (0x14040000 + LEVEL_HMC * 10 + 2), -2700, 2100, -6400 },
+    { LEVEL_HMC, 1, 0x00010000, 1939, -600, -2920 },
+    { LEVEL_HMC, 1, 0x00010000, 5100, -600, -4500 },
+    { LEVEL_HMC, 1, 0x00010000, 5860, -550, -739 },
+    { LEVEL_JRB, 1, 0x00010000, -7160, 1340, 2580 },
+    { LEVEL_JRB, 1, 0x00050000, -5800, 1340, -750 },
+    { LEVEL_JRB, 1, 0x00010000, 279, -2600, -7340 },
+    { LEVEL_JRB, 1, 0x04080000, 1540, 2160, 2130 },
+    { LEVEL_JRB, 1, 0x00010000, 2077, 1832, 7465 },
+    { LEVEL_JRB, 2, 0x00080000, 0, 1600, 3000 },
+    { LEVEL_LLL, 1, 0x00000000, -5900, 460, 6400 },
+    { LEVEL_LLL, 1, 0x00030000, 1050, 550, 6200 },
+    { LEVEL_PSS, 1, 0x00080000, -6385, -4200, 5770 },
+    { LEVEL_RR, 1, (0x14040000 + LEVEL_RR * 10 + 1), -6750, 2600, -50 },
+    { LEVEL_RR, 1, (0x14040000 + LEVEL_RR * 10 + 2), -4844, -4240, 6622 },
+    { LEVEL_RR, 1, (0x14040000 + LEVEL_RR * 10 + 3), -3428, 6770, -5128 },
+    { LEVEL_RR, 1, 0x000E0000, 5000, 4100, 4440 },
+    { LEVEL_SL, 1, 0x00030000, -5450, 1300, 5900 },
+    { LEVEL_SL, 1, 0x000C0000, -4700, 1300, 5850 },
+    { LEVEL_SL, 1, (0x14040000 + LEVEL_SL * 10 + 1), -3380, 1360, -4140 },
+    { LEVEL_SL, 2, 0x00050000, -720, 300, -1740 },
+    { LEVEL_SL, 2, (0x14040000 + LEVEL_SL * 10 + 2), -120, 300, -1740 },
+    { LEVEL_SL, 2, 0x00020000, 1660, 300, -1720 },
+    { LEVEL_SSL, 1, 0x00000000, -3000, 500, 800 },
+    { LEVEL_SSL, 1, (0x14040000 + LEVEL_SSL * 10 + 1), -1200, 500, 800 },
+    { LEVEL_SSL, 1, 0x00030000, 5840, 940, 2500 },
+    { LEVEL_SSL, 1, 0x00000000, 5860, 940, 4180 },
+    { LEVEL_SSL, 1, 0x00000000, 6900, 350, -5400 },
+    { LEVEL_SSL, 2, (0x14040000 + LEVEL_SSL * 10 + 2), -3536, 252, -3705 },
+    { LEVEL_SSL, 2, (0x14040000 + LEVEL_SSL * 10 + 3), -1242, 252, -3957 },
+    { LEVEL_THI, 1, (0x14040000 + LEVEL_THI * 10 + 2), -5712, -2190, 1100 },
+    { LEVEL_THI, 1, 0x000A0000, 2600, 3500, -2400 },
+    { LEVEL_THI, 1, (0x14040000 + LEVEL_THI * 10 + 3), 6022, -1722, -633 },
+    { LEVEL_THI, 2, (0x14040000 + LEVEL_THI * 10 + 1), -1866, -400, 311 },
+    { LEVEL_THI, 2, 0x00050000, 1849, -325, -183 },
+    { LEVEL_TOTWC, 1, 0x00000000, 0, -1760, -600 },
+    { LEVEL_TTC, 1, 0x00050000, -1160, 2920, -840 },
+    { LEVEL_TTC, 1, 0x00050000, -1140, -3720, -1620 },
+    { LEVEL_TTC, 1, (0x14040000 + LEVEL_TTC * 10 + 2), -1101, 6316, -685 },
+    { LEVEL_TTC, 1, 0x00060000, -780, 6316, -1020 },
+    { LEVEL_TTC, 1, 0x00060000, -400, 3600, 1880 },
+    { LEVEL_TTC, 1, 0x00050000, -40, 4160, -1280 },
+    { LEVEL_TTC, 1, 0x00060000, 0, 4783, 0 },
+    { LEVEL_TTC, 1, 0x00060000, 280, -4920, 1660 },
+    { LEVEL_TTC, 1, 0x00050000, 520, 300, 1500 },
+    { LEVEL_TTC, 1, 0x00050000, 840, -2200, 860 },
+    { LEVEL_TTC, 1, 0x00050000, 1240, 300, 840 },
+    { LEVEL_TTC, 1, (0x14040000 + LEVEL_TTC * 10 + 1), 1883, 4150, 550 },
+    { LEVEL_TTC, 1, 0x00060000, 2350, 5600, 2350 },
+    { LEVEL_TTM, 1, (0x14040000 + LEVEL_TTM * 10 + 1), 3261, -2553, -4092 },
+    { LEVEL_VCUTM, 1, 0x00020000, -6020, -2976, 1240 },
+    { LEVEL_VCUTM, 1, (0x14040000 + LEVEL_VCUTM * 10 + 1), -3434, 2951, -3076 },
+    { LEVEL_VCUTM, 1, 0x00050000, -2145, -2160, -5963 },
+    { LEVEL_VCUTM, 1, 0x00020000, 3980, 300, -6220 },
+    { LEVEL_WDW, 1, 0x00060000, -3760, 700, 4120 },
+    { LEVEL_WDW, 1, 0x00080000, -2200, 2600, 3500 },
+    { LEVEL_WDW, 1, 0x00050000, -2200, 3060, -3700 },
+    { LEVEL_WDW, 1, 0x00060000, -2075, 3050, -524 },
+    { LEVEL_WDW, 1, 0x00060000, 943, 3880, -1779 },
+    { LEVEL_WDW, 1, 0x000A0000, 1550, 4350, 100 },
+    { LEVEL_WDW, 1, 0x00050000, 3388, 1600, 1155 },
+    { LEVEL_WDW, 2, 0x00020000, -1779, -2240, 3644 },
+    { LEVEL_WDW, 2, 0x00010000, -770, 80, 770 },
+    { LEVEL_WDW, 2, 0x00020000, 1300, -2260, 3740 },
+    { LEVEL_WDW, 2, (0x14040000 + LEVEL_WDW * 10 + 2), 1655, -2160, -1293 },
+    { LEVEL_WF, 1, 0x00010000, 2750, 1370, -3400 },
+    { LEVEL_WMOTR, 1, 0x00000000, -3200, 4880, -4040 },
+    { LEVEL_WMOTR, 1, 0x00000000, -2760, 2320, -4080 },
+    { LEVEL_WMOTR, 1, (0x14040000 + LEVEL_WMOTR * 10 + 1), -2744, 4899, -4439 },
+    { LEVEL_WMOTR, 1, 0x00000000, -400, 1960, -120 },
+    { LEVEL_WMOTR, 1, 0x00000000, -240, -1080, 4520 },
+    { LEVEL_WMOTR, 1, 0x00000000, 3600, -2480, 5440 },
+    { LEVEL_WMOTR, 1, 0x00000000, 3960, 520, 440 },
+};
+
+static_assert(sizeof(SM64AP_BLOCKSANITY_SOURCES) / sizeof(SM64AP_BLOCKSANITY_SOURCES[0])
+              == SM64AP_NUM_BLOCKSANITY_CHECKS,
+              "Blocksanity source count must match location count");
 
 struct SM64APOneUpSource {
     s16 level;
@@ -439,6 +560,11 @@ void SM64AP_CheckLocation(int64_t loc_id) {
     int oneUpOffset = loc_id - SM64AP_LOCATIONID_1UP_CHECK_START;
     if (oneUpOffset >= 0 && oneUpOffset < SM64AP_NUM_1UP_CHECKS) {
         sm64_sent_1up_checks[oneUpOffset] = true;
+    }
+
+    int blocksanityOffset = loc_id - SM64AP_LOCATIONID_BLOCKSANITY_START;
+    if (blocksanityOffset >= 0 && blocksanityOffset < SM64AP_NUM_BLOCKSANITY_CHECKS) {
+        sm64_sent_blocksanity_checks[blocksanityOffset] = true;
     }
 }
 
@@ -1249,6 +1375,10 @@ void SM64AP_SetBuddyChecks(int enabled) {
     sm64_buddy_checks_enabled = enabled != 0;
 }
 
+void SM64AP_SetBlocksanity(int enabled) {
+    sm64_blocksanity_enabled = enabled != 0;
+}
+
 void SM64AP_SetBowserStageOneUpBehavior(int behavior) {
     sm64_bowser_stage_1up_item_behavior = behavior != 0;
 }
@@ -1675,6 +1805,7 @@ void SM64AP_ResetItems() {
     sm64_have_object_items.reset();
     sm64_sent_coin_checks.reset();
     sm64_sent_1up_checks.reset();
+    sm64_sent_blocksanity_checks.reset();
     sm64_sent_box_checks.clear();
     sm64_have_first_floor_key = false;
     sm64_have_progressive_basement_keys = 0;
@@ -1692,6 +1823,7 @@ void SM64AP_ResetItems() {
     sm64_have_vcutm_entrance = false;
     sm64_1up_checks_enabled = false;
     sm64_buddy_checks_enabled = true;
+    sm64_blocksanity_enabled = false;
     sm64_bowser_stage_1up_item_behavior = false;
     sm64_have_bowser_stage_1ups = false;
     sm64_have_bitdw_1ups = false;
@@ -1750,6 +1882,7 @@ void SM64AP_GenericInit() {
     AP_RegisterSlotDataIntCallback("ShowGlobalCapDisplay", &SM64AP_SetGlobalCapDisplay);
     AP_RegisterSlotDataIntCallback("OneUpChecks", &SM64AP_SetOneUpChecks);
     AP_RegisterSlotDataIntCallback("BuddyChecks", &SM64AP_SetBuddyChecks);
+    AP_RegisterSlotDataIntCallback("Blocksanity", &SM64AP_SetBlocksanity);
     AP_RegisterSlotDataIntCallback("BowserStage1UpBehavior", &SM64AP_SetBowserStageOneUpBehavior);
     AP_RegisterSlotDataIntCallback("EasyButterflies", &SM64AP_SetEasyButterflies);
     AP_RegisterSlotDataIntCallback("NoDespawn", &SM64AP_SetNoDespawn);
@@ -2090,6 +2223,47 @@ bool SM64AP_CollectOneUp(int locId) {
     }
 
     return true;
+}
+
+static int SM64AP_BlocksanityOffsetFromLocationId(int locId) {
+    int offset = locId - SM64AP_LOCATIONID_BLOCKSANITY_START;
+
+    if (offset < 0 || offset >= SM64AP_NUM_BLOCKSANITY_CHECKS) {
+        return -1;
+    }
+
+    return offset;
+}
+
+static int SM64AP_ResolveBlocksanityLocation(s16 level, s16 area, s32 behParams, s16 x, s16 y, s16 z) {
+    for (int i = 0; i < SM64AP_NUM_BLOCKSANITY_CHECKS; i++) {
+        const SM64APBlocksanitySource &source = SM64AP_BLOCKSANITY_SOURCES[i];
+        if (source.level == level
+            && source.area == area
+            && source.behParams == behParams
+            && source.x == x
+            && source.y == y
+            && source.z == z) {
+            return SM64AP_LOCATIONID_BLOCKSANITY_START + i;
+        }
+    }
+
+    return 0;
+}
+
+void SM64AP_SendBlocksanityCheck(s16 level, s16 area, s32 behParams, s16 x, s16 y, s16 z) {
+    if (!sm64_blocksanity_enabled || !SM64AP_CanReportProgress()) {
+        return;
+    }
+
+    int locId = SM64AP_ResolveBlocksanityLocation(level, area, behParams, x, y, z);
+    int offset = SM64AP_BlocksanityOffsetFromLocationId(locId);
+    if (offset < 0 || sm64_sent_blocksanity_checks[offset] || SM64AP_CheckedLoc(locId)) {
+        return;
+    }
+
+    sm64_sent_blocksanity_checks[offset] = true;
+    SM64AP_SendItem(locId);
 }
 
 void SM64AP_CheckCoinCount(int courseNum, int coinCount) {

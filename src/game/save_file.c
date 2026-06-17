@@ -531,6 +531,11 @@ void save_file_collect_star_or_key(s16 coinScore, s16 starIndex) {
                 save_file_set_star_flags(fileIndex, courseIndex, starFlag);
             }
             SM64AP_SendItem((courseIndex == -1 ? (10+15-1)*7 : courseIndex*7) + starIndex + SM64AP_ID_OFFSET);
+#ifdef VERSION_JP
+            if (gCurrLevelNum == LEVEL_JRB && starIndex == 4) {
+                SM64AP_SendBlocksanityCheck(LEVEL_JRB, 1, 0x04080000, 1540, 2160, 2130);
+            }
+#endif
             break;
     }
 }
