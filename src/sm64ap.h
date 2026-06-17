@@ -380,6 +380,7 @@ AP_EXTERN_C bool SM64AP_CanLedgeGrab();
 AP_EXTERN_C int SM64AP_BoxLocationId(int);
 AP_EXTERN_C void SM64AP_SendByBoxID(int);
 AP_EXTERN_C void SM64AP_SendItem(int);
+AP_EXTERN_C int SM64AP_LastLocationCheckId();
 
 // Print Next Message to Screen
 AP_EXTERN_C void SM64AP_PrintNext();

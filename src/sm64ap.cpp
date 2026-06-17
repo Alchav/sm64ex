@@ -138,6 +138,9 @@ static constexpr int SM64AP_COIN_CHECK_MAX_COUNTS[SM64AP_NUM_COIN_CHECK_COURSES]
 static bool SM64AP_CanReportProgress() {
     return gCurrDemoInput == nullptr && gCurrCreditsEntry == nullptr;
 }
+
+static int sm64ap_last_location_check_id = 0;
+
 static constexpr int SM64AP_COIN_CHECK_OFFSETS[SM64AP_NUM_COIN_CHECK_COURSES] = {
     0, 146, 287, 391, 545,
     696, 835, 968, 1104, 1210,
@@ -1965,7 +1968,12 @@ void SM64AP_SendItem(int idx) {
         return;
     }
 
+    sm64ap_last_location_check_id = idx;
     AP_SendItem(idx);
+}
+
+int SM64AP_LastLocationCheckId() {
+    return sm64ap_last_location_check_id;
 }
 
 // If an item exists on the stack, return it, otherwise 0

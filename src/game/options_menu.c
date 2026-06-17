@@ -112,6 +112,7 @@ static const u8 optsCheatsStr[][64] = {
     { TEXT_OPT_CHEAT7 },
     { TEXT_OPT_CHEAT8 },
     { TEXT_OPT_CHEAT9 },
+    { TEXT_OPT_CHEAT10 },
 };
 
 static const u8 apToggleNoStr[] = {
@@ -299,6 +300,7 @@ static struct Option optsCheats[] = {
     DEF_OPT_TOGGLE( optsCheatsStr[6], &Cheats.ExitAnywhere ),
     DEF_OPT_TOGGLE( optsCheatsStr[7], &Cheats.HugeMario ),
     DEF_OPT_TOGGLE( optsCheatsStr[8], &Cheats.TinyMario ),
+    DEF_OPT_TOGGLE( optsCheatsStr[9], &Cheats.ShowLastLocationCheck ),
     DEF_OPT_SUBMENU( menuApItemsStr, &menuApItems ),
 
 };

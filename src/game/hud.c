@@ -15,6 +15,8 @@
 #include "save_file.h"
 #include "print.h"
 #include "pc/configfile.h"
+#include "pc/cheats.h"
+#include "sm64ap.h"
 
 /* @file hud.c
  * This file implements HUD rendering and power meter animations.
@@ -365,6 +367,21 @@ void render_hud_timer(void) {
     gSPDisplayList(gDisplayListHead++, dl_hud_img_end);
 }
 
+static void render_hud_last_location_check(void) {
+    const s32 locId = SM64AP_LastLocationCheckId();
+
+    if (!Cheats.EnableCheats || !Cheats.ShowLastLocationCheck) {
+        return;
+    }
+
+    print_text(20, 20, "LAST CHECK");
+    if (locId == 0) {
+        print_text(150, 20, "NONE");
+    } else {
+        print_text_fmt_int(150, 20, "%d", locId);
+    }
+}
+
 /**
  * Sets HUD status camera value depending of the actions
  * defined in update_camera_status.
@@ -478,5 +495,7 @@ void render_hud(void) {
         if (hudDisplayFlags & HUD_DISPLAY_FLAG_TIMER && configHUD) {
             render_hud_timer();
         }
+
+        render_hud_last_location_check();
     }
 }
