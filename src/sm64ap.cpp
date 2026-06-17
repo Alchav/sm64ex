@@ -65,7 +65,6 @@ bool sm64_have_hat = false;
 bool sm64_have_vcutm_entrance = false;
 bool sm64_1up_checks_enabled = false;
 bool sm64_buddy_checks_enabled = true;
-bool sm64_blocksanity_enabled = false;
 bool sm64_bowser_stage_1up_item_behavior = false;
 bool sm64_have_bowser_stage_1ups = false;
 bool sm64_have_bitdw_1ups = false;
@@ -1378,10 +1377,6 @@ void SM64AP_SetBuddyChecks(int enabled) {
     sm64_buddy_checks_enabled = enabled != 0;
 }
 
-void SM64AP_SetBlocksanity(int enabled) {
-    sm64_blocksanity_enabled = enabled != 0;
-}
-
 void SM64AP_SetBowserStageOneUpBehavior(int behavior) {
     sm64_bowser_stage_1up_item_behavior = behavior != 0;
 }
@@ -1826,7 +1821,6 @@ void SM64AP_ResetItems() {
     sm64_have_vcutm_entrance = false;
     sm64_1up_checks_enabled = false;
     sm64_buddy_checks_enabled = true;
-    sm64_blocksanity_enabled = false;
     sm64_bowser_stage_1up_item_behavior = false;
     sm64_have_bowser_stage_1ups = false;
     sm64_have_bitdw_1ups = false;
@@ -1885,7 +1879,6 @@ void SM64AP_GenericInit() {
     AP_RegisterSlotDataIntCallback("ShowGlobalCapDisplay", &SM64AP_SetGlobalCapDisplay);
     AP_RegisterSlotDataIntCallback("OneUpChecks", &SM64AP_SetOneUpChecks);
     AP_RegisterSlotDataIntCallback("BuddyChecks", &SM64AP_SetBuddyChecks);
-    AP_RegisterSlotDataIntCallback("Blocksanity", &SM64AP_SetBlocksanity);
     AP_RegisterSlotDataIntCallback("BowserStage1UpBehavior", &SM64AP_SetBowserStageOneUpBehavior);
     AP_RegisterSlotDataIntCallback("EasyButterflies", &SM64AP_SetEasyButterflies);
     AP_RegisterSlotDataIntCallback("NoDespawn", &SM64AP_SetNoDespawn);
@@ -2260,7 +2253,7 @@ static int SM64AP_ResolveBlocksanityLocation(s16 level, s16 area, s32 behParams,
 }
 
 void SM64AP_SendBlocksanityCheck(s16 level, s16 area, s32 behParams, s16 x, s16 y, s16 z) {
-    if (!sm64_blocksanity_enabled || !SM64AP_CanReportProgress()) {
+    if (!SM64AP_CanReportProgress()) {
         return;
     }
 
