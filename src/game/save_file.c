@@ -649,6 +649,14 @@ s32 save_file_get_course_coin_score(s32 fileIndex, s32 courseIndex) {
  * Return TRUE if the cannon is unlocked in the current course.
  */
 s32 save_file_is_cannon_unlocked(void) {
+    if (!SM64AP_BuddyChecksEnabled()) {
+        if (gCurrCourseNum >= COURSE_MIN && gCurrCourseNum <= COURSE_MAX) {
+            return save_file_get_cannon_flags(gCurrSaveFileNum - 1, gCurrCourseNum - 1) != 0;
+        }
+
+        return FALSE;
+    }
+
     if (gCurrLevelNum == LEVEL_WMOTR || gCurrCourseNum == COURSE_WMOTR) {
         return SM64AP_HaveWmotrCannon();
     }
@@ -660,10 +668,12 @@ s32 save_file_is_cannon_unlocked(void) {
  * Sets the cannon status to unlocked in the current course.
  */
 void save_file_set_cannon_unlocked(void) {
-    if (gCurrLevelNum == LEVEL_WMOTR || gCurrCourseNum == COURSE_WMOTR) {
-        SM64AP_SendItem(SM64AP_LOCATIONID_WMOTR_BOBOMB_BUDDY);
-    } else if (gCurrCourseNum <= 15) {
-        SM64AP_SendItem(200 + gCurrCourseNum - 1 + SM64AP_ID_OFFSET);
+    if (SM64AP_BuddyChecksEnabled()) {
+        if (gCurrLevelNum == LEVEL_WMOTR || gCurrCourseNum == COURSE_WMOTR) {
+            SM64AP_SendItem(SM64AP_LOCATIONID_WMOTR_BOBOMB_BUDDY);
+        } else if (gCurrCourseNum <= 15) {
+            SM64AP_SendItem(200 + gCurrCourseNum - 1 + SM64AP_ID_OFFSET);
+        }
     }
 
     gSaveBuffer.files[gCurrSaveFileNum - 1][0].courseStars[gCurrCourseNum] |= 0x80;

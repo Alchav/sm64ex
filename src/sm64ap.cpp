@@ -64,6 +64,7 @@ bool sm64_have_bitfs = false;
 bool sm64_have_hat = false;
 bool sm64_have_vcutm_entrance = false;
 bool sm64_1up_checks_enabled = false;
+bool sm64_buddy_checks_enabled = true;
 bool sm64_bowser_stage_1up_item_behavior = false;
 bool sm64_have_bowser_stage_1ups = false;
 bool sm64_have_bitdw_1ups = false;
@@ -660,7 +661,7 @@ static bool SM64AP_IsKoopaTheQuick(u32 behParam, const void *behavior) {
 }
 
 static bool SM64AP_ShouldSpawnBobObject(s16 x, s16, s16, u32 behParam, const void *behavior) {
-    bool haveBobombBuddy = SM64AP_HaveFeature(SM64AP_FEATURE_BOB_BOBOMB_BUDDY);
+    bool haveBobombBuddy = !sm64_buddy_checks_enabled || SM64AP_HaveFeature(SM64AP_FEATURE_BOB_BOBOMB_BUDDY);
     bool haveBobCannon = SM64AP_HaveCannon(AP_COURSE_BOB);
 
     if (behavior_is(behavior, bhvKingBobomb)) {
@@ -707,7 +708,7 @@ static bool SM64AP_ShouldSpawnWfObject(u32 behParam, const void *behavior) {
         return SM64AP_HaveFeature(SM64AP_FEATURE_WF_FORTRESS);
     }
     if (behavior_is(behavior, bhvBobombBuddyOpensCannon)) {
-        return SM64AP_HaveFeature(SM64AP_FEATURE_WF_BOBOMB_BUDDY);
+        return !sm64_buddy_checks_enabled || SM64AP_HaveFeature(SM64AP_FEATURE_WF_BOBOMB_BUDDY);
     }
     if (behavior_is(behavior, bhvHoot)) {
         return SM64AP_HaveFeature(SM64AP_FEATURE_WF_HOOT);
@@ -743,7 +744,7 @@ static bool SM64AP_ShouldSpawnJrbObject(u32 behParam, const void *behavior) {
         return SM64AP_HaveFeature(SM64AP_FEATURE_JRB_RAISED_SHIP);
     }
     if (behavior_is(behavior, bhvBobombBuddyOpensCannon)) {
-        return SM64AP_HaveFeature(SM64AP_FEATURE_JRB_BOBOMB_BUDDY);
+        return !sm64_buddy_checks_enabled || SM64AP_HaveFeature(SM64AP_FEATURE_JRB_BOBOMB_BUDDY);
     }
     if (behavior_is(behavior, bhvJetStream)
         || (behavior_is(behavior, bhvStar) && beh_param_star(behParam) == 5)) {
@@ -1244,6 +1245,10 @@ void SM64AP_SetOneUpChecks(int enabled) {
     sm64_1up_checks_enabled = enabled != 0;
 }
 
+void SM64AP_SetBuddyChecks(int enabled) {
+    sm64_buddy_checks_enabled = enabled != 0;
+}
+
 void SM64AP_SetBowserStageOneUpBehavior(int behavior) {
     sm64_bowser_stage_1up_item_behavior = behavior != 0;
 }
@@ -1686,6 +1691,7 @@ void SM64AP_ResetItems() {
     sm64_have_hat = false;
     sm64_have_vcutm_entrance = false;
     sm64_1up_checks_enabled = false;
+    sm64_buddy_checks_enabled = true;
     sm64_bowser_stage_1up_item_behavior = false;
     sm64_have_bowser_stage_1ups = false;
     sm64_have_bitdw_1ups = false;
@@ -1743,6 +1749,7 @@ void SM64AP_GenericInit() {
     AP_RegisterSlotDataIntCallback("GlobalCapItems", &SM64AP_SetGlobalCapDisplay);
     AP_RegisterSlotDataIntCallback("ShowGlobalCapDisplay", &SM64AP_SetGlobalCapDisplay);
     AP_RegisterSlotDataIntCallback("OneUpChecks", &SM64AP_SetOneUpChecks);
+    AP_RegisterSlotDataIntCallback("BuddyChecks", &SM64AP_SetBuddyChecks);
     AP_RegisterSlotDataIntCallback("BowserStage1UpBehavior", &SM64AP_SetBowserStageOneUpBehavior);
     AP_RegisterSlotDataIntCallback("EasyButterflies", &SM64AP_SetEasyButterflies);
     AP_RegisterSlotDataIntCallback("NoDespawn", &SM64AP_SetNoDespawn);
@@ -1974,6 +1981,10 @@ bool SM64AP_OneUpChecksEnabled() {
     return sm64_1up_checks_enabled;
 }
 
+bool SM64AP_BuddyChecksEnabled() {
+    return sm64_buddy_checks_enabled;
+}
+
 static int SM64AP_OneUpCheckOffsetFromLocationId(int locId) {
     int offset = locId - SM64AP_LOCATIONID_1UP_CHECK_START;
 
@@ -2040,6 +2051,9 @@ bool SM64AP_ShouldSuppressOneUp(int locId) {
     int offset = SM64AP_OneUpCheckOffsetFromLocationId(locId);
 
     if (SM64AP_IsOneUpBoxLocation(locId)) {
+        if (!sm64_1up_checks_enabled) {
+            return false;
+        }
         return sm64_sent_box_checks.count(locId) != 0 || SM64AP_CheckedLoc(locId);
     }
 
@@ -2054,6 +2068,9 @@ bool SM64AP_CollectOneUp(int locId) {
     int offset = SM64AP_OneUpCheckOffsetFromLocationId(locId);
 
     if (SM64AP_IsOneUpBoxLocation(locId)) {
+        if (!sm64_1up_checks_enabled) {
+            return false;
+        }
         if (SM64AP_CanReportProgress()
             && sm64_sent_box_checks.count(locId) == 0
             && !SM64AP_CheckedLoc(locId)) {
@@ -2244,6 +2261,10 @@ bool SM64AP_HaveCastleCannon() {
 }
 
 bool SM64AP_HaveWmotrCannon() {
+    if (!sm64_buddy_checks_enabled) {
+        return save_file_get_cannon_flags(gCurrSaveFileNum - 1, COURSE_WMOTR - 1) != 0;
+    }
+
     return sm64_have_wmotr_cannon;
 }
 
@@ -2421,6 +2442,10 @@ bool SM64AP_PressedSwitch(int flag) {
 
 bool SM64AP_HaveCannon(int courseIdx) {
     if (courseIdx >= 0 && courseIdx < 15) {
+        if (!sm64_buddy_checks_enabled) {
+            return save_file_get_cannon_flags(gCurrSaveFileNum - 1, courseIdx) != 0;
+        }
+
         return sm64_have_cannon[courseIdx];
     }
     return false;

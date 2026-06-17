@@ -309,6 +309,7 @@ AP_EXTERN_C s16 SM64AP_ResolveAreaMusic(s16 level, s16 area, s16 vanillaSeq);
 AP_EXTERN_C bool SM64AP_CheckedLoc(int);
 AP_EXTERN_C void SM64AP_CheckCoinCount(int, int);
 AP_EXTERN_C bool SM64AP_OneUpChecksEnabled();
+AP_EXTERN_C bool SM64AP_BuddyChecksEnabled();
 AP_EXTERN_C int SM64AP_ResolveOneUpLocation(s16, s16, s16, s16, s16, s16, s16);
 AP_EXTERN_C bool SM64AP_ShouldSuppressOneUp(int);
 AP_EXTERN_C bool SM64AP_CollectOneUp(int);
