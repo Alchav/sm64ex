@@ -98,6 +98,11 @@ static bool bhv_1up_collect_on_no_despawn_floor(s16 collisionFlags) {
     }
 
     if (sObjFloor != NULL) {
+        if (SURFACE_IS_LETHAL_QUICKSAND(sObjFloor->type)) {
+            bhv_1up_collect_without_contact();
+            return true;
+        }
+
         switch (sObjFloor->type) {
             case SURFACE_BURNING:
             case SURFACE_DEATH_PLANE:

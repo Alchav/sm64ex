@@ -51,6 +51,10 @@ static bool bhv_coin_should_collect_on_no_despawn_floor(void) {
     }
 
     if (o->oFloor != NULL) {
+        if (SURFACE_IS_LETHAL_QUICKSAND(o->oFloor->type)) {
+            return true;
+        }
+
         switch (o->oFloor->type) {
             case SURFACE_BURNING:
             case SURFACE_DEATH_PLANE:

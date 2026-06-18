@@ -1853,6 +1853,13 @@ static s32 cur_obj_collect_loot_if_no_despawn_void(void) {
         return TRUE;
     }
 
+    if (o->oFloor != NULL && SURFACE_IS_LETHAL_QUICKSAND(o->oFloor->type)
+        && (o->oMoveFlags & OBJ_MOVE_MASK_ON_GROUND)) {
+        obj_collect_loot_coins_without_contact(o, o->oNumLootCoins);
+        obj_mark_for_deletion(o);
+        return TRUE;
+    }
+
     if (o->oFloor != NULL && o->oFloor->type == SURFACE_DEATH_PLANE
         && o->oPosY < o->oFloorHeight + 2048.0f) {
         obj_collect_loot_coins_without_contact(o, o->oNumLootCoins);
