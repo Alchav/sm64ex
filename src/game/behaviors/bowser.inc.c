@@ -1373,10 +1373,14 @@ void bhv_falling_bowser_platform_loop(void) {
 }
 
 void bowser_flame_despawn(void) {
+    struct Object *coin;
+
     obj_mark_for_deletion(o);
     spawn_object_with_scale(o, MODEL_NONE, bhvBlackSmokeUpward, 1.0f);
-    if (random_float() < 0.1)
-        spawn_object(o, MODEL_YELLOW_COIN, bhvTemporaryYellowCoin);
+    if (random_float() < 0.1) {
+        coin = spawn_object(o, MODEL_YELLOW_COIN, bhvTemporaryYellowCoin);
+        coin->oInteractionSubtype |= INT_SUBTYPE_HEAL_WITHOUT_COINS;
+    }
 }
 
 s32 bowser_flame_should_despawn(s32 maxTime) {

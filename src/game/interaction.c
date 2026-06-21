@@ -741,6 +741,12 @@ void reset_mario_pitch(struct MarioState *m) {
 }
 
 u32 interact_coin(struct MarioState *m, UNUSED u32 interactType, struct Object *o) {
+    if (o->oInteractionSubtype & INT_SUBTYPE_HEAL_WITHOUT_COINS) {
+        m->healCounter += 4 * o->oDamageOrCoinValue;
+        o->oInteractStatus = INT_STATUS_INTERACTED;
+        return FALSE;
+    }
+
     m->numCoins += o->oDamageOrCoinValue;
     m->healCounter += 4 * o->oDamageOrCoinValue;
     SM64AP_CheckCoinCount(gCurrCourseNum, m->numCoins);
