@@ -216,6 +216,7 @@ enum {
 #define SM64AP_ID_BOWSER_STAGE_1UPS 3626556
 #define SM64AP_ID_BITDW_1UPS 3626557
 #define SM64AP_ID_BITFS_1UPS 3626558
+#define SM64AP_ID_THI_TINY_PAINTING 3626559
 
 #define SM64AP_NUM_LEVEL_MOVES 10
 
@@ -351,6 +352,7 @@ AP_EXTERN_C bool SM64AP_CollectedCourseStar(int, int);
 AP_EXTERN_C bool SM64AP_ShouldSpawnLevelObject(s16, s16, s16, s16, s16, s16, u32, const void *);
 AP_EXTERN_C bool SM64AP_ShouldCreateWhirlpool(s16, s16, s8, s8, s16, s16, s16, s16);
 AP_EXTERN_C bool SM64AP_HavePainting(int);
+AP_EXTERN_C bool SM64AP_HavePaintingForArea(int, int);
 AP_EXTERN_C bool SM64AP_PaintingRandoEnabled();
 AP_EXTERN_C bool SM64AP_EasyButterflies();
 AP_EXTERN_C bool SM64AP_NoDespawn();

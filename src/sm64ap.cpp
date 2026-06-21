@@ -80,6 +80,7 @@ bool sm64_show_global_cap_display = false;
 int sm64_moat_state = 0;
 bool sm64_have_cannon[15];
 bool sm64_have_painting[NUM_PAINTING_LOCKS];
+bool sm64_have_thi_tiny_painting = false;
 bool sm64_painting_rando_enabled = false;
 int sm64_completion_type = 0;
 std::bitset<SM64AP_NUM_ABILITIES> sm64_have_abilities;
@@ -481,6 +482,9 @@ void SM64AP_RecvItem(int64_t idx, bool notify) {
             break;
         case SM64AP_ID_BITFS_1UPS:
             sm64_have_bitfs_1ups = true;
+            break;
+        case SM64AP_ID_THI_TINY_PAINTING:
+            sm64_have_thi_tiny_painting = true;
             break;
         case SM64AP_ID_HAT:
             if (!sm64_have_hat) {
@@ -1782,6 +1786,7 @@ void SM64AP_SetPaintingRando(int enabled) {
         // Not enabled, so unlock all paintings
         for (int i = 0; i < NUM_PAINTING_LOCKS; i++)
             sm64_have_painting[i] = true;
+        sm64_have_thi_tiny_painting = true;
     }
 }
 
@@ -1795,6 +1800,7 @@ void SM64AP_ResetItems() {
     for (int i = 0; i < NUM_PAINTING_LOCKS; i++) {
         sm64_have_painting[i] = false;
     }
+    sm64_have_thi_tiny_painting = false;
     sm64_painting_rando_enabled = false;
     sm64_have_abilities.reset();
     sm64_have_level_moves.reset();
@@ -2638,6 +2644,18 @@ bool SM64AP_HavePainting(int courseIdx) {
     }
 }
 
+bool SM64AP_HavePaintingForArea(int courseIdx, int areaIdx) {
+    if (!sm64_painting_rando_enabled) {
+        return true;
+    }
+
+    if (courseIdx == COURSE_THI && areaIdx == 2) {
+        return sm64_have_thi_tiny_painting;
+    }
+
+    return SM64AP_HavePainting(courseIdx);
+}
+
 bool SM64AP_PaintingRandoEnabled() {
     return sm64_painting_rando_enabled;
 }
@@ -2696,6 +2714,7 @@ enum SM64APCheatBoolItem {
     SM64AP_CHEAT_BOOL_BOWSER_STAGE_1UPS,
     SM64AP_CHEAT_BOOL_BITDW_1UPS,
     SM64AP_CHEAT_BOOL_BITFS_1UPS,
+    SM64AP_CHEAT_BOOL_THI_TINY_PAINTING,
     SM64AP_CHEAT_BOOL_WING_CAP,
     SM64AP_CHEAT_BOOL_METAL_CAP,
     SM64AP_CHEAT_BOOL_VANISH_CAP,
@@ -2880,6 +2899,7 @@ static void SM64AP_InitCheatItems() {
     SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_BOOL, SM64AP_CHEAT_BOOL_BOWSER_STAGE_1UPS, "BOWSER 1UPS");
     SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_BOOL, SM64AP_CHEAT_BOOL_BITDW_1UPS, "BITDW 1UPS");
     SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_BOOL, SM64AP_CHEAT_BOOL_BITFS_1UPS, "BITFS 1UPS");
+    SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_BOOL, SM64AP_CHEAT_BOOL_THI_TINY_PAINTING, "THI TINY PAINTING");
     SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_BOOL, SM64AP_CHEAT_BOOL_WING_CAP, "GLOBAL WING CAP");
     SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_BOOL, SM64AP_CHEAT_BOOL_METAL_CAP, "GLOBAL METAL CAP");
     SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_BOOL, SM64AP_CHEAT_BOOL_VANISH_CAP, "GLOBAL VANISH CAP");
@@ -2939,6 +2959,8 @@ static bool SM64AP_CheatBoolEnabled(int index) {
             return sm64_have_bitdw_1ups;
         case SM64AP_CHEAT_BOOL_BITFS_1UPS:
             return sm64_have_bitfs_1ups;
+        case SM64AP_CHEAT_BOOL_THI_TINY_PAINTING:
+            return sm64_have_thi_tiny_painting;
         case SM64AP_CHEAT_BOOL_WING_CAP:
             return sm64_have_wingcap;
         case SM64AP_CHEAT_BOOL_METAL_CAP:
@@ -2989,6 +3011,9 @@ static void SM64AP_CheatSetBool(int index, bool enabled) {
             break;
         case SM64AP_CHEAT_BOOL_BITFS_1UPS:
             sm64_have_bitfs_1ups = enabled;
+            break;
+        case SM64AP_CHEAT_BOOL_THI_TINY_PAINTING:
+            sm64_have_thi_tiny_painting = enabled;
             break;
         case SM64AP_CHEAT_BOOL_WING_CAP:
             sm64_have_wingcap = enabled;

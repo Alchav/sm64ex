@@ -71,6 +71,8 @@
 #define TEXT_PAINTING_WDW _("WDW")
 #define TEXT_PAINTING_TTM _("TTM")
 #define TEXT_PAINTING_THI _("THI")
+#define TEXT_PAINTING_THI_H _("THI H")
+#define TEXT_PAINTING_THI_T _("THI T")
 #define TEXT_PAINTING_TTC _("TTC")
 #define TEXT_PAINTING_RR  _("RR ")
 #define TEXT_PAINTING_UNK _("UNK")

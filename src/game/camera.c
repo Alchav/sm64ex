@@ -5202,7 +5202,7 @@ u8 get_cutscene_from_mario_status(struct Camera *c) {
         }
         if (SURFACE_IS_PAINTING_WARP(sMarioGeometry.currFloorType)) {
             struct WarpNode* warpNode = get_painting_warp_node();
-            if (SM64AP_HavePainting(gLevelToCourseNumTable[warpNode->destLevel - 1]))
+            if (SM64AP_HavePaintingForArea(gLevelToCourseNumTable[warpNode->destLevel - 1], warpNode->destArea))
                 cutscene = CUTSCENE_ENTER_PAINTING;
             else
                 cutscene = 0;

@@ -1136,6 +1136,7 @@ void set_painting_layer(struct GraphNodeGenerated *gen, struct Painting *paintin
  */
 Gfx *display_painting(struct Painting *painting) {
     int courseidx = 1;
+    int areaidx = 1;
     switch (painting->id) {
         case 0x0: courseidx = 1;  break; // BOB
         case 0x2: courseidx = 2;  break; // WF
@@ -1149,7 +1150,7 @@ Gfx *display_painting(struct Painting *painting) {
         case 0x8: courseidx = 11; break; // WDW
         case 0xA: courseidx = 12; break; // TTM
         case 0xD: courseidx = 13; break; // THI Huge painting
-        case 0x9: courseidx = 13; break; // THI Tiny painting
+        case 0x9: courseidx = 13; areaidx = 2; break; // THI Tiny painting
         case 0xB: courseidx = 14; break; // TTC
     }
     switch (painting->state) {
@@ -1157,7 +1158,7 @@ Gfx *display_painting(struct Painting *painting) {
             return display_painting_not_rippling(painting);
             break;
         default:
-            return SM64AP_HavePainting(courseidx) ? display_painting_rippling(painting) : display_painting_not_rippling(painting);
+            return SM64AP_HavePaintingForArea(courseidx, areaidx) ? display_painting_rippling(painting) : display_painting_not_rippling(painting);
             break;
     }
 }

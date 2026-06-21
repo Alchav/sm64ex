@@ -2538,6 +2538,7 @@ enum PauseLevelUnlockType {
 struct PauseLevelUnlock {
     s16 type;
     s16 id;
+    s16 area;
     const u8 *label;
 };
 
@@ -2627,7 +2628,8 @@ static const u8 sPaintingDdd[] = { TEXT_PAINTING_DDD };
 static const u8 sPaintingSl[] = { TEXT_PAINTING_SL };
 static const u8 sPaintingWdw[] = { TEXT_PAINTING_WDW };
 static const u8 sPaintingTtm[] = { TEXT_PAINTING_TTM };
-static const u8 sPaintingThi[] = { TEXT_PAINTING_THI };
+static const u8 sPaintingThiHuge[] = { TEXT_PAINTING_THI_H };
+static const u8 sPaintingThiTiny[] = { TEXT_PAINTING_THI_T };
 static const u8 sPaintingTtc[] = { TEXT_PAINTING_TTC };
 
 static const struct PauseUnlockView sPauseUnlockViews[] = {
@@ -2781,21 +2783,22 @@ static const struct PauseCastleUnlock sPauseCastleUnlocks[] = {
 };
 
 static const struct PauseLevelUnlock sPauseLevelUnlocks[] = {
-    { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_WF, sPaintingWf },
-    { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_JRB, sPaintingJrb },
-    { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_CCM, sPaintingCcm },
-    { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_LLL, sPaintingLll },
-    { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_SSL, sPaintingSsl },
-    { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_DDD, sPaintingDdd },
-    { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_SL, sPaintingSl },
-    { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_WDW, sPaintingWdw },
-    { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_TTM, sPaintingTtm },
-    { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_THI, sPaintingThi },
-    { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_TTC, sPaintingTtc },
-    { PAUSE_LEVEL_UNLOCK_WING_LIGHT, 0, sUnlockTotwc },
-    { PAUSE_LEVEL_UNLOCK_BBH, 0, sPaintingBbh },
-    { PAUSE_LEVEL_UNLOCK_BITFS, 0, sUnlockBitfs },
-    { PAUSE_LEVEL_UNLOCK_VCUTM_ENTRANCE, 0, sUnlockVcutm },
+    { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_WF, 1, sPaintingWf },
+    { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_JRB, 1, sPaintingJrb },
+    { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_CCM, 1, sPaintingCcm },
+    { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_LLL, 1, sPaintingLll },
+    { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_SSL, 1, sPaintingSsl },
+    { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_DDD, 1, sPaintingDdd },
+    { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_SL, 1, sPaintingSl },
+    { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_WDW, 1, sPaintingWdw },
+    { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_TTM, 1, sPaintingTtm },
+    { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_THI, 1, sPaintingThiHuge },
+    { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_THI, 2, sPaintingThiTiny },
+    { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_TTC, 1, sPaintingTtc },
+    { PAUSE_LEVEL_UNLOCK_WING_LIGHT, 0, 0, sUnlockTotwc },
+    { PAUSE_LEVEL_UNLOCK_BBH, 0, 0, sPaintingBbh },
+    { PAUSE_LEVEL_UNLOCK_BITFS, 0, 0, sUnlockBitfs },
+    { PAUSE_LEVEL_UNLOCK_VCUTM_ENTRANCE, 0, 0, sUnlockVcutm },
 };
 
 static bool pause_course_unlock_collected(const struct PauseCourseUnlock *unlock, const struct PauseUnlockView *view) {
@@ -2837,7 +2840,7 @@ static bool pause_castle_unlock_collected(const struct PauseCastleUnlock *unlock
 static bool pause_level_unlock_collected(const struct PauseLevelUnlock *unlock) {
     switch (unlock->type) {
         case PAUSE_LEVEL_UNLOCK_PAINTING:
-            return !SM64AP_PaintingRandoEnabled() || SM64AP_HavePainting(unlock->id);
+            return SM64AP_HavePaintingForArea(unlock->id, unlock->area);
         case PAUSE_LEVEL_UNLOCK_WING_LIGHT:
             return SM64AP_HaveWingCapLight();
         case PAUSE_LEVEL_UNLOCK_BBH:
