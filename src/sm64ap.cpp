@@ -884,6 +884,10 @@ static bool SM64AP_ShouldSpawnJrbObject(u32 behParam, const void *behavior) {
     }
     if (behavior_is(behavior, bhvUnagi)) {
         bool star2Collected = SM64AP_CollectedCourseStar(AP_COURSE_JRB, 1);
+        if (beh_param_second_byte(behParam) == 0) {
+            return SM64AP_HaveFeature(SM64AP_FEATURE_JRB_SUNKEN_SHIP)
+                && !SM64AP_HaveFeature(SM64AP_FEATURE_JRB_UNAGI);
+        }
         if (!SM64AP_HaveFeature(SM64AP_FEATURE_JRB_UNAGI)) {
             return false;
         }
