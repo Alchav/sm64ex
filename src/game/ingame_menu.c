@@ -2624,6 +2624,7 @@ static const u8 sPaintingWf[] = { TEXT_PAINTING_WF };
 static const u8 sPaintingJrb[] = { TEXT_PAINTING_JRB };
 static const u8 sPaintingCcm[] = { TEXT_PAINTING_CCM };
 static const u8 sPaintingBbh[] = { TEXT_PAINTING_BBH };
+static const u8 sPaintingHmc[] = { TEXT_PAINTING_HMC };
 static const u8 sPaintingLll[] = { TEXT_PAINTING_LLL };
 static const u8 sPaintingSsl[] = { TEXT_PAINTING_SSL };
 static const u8 sPaintingDdd[] = { TEXT_PAINTING_DDD };
@@ -2789,6 +2790,7 @@ static const struct PauseLevelUnlock sPauseLevelUnlocks[] = {
     { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_WF, 1, sPaintingWf },
     { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_JRB, 1, sPaintingJrb },
     { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_CCM, 1, sPaintingCcm },
+    { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_HMC, 1, sPaintingHmc },
     { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_LLL, 1, sPaintingLll },
     { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_SSL, 1, sPaintingSsl },
     { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_DDD, 1, sPaintingDdd },

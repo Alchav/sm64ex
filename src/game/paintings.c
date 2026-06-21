@@ -1052,17 +1052,15 @@ Gfx *display_painting_not_rippling(struct Painting *painting) {
 }
 
 /**
- * Clear Mario-related state and clear gRipplingPainting.
+ * Clear Mario-related painting state.
  */
-void reset_painting(struct Painting *painting) {
+static void reset_painting_local_state(struct Painting *painting) {
     painting->lastFloor = 0;
     painting->currFloor = 0;
     painting->floorEntered = 0;
     painting->marioWasUnder = 0;
     painting->marioIsUnder = 0;
     painting->marioWentUnder = 0;
-
-    gRipplingPainting = NULL;
 
     // Make sure all variables are reset correctly.
     // With segmented memory the segments that contain the relevant
@@ -1080,6 +1078,11 @@ void reset_painting(struct Painting *painting) {
         // that moves the painting stops during level unload.
         painting->posX = 3456.0f;
     }
+}
+
+void reset_painting(struct Painting *painting) {
+    reset_painting_local_state(painting);
+    gRipplingPainting = NULL;
 }
 
 /**
@@ -1134,31 +1137,43 @@ void set_painting_layer(struct GraphNodeGenerated *gen, struct Painting *paintin
 /**
  * Display either a normal painting or a rippling one depending on the painting's ripple status
  */
-Gfx *display_painting(struct Painting *painting) {
-    int courseidx = 1;
+static bool painting_unlocked_for_ap(s32 group, s32 id) {
+    int courseidx = COURSE_BOB;
     int areaidx = 1;
-    switch (painting->id) {
-        case 0x0: courseidx = 1;  break; // BOB
-        case 0x2: courseidx = 2;  break; // WF
-        case 0x3: courseidx = 3;  break; // JRB
-        case 0x1: courseidx = 4;  break; // CCM
-            // BBH and HMC are skipped here (courses 5 + 6)
-        case 0x4: courseidx = 7;  break; // LLL
-        case 0x5: courseidx = 8;  break; // SSL
-        case 0x7: courseidx = 9;  break; // DDD
-        case 0xC: courseidx = 10; break; // SL
-        case 0x8: courseidx = 11; break; // WDW
-        case 0xA: courseidx = 12; break; // TTM
-        case 0xD: courseidx = 13; break; // THI Huge painting
-        case 0x9: courseidx = 13; areaidx = 2; break; // THI Tiny painting
-        case 0xB: courseidx = 14; break; // TTC
+
+    if (group != 1) {
+        return true;
     }
+
+    switch (id) {
+        case 0:  courseidx = COURSE_BOB; break;
+        case 1:  courseidx = COURSE_CCM; break;
+        case 2:  courseidx = COURSE_WF;  break;
+        case 3:  courseidx = COURSE_JRB; break;
+        case 4:  courseidx = COURSE_LLL; break;
+        case 5:  courseidx = COURSE_SSL; break;
+        case 6:  courseidx = COURSE_HMC; break;
+        case 7:  courseidx = COURSE_DDD; break;
+        case 8:  courseidx = COURSE_WDW; break;
+        case 9:  courseidx = COURSE_THI; areaidx = 2; break;
+        case 10: courseidx = COURSE_TTM; break;
+        case 11: courseidx = COURSE_TTC; break;
+        case 12: courseidx = COURSE_SL;  break;
+        case 13: courseidx = COURSE_THI; break;
+        default:
+            return true;
+    }
+
+    return SM64AP_HavePaintingForArea(courseidx, areaidx);
+}
+
+Gfx *display_painting(struct Painting *painting, s32 group, s32 id) {
     switch (painting->state) {
         case PAINTING_IDLE:
             return display_painting_not_rippling(painting);
             break;
         default:
-            return SM64AP_HavePaintingForArea(courseidx, areaidx) ? display_painting_rippling(painting) : display_painting_not_rippling(painting);
+            return painting_unlocked_for_ap(group, id) ? display_painting_rippling(painting) : display_painting_not_rippling(painting);
             break;
     }
 }
@@ -1242,7 +1257,15 @@ Gfx *geo_painting_draw(s32 callContext, struct GraphNode *node, UNUSED void *con
         set_painting_layer(gen, painting);
 
         // Draw before updating
-        paintingDlist = display_painting(painting);
+        paintingDlist = display_painting(painting, group, id);
+
+        if (!painting_unlocked_for_ap(group, id)) {
+            reset_painting_local_state(painting);
+            if (gRipplingPainting == painting) {
+                gRipplingPainting = NULL;
+            }
+            return paintingDlist;
+        }
 
         // Update the painting
         painting_update_floors(painting);
