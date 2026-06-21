@@ -224,6 +224,7 @@ static void goomba_act_walk(void) {
 static void goomba_act_attacked_mario(void) {
     if (o->oGoombaSize == GOOMBA_SIZE_TINY) {
         mark_goomba_as_dead();
+        obj_collect_loot_coins_without_contact(o, o->oNumLootCoins);
         o->oNumLootCoins = 0;
         obj_die_if_health_non_positive();
     } else {

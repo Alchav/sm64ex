@@ -72,8 +72,10 @@ void bhv_scuttlebug_loop(void) {
             o->oForwardVel = 5.0f;
             if ((s16) o->oMoveAngleYaw == (s16) o->oAngleToMario)
                 o->oSubAction = 1;
-            if (o->oPosY - o->oHomeY < -200.0f)
+            if (o->oPosY - o->oHomeY < -200.0f) {
+                obj_collect_loot_coins_without_contact(o, o->oNumLootCoins);
                 obj_mark_for_deletion(o);
+            }
             cur_obj_rotate_yaw_toward(o->oAngleToMario, 0x400);
             break;
         case 3:
