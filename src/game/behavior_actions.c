@@ -40,6 +40,7 @@
 #include "save_file.h"
 #include "seq_ids.h"
 #include "sm64.h"
+#include "sm64ap.h"
 #include "spawn_object.h"
 #include "spawn_sound.h"
 #include "thread6.h"
@@ -223,6 +224,7 @@ void vec3f_copy_2(Vec3f dest, Vec3f src) {
 
 #include "behaviors/checkerboard_platform.inc.c"
 #include "behaviors/ddd_warp.inc.c"
+#include "behaviors/hmc_entrance_gate.inc.c"
 #include "behaviors/water_pillar.inc.c"
 #include "behaviors/moat_drainer.inc.c"
 #include "behaviors/bowser_key_cutscene.inc.c"

@@ -145,6 +145,7 @@ extern const u8 inside_castle_seg7_area_1_rooms[];
 extern const u8 inside_castle_seg7_area_2_rooms[];
 extern const u8 inside_castle_seg7_area_3_rooms[];
 extern const Collision inside_castle_seg7_collision_floor_trap[];
+extern const Collision inside_castle_seg7_collision_hmc_entrance_gate[];
 extern const Collision inside_castle_seg7_collision_star_door[];
 extern const Collision inside_castle_seg7_collision_water_level_pillar[];
 extern const Trajectory *const inside_castle_seg7_trajectory_mips[];

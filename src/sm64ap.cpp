@@ -2630,7 +2630,6 @@ bool SM64AP_HavePainting(int courseIdx) {
     switch(courseIdx) {
         case 1:  // BOB painting is always unlocked
         case 5:  // BBH doesn't have a painting
-        case 6:  // HMC has a painting but you get stuck in an infinite loop of falling in and getting pushed out, so let's not do that :)
         case 15: // RR doesn't have a painting
             return true;
         default:

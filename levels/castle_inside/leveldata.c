@@ -79,6 +79,7 @@
 #include "levels/castle_inside/areas/2/room.inc.c"
 #include "levels/castle_inside/areas/3/room.inc.c"
 #include "levels/castle_inside/trap_door/collision.inc.c"
+#include "levels/castle_inside/hmc_entrance_gate/collision.inc.c"
 #include "levels/castle_inside/star_door/collision.inc.c"
 #include "levels/castle_inside/clock_minute_hand/collision.inc.c"
 #include "levels/castle_inside/clock_hour_hand/collision.inc.c"
