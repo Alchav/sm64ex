@@ -2519,6 +2519,7 @@ enum PauseCastleUnlockType {
     PAUSE_CASTLE_UNLOCK_LEVEL_CAP,
     PAUSE_CASTLE_UNLOCK_CANNON,
     PAUSE_CASTLE_UNLOCK_YOSHI,
+    PAUSE_CASTLE_UNLOCK_TOADS,
 };
 
 struct PauseCastleUnlock {
@@ -2609,6 +2610,7 @@ static const u8 sUnlockStair[] = { TEXT_UNLOCK_STAIR };
 static const u8 sUnlockSub[] = { TEXT_UNLOCK_SUB };
 static const u8 sUnlockSunken[] = { TEXT_UNLOCK_SUNKEN };
 static const u8 sUnlockTotwc[] = { TEXT_UNLOCK_TOTWC };
+static const u8 sUnlockToads[] = { TEXT_UNLOCK_TOADS };
 static const u8 sUnlockUkiki[] = { TEXT_UNLOCK_UKIKI };
 static const u8 sUnlockUnagi[] = { TEXT_UNLOCK_UNAGI };
 static const u8 sUnlockVanish[] = { TEXT_UNLOCK_VANISH };
@@ -2780,6 +2782,7 @@ static const struct PauseCastleUnlock sPauseCastleUnlocks[] = {
     { PAUSE_CASTLE_UNLOCK_GLOBAL_CAP, 8, sUnlockVanish },
     { PAUSE_CASTLE_UNLOCK_YOSHI, 0, sUnlockYoshi },
     { PAUSE_CASTLE_UNLOCK_CANNON, 0, sUnlockCastleCannon },
+    { PAUSE_CASTLE_UNLOCK_TOADS, 0, sUnlockToads },
 };
 
 static const struct PauseLevelUnlock sPauseLevelUnlocks[] = {
@@ -2832,6 +2835,8 @@ static bool pause_castle_unlock_collected(const struct PauseCastleUnlock *unlock
             return SM64AP_HaveCastleCannon();
         case PAUSE_CASTLE_UNLOCK_YOSHI:
             return SM64AP_HaveYoshi();
+        case PAUSE_CASTLE_UNLOCK_TOADS:
+            return SM64AP_HaveToads();
     }
 
     return false;
