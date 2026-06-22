@@ -483,8 +483,8 @@ void SM64AP_RecvItem(int64_t idx, bool notify) {
         case SM64AP_ID_BITFS_1UPS:
             sm64_have_bitfs_1ups = true;
             break;
-        case SM64AP_ID_THI_TINY_PAINTING:
-            sm64_have_thi_tiny_painting = true;
+        case SM64AP_ID_THI_HUGE_PAINTING:
+            sm64_have_painting[COURSE_THI - 1] = true;
             break;
         case SM64AP_ID_HAT:
             if (!sm64_have_hat) {
@@ -529,7 +529,11 @@ void SM64AP_RecvItem(int64_t idx, bool notify) {
             break;
         case SM64AP_ID_PAINTINGUNLOCK(0) ... SM64AP_ID_PAINTINGUNLOCK(NUM_PAINTING_LOCKS-1):
             // We don't have a painting unlock for BoB, so (0) will never appear; index 1 corresponds to WF, and so on
-            sm64_have_painting[idx-(SM64AP_ID_PAINTINGUNLOCK(0))] = true;
+            if (idx == SM64AP_ID_THI_TINY_PAINTING) {
+                sm64_have_thi_tiny_painting = true;
+            } else {
+                sm64_have_painting[idx-(SM64AP_ID_PAINTINGUNLOCK(0))] = true;
+            }
             break;
         case SM64AP_ID_ABILITY(0):
             sm64_have_abilities[idx-SM64AP_ABILITY_OFFSET+1] = sm64_have_abilities[idx-SM64AP_ABILITY_OFFSET];
@@ -2903,7 +2907,6 @@ static void SM64AP_InitCheatItems() {
     SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_BOOL, SM64AP_CHEAT_BOOL_BOWSER_STAGE_1UPS, "BOWSER 1UPS");
     SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_BOOL, SM64AP_CHEAT_BOOL_BITDW_1UPS, "BITDW 1UPS");
     SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_BOOL, SM64AP_CHEAT_BOOL_BITFS_1UPS, "BITFS 1UPS");
-    SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_BOOL, SM64AP_CHEAT_BOOL_THI_TINY_PAINTING, "THI TINY PAINTING");
     SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_BOOL, SM64AP_CHEAT_BOOL_WING_CAP, "GLOBAL WING CAP");
     SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_BOOL, SM64AP_CHEAT_BOOL_METAL_CAP, "GLOBAL METAL CAP");
     SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_BOOL, SM64AP_CHEAT_BOOL_VANISH_CAP, "GLOBAL VANISH CAP");
@@ -2912,7 +2915,12 @@ static void SM64AP_InitCheatItems() {
         SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_CANNON, i, std::string(SM64AP_CHEAT_COURSE_NAMES[i]) + " CANNON");
     }
     for (int i = 0; i < SM64AP_NUM_PAINTING_LOCKS; i++) {
-        SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_PAINTING, i, std::string(SM64AP_CHEAT_COURSE_NAMES[i]) + " PAINTING");
+        if (i == COURSE_THI - 1) {
+            SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_PAINTING, i, "THI HUGE PAINTING");
+            SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_BOOL, SM64AP_CHEAT_BOOL_THI_TINY_PAINTING, "THI TINY PAINTING");
+        } else {
+            SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_PAINTING, i, std::string(SM64AP_CHEAT_COURSE_NAMES[i]) + " PAINTING");
+        }
     }
     for (int i = 0; i < SM64AP_NUM_FEATURES; i++) {
         SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_FEATURE, i, SM64AP_CHEAT_FEATURE_NAMES[i]);
