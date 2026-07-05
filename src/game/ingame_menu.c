@@ -3025,11 +3025,15 @@ static void render_pause_castle_unlocks(s16 x, s16 y) {
 static void render_pause_level_unlocks(s16 x, s16 y) {
     static const s16 columnOffset[] = { 0, 118 };
     static const s16 statusOffset[] = { 72, 190 };
+    enum {
+        LEVEL_UNLOCK_COUNT = sizeof(sPauseLevelUnlocks) / sizeof(sPauseLevelUnlocks[0]),
+        LEVEL_UNLOCK_ROWS_PER_COLUMN = (LEVEL_UNLOCK_COUNT + 1) / 2,
+    };
 
-    for (u16 i = 0; i < sizeof(sPauseLevelUnlocks) / sizeof(sPauseLevelUnlocks[0]); i++) {
+    for (u16 i = 0; i < LEVEL_UNLOCK_COUNT; i++) {
         const struct PauseLevelUnlock *unlock = &sPauseLevelUnlocks[i];
-        s16 column = i / 8;
-        s16 row = i % 8;
+        s16 column = i / LEVEL_UNLOCK_ROWS_PER_COLUMN;
+        s16 row = i % LEVEL_UNLOCK_ROWS_PER_COLUMN;
         s16 lineY = y - row * 11;
         render_pause_unlock_status(x + columnOffset[column], lineY, x + statusOffset[column], unlock->label,
                                    pause_level_unlock_collected(unlock));
