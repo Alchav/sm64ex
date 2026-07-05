@@ -25,6 +25,7 @@ extern "C" {
     void SM64AP_SetMarioHairColor(u8 r, u8 g, u8 b);
     void SM64AP_ResetMarioSideburnColor(void);
     void SM64AP_SetMarioSideburnColor(u8 r, u8 g, u8 b);
+    void SM64AP_SetMarioHatColor(u8 r, u8 g, u8 b);
     void SM64AP_SetMarioCapShirtColor(u8 r, u8 g, u8 b);
     void SM64AP_SetMarioCapGlovesColor(u8 r, u8 g, u8 b);
     void SM64AP_SetMarioCapHairColor(u8 r, u8 g, u8 b);
@@ -1744,6 +1745,7 @@ static bool SM64AP_ReadMarioColor(const std::string &rawColors, const char *key,
 
 static void SM64AP_ResetMarioColors() {
     SM64AP_SetMarioShirtColor(255, 0, 0);
+    SM64AP_SetMarioHatColor(255, 0, 0);
     SM64AP_SetMarioCapShirtColor(255, 0, 0);
     SM64AP_SetMarioOverallsColor(0, 0, 255);
     SM64AP_SetMarioGlovesColor(255, 255, 255);
@@ -1759,9 +1761,18 @@ static void SM64AP_SetMarioColors(std::string rawColors) {
     SM64AP_ResetMarioColors();
 
     u8 color[3];
-    if (SM64AP_ReadMarioColor(rawColors, "shirt", color)) {
-        SM64AP_SetMarioShirtColor(color[0], color[1], color[2]);
+    u8 shirtColor[3];
+    bool haveShirtColor = SM64AP_ReadMarioColor(rawColors, "shirt", shirtColor);
+
+    if (haveShirtColor) {
+        SM64AP_SetMarioShirtColor(shirtColor[0], shirtColor[1], shirtColor[2]);
+    }
+    if (SM64AP_ReadMarioColor(rawColors, "hat", color)) {
+        SM64AP_SetMarioHatColor(color[0], color[1], color[2]);
         SM64AP_SetMarioCapShirtColor(color[0], color[1], color[2]);
+    } else if (haveShirtColor) {
+        SM64AP_SetMarioHatColor(shirtColor[0], shirtColor[1], shirtColor[2]);
+        SM64AP_SetMarioCapShirtColor(shirtColor[0], shirtColor[1], shirtColor[2]);
     }
     if (SM64AP_ReadMarioColor(rawColors, "overalls", color)) {
         SM64AP_SetMarioOverallsColor(color[0], color[1], color[2]);
