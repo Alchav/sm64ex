@@ -929,15 +929,10 @@ static bool SM64AP_ShouldSpawnDddObject(u32 behParam, const void *behavior) {
         return SM64AP_HaveFeature(SM64AP_FEATURE_DDD_MANTA_RAY);
     }
     if (behavior_is(behavior, bhvBowserSubDoor)) {
-        return SM64AP_HaveFeature(SM64AP_FEATURE_DDD_BOWSERS_SUB)
-            || SM64AP_HaveFeature(SM64AP_FEATURE_DDD_POLES);
+        return !SM64AP_HaveFeature(SM64AP_FEATURE_DDD_POLES);
     }
     if (behavior_is(behavior, bhvBowsersSub)) {
-        if (behParam == 0x000B0000) {
-            return SM64AP_HaveFeature(SM64AP_FEATURE_DDD_BOWSERS_SUB);
-        }
-        return SM64AP_HaveFeature(SM64AP_FEATURE_DDD_POLES)
-            && !SM64AP_HaveFeature(SM64AP_FEATURE_DDD_BOWSERS_SUB);
+        return behParam == 0x000B0000 && SM64AP_HaveFeature(SM64AP_FEATURE_DDD_BOWSERS_SUB);
     }
     if (behavior_is(behavior, bhvDDDPole)) {
         return SM64AP_HaveFeature(SM64AP_FEATURE_DDD_POLES);
