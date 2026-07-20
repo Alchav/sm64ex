@@ -1118,6 +1118,9 @@ s32 act_exit_airborne(struct MarioState *m) {
         if (gPauseExitCourseSkipDoneScreen) {
             m->faceAngle[1] += 0x8000;
             m->marioObj->oMoveAngleYaw = m->faceAngle[1];
+            mario_set_forward_vel(m, 0.0f);
+            m->vel[1] = 0.0f;
+            cutscene_exit_painting_end(m->area->camera);
             gPauseExitCourseSkipDoneScreen = FALSE;
             set_mario_action(m, ACT_IDLE, 0);
         }
@@ -1135,6 +1138,9 @@ s32 act_falling_exit_airborne(struct MarioState *m) {
         if (gPauseExitCourseSkipDoneScreen) {
             m->faceAngle[1] += 0x8000;
             m->marioObj->oMoveAngleYaw = m->faceAngle[1];
+            mario_set_forward_vel(m, 0.0f);
+            m->vel[1] = 0.0f;
+            cutscene_exit_painting_end(m->area->camera);
             gPauseExitCourseSkipDoneScreen = FALSE;
             set_mario_action(m, ACT_IDLE, 0);
         }
@@ -1300,6 +1306,9 @@ s32 act_special_exit_airborne(struct MarioState *m) {
         if (gPauseExitCourseSkipDoneScreen) {
             m->faceAngle[1] += 0x8000;
             marioObj->oMoveAngleYaw = m->faceAngle[1];
+            mario_set_forward_vel(m, 0.0f);
+            m->vel[1] = 0.0f;
+            cutscene_exit_painting_end(m->area->camera);
             gPauseExitCourseSkipDoneScreen = FALSE;
             set_mario_action(m, ACT_IDLE, 0);
         }
