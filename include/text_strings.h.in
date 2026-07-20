@@ -214,6 +214,7 @@
 #define TEXT_MYSCORE _("マイスコア")
 #define TEXT_CONTINUE _("つづけて　マリオする？")
 #define TEXT_EXIT_GAME _("ゲームをしゅうりょうする")
+#define TEXT_EXIT_TO_LOBBY _("EXIT TO LOBBY")
 #define TEXT_EXIT_COURSE _("コースからでる？")
 #define TEXT_CAMERA_ANGLE_R _("Ｒボタンのカメラきりかえ")
 
@@ -313,6 +314,7 @@
 #define TEXT_COURSE _("COURSE")
 #define TEXT_MYSCORE _("MYSCORE")
 #define TEXT_CONTINUE _("CONTINUE")
+#define TEXT_EXIT_TO_LOBBY _("EXIT TO LOBBY")
 #define TEXT_EXIT_COURSE _("EXIT COURSE")
 #define TEXT_EXIT_GAME _("EXIT GAME")
 #ifndef VERSION_EU // "R" text is different in EU
@@ -459,6 +461,7 @@
 #define TEXT_COURSE_FR                  _("NIVEAU")
 #define TEXT_MY_SCORE_FR                _("MON SCORE")
 #define TEXT_CONTINUE_FR                _("CONTINUER")
+#define TEXT_EXIT_TO_LOBBY_FR           _("QUITTER AU HALL")
 #define TEXT_EXIT_COURSE_FR             _("QUITTER NIVEAU")
 #define TEXT_EXIT_GAME_FR		_("QUITTER JEU")
 #define TEXT_CAMERA_ANGLE_R_FR          _("RÉGLAGE CAMÉRA AVEC [R]")
@@ -466,6 +469,7 @@
 #define TEXT_COURSE_DE                  _("KURS")
 #define TEXT_MY_SCORE_DE                _("LEISTUNG")
 #define TEXT_CONTINUE_DE                _("WEITER")
+#define TEXT_EXIT_TO_LOBBY_DE           _("ZUR HALLE")
 #define TEXT_EXIT_COURSE_DE             _("KURS VERLASSEN")
 #define TEXT_EXIT_GAME_DE		_("SPIEL VERLASSEN")
 #define TEXT_CAMERA_ANGLE_R_DE          _("KAMERA MIT [R] VERSTELLEN")

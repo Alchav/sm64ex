@@ -1114,6 +1114,9 @@ s32 play_mode_normal(void) {
 }
 
 s32 play_mode_paused(void) {
+    struct ObjectWarpNode *warpNode;
+    s32 previousDelayedWarpOp;
+
     if (gPauseScreenMode == 0) {
         set_menu_mode(RENDER_PAUSE_SCREEN);
     } else if (gPauseScreenMode == 1) {
@@ -1128,6 +1131,27 @@ s32 play_mode_paused(void) {
             initiate_warp(LEVEL_CASTLE, 1, 0x1F, 0);
             fade_into_special_warp(0, 0);
             gSavedCourseNum = COURSE_NONE;
+        }
+    } else if (gPauseScreenMode == 4) {
+        // Exit course to its entrance instead of the castle lobby.
+        if (gDebugLevelSelect) {
+            fade_into_special_warp(-9, 1);
+        } else {
+            warpNode = area_get_warp_node(WARP_NODE_F0);
+            if (warpNode != NULL) {
+                previousDelayedWarpOp = sDelayedWarpOp;
+                sDelayedWarpOp = WARP_OP_TELEPORT;
+                sSourceWarpNodeId = WARP_NODE_F0;
+                initiate_warp(warpNode->node.destLevel & 0x7F, warpNode->node.destArea,
+                              warpNode->node.destNode, 0);
+                sDelayedWarpOp = previousDelayedWarpOp;
+                fade_into_special_warp(0, 0);
+                gSavedCourseNum = COURSE_NONE;
+            } else {
+                initiate_warp(LEVEL_CASTLE, 1, 0x1F, 0);
+                fade_into_special_warp(0, 0);
+                gSavedCourseNum = COURSE_NONE;
+            }
         }
     } else if (gPauseScreenMode == 3) {
         // We should only be getting "int 3" to here

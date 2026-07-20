@@ -2377,6 +2377,11 @@ void render_pause_course_options(s16 x, s16 y, s8 *index, s16 yIndex) {
         { TEXT_CONTINUE_FR },
         { TEXT_CONTINUE_DE }
     };
+    u8 textExitToLobby[][16] = {
+        { TEXT_EXIT_TO_LOBBY },
+        { TEXT_EXIT_TO_LOBBY_FR },
+        { TEXT_EXIT_TO_LOBBY_DE }
+    };
     u8 textExitCourse[][15] = {
         { TEXT_EXIT_COURSE },
         { TEXT_EXIT_COURSE_FR },
@@ -2389,16 +2394,18 @@ void render_pause_course_options(s16 x, s16 y, s8 *index, s16 yIndex) {
         { TEXT_CAMERA_ANGLE_R_DE }
     };
 #define textContinue     textContinue[gInGameLanguage]
+#define textExitToLobby  textExitToLobby[gInGameLanguage]
 #define textExitCourse   textExitCourse[gInGameLanguage]
 #define textCameraAngleR textCameraAngleR[gInGameLanguage]
 #else
     u8 textContinue[] = { TEXT_CONTINUE };
+    u8 textExitToLobby[] = { TEXT_EXIT_TO_LOBBY };
     u8 textExitCourse[] = { TEXT_EXIT_COURSE };
     u8 textCameraAngleR[] = { TEXT_CAMERA_ANGLE_R };
 #endif
     u8 textLevelItems[] = { TEXT_LEVEL_ITEMS };
 
-    handle_menu_scrolling(MENU_SCROLL_VERTICAL, index, 1, 4);
+    handle_menu_scrolling(MENU_SCROLL_VERTICAL, index, 1, 5);
 
     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
@@ -2406,9 +2413,10 @@ void render_pause_course_options(s16 x, s16 y, s8 *index, s16 yIndex) {
     print_generic_string(x + 10, y - 2, textContinue);
     print_generic_string(x + 10, y - 17, textLevelItems);
 
-    if (index[0] != 4) {
+    if (index[0] != 5) {
         print_generic_string(x + 10, y - 33, textExitCourse);
-        print_generic_string(x + 10, y - 48, textCameraAngleR);
+        print_generic_string(x + 10, y - 48, textExitToLobby);
+        print_generic_string(x + 10, y - 63, textCameraAngleR);
         gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
 
         create_dl_translation_matrix(MENU_MTX_PUSH, x - X_VAL8, (y - ((index[0] - 1) * yIndex)) - Y_VAL8, 0);
@@ -2418,8 +2426,9 @@ void render_pause_course_options(s16 x, s16 y, s8 *index, s16 yIndex) {
         gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
     } else {
         print_generic_string(x + 10, y - 33, textExitCourse);
+        print_generic_string(x + 10, y - 48, textExitToLobby);
         gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
-        render_pause_camera_options(x - 42, y - 57, &gDialogCameraAngleIndex, 110);
+        render_pause_camera_options(x - 42, y - 72, &gDialogCameraAngleIndex, 110);
     }
 }
 
@@ -3193,6 +3202,8 @@ s16 render_pause_courses_and_castle(void) {
                 gMenuMode = -1;
 
                 if (gDialogLineNum == 3) {
+                    num = 4;
+                } else if (gDialogLineNum == 4) {
                     num = 2;
                 } else {
                     num = 1;
