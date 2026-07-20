@@ -163,6 +163,7 @@ struct HudDisplay gHudDisplay;
 s16 sCurrPlayMode;
 u16 D_80339ECA;
 s16 sTransitionTimer;
+u8 gPauseExitCourseSkipDoneScreen = FALSE;
 void (*sTransitionUpdate)(s16 *);
 struct WarpDest sWarpDest;
 s16 D_80339EE0;
@@ -1140,7 +1141,8 @@ s32 play_mode_paused(void) {
             warpNode = area_get_warp_node(WARP_NODE_F0);
             if (warpNode != NULL) {
                 previousDelayedWarpOp = sDelayedWarpOp;
-                sDelayedWarpOp = WARP_OP_TELEPORT;
+                gPauseExitCourseSkipDoneScreen = TRUE;
+                sDelayedWarpOp = WARP_OP_STAR_EXIT;
                 sSourceWarpNodeId = WARP_NODE_F0;
                 initiate_warp(warpNode->node.destLevel & 0x7F, warpNode->node.destArea,
                               warpNode->node.destNode, 0);

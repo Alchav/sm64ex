@@ -1115,6 +1115,12 @@ s32 act_exit_airborne(struct MarioState *m) {
         && launch_mario_until_land(m, ACT_EXIT_LAND_SAVE_DIALOG, MARIO_ANIM_GENERAL_FALL, -32.0f)) {
         // heal Mario
         m->healCounter = 31;
+        if (gPauseExitCourseSkipDoneScreen) {
+            m->faceAngle[1] += 0x8000;
+            m->marioObj->oMoveAngleYaw = m->faceAngle[1];
+            gPauseExitCourseSkipDoneScreen = FALSE;
+            set_mario_action(m, ACT_IDLE, 0);
+        }
     }
     // rotate him to face away from the entrance
     m->marioObj->header.gfx.angle[1] += 0x8000;
@@ -1126,6 +1132,12 @@ s32 act_falling_exit_airborne(struct MarioState *m) {
     if (launch_mario_until_land(m, ACT_EXIT_LAND_SAVE_DIALOG, MARIO_ANIM_GENERAL_FALL, 0.0f)) {
         // heal Mario
         m->healCounter = 31;
+        if (gPauseExitCourseSkipDoneScreen) {
+            m->faceAngle[1] += 0x8000;
+            m->marioObj->oMoveAngleYaw = m->faceAngle[1];
+            gPauseExitCourseSkipDoneScreen = FALSE;
+            set_mario_action(m, ACT_IDLE, 0);
+        }
     }
     // rotate Mario to face away from the entrance
     m->marioObj->header.gfx.angle[1] += 0x8000;
@@ -1285,6 +1297,12 @@ s32 act_special_exit_airborne(struct MarioState *m) {
         // heal Mario
         m->healCounter = 31;
         m->actionArg = 1;
+        if (gPauseExitCourseSkipDoneScreen) {
+            m->faceAngle[1] += 0x8000;
+            marioObj->oMoveAngleYaw = m->faceAngle[1];
+            gPauseExitCourseSkipDoneScreen = FALSE;
+            set_mario_action(m, ACT_IDLE, 0);
+        }
     }
 
     m->particleFlags |= PARTICLE_SPARKLES;

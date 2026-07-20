@@ -68,6 +68,7 @@ extern struct MarioState *gMarioState;
 extern s16 sCurrPlayMode;
 extern u16 D_80339ECA;
 extern s16 sTransitionTimer;
+extern u8 gPauseExitCourseSkipDoneScreen;
 extern void (*sTransitionUpdate)(s16 *);
 extern u8 unused3[4];
 
