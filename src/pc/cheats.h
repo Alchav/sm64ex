@@ -15,6 +15,7 @@ struct CheatList {
     bool         HugeMario;
     bool         TinyMario;
     bool         ShowLastLocationCheck;
+    bool         RespawnCollectedOneUps;
 };
 
 extern struct CheatList Cheats;

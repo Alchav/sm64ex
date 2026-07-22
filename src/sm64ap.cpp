@@ -15,6 +15,7 @@ extern "C" {
     #include "engine/behavior_script.h"
     #include "game/level_update.h"
     #include "game/object_list_processor.h"
+    #include "pc/cheats.h"
     #include "object_constants.h"
 
     void SM64AP_SetMarioShirtColor(u8 r, u8 g, u8 b);
@@ -2201,6 +2202,10 @@ int SM64AP_ResolveOneUpLocation(s16 level, s16 area, s16 sourceType, s16 sourceP
 
 bool SM64AP_ShouldSuppressOneUp(int locId) {
     int offset = SM64AP_OneUpCheckOffsetFromLocationId(locId);
+
+    if (Cheats.EnableCheats && Cheats.RespawnCollectedOneUps) {
+        return false;
+    }
 
     if (SM64AP_IsOneUpBoxLocation(locId)) {
         if (!sm64_1up_checks_enabled) {

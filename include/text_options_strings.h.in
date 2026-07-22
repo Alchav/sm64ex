@@ -86,6 +86,7 @@
 #define TEXT_OPT_CHEAT8    _("HUGE MARIO")
 #define TEXT_OPT_CHEAT9    _("TINY MARIO")
 #define TEXT_OPT_CHEAT10   _("LAST CHECK DISPLAY")
+#define TEXT_OPT_CHEAT11   _("RESPAWN CHECKED 1-UPS")
 
 #else // VERSION
 
@@ -151,6 +152,7 @@
 #define TEXT_OPT_CHEAT8    _("Huge Mario")
 #define TEXT_OPT_CHEAT9    _("Tiny Mario")
 #define TEXT_OPT_CHEAT10   _("Last check display")
+#define TEXT_OPT_CHEAT11   _("Respawn checked 1-Ups")
 
 #endif // VERSION
 
