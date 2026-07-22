@@ -165,11 +165,17 @@ void king_whomp_on_ground(void) {
 }
 
 void whomp_on_ground(void) {
+    s32 numCoins;
+
     if (o->oSubAction == 0) {
         if (gMarioObject->platform == o) {
             if (cur_obj_is_mario_ground_pounding_platform()) {
-                o->oNumLootCoins = 5;
-                obj_spawn_loot_yellow_coins(o, 5, 20.0f);
+                numCoins = 5;
+                if (SM64AP_NoDespawn()) {
+                    numCoins += o->oNumLootCoins;
+                }
+                o->oNumLootCoins = numCoins;
+                obj_spawn_loot_yellow_coins(o, numCoins, 20.0f);
                 o->oAction = 8;
             } else {
                 cur_obj_spawn_loot_coin_at_mario_pos();
