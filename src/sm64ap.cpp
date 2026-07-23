@@ -698,6 +698,9 @@ static int SM64AP_CoinObjectSource(u32 behParam, const void *behavior) {
     u8 content = beh_param_second_byte(behParam);
 
     if (behavior_is(behavior, bhvExclamationBox)) {
+        if ((behParam >> 16) == 0x1404) {
+            return -1;
+        }
         switch (content) {
             case 4:
                 return SM64AP_COIN_SOURCE_ONE_COIN_BOX;
