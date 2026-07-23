@@ -493,6 +493,11 @@ void bhv_chain_chomp_update(void) {
  * Update function for wooden post.
  */
 void bhv_wooden_post_update(void) {
+    if (!SM64AP_HaveCoinSource(SM64AP_COIN_SOURCE_WOODEN_POST, gCurrLevelNum)) {
+        obj_mark_for_deletion(o);
+        return;
+    }
+
     // When ground pounded by mario, drop by -45 + -20
     if (!o->oWoodenPostMarioPounding) {
         if ((o->oWoodenPostMarioPounding = cur_obj_is_mario_ground_pounding_platform())) {

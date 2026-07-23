@@ -120,6 +120,12 @@ void bhv_lll_bowser_puzzle_spawn_pieces(f32 pieceWidth) {
 void bhv_lll_bowser_puzzle_loop(void) {
     s32 i;
     UNUSED struct Object *sp28;
+
+    if (!SM64AP_HaveCoinSource(SM64AP_COIN_SOURCE_BOWSER_PUZZLE, gCurrLevelNum)) {
+        obj_mark_for_deletion(o);
+        return;
+    }
+
     switch (o->oAction) {
         case BOWSER_PUZZLE_ACT_SPAWN_PIECES:
             bhv_lll_bowser_puzzle_spawn_pieces(480.0f);

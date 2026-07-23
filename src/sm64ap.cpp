@@ -90,6 +90,37 @@ std::bitset<SM64AP_NUM_LEVEL_MOVE_AREAS * SM64AP_NUM_LEVEL_MOVES> sm64_have_leve
 std::bitset<SM64AP_NUM_FEATURES> sm64_have_features;
 std::bitset<SM64AP_NUM_LEVEL_CAPS> sm64_have_level_caps;
 std::bitset<SM64AP_NUM_OBJECT_ITEMS> sm64_have_object_items;
+
+struct SM64APCoinGlobalItem {
+    int source;
+    const char *name;
+};
+
+struct SM64APCoinLevelItem {
+    int source;
+    s16 level;
+    const char *name;
+};
+
+#define COIN_GLOBAL(source, name) { source, name },
+static constexpr SM64APCoinGlobalItem sm64_coin_global_items[] = {
+#include "sm64ap_coin_items.inc"
+};
+#undef COIN_GLOBAL
+
+#define COIN_LEVEL(source, level, name) { source, level, name },
+static constexpr SM64APCoinLevelItem sm64_coin_level_items[] = {
+#include "sm64ap_coin_items.inc"
+};
+#undef COIN_LEVEL
+
+static constexpr int SM64AP_NUM_COIN_GLOBAL_ITEMS =
+    sizeof(sm64_coin_global_items) / sizeof(sm64_coin_global_items[0]);
+static constexpr int SM64AP_NUM_COIN_LEVEL_ITEMS =
+    sizeof(sm64_coin_level_items) / sizeof(sm64_coin_level_items[0]);
+
+std::bitset<SM64AP_NUM_COIN_GLOBAL_ITEMS> sm64_have_coin_global_items;
+std::bitset<SM64AP_NUM_COIN_LEVEL_ITEMS> sm64_have_coin_level_items;
 std::bitset<SM64AP_NUM_COIN_CHECKS> sm64_sent_coin_checks;
 std::bitset<SM64AP_NUM_1UP_CHECKS> sm64_sent_1up_checks;
 std::bitset<SM64AP_NUM_BLOCKSANITY_CHECKS> sm64_sent_blocksanity_checks;
@@ -420,6 +451,18 @@ static int SM64AP_CoinCheckOffsetFromLocationId(int locId);
 void SM64AP_RecvItem(int64_t idx, bool notify) {
     AP_EnableQueueItemRecvMsgs(true);
 
+    if (idx >= SM64AP_COIN_GLOBAL_ITEM_OFFSET
+        && idx < SM64AP_COIN_GLOBAL_ITEM_OFFSET + SM64AP_NUM_COIN_GLOBAL_ITEMS) {
+        sm64_have_coin_global_items[idx - SM64AP_COIN_GLOBAL_ITEM_OFFSET] = true;
+        return;
+    }
+
+    if (idx >= SM64AP_COIN_LEVEL_ITEM_OFFSET
+        && idx < SM64AP_COIN_LEVEL_ITEM_OFFSET + SM64AP_NUM_COIN_LEVEL_ITEMS) {
+        sm64_have_coin_level_items[idx - SM64AP_COIN_LEVEL_ITEM_OFFSET] = true;
+        return;
+    }
+
     if (idx >= SM64AP_ID_OBJECT_ITEM(0)
         && idx <= SM64AP_ID_OBJECT_ITEM(SM64AP_NUM_CONTIGUOUS_OBJECT_ITEMS - 1)
         && idx != SM64AP_ID_BITFS) {
@@ -614,12 +657,150 @@ static u8 beh_param_second_byte(u32 behParam) {
     return (behParam >> 16) & 0xFF;
 }
 
+static int SM64AP_CoinFormationSource(u32 behParam) {
+    u8 flags = beh_param_second_byte(behParam);
+
+    if (flags & COIN_FORMATION_FLAG_ARROW) {
+        return SM64AP_COIN_SOURCE_ARROW;
+    }
+    if (flags & COIN_FORMATION_FLAG_RING) {
+        if (flags & COIN_FORMATION_FLAG_VERTICAL) {
+            return SM64AP_COIN_SOURCE_VERTICAL_RING;
+        }
+        if (flags & COIN_FORMATION_FLAG_FLYING) {
+            return SM64AP_COIN_SOURCE_FLYING_HORIZONTAL_RING;
+        }
+        return SM64AP_COIN_SOURCE_HORIZONTAL_RING;
+    }
+    if (flags & COIN_FORMATION_FLAG_VERTICAL) {
+        return SM64AP_COIN_SOURCE_VERTICAL_LINE;
+    }
+    if (flags & COIN_FORMATION_FLAG_FLYING) {
+        return SM64AP_COIN_SOURCE_FLYING_HORIZONTAL_LINE;
+    }
+    return SM64AP_COIN_SOURCE_HORIZONTAL_LINE;
+}
+
+static int SM64AP_PlacedCoinSource(u32 behParam, const void *behavior) {
+    if (behavior_is(behavior, bhvYellowCoin) || behavior_is(behavior, bhvOneCoin)) {
+        return SM64AP_COIN_SOURCE_YELLOW_COIN;
+    }
+    if (behavior_is(behavior, bhvRedCoin)) {
+        return SM64AP_COIN_SOURCE_RED_COIN;
+    }
+    if (behavior_is(behavior, bhvMovingBlueCoin) || behavior_is(behavior, bhvBlueCoinSliding)) {
+        return SM64AP_COIN_SOURCE_MOVING_BLUE_COIN;
+    }
+    if (behavior_is(behavior, bhvBlueCoinSwitch) || behavior_is(behavior, bhvHiddenBlueCoin)) {
+        return SM64AP_COIN_SOURCE_BLUE_COIN_SWITCH;
+    }
+    if (behavior_is(behavior, bhvCoinFormation)) {
+        return SM64AP_CoinFormationSource(behParam);
+    }
+    return -1;
+}
+
+static int SM64AP_CoinObjectSource(u32 behParam, const void *behavior) {
+    u8 content = beh_param_second_byte(behParam);
+
+    if (behavior_is(behavior, bhvExclamationBox)) {
+        switch (content) {
+            case 4:
+                return SM64AP_COIN_SOURCE_ONE_COIN_BOX;
+            case 5:
+                return SM64AP_COIN_SOURCE_THREE_COIN_BOX;
+            case 6:
+                return SM64AP_COIN_SOURCE_TEN_COIN_BOX;
+        }
+    }
+    if (behavior_is(behavior, bhvBreakableBox) && content == 1) {
+        return SM64AP_COIN_SOURCE_BREAKABLE_COIN_BOX;
+    }
+    if (behavior_is(behavior, bhvBreakableBoxSmall)) {
+        return SM64AP_COIN_SOURCE_SMALL_BREAKABLE_BOX;
+    }
+    if (behavior_is(behavior, bhvJumpingBox)) {
+        return SM64AP_COIN_SOURCE_JUMPING_BOX;
+    }
+    if (behavior_is(behavior, bhvWoodenPost)) {
+        return SM64AP_COIN_SOURCE_WOODEN_POST;
+    }
+    if (behavior_is(behavior, bhvLllBowserPuzzle)) {
+        return SM64AP_COIN_SOURCE_BOWSER_PUZZLE;
+    }
+    return -1;
+}
+
+static int SM64AP_EnemyCoinSource(const void *behavior) {
+    if (behavior_is(behavior, bhvBobomb)) return SM64AP_COIN_SOURCE_BOBOMB;
+    if (behavior_is(behavior, bhvBoo) || behavior_is(behavior, bhvGhostHuntBoo)
+        || behavior_is(behavior, bhvMerryGoRoundBoo)
+        || behavior_is(behavior, bhvMerryGoRoundBooManager)
+        || behavior_is(behavior, bhvBooInCastle)
+        || behavior_is(behavior, bhvBooWithCage)) return SM64AP_COIN_SOURCE_BOO;
+    if (behavior_is(behavior, bhvSmallBully)) return SM64AP_COIN_SOURCE_BULLY;
+    if (behavior_is(behavior, bhvChuckya)) return SM64AP_COIN_SOURCE_CHUCKYA;
+    if (behavior_is(behavior, bhvEnemyLakitu)) return SM64AP_COIN_SOURCE_ENEMY_LAKITU;
+    if (behavior_is(behavior, bhvEyerokBoss) || behavior_is(behavior, bhvEyerokHand)) {
+        return SM64AP_COIN_SOURCE_EYEROK;
+    }
+    if (behavior_is(behavior, bhvFirePiranhaPlant)) return SM64AP_COIN_SOURCE_FIRE_PIRANHA_PLANT;
+    if (behavior_is(behavior, bhvFlyGuy)) return SM64AP_COIN_SOURCE_FLY_GUY;
+    if (behavior_is(behavior, bhvFlyingBookend) || behavior_is(behavior, bhvBookendSpawn)) {
+        return SM64AP_COIN_SOURCE_FLYING_BOOKEND;
+    }
+    if (behavior_is(behavior, bhvGoomba) || behavior_is(behavior, bhvGoombaTripletSpawner)) {
+        return SM64AP_COIN_SOURCE_GOOMBA;
+    }
+    if (behavior_is(behavior, bhvKoopa)) return SM64AP_COIN_SOURCE_KOOPA_TROOPA;
+    if (behavior_is(behavior, bhvMoneybag) || behavior_is(behavior, bhvMoneybagHidden)) {
+        return SM64AP_COIN_SOURCE_MONEYBAG;
+    }
+    if (behavior_is(behavior, bhvMrBlizzard)) return SM64AP_COIN_SOURCE_MR_BLIZZARD;
+    if (behavior_is(behavior, bhvMrI)) return SM64AP_COIN_SOURCE_MR_I;
+    if (behavior_is(behavior, bhvMontyMole) || behavior_is(behavior, bhvMontyMoleHole)) {
+        return SM64AP_COIN_SOURCE_MONTY_MOLE;
+    }
+    if (behavior_is(behavior, bhvBigBully)) return SM64AP_COIN_SOURCE_BIG_BULLY;
+    if (behavior_is(behavior, bhvPiranhaPlant)) return SM64AP_COIN_SOURCE_PIRANHA_PLANT;
+    if (behavior_is(behavior, bhvPokey) || behavior_is(behavior, bhvPokeyBodyPart)) {
+        return SM64AP_COIN_SOURCE_POKEY;
+    }
+    if (behavior_is(behavior, bhvScuttlebug) || behavior_is(behavior, bhvScuttlebugSpawn)) {
+        return SM64AP_COIN_SOURCE_SCUTTLEBUG;
+    }
+    if (behavior_is(behavior, bhvSkeeter)) return SM64AP_COIN_SOURCE_SKEETER;
+    if (behavior_is(behavior, bhvSnufit)) return SM64AP_COIN_SOURCE_SNUFIT;
+    if (behavior_is(behavior, bhvSpindrift)) return SM64AP_COIN_SOURCE_SPINDRIFT;
+    if (behavior_is(behavior, bhvSwoop)) return SM64AP_COIN_SOURCE_SWOOP;
+    if (behavior_is(behavior, bhvSmallWhomp)) return SM64AP_COIN_SOURCE_WHOMP;
+    return -1;
+}
+
 bool SM64AP_HaveFeature(int feature) {
     return feature >= 0 && feature < SM64AP_NUM_FEATURES && sm64_have_features[feature];
 }
 
 bool SM64AP_HaveObjectItem(int item) {
     return item >= 0 && item < SM64AP_NUM_OBJECT_ITEMS && sm64_have_object_items[item];
+}
+
+bool SM64AP_HaveCoinSource(int source, s16 level) {
+    for (int i = 0; i < SM64AP_NUM_COIN_GLOBAL_ITEMS; i++) {
+        if (sm64_coin_global_items[i].source == source && sm64_have_coin_global_items[i]) {
+            return true;
+        }
+    }
+
+    for (int i = 0; i < SM64AP_NUM_COIN_LEVEL_ITEMS; i++) {
+        if (sm64_coin_level_items[i].source == source
+            && (sm64_coin_level_items[i].level == level || sm64_coin_level_items[i].level == -2)
+            && sm64_have_coin_level_items[i]) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 static int SM64AP_LevelSpecificObjectItemForLevel(int item, s16 level) {
@@ -986,6 +1167,35 @@ static bool SM64AP_IsPurpleSwitchObject(s16 model, const void *behavior) {
 }
 
 bool SM64AP_ShouldSpawnLevelObject(s16 level, s16, s16 model, s16 x, s16 y, s16 z, u32 behParam, const void *behavior) {
+    if ((behavior_is(behavior, bhvHiddenRedCoinStar)
+         || behavior_is(behavior, bhvBowserCourseRedCoinStar))
+        && !SM64AP_HaveCoinSource(SM64AP_COIN_SOURCE_RED_COIN, level)) {
+        return false;
+    }
+
+    int coinSource = SM64AP_PlacedCoinSource(behParam, behavior);
+    if (coinSource >= 0 && !SM64AP_HaveCoinSource(coinSource, level)) {
+        return false;
+    }
+
+    int coinObjectSource = SM64AP_CoinObjectSource(behParam, behavior);
+    if (coinObjectSource >= 0 && !SM64AP_HaveCoinSource(coinObjectSource, level)) {
+        return false;
+    }
+
+    int enemySource = SM64AP_EnemyCoinSource(behavior);
+    if (behavior_is(behavior, bhvBigBullyWithMinions)
+        && !SM64AP_HaveCoinSource(SM64AP_COIN_SOURCE_BULLY, level)) {
+        return false;
+    }
+    if (enemySource == SM64AP_COIN_SOURCE_BOO
+        && (level == LEVEL_CASTLE || level == LEVEL_CASTLE_COURTYARD)) {
+        return SM64AP_HaveBBH();
+    }
+    if (enemySource >= 0 && !SM64AP_HaveCoinSource(enemySource, level)) {
+        return false;
+    }
+
     if (SM64AP_IsPurpleSwitchObject(model, behavior)) {
         return SM64AP_HaveObjectItemForLevel(SM64AP_OBJECT_ITEM_PURPLE_SWITCHES, level);
     }
@@ -1820,6 +2030,8 @@ void SM64AP_ResetItems() {
     sm64_have_features.reset();
     sm64_have_level_caps.reset();
     sm64_have_object_items.reset();
+    sm64_have_coin_global_items.reset();
+    sm64_have_coin_level_items.reset();
     sm64_sent_coin_checks.reset();
     sm64_sent_1up_checks.reset();
     sm64_sent_blocksanity_checks.reset();
@@ -2716,6 +2928,7 @@ enum SM64APCheatItemKind {
     SM64AP_CHEAT_ITEM_OBJECT,
     SM64AP_CHEAT_ITEM_ABILITY,
     SM64AP_CHEAT_ITEM_LEVEL_MOVE,
+    SM64AP_CHEAT_ITEM_COIN_UNLOCK,
 };
 
 enum SM64APCheatBoolItem {
@@ -2952,6 +3165,19 @@ static void SM64AP_InitCheatItems() {
                             std::string(SM64AP_CHEAT_LEVEL_MOVE_AREA_NAMES[area]) + " " + SM64AP_CHEAT_LEVEL_MOVE_NAMES[move]);
         }
     }
+    for (int i = 0; i < SM64AP_NUM_COIN_GLOBAL_ITEMS; i++) {
+        SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_COIN_UNLOCK,
+                        SM64AP_COIN_GLOBAL_ITEM_OFFSET + i,
+                        std::string("GLOBAL ") + sm64_coin_global_items[i].name);
+    }
+    for (int i = 0; i < SM64AP_NUM_COIN_LEVEL_ITEMS; i++) {
+        if (sm64_coin_level_items[i].source < 0) {
+            continue;
+        }
+        SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_COIN_UNLOCK,
+                        SM64AP_COIN_LEVEL_ITEM_OFFSET + i,
+                        sm64_coin_level_items[i].name);
+    }
 }
 
 static bool SM64AP_CheatBoolEnabled(int index) {
@@ -3150,6 +3376,16 @@ bool SM64AP_CheatItemEnabled(int index) {
             return item.index >= 0
                 && item.index < SM64AP_NUM_LEVEL_MOVE_AREAS * SM64AP_NUM_LEVEL_MOVES
                 && sm64_have_level_moves[item.index];
+        case SM64AP_CHEAT_ITEM_COIN_UNLOCK:
+            if (item.index >= SM64AP_COIN_GLOBAL_ITEM_OFFSET
+                && item.index < SM64AP_COIN_GLOBAL_ITEM_OFFSET + SM64AP_NUM_COIN_GLOBAL_ITEMS) {
+                return sm64_have_coin_global_items[item.index - SM64AP_COIN_GLOBAL_ITEM_OFFSET];
+            }
+            if (item.index >= SM64AP_COIN_LEVEL_ITEM_OFFSET
+                && item.index < SM64AP_COIN_LEVEL_ITEM_OFFSET + SM64AP_NUM_COIN_LEVEL_ITEMS) {
+                return sm64_have_coin_level_items[item.index - SM64AP_COIN_LEVEL_ITEM_OFFSET];
+            }
+            return false;
     }
 
     return false;
@@ -3197,6 +3433,15 @@ void SM64AP_CheatSetItemEnabled(int index, bool enabled) {
         case SM64AP_CHEAT_ITEM_LEVEL_MOVE:
             if (item.index >= 0 && item.index < SM64AP_NUM_LEVEL_MOVE_AREAS * SM64AP_NUM_LEVEL_MOVES) {
                 sm64_have_level_moves[item.index] = enabled;
+            }
+            break;
+        case SM64AP_CHEAT_ITEM_COIN_UNLOCK:
+            if (item.index >= SM64AP_COIN_GLOBAL_ITEM_OFFSET
+                && item.index < SM64AP_COIN_GLOBAL_ITEM_OFFSET + SM64AP_NUM_COIN_GLOBAL_ITEMS) {
+                sm64_have_coin_global_items[item.index - SM64AP_COIN_GLOBAL_ITEM_OFFSET] = enabled;
+            } else if (item.index >= SM64AP_COIN_LEVEL_ITEM_OFFSET
+                       && item.index < SM64AP_COIN_LEVEL_ITEM_OFFSET + SM64AP_NUM_COIN_LEVEL_ITEMS) {
+                sm64_have_coin_level_items[item.index - SM64AP_COIN_LEVEL_ITEM_OFFSET] = enabled;
             }
             break;
     }
