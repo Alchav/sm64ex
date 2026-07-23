@@ -667,16 +667,10 @@ static int SM64AP_CoinFormationSource(u32 behParam) {
         if (flags & COIN_FORMATION_FLAG_VERTICAL) {
             return SM64AP_COIN_SOURCE_VERTICAL_RING;
         }
-        if (flags & COIN_FORMATION_FLAG_FLYING) {
-            return SM64AP_COIN_SOURCE_FLYING_HORIZONTAL_RING;
-        }
         return SM64AP_COIN_SOURCE_HORIZONTAL_RING;
     }
     if (flags & COIN_FORMATION_FLAG_VERTICAL) {
         return SM64AP_COIN_SOURCE_VERTICAL_LINE;
-    }
-    if (flags & COIN_FORMATION_FLAG_FLYING) {
-        return SM64AP_COIN_SOURCE_FLYING_HORIZONTAL_LINE;
     }
     return SM64AP_COIN_SOURCE_HORIZONTAL_LINE;
 }
@@ -3166,6 +3160,9 @@ static void SM64AP_InitCheatItems() {
         }
     }
     for (int i = 0; i < SM64AP_NUM_COIN_GLOBAL_ITEMS; i++) {
+        if (sm64_coin_global_items[i].source < 0) {
+            continue;
+        }
         SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_COIN_UNLOCK,
                         SM64AP_COIN_GLOBAL_ITEM_OFFSET + i,
                         std::string("GLOBAL ") + sm64_coin_global_items[i].name);
