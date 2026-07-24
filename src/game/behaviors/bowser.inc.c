@@ -1150,7 +1150,7 @@ void bhv_bowser_init(void) {
         level = 0;
     o->oBehParams2ndByte = level;
     o->oBowserUnk1B2 = D_8032F690[level];
-    o->oHealth = D_8032F694[level];
+    o->oHealth = SM64AP_BowserHitRequirement(gCurrLevelNum);
     cur_obj_start_cam_event(o, CAM_EVENT_BOWSER_INIT);
     o->oAction = 5;
     o->oBowserUnk1AE = 0;
@@ -1296,7 +1296,9 @@ void falling_bowser_plat_act_1(void) {
     if (sp0->platform == o)
         if (sp0->oAction == 13 && sp0->oBowserUnkF4 & 0x10000)
             o->oAction = 2;
-    if (sp0->oHealth == 1 && (sp0->oAction == 3 || sp0->oHeldState != HELD_FREE))
+    if (SM64AP_BowserHitRequirement(LEVEL_BOWSER_3) - sp0->oHealth
+            >= SM64AP_BowserInTheSkyStageCollapseHits()
+        && (sp0->oAction == 3 || sp0->oHeldState != HELD_FREE))
         o->oSubAction = 1;
     if (o->oSubAction == 0)
         o->oPlatformUnkFC = 0;

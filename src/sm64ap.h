@@ -218,6 +218,10 @@ enum {
 #define SM64AP_ID_BITFS_1UPS 3626558
 #define SM64AP_ID_THI_TINY_PAINTING 3626242
 #define SM64AP_ID_THI_HUGE_PAINTING 3626559
+#define SM64AP_ID_PROGRESSIVE_BOWSER_ARENA_BOMB 3626849
+#define SM64AP_ID_BITDW_PROGRESSIVE_BOWSER_ARENA_BOMB 3626850
+#define SM64AP_ID_BITFS_PROGRESSIVE_BOWSER_ARENA_BOMB 3626851
+#define SM64AP_ID_BITS_PROGRESSIVE_BOWSER_ARENA_BOMB 3626852
 
 /*
  * Coin-source items are intentionally outside the older contiguous item
@@ -268,6 +272,8 @@ enum {
     SM64AP_COIN_SOURCE_JUMPING_BOX,
     SM64AP_COIN_SOURCE_WOODEN_POST,
     SM64AP_COIN_SOURCE_BOWSER_PUZZLE,
+    SM64AP_COIN_SOURCE_BIG_BOO,
+    SM64AP_COIN_SOURCE_THWOMP,
     SM64AP_NUM_COIN_SOURCES
 };
 
@@ -404,6 +410,8 @@ AP_EXTERN_C int SM64AP_LevelMoveAreaForLevel(s16);
 AP_EXTERN_C bool SM64AP_HaveLevelMoveOrGlobal(int, int);
 AP_EXTERN_C bool SM64AP_CollectedCourseStar(int, int);
 AP_EXTERN_C bool SM64AP_ShouldSpawnLevelObject(s16, s16, s16, s16, s16, s16, u32, const void *);
+AP_EXTERN_C int SM64AP_BowserHitRequirement(s16);
+AP_EXTERN_C int SM64AP_BowserInTheSkyStageCollapseHits();
 AP_EXTERN_C bool SM64AP_ShouldCreateWhirlpool(s16, s16, s8, s8, s16, s16, s16, s16);
 AP_EXTERN_C bool SM64AP_HavePainting(int);
 AP_EXTERN_C bool SM64AP_HavePaintingForArea(int, int);

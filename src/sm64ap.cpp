@@ -78,6 +78,9 @@ bool sm64_no_despawn = false;
 bool sm64_have_wingcap = false;
 bool sm64_have_metalcap = false;
 bool sm64_have_vanishcap = false;
+int sm64_bowser_arena_bombs[3] = { 0, 0, 0 };
+int sm64_bowser_hit_requirements[3] = { 1, 1, 3 };
+int sm64_bowser_in_the_sky_stage_collapse_hits = 2;
 bool sm64_show_global_cap_display = false;
 int sm64_moat_state = 0;
 bool sm64_have_cannon[15];
@@ -495,6 +498,20 @@ void SM64AP_RecvItem(int64_t idx, bool notify) {
         case SM64AP_ID_PROGRESSIVE_MIPS:
             SM64AP_IncrementClamped(sm64_have_progressive_mips, 2);
             break;
+        case SM64AP_ID_PROGRESSIVE_BOWSER_ARENA_BOMB:
+            SM64AP_IncrementClamped(sm64_bowser_arena_bombs[0], 4);
+            SM64AP_IncrementClamped(sm64_bowser_arena_bombs[1], 4);
+            SM64AP_IncrementClamped(sm64_bowser_arena_bombs[2], 4);
+            break;
+        case SM64AP_ID_BITDW_PROGRESSIVE_BOWSER_ARENA_BOMB:
+            SM64AP_IncrementClamped(sm64_bowser_arena_bombs[0], 4);
+            break;
+        case SM64AP_ID_BITFS_PROGRESSIVE_BOWSER_ARENA_BOMB:
+            SM64AP_IncrementClamped(sm64_bowser_arena_bombs[1], 4);
+            break;
+        case SM64AP_ID_BITS_PROGRESSIVE_BOWSER_ARENA_BOMB:
+            SM64AP_IncrementClamped(sm64_bowser_arena_bombs[2], 5);
+            break;
         case SM64AP_ID_WING_CAP_LIGHT:
             sm64_have_wing_cap_light = true;
             break;
@@ -730,6 +747,9 @@ static int SM64AP_CoinObjectSource(u32 behParam, const void *behavior) {
 
 static int SM64AP_EnemyCoinSource(const void *behavior) {
     if (behavior_is(behavior, bhvBobomb)) return SM64AP_COIN_SOURCE_BOBOMB;
+    if (behavior_is(behavior, bhvGhostHuntBigBoo)
+        || behavior_is(behavior, bhvMerryGoRoundBigBoo)
+        || behavior_is(behavior, bhvBalconyBigBoo)) return SM64AP_COIN_SOURCE_BIG_BOO;
     if (behavior_is(behavior, bhvBoo) || behavior_is(behavior, bhvGhostHuntBoo)
         || behavior_is(behavior, bhvMerryGoRoundBoo)
         || behavior_is(behavior, bhvMerryGoRoundBooManager)
@@ -771,6 +791,9 @@ static int SM64AP_EnemyCoinSource(const void *behavior) {
     if (behavior_is(behavior, bhvSpindrift)) return SM64AP_COIN_SOURCE_SPINDRIFT;
     if (behavior_is(behavior, bhvSwoop)) return SM64AP_COIN_SOURCE_SWOOP;
     if (behavior_is(behavior, bhvSmallWhomp)) return SM64AP_COIN_SOURCE_WHOMP;
+    if (behavior_is(behavior, bhvThwomp) || behavior_is(behavior, bhvThwomp2)
+        || behavior_is(behavior, bhvGrindel)
+        || behavior_is(behavior, bhvHorizontalGrindel)) return SM64AP_COIN_SOURCE_THWOMP;
     return -1;
 }
 
@@ -1163,10 +1186,44 @@ static bool SM64AP_IsPurpleSwitchObject(s16 model, const void *behavior) {
             || behavior_is(behavior, bhvPurpleSwitchHiddenBoxes));
 }
 
+static int SM64AP_BowserArenaIndex(s16 level) {
+    if (level == LEVEL_BOWSER_1) return 0;
+    if (level == LEVEL_BOWSER_2) return 1;
+    if (level == LEVEL_BOWSER_3) return 2;
+    return -1;
+}
+
+static int SM64AP_BowserArenaBombIndex(s16 level, s16 x, s16 z) {
+    static constexpr s16 bombPositions[3][5][2] = {
+        {{ 2949, 0 }, { 0, -2949 }, { 0, 2949 }, { -2949, 0 }, { 0, 0 }},
+        {{ 4, 3598 }, { 3584, 0 }, { 0, -3583 }, { -3583, 0 }, { 0, 0 }},
+        {{ -2122, -2912 }, { -3362, 1121 }, { 0, 3584 }, { 3363, 1121 }, { 2123, -2912 }},
+    };
+    int arena = SM64AP_BowserArenaIndex(level);
+    if (arena < 0) return -1;
+    int bombCount = arena == 2 ? 5 : 4;
+    for (int i = 0; i < bombCount; i++) {
+        if (bombPositions[arena][i][0] == x && bombPositions[arena][i][1] == z) return i;
+    }
+    return -1;
+}
+
 bool SM64AP_ShouldSpawnLevelObject(s16 level, s16, s16 model, s16 x, s16 y, s16 z, u32 behParam, const void *behavior) {
+    if (behavior_is(behavior, bhvBowserBomb)) {
+        int arena = SM64AP_BowserArenaIndex(level);
+        int bomb = SM64AP_BowserArenaBombIndex(level, x, z);
+        if (arena >= 0 && bomb >= 0) return bomb < sm64_bowser_arena_bombs[arena];
+    }
+
     if ((behavior_is(behavior, bhvHiddenRedCoinStar)
          || behavior_is(behavior, bhvBowserCourseRedCoinStar))
         && !SM64AP_HaveCoinSource(SM64AP_COIN_SOURCE_RED_COIN, level)) {
+        return false;
+    }
+
+    if (behavior_is(behavior, bhvGhostHuntBigBoo)
+        && (!SM64AP_HaveCoinSource(SM64AP_COIN_SOURCE_BOO, level)
+            || !SM64AP_HaveCoinSource(SM64AP_COIN_SOURCE_BIG_BOO, level))) {
         return false;
     }
 
@@ -1601,6 +1658,31 @@ void SM64AP_SetEasyButterflies(int enabled) {
 
 void SM64AP_SetNoDespawn(int enabled) {
     sm64_no_despawn = enabled != 0;
+}
+
+static void SM64AP_SetBowserInTheDarkWorldHits(int hits) {
+    sm64_bowser_hit_requirements[0] = hits;
+}
+
+static void SM64AP_SetBowserInTheFireSeaHits(int hits) {
+    sm64_bowser_hit_requirements[1] = hits;
+}
+
+static void SM64AP_SetBowserInTheSkyHits(int hits) {
+    sm64_bowser_hit_requirements[2] = hits;
+}
+
+static void SM64AP_SetBowserInTheSkyStageCollapseHits(int hits) {
+    sm64_bowser_in_the_sky_stage_collapse_hits = hits;
+}
+
+int SM64AP_BowserHitRequirement(s16 level) {
+    int arena = SM64AP_BowserArenaIndex(level);
+    return arena >= 0 ? sm64_bowser_hit_requirements[arena] : 1;
+}
+
+int SM64AP_BowserInTheSkyStageCollapseHits() {
+    return sm64_bowser_in_the_sky_stage_collapse_hits;
 }
 
 static void SM64AP_ResetCoinStarRequirements() {
@@ -2058,6 +2140,9 @@ void SM64AP_ResetItems() {
     sm64_have_wingcap = false;
     sm64_have_metalcap = false;
     sm64_have_vanishcap = false;
+    for (int i = 0; i < 3; i++) {
+        sm64_bowser_arena_bombs[i] = 0;
+    }
     starsCollected = 0;
 
     AP_SetServerDataRequest moat_request;
@@ -2110,6 +2195,11 @@ void SM64AP_GenericInit() {
     AP_RegisterSlotDataIntCallback("BowserStage1UpBehavior", &SM64AP_SetBowserStageOneUpBehavior);
     AP_RegisterSlotDataIntCallback("EasyButterflies", &SM64AP_SetEasyButterflies);
     AP_RegisterSlotDataIntCallback("NoDespawn", &SM64AP_SetNoDespawn);
+    AP_RegisterSlotDataIntCallback("BowserInTheDarkWorldHits", &SM64AP_SetBowserInTheDarkWorldHits);
+    AP_RegisterSlotDataIntCallback("BowserInTheFireSeaHits", &SM64AP_SetBowserInTheFireSeaHits);
+    AP_RegisterSlotDataIntCallback("BowserInTheSkyHits", &SM64AP_SetBowserInTheSkyHits);
+    AP_RegisterSlotDataIntCallback(
+        "BowserInTheSkyStageCollapseHits", &SM64AP_SetBowserInTheSkyStageCollapseHits);
     AP_RegisterSlotDataRawCallback("AreaRando", static_cast<void (*)(std::string)>(&SM64AP_SetCourseMap));
     AP_RegisterSlotDataRawCallback("StartInventory", static_cast<void (*)(std::string)>(&SM64AP_SetStartInventory));
     AP_RegisterSlotDataIntCallback("MusicShuffleMode", &SM64AP_SetMusicShuffleMode);
