@@ -123,6 +123,8 @@ u8 gMenuHoldKeyTimer = 0;
 s32 gDialogResponse = 0;
 static bool sPauseCourseUnlockViewOpen = false;
 static s8 sPauseUnlockViewIndex = 0;
+static s8 sPauseUnlockPage = 0;
+static bool sPauseUnlockHorizontalHeld = false;
 
 #if !defined(EXTERNAL_DATA) && (defined(VERSION_JP) || defined(VERSION_SH) || defined(VERSION_EU))
 #ifdef VERSION_EU
@@ -2449,6 +2451,7 @@ void render_pause_castle_menu_box(s16 x, s16 y) {
     create_dl_rotation_matrix(MENU_MTX_NOPUSH, 270.0f, 0, 0, 1.0f);
     gSPDisplayList(gDisplayListHead++, dl_draw_triangle);
     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+
 }
 
 void highlight_last_course_complete_stars(void) {
@@ -2878,6 +2881,37 @@ static void render_pause_unlock_status(s16 x, s16 y, s16 statusX, const u8 *labe
     print_generic_string(statusX, y, unlocked ? textYes : textNo);
 }
 
+static void pause_ascii_to_dialog_string(const char *ascii, u8 *dialog, s16 maxLength) {
+    s16 i = 0;
+    while (ascii[i] != '\0' && i < maxLength) {
+        dialog[i] = ascii[i] == ' ' ? DIALOG_CHAR_SPACE : ASCII_TO_DIALOG(ascii[i]);
+        i++;
+    }
+    dialog[i] = DIALOG_CHAR_TERMINATOR;
+}
+
+static void render_pause_coin_unlock_column(s16 x, s16 y, s16 statusX, s16 levelNum, bool enemies) {
+    u8 label[19];
+    s16 count = SM64AP_LevelCoinUnlockCount(levelNum, enemies);
+
+    for (s16 i = 0; i < count && i < 10; i++) {
+        pause_ascii_to_dialog_string(SM64AP_LevelCoinUnlockName(levelNum, enemies, i), label, 18);
+        render_pause_unlock_status(
+            x, y - i * 11, statusX, label,
+            SM64AP_LevelCoinUnlockEnabled(levelNum, enemies, i));
+    }
+}
+
+static void render_pause_coin_and_enemy_unlocks(const struct PauseUnlockView *view) {
+    static const u8 textCoinObjects[] = { TEXT_COIN_OBJECTS };
+    static const u8 textEnemies[] = { TEXT_ENEMIES };
+
+    print_generic_string(-8, 122, textCoinObjects);
+    print_generic_string(150, 122, textEnemies);
+    render_pause_coin_unlock_column(-8, 108, 132, view->levelNum, false);
+    render_pause_coin_unlock_column(150, 108, 292, view->levelNum, true);
+}
+
 static void render_pause_coin_star_requirement(s16 x, s16 y, s16 valueX, s16 courseNum) {
     u8 strCoinRequirement[4];
     s16 digitCount = 0;
@@ -2988,18 +3022,42 @@ static void render_pause_level_unlocks(s16 x, s16 y);
 
 static void render_pause_unlock_view_page(s16 viewIndex) {
     const struct PauseUnlockView *view = pause_unlock_view_at(viewIndex);
+    static const u8 textPageOne[] = { TEXT_PAGE_1 };
+    static const u8 textPageTwo[] = { TEXT_PAGE_2 };
+
+    if (view->type == PAUSE_UNLOCK_VIEW_LEVELS) {
+        sPauseUnlockPage = 0;
+    } else {
+        create_dl_translation_matrix(MENU_MTX_PUSH, -18, 105, 0);
+        create_dl_rotation_matrix(MENU_MTX_NOPUSH, 180.0f, 0, 0, 1.0f);
+        gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
+        gSPDisplayList(gDisplayListHead++, dl_draw_triangle);
+        gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+
+        create_dl_translation_matrix(MENU_MTX_PUSH, 310, 89, 0);
+        gSPDisplayList(gDisplayListHead++, dl_draw_triangle);
+        gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+    }
 
     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
 
     print_generic_string(-8, 140, pause_unlock_view_title(view));
     if (view->type != PAUSE_UNLOCK_VIEW_LEVELS) {
+        print_generic_string(266, 140, sPauseUnlockPage == 0 ? textPageOne : textPageTwo);
+    }
+    if (sPauseUnlockPage == 0 && view->type != PAUSE_UNLOCK_VIEW_LEVELS) {
         render_pause_move_unlocks(-8, 122, view->moveArea);
     }
 
     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
 
-    if (view->type == PAUSE_UNLOCK_VIEW_CASTLE) {
+    if (sPauseUnlockPage == 1) {
+        gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
+        gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
+        render_pause_coin_and_enemy_unlocks(view);
+        gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
+    } else if (view->type == PAUSE_UNLOCK_VIEW_CASTLE) {
         gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
         gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
         render_pause_castle_unlocks(126, 122);
@@ -3049,6 +3107,31 @@ static void render_pause_level_unlocks(s16 x, s16 y) {
     }
 }
 
+static void handle_pause_unlock_page_scrolling(bool hasPages) {
+    s8 requestedPage = sPauseUnlockPage;
+
+    if (!hasPages) {
+        sPauseUnlockPage = 0;
+        sPauseUnlockHorizontalHeld = false;
+        return;
+    }
+
+    if (gPlayer3Controller->rawStickX > 60) {
+        requestedPage = 1;
+    } else if (gPlayer3Controller->rawStickX < -60) {
+        requestedPage = 0;
+    } else {
+        sPauseUnlockHorizontalHeld = false;
+        return;
+    }
+
+    if (!sPauseUnlockHorizontalHeld && requestedPage != sPauseUnlockPage) {
+        sPauseUnlockPage = requestedPage;
+        play_sound(SOUND_MENU_CHANGE_SELECT, gDefaultSoundArgs);
+    }
+    sPauseUnlockHorizontalHeld = true;
+}
+
 void render_pause_castle_main_strings(s16 x, s16 y) {
     (void) x;
     (void) y;
@@ -3063,6 +3146,7 @@ void render_pause_castle_main_strings(s16 x, s16 y) {
         gDialogLineNum = pause_unlock_view_count() - 1;
     }
 
+    handle_pause_unlock_page_scrolling(pause_unlock_view_at(gDialogLineNum)->type != PAUSE_UNLOCK_VIEW_LEVELS);
     render_pause_unlock_view_page(gDialogLineNum);
 }
 
@@ -3096,6 +3180,9 @@ static void handle_pause_course_unlock_view_scrolling(void) {
     if (sPauseUnlockViewIndex == -1) {
         sPauseUnlockViewIndex = pause_unlock_view_count() - 1;
     }
+
+    handle_pause_unlock_page_scrolling(
+        pause_unlock_view_at(sPauseUnlockViewIndex)->type != PAUSE_UNLOCK_VIEW_LEVELS);
 }
 
 static bool pause_menu_confirm_pressed(void) {
@@ -3144,6 +3231,8 @@ s16 render_pause_courses_and_castle(void) {
             gDialogLineNum = 1;
             gDialogTextAlpha = 0;
             sPauseCourseUnlockViewOpen = false;
+            sPauseUnlockPage = 0;
+            sPauseUnlockHorizontalHeld = false;
             set_pause_course_unlock_view_to_current_course();
             level_set_transition(-1, 0);
 #if defined(VERSION_JP) || defined(VERSION_SH)

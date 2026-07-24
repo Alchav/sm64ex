@@ -80,6 +80,10 @@
 #define TEXT_PAINTING_Y   _("Y")
 #define TEXT_PAINTING_N   _("N")
 #define TEXT_PAINTING_NA  _("NA")
+#define TEXT_COIN_OBJECTS _("COIN OBJECTS")
+#define TEXT_ENEMIES      _("ENEMIES")
+#define TEXT_PAGE_1       _("1 OF 2")
+#define TEXT_PAGE_2       _("2 OF 2")
 
 // Course unlock labels
 #define TEXT_UNLOCK_NO_ITEMS _("NO ITEMS")

@@ -41,6 +41,8 @@ extern "C" {
 #include <queue>
 #include <cctype>
 #include <utility>
+#include <algorithm>
+#include <cstring>
 
 #define WARP_NODE_CREDITS_MIN 0xF8 // level_update.c
 #define NUM_PAINTING_LOCKS SM64AP_NUM_PAINTING_LOCKS
@@ -821,6 +823,92 @@ bool SM64AP_HaveCoinSource(int source, s16 level) {
     }
 
     return false;
+}
+
+static bool SM64AP_IsEnemyCoinSource(int source) {
+    return (source >= SM64AP_COIN_SOURCE_BOBOMB && source <= SM64AP_COIN_SOURCE_WHOMP)
+        || source == SM64AP_COIN_SOURCE_BIG_BOO
+        || source == SM64AP_COIN_SOURCE_THWOMP;
+}
+
+static const SM64APCoinLevelItem *SM64AP_LevelCoinUnlockAt(s16 level, bool enemies, int index) {
+    for (int i = 0; i < SM64AP_NUM_COIN_LEVEL_ITEMS; i++) {
+        const SM64APCoinLevelItem &item = sm64_coin_level_items[i];
+        if (item.source < 0 || item.level != level
+            || SM64AP_IsEnemyCoinSource(item.source) != enemies) {
+            continue;
+        }
+        if (index-- == 0) {
+            return &item;
+        }
+    }
+    return nullptr;
+}
+
+int SM64AP_LevelCoinUnlockCount(s16 level, bool enemies) {
+    int count = 0;
+    while (SM64AP_LevelCoinUnlockAt(level, enemies, count) != nullptr) {
+        count++;
+    }
+    return count;
+}
+
+const char *SM64AP_LevelCoinUnlockName(s16 level, bool enemies, int index) {
+    const SM64APCoinLevelItem *item = SM64AP_LevelCoinUnlockAt(level, enemies, index);
+    if (item == nullptr || item->name == nullptr) {
+        return "";
+    }
+
+    switch (item->source) {
+        case SM64AP_COIN_SOURCE_YELLOW_COIN:         return "SINGLE Y COINS";
+        case SM64AP_COIN_SOURCE_RED_COIN:            return "RED COINS";
+        case SM64AP_COIN_SOURCE_MOVING_BLUE_COIN:    return "SINGLE B COIN";
+        case SM64AP_COIN_SOURCE_BLUE_COIN_SWITCH:    return "BLUE COIN BLK";
+        case SM64AP_COIN_SOURCE_HORIZONTAL_LINE:     return "H COIN LINE";
+        case SM64AP_COIN_SOURCE_HORIZONTAL_RING:     return "H COIN RING";
+        case SM64AP_COIN_SOURCE_ARROW:               return "COIN ARROWS";
+        case SM64AP_COIN_SOURCE_VERTICAL_LINE:       return "V COIN LINE";
+        case SM64AP_COIN_SOURCE_VERTICAL_RING:       return "V COIN RING";
+        case SM64AP_COIN_SOURCE_BREAKABLE_COIN_BOX:  return "COIN BOXES";
+        case SM64AP_COIN_SOURCE_SMALL_BREAKABLE_BOX: return "CORK BOXES";
+        case SM64AP_COIN_SOURCE_JUMPING_BOX:         return "CRAZY BOXES";
+        case SM64AP_COIN_SOURCE_WOODEN_POST:         return "WOOD POSTS";
+        case SM64AP_COIN_SOURCE_BOWSER_PUZZLE:       return "BOWSER PUZZLE";
+        case SM64AP_COIN_SOURCE_THREE_COIN_BOX:      return "3 COIN BLOCK";
+        case SM64AP_COIN_SOURCE_TEN_COIN_BOX:        return "10 COIN BLOCK";
+        case SM64AP_COIN_SOURCE_BOBOMB:              return "BOB OMBS";
+        case SM64AP_COIN_SOURCE_BOO:                 return "BOOS";
+        case SM64AP_COIN_SOURCE_BULLY:               return "BULLIES";
+        case SM64AP_COIN_SOURCE_CHUCKYA:             return "CHUCKYAS";
+        case SM64AP_COIN_SOURCE_ENEMY_LAKITU:        return "LAKITU";
+        case SM64AP_COIN_SOURCE_EYEROK:              return "EYEROK";
+        case SM64AP_COIN_SOURCE_FIRE_PIRANHA_PLANT:  return "FIRE PIRANHA";
+        case SM64AP_COIN_SOURCE_FLY_GUY:             return "FLY GUYS";
+        case SM64AP_COIN_SOURCE_FLYING_BOOKEND:      return "BOOKENDS";
+        case SM64AP_COIN_SOURCE_GOOMBA:              return "GOOMBAS";
+        case SM64AP_COIN_SOURCE_KOOPA_TROOPA:        return "KOOPA TROOPA";
+        case SM64AP_COIN_SOURCE_MONEYBAG:            return "MONEYBAGS";
+        case SM64AP_COIN_SOURCE_MR_BLIZZARD:         return "MR BLIZZARDS";
+        case SM64AP_COIN_SOURCE_MR_I:                return "MR IS";
+        case SM64AP_COIN_SOURCE_SCUTTLEBUG:          return "SCUTTLEBUGS";
+        case SM64AP_COIN_SOURCE_PIRANHA_PLANT:       return "PIRANHA PLANT";
+        case SM64AP_COIN_SOURCE_POKEY:               return "POKEYS";
+        case SM64AP_COIN_SOURCE_SKEETER:             return "SKEETERS";
+        case SM64AP_COIN_SOURCE_SNUFIT:              return "SNUFITS";
+        case SM64AP_COIN_SOURCE_SPINDRIFT:           return "SPINDRIFTS";
+        case SM64AP_COIN_SOURCE_SWOOP:               return "SWOOPS";
+        case SM64AP_COIN_SOURCE_WHOMP:               return "WHOMPS";
+        case SM64AP_COIN_SOURCE_MONTY_MOLE:          return "MONTY MOLES";
+        case SM64AP_COIN_SOURCE_BIG_BULLY:           return "BIG BULLY";
+        case SM64AP_COIN_SOURCE_BIG_BOO:             return "BIG BOO";
+        case SM64AP_COIN_SOURCE_THWOMP:              return "THWOMP";
+        default:                                     return "";
+    }
+}
+
+bool SM64AP_LevelCoinUnlockEnabled(s16 level, bool enemies, int index) {
+    const SM64APCoinLevelItem *item = SM64AP_LevelCoinUnlockAt(level, enemies, index);
+    return item != nullptr && SM64AP_HaveCoinSource(item->source, level);
 }
 
 static int SM64AP_LevelSpecificObjectItemForLevel(int item, s16 level) {
@@ -3016,6 +3104,7 @@ enum SM64APCheatItemKind {
     SM64AP_CHEAT_ITEM_ABILITY,
     SM64AP_CHEAT_ITEM_LEVEL_MOVE,
     SM64AP_CHEAT_ITEM_COIN_UNLOCK,
+    SM64AP_CHEAT_ITEM_BOWSER_ARENA_BOMB,
 };
 
 enum SM64APCheatBoolItem {
@@ -3239,7 +3328,14 @@ static void SM64AP_InitCheatItems() {
     }
     for (int i = 0; i < SM64AP_NUM_OBJECT_ITEMS; i++) {
         if (i != SM64AP_OBJECT_ITEM_RESERVED_BITFS) {
-            SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_OBJECT, i, SM64AP_CHEAT_OBJECT_ITEM_NAMES[i]);
+            bool globalItem = i == SM64AP_OBJECT_ITEM_CHECKERBOARD_PLATFORMS
+                || i == SM64AP_OBJECT_ITEM_ROLLING_LOGS
+                || i == SM64AP_OBJECT_ITEM_PURPLE_SWITCHES;
+            SM64AP_CheatAdd(
+                SM64AP_CHEAT_ITEM_OBJECT, i,
+                globalItem
+                    ? std::string("GLOBAL ") + SM64AP_CHEAT_OBJECT_ITEM_NAMES[i]
+                    : SM64AP_CHEAT_OBJECT_ITEM_NAMES[i]);
         }
     }
     for (int i = 0; i < SM64AP_NUM_ABILITIES; i++) {
@@ -3268,6 +3364,44 @@ static void SM64AP_InitCheatItems() {
                         SM64AP_COIN_LEVEL_ITEM_OFFSET + i,
                         sm64_coin_level_items[i].name);
     }
+
+    for (int bomb = 1; bomb <= 4; bomb++) {
+        SM64AP_CheatAdd(
+            SM64AP_CHEAT_ITEM_BOWSER_ARENA_BOMB, 30 + bomb,
+            std::string("GLOBAL BOWSER ARENA BOMB ") + std::to_string(bomb));
+    }
+    static constexpr const char *bowserStageNames[] = { "BITDW", "BITFS", "BITS" };
+    static constexpr int bowserStageBombCounts[] = { 4, 4, 5 };
+    for (int arena = 0; arena < 3; arena++) {
+        for (int bomb = 1; bomb <= bowserStageBombCounts[arena]; bomb++) {
+            SM64AP_CheatAdd(
+                SM64AP_CHEAT_ITEM_BOWSER_ARENA_BOMB, arena * 10 + bomb,
+                std::string(bowserStageNames[arena]) + " BOWSER ARENA BOMB " + std::to_string(bomb));
+        }
+    }
+
+    static constexpr const char *levelPrefixes[] = {
+        "GLOBAL", "CASTLE", "BOB", "WF", "JRB", "CCM", "BBH", "HMC", "LLL", "SSL",
+        "DDD", "SL", "WDW", "TTM", "THI", "TTC", "RR", "PSS", "SA", "BITDW", "BITFS",
+        "BITS", "VCUTM", "COTMC", "TOTWC", "WMOTR",
+    };
+    auto levelOrder = [](const std::string &name) {
+        for (int i = 0; i < static_cast<int>(sizeof(levelPrefixes) / sizeof(levelPrefixes[0])); i++) {
+            size_t length = std::strlen(levelPrefixes[i]);
+            if (name.compare(0, length, levelPrefixes[i]) == 0
+                && (name.size() == length || name[length] == ' ')) {
+                return i;
+            }
+        }
+        return 1;
+    };
+    std::stable_sort(
+        sm64ap_cheat_items.begin(), sm64ap_cheat_items.end(),
+        [levelOrder](const SM64APCheatItem &left, const SM64APCheatItem &right) {
+            int leftOrder = levelOrder(left.name);
+            int rightOrder = levelOrder(right.name);
+            return leftOrder == rightOrder ? left.name < right.name : leftOrder < rightOrder;
+        });
 }
 
 static bool SM64AP_CheatBoolEnabled(int index) {
@@ -3476,6 +3610,16 @@ bool SM64AP_CheatItemEnabled(int index) {
                 return sm64_have_coin_level_items[item.index - SM64AP_COIN_LEVEL_ITEM_OFFSET];
             }
             return false;
+        case SM64AP_CHEAT_ITEM_BOWSER_ARENA_BOMB: {
+            int arena = item.index / 10;
+            int bomb = item.index % 10;
+            if (arena == 3) {
+                return sm64_bowser_arena_bombs[0] >= bomb
+                    && sm64_bowser_arena_bombs[1] >= bomb
+                    && sm64_bowser_arena_bombs[2] >= bomb;
+            }
+            return arena >= 0 && arena < 3 && sm64_bowser_arena_bombs[arena] >= bomb;
+        }
     }
 
     return false;
@@ -3534,6 +3678,27 @@ void SM64AP_CheatSetItemEnabled(int index, bool enabled) {
                 sm64_have_coin_level_items[item.index - SM64AP_COIN_LEVEL_ITEM_OFFSET] = enabled;
             }
             break;
+        case SM64AP_CHEAT_ITEM_BOWSER_ARENA_BOMB: {
+            int arena = item.index / 10;
+            int bomb = item.index % 10;
+            int value = enabled ? bomb : bomb - 1;
+            if (arena == 3) {
+                for (int i = 0; i < 3; i++) {
+                    if (enabled) {
+                        SM64AP_SetMin(sm64_bowser_arena_bombs[i], value);
+                    } else if (sm64_bowser_arena_bombs[i] >= bomb) {
+                        sm64_bowser_arena_bombs[i] = value;
+                    }
+                }
+            } else if (arena >= 0 && arena < 3) {
+                if (enabled) {
+                    SM64AP_SetMin(sm64_bowser_arena_bombs[arena], value);
+                } else if (sm64_bowser_arena_bombs[arena] >= bomb) {
+                    sm64_bowser_arena_bombs[arena] = value;
+                }
+            }
+            break;
+        }
     }
 }
 
