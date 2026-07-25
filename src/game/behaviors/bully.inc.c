@@ -182,6 +182,10 @@ void bully_step(void) {
 
 void bully_spawn_coin(void) {
     struct Object *coin = spawn_object(o, MODEL_YELLOW_COIN, bhvMovingYellowCoin);
+    if (!SM64AP_AssignPermanentCoinOutput(o, coin, 1, 1)) {
+        coin->activeFlags = ACTIVE_FLAG_DEACTIVATED;
+        return;
+    }
 #ifdef VERSION_JP //TODO: maybe move this ifdef logic to the header?
     cur_obj_play_sound_2(SOUND_GENERAL_COIN_SPURT);
 #elif VERSION_EU

@@ -10,6 +10,7 @@
 #include "game/memory.h"
 #include "game/object_helpers.h"
 #include "game/macro_special_objects.h"
+#include "game/area.h"
 #include "surface_collision.h"
 #include "game/mario.h"
 #include "game/object_list_processor.h"
@@ -610,6 +611,7 @@ void load_area_terrain(s16 index, s16 *data, s8 *surfaceRooms, s16 *macroObjects
         } else if (terrainLoadType == TERRAIN_LOAD_VERTICES) {
             vertexData = read_vertex_data(&data);
         } else if (terrainLoadType == TERRAIN_LOAD_OBJECTS) {
+            gAreaData[index].specialObjects = data;
             spawn_special_objects(index, &data);
         } else if (terrainLoadType == TERRAIN_LOAD_ENVIRONMENT) {
             load_environmental_regions(&data);

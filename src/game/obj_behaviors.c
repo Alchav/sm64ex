@@ -626,6 +626,10 @@ void obj_spawn_yellow_coins(struct Object *obj, s8 nCoins) {
 
     for (count = 0; count < nCoins; count++) {
         coin = spawn_object(obj, MODEL_YELLOW_COIN, bhvMovingYellowCoin);
+        if (!SM64AP_AssignPermanentCoinOutput(obj, coin, 1, nCoins)) {
+            coin->activeFlags = ACTIVE_FLAG_DEACTIVATED;
+            continue;
+        }
         coin->oForwardVel = random_float() * 20;
         coin->oVelY = random_float() * 40 + 20;
         coin->oMoveAngleYaw = random_u16();

@@ -108,6 +108,11 @@ static void moving_coin_collect_without_contact(void) {
         coinValue = cur_obj_has_model(MODEL_BLUE_COIN) ? 5 : 1;
     }
 
+    if (!SM64AP_CollectPermanentCoin(o, coinValue)) {
+        coin_collected();
+        return;
+    }
+
     gMarioState->numCoins += coinValue;
     gMarioState->healCounter += 4 * coinValue;
     SM64AP_CheckCoinCount(gCurrCourseNum, gMarioState->numCoins);
@@ -133,6 +138,14 @@ void bhv_moving_yellow_coin_init(void) {
     o->oBuoyancy = 1.5f;
 
     obj_set_hitbox(o, &sMovingYellowCoinHitbox);
+    if (o->apCoinSourceKind == 2
+        && !SM64AP_AssignPermanentCoinOutput(o->parentObj, o, 1, 1)) {
+        o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
+        return;
+    }
+    if (SM64AP_ShouldSuppressPermanentCoin(o, 1)) {
+        o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
+    }
 }
 
 void bhv_moving_yellow_coin_loop(void) {
@@ -184,6 +197,14 @@ void bhv_moving_blue_coin_init(void) {
     o->oBuoyancy = 1.5f;
 
     obj_set_hitbox(o, &sMovingBlueCoinHitbox);
+    if (o->apCoinSourceKind == 2
+        && !SM64AP_AssignPermanentCoinOutput(o->parentObj, o, 5, 1)) {
+        o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
+        return;
+    }
+    if (SM64AP_ShouldSuppressPermanentCoin(o, 5)) {
+        o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
+    }
 }
 
 void bhv_moving_blue_coin_loop(void) {

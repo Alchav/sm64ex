@@ -106,12 +106,88 @@ struct LoadedPreset {
 #define MACRO_OBJ_Z 3
 #define MACRO_OBJ_PARAMS 4
 
+#define MAX_AP_TRACKED_PLACEMENTS 1024
+
+struct APSuppressedPlacement {
+    const s16 *respawnInfo;
+    bool suppressed;
+};
+
+static struct APSuppressedPlacement sAPSuppressedPlacements[MAX_AP_TRACKED_PLACEMENTS];
+static s32 sAPSuppressedPlacementCount;
+
+void clear_ap_suppressed_placement_state(void) {
+    sAPSuppressedPlacementCount = 0;
+}
+
+static bool ap_placement_is_suppressed(const s16 *respawnInfo) {
+    s32 i;
+    for (i = 0; i < sAPSuppressedPlacementCount; i++) {
+        if (sAPSuppressedPlacements[i].respawnInfo == respawnInfo) {
+            return sAPSuppressedPlacements[i].suppressed;
+        }
+    }
+    return FALSE;
+}
+
+static void set_ap_placement_suppressed(const s16 *respawnInfo, bool suppressed) {
+    s32 i;
+    for (i = 0; i < sAPSuppressedPlacementCount; i++) {
+        if (sAPSuppressedPlacements[i].respawnInfo == respawnInfo) {
+            sAPSuppressedPlacements[i].suppressed = suppressed;
+            return;
+        }
+    }
+
+    if (sAPSuppressedPlacementCount < MAX_AP_TRACKED_PLACEMENTS) {
+        sAPSuppressedPlacements[sAPSuppressedPlacementCount].respawnInfo = respawnInfo;
+        sAPSuppressedPlacements[sAPSuppressedPlacementCount].suppressed = suppressed;
+        sAPSuppressedPlacementCount++;
+    }
+}
+
+static struct Object *spawn_macro_object_entry(
+    s16 areaIndex, const struct LoadedPreset *preset, s16 macroObject[5], s16 *respawnInfo) {
+    struct Object *newObj;
+    u32 behaviorParams = ((macroObject[MACRO_OBJ_PARAMS] & 0x00FF) << 16)
+                         + (macroObject[MACRO_OBJ_PARAMS] & 0xFF00);
+
+    if (((macroObject[MACRO_OBJ_PARAMS] >> 8) & RESPAWN_INFO_DONT_RESPAWN)
+        == RESPAWN_INFO_DONT_RESPAWN) {
+        return NULL;
+    }
+
+    if (!SM64AP_ShouldSpawnLevelObject(
+            gCurrLevelNum, areaIndex, preset->model,
+            macroObject[MACRO_OBJ_X], macroObject[MACRO_OBJ_Y], macroObject[MACRO_OBJ_Z],
+            behaviorParams, preset->behavior)) {
+        set_ap_placement_suppressed(respawnInfo, TRUE);
+        return NULL;
+    }
+
+    set_ap_placement_suppressed(respawnInfo, FALSE);
+    newObj = spawn_object_abs_with_rot(
+        &gMacroObjectDefaultParent, 0, preset->model, preset->behavior,
+        macroObject[MACRO_OBJ_X], macroObject[MACRO_OBJ_Y], macroObject[MACRO_OBJ_Z],
+        0, convert_rotation(macroObject[MACRO_OBJ_Y_ROT]), 0);
+    newObj->oUnk1A8 = macroObject[MACRO_OBJ_PARAMS];
+    newObj->oBehParams = behaviorParams;
+    newObj->oBehParams2ndByte = macroObject[MACRO_OBJ_PARAMS] & 0x00FF;
+    newObj->respawnInfoType = RESPAWN_INFO_TYPE_16;
+    newObj->respawnInfo = respawnInfo;
+    newObj->parentObj = newObj;
+    SM64AP_AssignPermanentCoinSource(
+        newObj, gCurrLevelNum, areaIndex, preset->model,
+        macroObject[MACRO_OBJ_X], macroObject[MACRO_OBJ_Y], macroObject[MACRO_OBJ_Z],
+        behaviorParams, preset->behavior);
+    return newObj;
+}
+
 void spawn_macro_objects(s16 areaIndex, s16 *macroObjList) {
     UNUSED u32 pad5C;
     s32 presetID;
 
     s16 macroObject[5]; // see the 5 #define statements above
-    struct Object *newObj;
     struct LoadedPreset preset;
 
     gMacroObjectDefaultParent.header.gfx.unk18 = areaIndex;
@@ -145,36 +221,68 @@ void spawn_macro_objects(s16 areaIndex, s16 *macroObjList) {
                 (macroObject[MACRO_OBJ_PARAMS] & 0xFF00) + (preset.param & 0x00FF);
         }
 
-        // If object has been killed, prevent it from respawning
-        if (((macroObject[MACRO_OBJ_PARAMS] >> 8) & RESPAWN_INFO_DONT_RESPAWN)
-            != RESPAWN_INFO_DONT_RESPAWN
-            && SM64AP_ShouldSpawnLevelObject(gCurrLevelNum, areaIndex, preset.model,
-                                             macroObject[MACRO_OBJ_X], macroObject[MACRO_OBJ_Y],
-                                             macroObject[MACRO_OBJ_Z],
-                                             ((macroObject[MACRO_OBJ_PARAMS] & 0x00FF) << 16)
-                                                 + (macroObject[MACRO_OBJ_PARAMS] & 0xFF00),
-                                             preset.behavior)) {
-            // Spawn the new macro object.
-            newObj =
-                spawn_object_abs_with_rot(&gMacroObjectDefaultParent, // Parent object
-                                          0,                          // Unused
-                                          preset.model,               // Model ID
-                                          preset.behavior,            // Behavior address
-                                          macroObject[MACRO_OBJ_X],   // X-position
-                                          macroObject[MACRO_OBJ_Y],   // Y-position
-                                          macroObject[MACRO_OBJ_Z],   // Z-position
-                                          0,                          // X-rotation
-                                          convert_rotation(macroObject[MACRO_OBJ_Y_ROT]), // Y-rotation
-                                          0                                               // Z-rotation
-                );
+        spawn_macro_object_entry(areaIndex, &preset, macroObject, macroObjList - 1);
+    }
+}
 
-            newObj->oUnk1A8 = macroObject[MACRO_OBJ_PARAMS];
-            newObj->oBehParams = ((macroObject[MACRO_OBJ_PARAMS] & 0x00FF) << 16)
-                                 + (macroObject[MACRO_OBJ_PARAMS] & 0xFF00);
-            newObj->oBehParams2ndByte = macroObject[MACRO_OBJ_PARAMS] & 0x00FF;
-            newObj->respawnInfoType = RESPAWN_INFO_TYPE_16;
-            newObj->respawnInfo = macroObjList - 1;
-            newObj->parentObj = newObj;
+static struct Object *find_live_macro_object(s16 *respawnInfo) {
+    s32 i;
+    for (i = 0; i < OBJECT_POOL_CAPACITY; i++) {
+        struct Object *object = &gObjectPool[i];
+        if ((object->activeFlags & ACTIVE_FLAG_ACTIVE)
+            && object->respawnInfoType == RESPAWN_INFO_TYPE_16
+            && object->respawnInfo == respawnInfo) {
+            return object;
+        }
+    }
+    return NULL;
+}
+
+void reconcile_macro_objects(s16 areaIndex, s16 *macroObjList) {
+    while (macroObjList != NULL && *macroObjList != -1) {
+        s32 presetID = (*macroObjList & 0x1FF) - 31;
+        s16 macroObject[5];
+        struct LoadedPreset preset;
+        s16 *respawnInfo;
+        struct Object *object;
+        u32 behaviorParams;
+        bool desired;
+
+        if (presetID < 0) {
+            break;
+        }
+
+        macroObject[MACRO_OBJ_Y_ROT] = ((*macroObjList++ >> 9) & 0x7F) << 1;
+        macroObject[MACRO_OBJ_X] = *macroObjList++;
+        macroObject[MACRO_OBJ_Y] = *macroObjList++;
+        macroObject[MACRO_OBJ_Z] = *macroObjList++;
+        respawnInfo = macroObjList;
+        macroObject[MACRO_OBJ_PARAMS] = *macroObjList++;
+
+        preset.model = MacroObjectPresets[presetID].model;
+        preset.behavior = MacroObjectPresets[presetID].behavior;
+        preset.param = MacroObjectPresets[presetID].param;
+        if (preset.param != 0) {
+            macroObject[MACRO_OBJ_PARAMS] =
+                (macroObject[MACRO_OBJ_PARAMS] & 0xFF00) + (preset.param & 0x00FF);
+        }
+
+        behaviorParams = ((macroObject[MACRO_OBJ_PARAMS] & 0x00FF) << 16)
+                         + (macroObject[MACRO_OBJ_PARAMS] & 0xFF00);
+        desired = SM64AP_ShouldSpawnLevelObject(
+            gCurrLevelNum, areaIndex, preset.model,
+            macroObject[MACRO_OBJ_X], macroObject[MACRO_OBJ_Y], macroObject[MACRO_OBJ_Z],
+            behaviorParams, preset.behavior);
+        object = find_live_macro_object(respawnInfo);
+
+        if (desired && object == NULL && ap_placement_is_suppressed(respawnInfo)) {
+            spawn_macro_object_entry(areaIndex, &preset, macroObject, respawnInfo);
+        } else if (!desired && object != NULL) {
+            set_ap_placement_suppressed(respawnInfo, TRUE);
+            object->oFlags |= OBJ_FLAG_PERSISTENT_RESPAWN;
+            object->activeFlags = ACTIVE_FLAG_DEACTIVATED;
+        } else if (desired && object != NULL) {
+            set_ap_placement_suppressed(respawnInfo, FALSE);
         }
     }
 }
@@ -245,23 +353,153 @@ void spawn_macro_objects_hardcoded(s16 areaIndex, s16 *macroObjList) {
     }
 }
 
-void spawn_special_objects(s16 areaIndex, s16 **specialObjList) {
-    s32 numOfSpecialObjects;
-    s32 i;
-    s32 offset;
+struct LoadedSpecialObject {
+    s16 *respawnInfo;
     s16 x;
     s16 y;
     s16 z;
-    s16 extraParams[4];
+    s16 extraParams[3];
 #ifdef VERSION_EU
     s16 model;
 #else
     u8 model;
 #endif
     u8 type;
-    u8 presetID;
     u8 defaultParam;
     const BehaviorScript *behavior;
+};
+
+static void load_special_object_entry(s16 **specialObjList, struct LoadedSpecialObject *entry) {
+    s32 offset = 0;
+    u8 presetID;
+
+    entry->respawnInfo = *specialObjList;
+    presetID = (u8) **specialObjList;
+    (*specialObjList)++;
+    entry->x = **specialObjList;
+    (*specialObjList)++;
+    entry->y = **specialObjList;
+    (*specialObjList)++;
+    entry->z = **specialObjList;
+    (*specialObjList)++;
+
+    while (SpecialObjectPresets[offset].preset_id != presetID
+           && SpecialObjectPresets[offset].preset_id != 0xFF) {
+        offset++;
+    }
+
+    entry->model = SpecialObjectPresets[offset].model;
+    entry->behavior = SpecialObjectPresets[offset].behavior;
+    entry->type = SpecialObjectPresets[offset].type;
+    entry->defaultParam = SpecialObjectPresets[offset].defParam;
+    entry->extraParams[0] = 0;
+    entry->extraParams[1] = 0;
+    entry->extraParams[2] = 0;
+
+    switch (entry->type) {
+        case SPTYPE_YROT_NO_PARAMS:
+        case SPTYPE_DEF_PARAM_AND_YROT:
+            entry->extraParams[0] = **specialObjList;
+            (*specialObjList)++;
+            break;
+        case SPTYPE_PARAMS_AND_YROT:
+            entry->extraParams[0] = **specialObjList;
+            (*specialObjList)++;
+            entry->extraParams[1] = **specialObjList;
+            (*specialObjList)++;
+            break;
+        case SPTYPE_UNKNOWN:
+            entry->extraParams[0] = **specialObjList;
+            (*specialObjList)++;
+            entry->extraParams[1] = **specialObjList;
+            (*specialObjList)++;
+            entry->extraParams[2] = **specialObjList;
+            (*specialObjList)++;
+            break;
+    }
+}
+
+static u32 get_special_object_behavior_params(const struct LoadedSpecialObject *entry) {
+    if (entry->type == SPTYPE_PARAMS_AND_YROT) {
+        return ((u32) entry->extraParams[1]) << 16;
+    }
+    if (entry->type == SPTYPE_DEF_PARAM_AND_YROT) {
+        return ((u32) entry->defaultParam) << 24;
+    }
+    return 0;
+}
+
+static bool should_spawn_special_object(
+    s16 areaIndex, const struct LoadedSpecialObject *entry) {
+    return (((*entry->respawnInfo >> 8) & RESPAWN_INFO_DONT_RESPAWN)
+            != RESPAWN_INFO_DONT_RESPAWN)
+           && entry->behavior != NULL
+           && SM64AP_ShouldSpawnLevelObject(
+               gCurrLevelNum, areaIndex, entry->model, entry->x, entry->y, entry->z,
+               get_special_object_behavior_params(entry), entry->behavior);
+}
+
+static struct Object *spawn_special_object_entry(
+    s16 areaIndex, const struct LoadedSpecialObject *entry) {
+    struct Object *newObj = NULL;
+    u32 behaviorParams = get_special_object_behavior_params(entry);
+
+    if (!should_spawn_special_object(areaIndex, entry)) {
+        if (((*entry->respawnInfo >> 8) & RESPAWN_INFO_DONT_RESPAWN)
+            != RESPAWN_INFO_DONT_RESPAWN
+            && entry->behavior != NULL) {
+            set_ap_placement_suppressed(entry->respawnInfo, TRUE);
+        }
+        return NULL;
+    }
+
+    set_ap_placement_suppressed(entry->respawnInfo, FALSE);
+    switch (entry->type) {
+        case SPTYPE_NO_YROT_OR_PARAMS:
+            newObj = spawn_object_abs_with_rot(
+                &gMacroObjectDefaultParent, 0, entry->model, entry->behavior,
+                entry->x, entry->y, entry->z, 0, 0, 0);
+            break;
+        case SPTYPE_YROT_NO_PARAMS:
+        case SPTYPE_PARAMS_AND_YROT:
+            newObj = spawn_object_abs_with_rot(
+                &gMacroObjectDefaultParent, 0, entry->model, entry->behavior,
+                entry->x, entry->y, entry->z, 0, convert_rotation(entry->extraParams[0]), 0);
+            if (entry->type == SPTYPE_PARAMS_AND_YROT) {
+                newObj->oBehParams = behaviorParams;
+            }
+            break;
+        case SPTYPE_UNKNOWN:
+            newObj = spawn_object_abs_with_rot(
+                &gMacroObjectDefaultParent, 0, entry->model, entry->behavior,
+                entry->x, entry->y, entry->z, 0, 0, 0);
+            newObj->oMacroUnk108 = (f32) entry->extraParams[0];
+            newObj->oMacroUnk10C = (f32) entry->extraParams[1];
+            newObj->oMacroUnk110 = (f32) entry->extraParams[2];
+            break;
+        case SPTYPE_DEF_PARAM_AND_YROT:
+            newObj = spawn_object_abs_with_rot(
+                &gMacroObjectDefaultParent, 0, entry->model, entry->behavior,
+                entry->x, entry->y, entry->z, 0, convert_rotation(entry->extraParams[0]), 0);
+            newObj->oBehParams = behaviorParams;
+            break;
+    }
+
+    if (newObj != NULL) {
+        newObj->respawnInfoType = RESPAWN_INFO_TYPE_16;
+        newObj->respawnInfo = entry->respawnInfo;
+        newObj->parentObj = newObj;
+        SM64AP_AssignPermanentCoinSource(
+            newObj, gCurrLevelNum, areaIndex, entry->model,
+            entry->x, entry->y, entry->z, behaviorParams, entry->behavior);
+    }
+    return newObj;
+}
+
+void spawn_special_objects(s16 areaIndex, s16 **specialObjList) {
+    s32 numOfSpecialObjects;
+    s32 i;
+    struct LoadedSpecialObject entry;
 
     numOfSpecialObjects = **specialObjList;
     (*specialObjList)++;
@@ -270,68 +508,37 @@ void spawn_special_objects(s16 areaIndex, s16 **specialObjList) {
     gMacroObjectDefaultParent.header.gfx.unk19 = areaIndex;
 
     for (i = 0; i < numOfSpecialObjects; i++) {
-        presetID = (u8) * *specialObjList;
-        (*specialObjList)++;
-        x = **specialObjList;
-        (*specialObjList)++;
-        y = **specialObjList;
-        (*specialObjList)++;
-        z = **specialObjList;
-        (*specialObjList)++;
+        load_special_object_entry(specialObjList, &entry);
+        spawn_special_object_entry(areaIndex, &entry);
+    }
+}
 
-        offset = 0;
-        while (TRUE) {
-            if (SpecialObjectPresets[offset].preset_id == presetID) {
-                break;
-            }
+void reconcile_special_objects(s16 areaIndex, s16 *specialObjList) {
+    s32 numOfSpecialObjects;
+    s32 i;
+    struct LoadedSpecialObject entry;
 
-            if (SpecialObjectPresets[offset].preset_id == 0xFF) {
-            }
+    if (specialObjList == NULL) {
+        return;
+    }
 
-            offset++;
-        }
+    numOfSpecialObjects = *specialObjList++;
+    for (i = 0; i < numOfSpecialObjects; i++) {
+        struct Object *object;
+        bool desired;
 
-        model = SpecialObjectPresets[offset].model;
-        behavior = SpecialObjectPresets[offset].behavior;
-        type = SpecialObjectPresets[offset].type;
-        defaultParam = SpecialObjectPresets[offset].defParam;
+        load_special_object_entry(&specialObjList, &entry);
+        desired = should_spawn_special_object(areaIndex, &entry);
+        object = find_live_macro_object(entry.respawnInfo);
 
-        switch (type) {
-            case SPTYPE_NO_YROT_OR_PARAMS:
-                spawn_macro_abs_yrot_2params(model, behavior, x, y, z, 0, 0);
-                break;
-            case SPTYPE_YROT_NO_PARAMS:
-                extraParams[0] = **specialObjList; // Y-rotation
-                (*specialObjList)++;
-                spawn_macro_abs_yrot_2params(model, behavior, x, y, z, extraParams[0], 0);
-                break;
-            case SPTYPE_PARAMS_AND_YROT:
-                extraParams[0] = **specialObjList; // Y-rotation
-                (*specialObjList)++;
-                extraParams[1] = **specialObjList; // Params
-                (*specialObjList)++;
-                spawn_macro_abs_yrot_2params(model, behavior, x, y, z, extraParams[0], extraParams[1]);
-                break;
-            case SPTYPE_UNKNOWN:
-                extraParams[0] =
-                    **specialObjList; // Unknown, gets put into obj->oMacroUnk108 as a float
-                (*specialObjList)++;
-                extraParams[1] =
-                    **specialObjList; // Unknown, gets put into obj->oMacroUnk10C as a float
-                (*specialObjList)++;
-                extraParams[2] =
-                    **specialObjList; // Unknown, gets put into obj->oMacroUnk110 as a float
-                (*specialObjList)++;
-                spawn_macro_abs_special(model, behavior, x, y, z, extraParams[0], extraParams[1],
-                                        extraParams[2]);
-                break;
-            case SPTYPE_DEF_PARAM_AND_YROT:
-                extraParams[0] = **specialObjList; // Y-rotation
-                (*specialObjList)++;
-                spawn_macro_abs_yrot_param1(model, behavior, x, y, z, extraParams[0], defaultParam);
-                break;
-            default:
-                break;
+        if (desired && object == NULL && ap_placement_is_suppressed(entry.respawnInfo)) {
+            spawn_special_object_entry(areaIndex, &entry);
+        } else if (!desired && object != NULL) {
+            set_ap_placement_suppressed(entry.respawnInfo, TRUE);
+            object->oFlags |= OBJ_FLAG_PERSISTENT_RESPAWN;
+            object->activeFlags = ACTIVE_FLAG_DEACTIVATED;
+        } else if (desired && object != NULL) {
+            set_ap_placement_suppressed(entry.respawnInfo, FALSE);
         }
     }
 }

@@ -204,6 +204,12 @@ struct Object
     /*0x218*/ void *collisionData;
     /*0x21C*/ Mat4 transform;
     /*0x25C*/ void *respawnInfo;
+    u64 apCoinSourceId;
+    u8 apCoinSlot;
+    u8 apCoinCourse;
+    u8 apCoinValue;
+    u8 apCoinSlotCount;
+    u8 apCoinSourceKind;
 };
 
 struct ObjectHitbox

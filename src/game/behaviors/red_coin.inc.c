@@ -43,6 +43,9 @@ void bhv_red_coin_init(void) {
     }
 
     obj_set_hitbox(o, &sRedCoinHitbox);
+    if (SM64AP_ShouldSuppressPermanentCoin(o, 2)) {
+        o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
+    }
 }
 
 /**

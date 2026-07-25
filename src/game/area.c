@@ -7,6 +7,7 @@
 #include "behavior_data.h"
 #include "game_init.h"
 #include "object_list_processor.h"
+#include "macro_special_objects.h"
 #include "engine/surface_load.h"
 #include "ingame_menu.h"
 #include "screen_transition.h"
@@ -184,6 +185,7 @@ void load_obj_warp_nodes(void) {
 void clear_areas(void) {
     s32 i;
 
+    clear_ap_suppressed_placement_state();
     gCurrentArea = NULL;
     gWarpTransition.isActive = FALSE;
     gWarpTransition.pauseRendering = FALSE;
@@ -197,6 +199,7 @@ void clear_areas(void) {
         gAreaData[i].terrainData = NULL;
         gAreaData[i].surfaceRooms = NULL;
         gAreaData[i].macroObjects = NULL;
+        gAreaData[i].specialObjects = NULL;
         gAreaData[i].warpNodes = NULL;
         gAreaData[i].paintingWarpNodes = NULL;
         gAreaData[i].instantWarps = NULL;
@@ -205,6 +208,8 @@ void clear_areas(void) {
         gAreaData[i].unused28 = NULL;
         gAreaData[i].whirlpools[0] = NULL;
         gAreaData[i].whirlpools[1] = NULL;
+        gAreaData[i].whirlpoolSpawnInfos[0].defined = FALSE;
+        gAreaData[i].whirlpoolSpawnInfos[1].defined = FALSE;
         gAreaData[i].dialog[0] = 255;
         gAreaData[i].dialog[1] = 255;
         gAreaData[i].musicParam = 0;

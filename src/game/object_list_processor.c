@@ -7,11 +7,13 @@
 #include "debug.h"
 #include "engine/behavior_script.h"
 #include "engine/graph_node.h"
+#include "engine/level_script.h"
 #include "engine/surface_collision.h"
 #include "engine/surface_load.h"
 #include "interaction.h"
 #include "level_update.h"
 #include "mario.h"
+#include "macro_special_objects.h"
 #include "memory.h"
 #include "object_collision.h"
 #include "object_helpers.h"
@@ -19,6 +21,7 @@
 #include "platform_displacement.h"
 #include "profiler.h"
 #include "spawn_object.h"
+#include "sm64ap.h"
 
 
 /**
@@ -450,6 +453,59 @@ void unload_objects_from_area(UNUSED s32 unused, s32 areaIndex) {
 /**
  * Spawn objects given a list of SpawnInfos. Called when loading an area.
  */
+static struct Object *spawn_object_from_info(struct SpawnInfo *spawnInfo) {
+    struct Object *object;
+    const BehaviorScript *script = segmented_to_virtual(spawnInfo->behaviorScript);
+
+    if ((spawnInfo->behaviorArg & (RESPAWN_INFO_DONT_RESPAWN << 8))
+        == (RESPAWN_INFO_DONT_RESPAWN << 8)) {
+        return NULL;
+    }
+
+    if (!SM64AP_ShouldSpawnLevelObject(
+            gCurrLevelNum, spawnInfo->areaIndex, spawnInfo->model,
+            spawnInfo->startPos[0], spawnInfo->startPos[1], spawnInfo->startPos[2],
+            spawnInfo->behaviorArg, spawnInfo->behaviorScript)) {
+        spawnInfo->apSuppressed = TRUE;
+        return NULL;
+    }
+
+    spawnInfo->apSuppressed = FALSE;
+    object = create_object(script);
+    object->oBehParams = spawnInfo->behaviorArg;
+    object->oBehParams2ndByte = ((spawnInfo->behaviorArg) >> 16) & 0xFF;
+
+    object->behavior = script;
+    object->unused1 = 0;
+
+    object->respawnInfoType = RESPAWN_INFO_TYPE_32;
+    object->respawnInfo = &spawnInfo->behaviorArg;
+
+    if (spawnInfo->behaviorArg & 0x01) {
+        gMarioObject = object;
+        geo_make_first_child(&object->header.gfx.node);
+    }
+
+    geo_obj_init_spawninfo(&object->header.gfx, spawnInfo);
+
+    object->oPosX = spawnInfo->startPos[0];
+    object->oPosY = spawnInfo->startPos[1];
+    object->oPosZ = spawnInfo->startPos[2];
+
+    object->oFaceAnglePitch = spawnInfo->startAngle[0];
+    object->oFaceAngleYaw = spawnInfo->startAngle[1];
+    object->oFaceAngleRoll = spawnInfo->startAngle[2];
+
+    object->oMoveAnglePitch = spawnInfo->startAngle[0];
+    object->oMoveAngleYaw = spawnInfo->startAngle[1];
+    object->oMoveAngleRoll = spawnInfo->startAngle[2];
+    SM64AP_AssignPermanentCoinSource(
+        object, gCurrLevelNum, spawnInfo->areaIndex, spawnInfo->model,
+        spawnInfo->startPos[0], spawnInfo->startPos[1], spawnInfo->startPos[2],
+        spawnInfo->behaviorArg, spawnInfo->behaviorScript);
+    return object;
+}
+
 void spawn_objects_from_info(UNUSED s32 unused, struct SpawnInfo *spawnInfo) {
     gObjectLists = gObjectListArray;
     gTimeStopState = 0;
@@ -457,9 +513,6 @@ void spawn_objects_from_info(UNUSED s32 unused, struct SpawnInfo *spawnInfo) {
     gWDWWaterLevelChanging = FALSE;
     gMarioOnMerryGoRound = 0;
 
-    //! (Spawning Displacement) On the Japanese version, Mario's platform object
-    //  isn't cleared when transitioning between areas. This can cause Mario to
-    //  receive displacement after spawning.
 #ifndef VERSION_JP
     clear_mario_platform();
 #endif
@@ -469,54 +522,79 @@ void spawn_objects_from_info(UNUSED s32 unused, struct SpawnInfo *spawnInfo) {
     }
 
     while (spawnInfo != NULL) {
-        struct Object *object;
-        UNUSED s32 unused;
-        const BehaviorScript *script;
-        UNUSED s16 arg16 = (s16)(spawnInfo->behaviorArg & 0xFFFF);
-
-        script = segmented_to_virtual(spawnInfo->behaviorScript);
-
-        // If the object was previously killed/collected, don't respawn it
-        if ((spawnInfo->behaviorArg & (RESPAWN_INFO_DONT_RESPAWN << 8))
-            != (RESPAWN_INFO_DONT_RESPAWN << 8)) {
-            object = create_object(script);
-
-            // Behavior parameters are often treated as four separate bytes, but
-            // are stored as an s32.
-            object->oBehParams = spawnInfo->behaviorArg;
-            // The second byte of the behavior parameters is copied over to a special field
-            // as it is the most frequently used by objects.
-            object->oBehParams2ndByte = ((spawnInfo->behaviorArg) >> 16) & 0xFF;
-
-            object->behavior = script;
-            object->unused1 = 0;
-
-            // Record death/collection in the SpawnInfo
-            object->respawnInfoType = RESPAWN_INFO_TYPE_32;
-            object->respawnInfo = &spawnInfo->behaviorArg;
-
-            if (spawnInfo->behaviorArg & 0x01) {
-                gMarioObject = object;
-                geo_make_first_child(&object->header.gfx.node);
-            }
-
-            geo_obj_init_spawninfo(&object->header.gfx, spawnInfo);
-
-            object->oPosX = spawnInfo->startPos[0];
-            object->oPosY = spawnInfo->startPos[1];
-            object->oPosZ = spawnInfo->startPos[2];
-
-            object->oFaceAnglePitch = spawnInfo->startAngle[0];
-            object->oFaceAngleYaw = spawnInfo->startAngle[1];
-            object->oFaceAngleRoll = spawnInfo->startAngle[2];
-
-            object->oMoveAnglePitch = spawnInfo->startAngle[0];
-            object->oMoveAngleYaw = spawnInfo->startAngle[1];
-            object->oMoveAngleRoll = spawnInfo->startAngle[2];
-        }
-
+        spawn_object_from_info(spawnInfo);
         spawnInfo = spawnInfo->next;
     }
+}
+
+static struct Object *find_live_spawn_info_object(struct SpawnInfo *spawnInfo) {
+    s32 i;
+    for (i = 0; i < OBJECT_POOL_CAPACITY; i++) {
+        struct Object *object = &gObjectPool[i];
+        if ((object->activeFlags & ACTIVE_FLAG_ACTIVE) && object->header.gfx.unk4C == spawnInfo) {
+            return object;
+        }
+    }
+    return NULL;
+}
+
+static void reconcile_level_script_objects(void) {
+    struct SpawnInfo *spawnInfo;
+
+    if (gCurrentArea == NULL) {
+        return;
+    }
+
+    for (spawnInfo = gCurrentArea->objectSpawnInfos; spawnInfo != NULL; spawnInfo = spawnInfo->next) {
+        struct Object *object = find_live_spawn_info_object(spawnInfo);
+        bool desired = SM64AP_ShouldSpawnLevelObject(
+            gCurrLevelNum, spawnInfo->areaIndex, spawnInfo->model,
+            spawnInfo->startPos[0], spawnInfo->startPos[1], spawnInfo->startPos[2],
+            spawnInfo->behaviorArg, spawnInfo->behaviorScript);
+
+        if (desired && object != NULL && obj_has_behavior(object, bhvMips)) {
+            s32 expectedTier = SM64AP_CheckedLoc(SM64AP_LOCATIONID_MIPS1) ? 1 : 0;
+            if (object->oBehParams2ndByte != expectedTier) {
+                spawnInfo->apSuppressed = TRUE;
+                object->oFlags |= OBJ_FLAG_PERSISTENT_RESPAWN;
+                object->activeFlags = ACTIVE_FLAG_DEACTIVATED;
+                object = NULL;
+            }
+        }
+
+        if (desired && object == NULL && spawnInfo->apSuppressed) {
+            spawn_object_from_info(spawnInfo);
+        } else if (!desired && object != NULL && object != gMarioObject) {
+            spawnInfo->apSuppressed = TRUE;
+            object->oFlags |= OBJ_FLAG_PERSISTENT_RESPAWN;
+            object->activeFlags = ACTIVE_FLAG_DEACTIVATED;
+        } else if (desired && object != NULL) {
+            spawnInfo->apSuppressed = FALSE;
+        }
+    }
+}
+
+static void spawn_outstanding_permanent_coin_star(void) {
+    s32 index;
+    struct Object *star;
+
+    if (!SM64AP_ShouldSpawnOutstandingCoinStar() || gMarioObject == NULL) {
+        return;
+    }
+    for (index = 0; index < OBJECT_POOL_CAPACITY; index++) {
+        star = &gObjectPool[index];
+        if ((star->activeFlags & ACTIVE_FLAG_ACTIVE)
+            && obj_has_behavior(star, bhvSpawnedStarNoLevelExit)
+            && ((star->oBehParams >> 24) & 0xFF) == 6) {
+            return;
+        }
+    }
+
+    star = spawn_object(gMarioObject, MODEL_STAR, bhvSpawnedStarNoLevelExit);
+    star->oBehParams = 6 << 24;
+    star->oBehParams2ndByte = 6;
+    star->oInteractionSubtype = INT_SUBTYPE_NO_EXIT;
+    obj_set_angle(star, 0, 0, 0);
 }
 
 void stub_obj_list_processor_1(void) {
@@ -553,6 +631,10 @@ void clear_objects(void) {
 
     gObjectMemoryPool = mem_pool_init(0x800, MEMORY_POOL_LEFT);
     gObjectLists = gObjectListArray;
+
+    SM64AP_RestorePermanentCoinCount();
+    spawn_outstanding_permanent_coin_star();
+    SM64AP_FlushPermanentCoinLedger();
 
     clear_dynamic_surfaces();
 }
@@ -638,6 +720,19 @@ void update_objects(UNUSED s32 unused) {
     stub_debug_5();
 
     gObjectLists = gObjectListArray;
+
+    SM64AP_RestorePermanentCoinCount();
+    spawn_outstanding_permanent_coin_star();
+    SM64AP_FlushPermanentCoinLedger();
+
+    if (SM64AP_ConsumeLiveObjectReconcileRequest()) {
+        reconcile_level_script_objects();
+        if (gCurrentArea != NULL) {
+            reconcile_macro_objects(gCurrentArea->index, gCurrentArea->macroObjects);
+            reconcile_special_objects(gCurrentArea->index, gCurrentArea->specialObjects);
+            reconcile_area_whirlpools();
+        }
+    }
 
     // If time stop is not active, unload object surfaces
     cycleCounts[1] = get_clock_difference(cycleCounts[0]);

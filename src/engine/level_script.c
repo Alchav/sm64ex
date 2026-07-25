@@ -431,10 +431,12 @@ static void level_cmd_init_mario(void) {
 
     gMarioSpawnInfo->activeAreaIndex = -1;
     gMarioSpawnInfo->areaIndex = 0;
+    gMarioSpawnInfo->model = CMD_GET(u8, 3);
     gMarioSpawnInfo->behaviorArg = CMD_GET(u32, 4);
     gMarioSpawnInfo->behaviorScript = CMD_GET(void *, 8);
     gMarioSpawnInfo->unk18 = gLoadedGraphNodes[CMD_GET(u8, 3)];
     gMarioSpawnInfo->next = NULL;
+    gMarioSpawnInfo->apSuppressed = FALSE;
 
     sCurrentCmd = CMD_NEXT;
 }
@@ -455,9 +457,7 @@ static void level_cmd_place_object(void) {
     behaviorArg = CMD_GET(u32, 16);
     behaviorScript = CMD_GET(void *, 20);
 
-    if (sCurrAreaIndex != -1
-        && SM64AP_ShouldSpawnLevelObject(gCurrLevelNum, sCurrAreaIndex, model, posX, posY, posZ,
-                                         behaviorArg, behaviorScript)) {
+    if (sCurrAreaIndex != -1) {
         spawnInfo = alloc_only_pool_alloc(sLevelPool, sizeof(struct SpawnInfo));
 
         spawnInfo->startPos[0] = posX;
@@ -470,11 +470,13 @@ static void level_cmd_place_object(void) {
 
         spawnInfo->areaIndex = sCurrAreaIndex;
         spawnInfo->activeAreaIndex = sCurrAreaIndex;
+        spawnInfo->model = model;
 
         spawnInfo->behaviorArg = behaviorArg;
         spawnInfo->behaviorScript = behaviorScript;
         spawnInfo->unk18 = gLoadedGraphNodes[model];
         spawnInfo->next = gAreas[sCurrAreaIndex].objectSpawnInfos;
+        spawnInfo->apSuppressed = FALSE;
 
         gAreas[sCurrAreaIndex].objectSpawnInfos = spawnInfo;
     }
@@ -581,23 +583,51 @@ static void level_cmd_3A(void) {
 }
 
 static void level_cmd_create_whirlpool(void) {
-    struct Whirlpool *whirlpool;
     s32 index = CMD_GET(u8, 2);
 
-    if (SM64AP_ShouldCreateWhirlpool(gCurrLevelNum, sCurrAreaIndex, index, CMD_GET(u8, 3), CMD_GET(s16, 4),
-                                      CMD_GET(s16, 6), CMD_GET(s16, 8), CMD_GET(s16, 10))) {
-        if (sCurrAreaIndex != -1 && index < 2) {
-            if ((whirlpool = gAreas[sCurrAreaIndex].whirlpools[index]) == NULL) {
-                whirlpool = alloc_only_pool_alloc(sLevelPool, sizeof(struct Whirlpool));
-                gAreas[sCurrAreaIndex].whirlpools[index] = whirlpool;
-            }
-
-            vec3s_set(whirlpool->pos, CMD_GET(s16, 4), CMD_GET(s16, 6), CMD_GET(s16, 8));
-            whirlpool->strength = CMD_GET(s16, 10);
-        }
+    if (sCurrAreaIndex != -1 && index < 2) {
+        struct WhirlpoolSpawnInfo *spawnInfo = &gAreas[sCurrAreaIndex].whirlpoolSpawnInfos[index];
+        spawnInfo->defined = TRUE;
+        spawnInfo->condition = CMD_GET(u8, 3);
+        vec3s_set(spawnInfo->pos, CMD_GET(s16, 4), CMD_GET(s16, 6), CMD_GET(s16, 8));
+        spawnInfo->strength = CMD_GET(s16, 10);
+        reconcile_area_whirlpools();
     }
 
     sCurrentCmd = CMD_NEXT;
+}
+
+void reconcile_area_whirlpools(void) {
+    s32 index;
+    struct Area *area;
+
+    if (sCurrAreaIndex == -1) {
+        return;
+    }
+
+    area = &gAreas[sCurrAreaIndex];
+    for (index = 0; index < 2; index++) {
+        struct WhirlpoolSpawnInfo *spawnInfo = &area->whirlpoolSpawnInfos[index];
+        bool desired;
+
+        if (!spawnInfo->defined) {
+            continue;
+        }
+
+        desired = SM64AP_ShouldCreateWhirlpool(
+            gCurrLevelNum, sCurrAreaIndex, index, spawnInfo->condition,
+            spawnInfo->pos[0], spawnInfo->pos[1], spawnInfo->pos[2], spawnInfo->strength);
+        if (!desired) {
+            area->whirlpools[index] = NULL;
+            continue;
+        }
+
+        if (area->whirlpools[index] == NULL) {
+            area->whirlpools[index] = alloc_only_pool_alloc(sLevelPool, sizeof(struct Whirlpool));
+        }
+        vec3s_copy(area->whirlpools[index]->pos, spawnInfo->pos);
+        area->whirlpools[index]->strength = spawnInfo->strength;
+    }
 }
 
 static void level_cmd_set_blackout(void) {

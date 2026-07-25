@@ -537,6 +537,9 @@ struct Object *spawn_object_at_origin(struct Object *parent, UNUSED s32 unusedAr
     obj = create_object(behaviorAddr);
 
     obj->parentObj = parent;
+    obj->apCoinSourceId = parent->apCoinSourceId;
+    obj->apCoinCourse = parent->apCoinCourse;
+    obj->apCoinSourceKind = parent->apCoinSourceId != 0 ? 2 : 0;
     obj->header.gfx.unk18 = parent->header.gfx.unk18;
     obj->header.gfx.unk19 = parent->header.gfx.unk18;
 
@@ -1613,6 +1616,16 @@ static void obj_spawn_loot_coins(struct Object *obj, s32 numCoins, f32 sp30,
     f32 spawnHeight;
     struct Surface *floor;
     struct Object *coin;
+    s32 slotCount = numCoins;
+
+    if (obj->oNumLootCoins > slotCount) {
+        slotCount = obj->oNumLootCoins;
+    }
+    if (obj_has_behavior(obj, bhvSmallWhomp)) {
+        slotCount = 10;
+    } else if (obj_has_behavior(obj, bhvGoomba) && obj->oGoombaSize == GOOMBA_SIZE_HUGE) {
+        slotCount = 5;
+    }
 
     spawnHeight = find_floor(obj->oPosX, obj->oPosY, obj->oPosZ, &floor);
     if (obj->oPosY - spawnHeight > 100.0f) {
@@ -1627,6 +1640,11 @@ static void obj_spawn_loot_coins(struct Object *obj, s32 numCoins, f32 sp30,
         obj->oNumLootCoins--;
 
         coin = spawn_object(obj, model, coinBehavior);
+        if (!SM64AP_AssignPermanentCoinOutput(
+                obj, coin, model == MODEL_BLUE_COIN ? 5 : 1, slotCount)) {
+            coin->activeFlags = ACTIVE_FLAG_DEACTIVATED;
+            continue;
+        }
         obj_translate_xz_random(coin, posJitter);
         coin->oPosY = spawnHeight;
         coin->oCoinUnk110 = sp30;
@@ -1666,18 +1684,31 @@ static void obj_collect_coin_value_without_contact(s32 coinValue) {
 }
 
 void obj_collect_loot_coins_without_contact(struct Object *obj, s32 numCoins) {
+    s32 coinValue;
+
     if (!SM64AP_NoDespawn()) {
         return;
     }
 
     if (numCoins < 0) {
-        obj_collect_coin_value_without_contact(5);
+        if (obj_has_behavior(obj, bhvGoomba) && obj->oGoombaSize == GOOMBA_SIZE_HUGE) {
+            coinValue = SM64AP_CollectPermanentCoinOutputs(obj, 1, 5, 5);
+        } else {
+            coinValue = SM64AP_CollectPermanentCoinOutputs(obj, 5, 1, 1);
+        }
     } else if (numCoins > 0) {
-        obj_collect_coin_value_without_contact(numCoins);
+        s32 slotCount = numCoins;
+        if (obj_has_behavior(obj, bhvSmallWhomp)) {
+            slotCount = 10;
+        } else if (obj_has_behavior(obj, bhvGoomba) && obj->oGoombaSize == GOOMBA_SIZE_HUGE) {
+            slotCount = 5;
+        }
+        coinValue = SM64AP_CollectPermanentCoinOutputs(obj, 1, slotCount, numCoins);
     } else {
         return;
     }
 
+    obj_collect_coin_value_without_contact(coinValue);
     obj->oNumLootCoins = 0;
 }
 
@@ -1690,6 +1721,10 @@ void cur_obj_spawn_loot_coin_at_mario_pos(void) {
     o->oNumLootCoins--;
 
     coin = spawn_object(o, MODEL_YELLOW_COIN, bhvSingleCoinGetsSpawned);
+    if (!SM64AP_AssignPermanentCoinOutput(o, coin, 1, o->apCoinSlotCount > 0 ? o->apCoinSlotCount : 10)) {
+        coin->activeFlags = ACTIVE_FLAG_DEACTIVATED;
+        return;
+    }
     coin->oVelY = 30.0f;
 
     obj_copy_pos(coin, gMarioObject);
@@ -2992,7 +3027,10 @@ s32 cur_obj_check_interacted(void) {
 
 void cur_obj_spawn_loot_blue_coin(void) {
     if (o->oNumLootCoins >= 5) {
-        spawn_object(o, MODEL_BLUE_COIN, bhvMrIBlueCoin);
+        struct Object *coin = spawn_object(o, MODEL_BLUE_COIN, bhvMrIBlueCoin);
+        if (!SM64AP_AssignPermanentCoinOutput(o, coin, 5, 1)) {
+            coin->activeFlags = ACTIVE_FLAG_DEACTIVATED;
+        }
         o->oNumLootCoins -= 5;
     }
 }

@@ -625,7 +625,26 @@ static void obj_die_if_health_non_positive(void) {
         }
 
         if ((s32)o->oNumLootCoins < 0) {
-            spawn_object(o, MODEL_BLUE_COIN, bhvMrIBlueCoin);
+            if (SM64AP_PermanentCoinCollection()
+                && obj_has_behavior(o, bhvGoomba)
+                && o->oGoombaSize == GOOMBA_SIZE_HUGE) {
+                if (SM64AP_PermanentCoinMask(o, 5, 0) == 0) {
+                    struct Object *coin = spawn_object(o, MODEL_BLUE_COIN, bhvMrIBlueCoin);
+                    if (!SM64AP_AssignPermanentAggregateCoinOutput(o, coin, 5)) {
+                        coin->activeFlags = ACTIVE_FLAG_DEACTIVATED;
+                    }
+                } else {
+                    // A partially exhausted Huge Goomba emits only its
+                    // remaining one-value slots.
+                    o->oNumLootCoins = 5;
+                    obj_spawn_loot_yellow_coins(o, 5, 20.0f);
+                }
+            } else {
+                struct Object *coin = spawn_object(o, MODEL_BLUE_COIN, bhvMrIBlueCoin);
+                if (!SM64AP_AssignPermanentCoinOutput(o, coin, 5, 1)) {
+                    coin->activeFlags = ACTIVE_FLAG_DEACTIVATED;
+                }
+            }
         } else {
             obj_spawn_loot_yellow_coins(o, o->oNumLootCoins, 20.0f);
         }

@@ -147,6 +147,12 @@ void bhv_hidden_red_coin_star_init(void) {
     if (gCurrCourseNum != COURSE_JRB)
         spawn_object(o, MODEL_TRANSPARENT_STAR, bhvRedCoinStarMarker);
 
+    if (SM64AP_PermanentCoinCollection()) {
+        // Wait until every red coin has initialized and suppressed its collected slot.
+        o->oHiddenStarTriggerCounter = -2;
+        return;
+    }
+
     sp36 = count_objects_with_behavior(bhvRedCoin);
     if (sp36 == 0) {
         sp30 =
@@ -159,6 +165,17 @@ void bhv_hidden_red_coin_star_init(void) {
 }
 
 void bhv_hidden_red_coin_star_loop(void) {
+    if (SM64AP_PermanentCoinCollection()) {
+        if (o->oHiddenStarTriggerCounter == -2) {
+            o->oHiddenStarTriggerCounter = -1;
+            gRedCoinsCollected = 0;
+            return;
+        }
+        if (o->oHiddenStarTriggerCounter == -1) {
+            o->oHiddenStarTriggerCounter = 8 - count_objects_with_behavior(bhvRedCoin);
+        }
+    }
+
     gRedCoinsCollected = o->oHiddenStarTriggerCounter;
     switch (o->oAction) {
         case 0:

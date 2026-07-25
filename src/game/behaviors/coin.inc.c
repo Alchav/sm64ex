@@ -25,6 +25,11 @@ static void bhv_coin_collect_without_contact(void) {
         coinValue = cur_obj_has_model(MODEL_BLUE_COIN) ? 5 : 1;
     }
 
+    if (!SM64AP_CollectPermanentCoin(o, coinValue)) {
+        obj_mark_for_deletion(o);
+        return;
+    }
+
     gMarioState->numCoins += coinValue;
     gMarioState->healCounter += 4 * coinValue;
     SM64AP_CheckCoinCount(gCurrCourseNum, gMarioState->numCoins);
@@ -92,6 +97,10 @@ s32 bhv_coin_sparkles_init(void) {
 void bhv_yellow_coin_init(void) {
     cur_obj_set_behavior(bhvYellowCoin);
     obj_set_hitbox(o, &sYellowCoinHitbox);
+    if (SM64AP_ShouldSuppressPermanentCoin(o, 1)) {
+        obj_mark_for_deletion(o);
+        return;
+    }
     bhv_init_room();
     cur_obj_update_floor_height();
     if (500.0f < absf(o->oPosY - o->oFloorHeight))
@@ -118,6 +127,22 @@ void bhv_coin_init(void) {
     o->oMoveAngleYaw = random_u16();
     cur_obj_set_behavior(bhvYellowCoin);
     obj_set_hitbox(o, &sYellowCoinHitbox);
+    if (o->apCoinSourceKind == 2) {
+        s32 slotCount = 1;
+        if (obj_has_behavior(o->parentObj, bhvThreeCoinsSpawn)) {
+            slotCount = 3;
+        } else if (obj_has_behavior(o->parentObj, bhvTenCoinsSpawn)) {
+            slotCount = 10;
+        }
+        if (!SM64AP_AssignPermanentCoinOutput(o->parentObj, o, 1, slotCount)) {
+            obj_mark_for_deletion(o);
+            return;
+        }
+    }
+    if (SM64AP_ShouldSuppressPermanentCoin(o, 1)) {
+        obj_mark_for_deletion(o);
+        return;
+    }
     cur_obj_become_intangible();
 }
 
@@ -250,12 +275,14 @@ void spawn_coin_in_formation(s32 sp50, s32 sp54) {
     if (sp3C) {
         sp4C = spawn_object_relative(sp50, sp40[0], sp40[1], sp40[2], o, MODEL_YELLOW_COIN,
                                      bhvCoinFormationSpawn);
+        SM64AP_AssignPermanentCoinSlot(sp4C, o, sp50, 1);
         sp4C->oCoinUnkF8 = sp38;
     }
 }
 
 void bhv_coin_formation_init(void) {
     o->oCoinUnkF4 = (o->oBehParams >> 8) & 0xFF;
+    o->oCoinUnkF4 |= SM64AP_PermanentCoinMask(o, 8, 1);
 }
 
 void bhv_coin_formation_loop(void) {

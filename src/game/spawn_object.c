@@ -279,6 +279,12 @@ struct Object *allocate_object(struct ObjectNode *objList) {
 
     obj->respawnInfoType = RESPAWN_INFO_TYPE_NULL;
     obj->respawnInfo = NULL;
+    obj->apCoinSourceId = 0;
+    obj->apCoinSlot = 0;
+    obj->apCoinCourse = 0;
+    obj->apCoinValue = 0;
+    obj->apCoinSlotCount = 0;
+    obj->apCoinSourceKind = 0;
 
     obj->oDistanceToMario = 19000.0f;
     obj->oRoom = -1;

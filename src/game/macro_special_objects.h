@@ -13,6 +13,9 @@ void spawn_macro_abs_yrot_param1(u32 model, const BehaviorScript *behavior, s16 
 void spawn_macro_abs_special(u32 model, const BehaviorScript *behavior, s16 x, s16 y, s16 z, s16 unkA, s16 unkB, s16 unkC);
 
 void spawn_macro_objects(s16 areaIndex, s16 *macroObjList);
+void reconcile_macro_objects(s16 areaIndex, s16 *macroObjList);
+void reconcile_special_objects(s16 areaIndex, s16 *specialObjList);
+void clear_ap_suppressed_placement_state(void);
 void spawn_macro_objects_hardcoded(s16 areaIndex, s16 *macroObjList);
 void spawn_special_objects(s16 areaIndex, s16 **specialObjList);
 u32 get_special_objects_size(s16 *data);
