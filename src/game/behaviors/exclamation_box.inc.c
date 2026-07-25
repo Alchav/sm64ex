@@ -37,10 +37,19 @@ void bhv_rotating_exclamation_box_loop(void) {
         obj_mark_for_deletion(o);
 }
 
+static bool exclamation_box_one_up_unlocked(void) {
+    if ((o->oBehParams >> 16) == 0x1404
+        || o->oBehParams2ndByte == 7
+        || o->oBehParams2ndByte == 9) {
+        return SM64AP_HaveOneUpSource(gCurrLevelNum, SM64AP_1UP_SOURCE_BOX);
+    }
+    return true;
+}
+
 void exclamation_box_act_0(void) {
     if ((o->oBehParams >> 16) == 0x1404) {
         o->oAnimState = 3;
-        o->oAction = 2;
+        o->oAction = exclamation_box_one_up_unlocked() ? 2 : 1;
         return;
     }
     if (o->oBehParams2ndByte < 3) {
@@ -61,13 +70,20 @@ void exclamation_box_act_1(void) {
         spawn_object(o, MODEL_EXCLAMATION_POINT, bhvRotatingExclamationMark);
         cur_obj_set_model(MODEL_EXCLAMATION_BOX_OUTLINE);
     }
-    if ((o->oBehParams >> 16) == 0x1404 || SM64AP_HaveCap(D_8032F0C0[o->oBehParams2ndByte])) {
+    if (exclamation_box_one_up_unlocked()
+        && ((o->oBehParams >> 16) == 0x1404
+            || o->oBehParams2ndByte >= 3
+            || SM64AP_HaveCap(D_8032F0C0[o->oBehParams2ndByte]))) {
         o->oAction = 2;
         cur_obj_set_model(MODEL_EXCLAMATION_BOX);
     }
 }
 
 void exclamation_box_act_2(void) {
+    if (!exclamation_box_one_up_unlocked()) {
+        o->oAction = 1;
+        return;
+    }
     obj_set_hitbox(o, &sExclamationBoxHitbox);
     if (o->oTimer == 0) {
         cur_obj_unhide();

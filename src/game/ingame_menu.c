@@ -2511,7 +2511,6 @@ struct PauseCourseUnlock {
 enum PauseUnlockViewType {
     PAUSE_UNLOCK_VIEW_COURSE,
     PAUSE_UNLOCK_VIEW_CASTLE,
-    PAUSE_UNLOCK_VIEW_LEVELS,
     PAUSE_UNLOCK_VIEW_SECRET,
 };
 
@@ -2527,7 +2526,6 @@ struct PauseUnlockView {
 enum PauseCastleUnlockType {
     PAUSE_CASTLE_UNLOCK_KEY,
     PAUSE_CASTLE_UNLOCK_MIPS,
-    PAUSE_CASTLE_UNLOCK_GLOBAL_CAP,
     PAUSE_CASTLE_UNLOCK_LEVEL_CAP,
     PAUSE_CASTLE_UNLOCK_CANNON,
     PAUSE_CASTLE_UNLOCK_YOSHI,
@@ -2631,6 +2629,11 @@ static const u8 sUnlockWaterDiamonds[] = { TEXT_UNLOCK_WATER_DIAMONDS };
 static const u8 sUnlockWhomp[] = { TEXT_UNLOCK_WHOMP };
 static const u8 sUnlockWing[] = { TEXT_UNLOCK_WING };
 static const u8 sUnlockYoshi[] = { TEXT_UNLOCK_YOSHI };
+static const u8 sUnlockExtra1Ups[] = {
+    ASCII_TO_DIALOG('E'), ASCII_TO_DIALOG('X'), ASCII_TO_DIALOG('T'), ASCII_TO_DIALOG('R'),
+    ASCII_TO_DIALOG('A'), DIALOG_CHAR_SPACE, ASCII_TO_DIALOG('1'), ASCII_TO_DIALOG('U'),
+    ASCII_TO_DIALOG('P'), ASCII_TO_DIALOG('S'), DIALOG_CHAR_TERMINATOR
+};
 
 static const u8 sPaintingWf[] = { TEXT_PAINTING_WF };
 static const u8 sPaintingJrb[] = { TEXT_PAINTING_JRB };
@@ -2646,6 +2649,11 @@ static const u8 sPaintingTtm[] = { TEXT_PAINTING_TTM };
 static const u8 sPaintingThiHuge[] = { TEXT_PAINTING_THI_H };
 static const u8 sPaintingThiTiny[] = { TEXT_PAINTING_THI_T };
 static const u8 sPaintingTtc[] = { TEXT_PAINTING_TTC };
+static const u8 sPaintingRr[] = { TEXT_PAINTING_RR };
+static const u8 sPaintingWmotr[] = {
+    ASCII_TO_DIALOG('W'), ASCII_TO_DIALOG('M'), ASCII_TO_DIALOG('O'), ASCII_TO_DIALOG('T'),
+    ASCII_TO_DIALOG('R'), DIALOG_CHAR_SPACE, DIALOG_CHAR_TERMINATOR
+};
 
 static const struct PauseUnlockView sPauseUnlockViews[] = {
     { PAUSE_UNLOCK_VIEW_CASTLE, COURSE_NONE, LEVEL_CASTLE, SM64AP_LEVEL_MOVE_AREA_CASTLE, SM64AP_LEVEL_MOVE_AREA_CASTLE, sPauseViewCastle },
@@ -2671,7 +2679,6 @@ static const struct PauseUnlockView sPauseUnlockViews[] = {
     { PAUSE_UNLOCK_VIEW_SECRET, COURSE_COTMC - 1, LEVEL_COTMC, SM64AP_LEVEL_MOVE_AREA_CASTLE, PAUSE_COURSE_UNLOCK_AREA_COTMC, sPauseViewCotmc },
     { PAUSE_UNLOCK_VIEW_SECRET, COURSE_TOTWC - 1, LEVEL_TOTWC, SM64AP_LEVEL_MOVE_AREA_CASTLE, PAUSE_COURSE_UNLOCK_AREA_TOTWC, sPauseViewTotwc },
     { PAUSE_UNLOCK_VIEW_SECRET, COURSE_WMOTR - 1, LEVEL_WMOTR, SM64AP_LEVEL_MOVE_AREA_CASTLE, PAUSE_COURSE_UNLOCK_AREA_WMOTR, sPauseViewWmotr },
-    { PAUSE_UNLOCK_VIEW_LEVELS, COURSE_NONE, LEVEL_CASTLE, SM64AP_LEVEL_MOVE_AREA_CASTLE, SM64AP_LEVEL_MOVE_AREA_CASTLE, sPauseViewLevels },
 };
 
 static const struct PauseMoveUnlock sPauseMoveUnlocks[] = {
@@ -2791,8 +2798,6 @@ static const struct PauseCastleUnlock sPauseCastleUnlocks[] = {
     { PAUSE_CASTLE_UNLOCK_MIPS, 1, sUnlockMips1 },
     { PAUSE_CASTLE_UNLOCK_MIPS, 2, sUnlockMips2 },
     { PAUSE_CASTLE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_CASTLE_WING, sUnlockWing },
-    { PAUSE_CASTLE_UNLOCK_GLOBAL_CAP, 4, sUnlockMetal },
-    { PAUSE_CASTLE_UNLOCK_GLOBAL_CAP, 8, sUnlockVanish },
     { PAUSE_CASTLE_UNLOCK_YOSHI, 0, sUnlockYoshi },
     { PAUSE_CASTLE_UNLOCK_CANNON, 0, sUnlockCastleCannon },
     { PAUSE_CASTLE_UNLOCK_TOADS, 0, sUnlockToads },
@@ -2812,6 +2817,8 @@ static const struct PauseLevelUnlock sPauseLevelUnlocks[] = {
     { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_THI, 1, sPaintingThiHuge },
     { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_THI, 2, sPaintingThiTiny },
     { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_TTC, 1, sPaintingTtc },
+    { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_RR, 1, sPaintingRr },
+    { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_WMOTR, 1, sPaintingWmotr },
     { PAUSE_LEVEL_UNLOCK_WING_LIGHT, 0, 0, sUnlockTotwc },
     { PAUSE_LEVEL_UNLOCK_BBH, 0, 0, sPaintingBbh },
     { PAUSE_LEVEL_UNLOCK_BITFS, 0, 0, sUnlockBitfs },
@@ -2841,8 +2848,6 @@ static bool pause_castle_unlock_collected(const struct PauseCastleUnlock *unlock
             return SM64AP_HaveCastleKey(unlock->id);
         case PAUSE_CASTLE_UNLOCK_MIPS:
             return SM64AP_HaveProgressiveMips(unlock->id);
-        case PAUSE_CASTLE_UNLOCK_GLOBAL_CAP:
-            return SM64AP_HaveGlobalCap(unlock->id);
         case PAUSE_CASTLE_UNLOCK_LEVEL_CAP:
             return SM64AP_HaveLevelCapOrGlobal(unlock->id);
         case PAUSE_CASTLE_UNLOCK_CANNON:
@@ -2888,6 +2893,58 @@ static void pause_ascii_to_dialog_string(const char *ascii, u8 *dialog, s16 maxL
         i++;
     }
     dialog[i] = DIALOG_CHAR_TERMINATOR;
+}
+
+static s16 render_pause_one_up_unlocks(
+    s16 x, s16 y, s16 statusX, s16 levelNum, s16 firstRow, s16 maxRows
+) {
+    u8 label[19];
+    s16 count = SM64AP_LevelOneUpUnlockCount(levelNum);
+    s16 rendered = 0;
+
+    for (s16 i = 0; i < count && firstRow + rendered < maxRows; i++) {
+        pause_ascii_to_dialog_string(SM64AP_LevelOneUpUnlockName(levelNum, i), label, 18);
+        render_pause_unlock_status(
+            x, y - (firstRow + rendered) * 11, statusX, label,
+            SM64AP_LevelOneUpUnlockEnabled(levelNum, i));
+        rendered++;
+    }
+    return rendered;
+}
+
+static s16 render_pause_bowser_bomb_count(
+    s16 x, s16 y, s16 valueX, s16 levelNum, s16 row, s16 maxRows
+) {
+    static const u8 label[] = {
+        ASCII_TO_DIALOG('B'), ASCII_TO_DIALOG('O'), ASCII_TO_DIALOG('W'), ASCII_TO_DIALOG('S'),
+        ASCII_TO_DIALOG('E'), ASCII_TO_DIALOG('R'), DIALOG_CHAR_SPACE,
+        ASCII_TO_DIALOG('A'), ASCII_TO_DIALOG('R'), ASCII_TO_DIALOG('E'), ASCII_TO_DIALOG('N'),
+        ASCII_TO_DIALOG('A'), DIALOG_CHAR_SPACE,
+        ASCII_TO_DIALOG('B'), ASCII_TO_DIALOG('O'), ASCII_TO_DIALOG('M'), ASCII_TO_DIALOG('B'),
+        ASCII_TO_DIALOG('S'), DIALOG_CHAR_TERMINATOR
+    };
+    u8 value[4];
+    s16 bombCount = SM64AP_BowserArenaBombCount(levelNum);
+
+    if (bombCount < 0 || row >= maxRows) {
+        return 0;
+    }
+    int_to_str(bombCount, value);
+    print_generic_string(x, y - row * 11, label);
+    print_generic_string(valueX, y - row * 11, value);
+    return 1;
+}
+
+static s16 render_pause_bowser_extra_one_ups(
+    s16 x, s16 y, s16 statusX, s16 levelNum, s16 row, s16 maxRows
+) {
+    if ((levelNum != LEVEL_BITDW && levelNum != LEVEL_BITFS) || row >= maxRows) {
+        return 0;
+    }
+    render_pause_unlock_status(
+        x, y - row * 11, statusX, sUnlockExtra1Ups,
+        SM64AP_HaveBowserStageExtraOneUps(levelNum));
+    return 1;
 }
 
 static void render_pause_coin_unlock_column(s16 x, s16 y, s16 statusX, s16 levelNum, bool enemies) {
@@ -2986,6 +3043,13 @@ static void render_pause_area_unlocks(s16 x, s16 y, const struct PauseUnlockView
         unlockCount++;
     }
 
+    unlockCount += render_pause_one_up_unlocks(
+        x, y, x + 170, view->levelNum, unlockCount, 10);
+    unlockCount += render_pause_bowser_extra_one_ups(
+        x, y, x + 170, view->levelNum, unlockCount, 10);
+    unlockCount += render_pause_bowser_bomb_count(
+        x, y, x + 170, view->levelNum, unlockCount, 10);
+
     if (unlockCount == 0 && view->type != PAUSE_UNLOCK_VIEW_COURSE) {
         print_generic_string(x, y, textNoItems);
     }
@@ -3025,34 +3089,37 @@ static void render_pause_unlock_view_page(s16 viewIndex) {
     static const u8 textPageOne[] = { TEXT_PAGE_1 };
     static const u8 textPageTwo[] = { TEXT_PAGE_2 };
 
-    if (view->type == PAUSE_UNLOCK_VIEW_LEVELS) {
-        sPauseUnlockPage = 0;
-    } else {
-        create_dl_translation_matrix(MENU_MTX_PUSH, -18, 105, 0);
-        create_dl_rotation_matrix(MENU_MTX_NOPUSH, 180.0f, 0, 0, 1.0f);
-        gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
-        gSPDisplayList(gDisplayListHead++, dl_draw_triangle);
-        gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+    create_dl_translation_matrix(MENU_MTX_PUSH, -18, 105, 0);
+    create_dl_rotation_matrix(MENU_MTX_NOPUSH, 180.0f, 0, 0, 1.0f);
+    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
+    gSPDisplayList(gDisplayListHead++, dl_draw_triangle);
+    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 
-        create_dl_translation_matrix(MENU_MTX_PUSH, 310, 89, 0);
-        gSPDisplayList(gDisplayListHead++, dl_draw_triangle);
-        gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
-    }
+    create_dl_translation_matrix(MENU_MTX_PUSH, 310, 89, 0);
+    gSPDisplayList(gDisplayListHead++, dl_draw_triangle);
+    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 
     gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
 
-    print_generic_string(-8, 140, pause_unlock_view_title(view));
-    if (view->type != PAUSE_UNLOCK_VIEW_LEVELS) {
-        print_generic_string(266, 140, sPauseUnlockPage == 0 ? textPageOne : textPageTwo);
-    }
-    if (sPauseUnlockPage == 0 && view->type != PAUSE_UNLOCK_VIEW_LEVELS) {
+    print_generic_string(
+        -8, 140,
+        view->type == PAUSE_UNLOCK_VIEW_CASTLE && sPauseUnlockPage == 1
+            ? sPauseViewLevels
+            : pause_unlock_view_title(view));
+    print_generic_string(266, 140, sPauseUnlockPage == 0 ? textPageOne : textPageTwo);
+    if (sPauseUnlockPage == 0) {
         render_pause_move_unlocks(-8, 122, view->moveArea);
     }
 
     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
 
-    if (sPauseUnlockPage == 1) {
+    if (sPauseUnlockPage == 1 && view->type == PAUSE_UNLOCK_VIEW_CASTLE) {
+        gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
+        gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
+        render_pause_level_unlocks(74, 122);
+        gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
+    } else if (sPauseUnlockPage == 1) {
         gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
         gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
         render_pause_coin_and_enemy_unlocks(view);
@@ -3061,11 +3128,6 @@ static void render_pause_unlock_view_page(s16 viewIndex) {
         gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
         gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
         render_pause_castle_unlocks(126, 122);
-        gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
-    } else if (view->type == PAUSE_UNLOCK_VIEW_LEVELS) {
-        gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
-        gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
-        render_pause_level_unlocks(74, 122);
         gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
     } else {
         gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
@@ -3078,14 +3140,45 @@ static void render_pause_unlock_view_page(s16 viewIndex) {
 static void render_pause_castle_unlocks(s16 x, s16 y) {
     static const s16 statusOffset[] = { 64, 178 };
     static const s16 columnOffset[] = { 0, 88 };
+    enum {
+        CASTLE_UNLOCK_COUNT = sizeof(sPauseCastleUnlocks) / sizeof(sPauseCastleUnlocks[0]),
+    };
+    s16 oneUpCount = SM64AP_LevelOneUpUnlockCount(LEVEL_CASTLE);
+    s16 totalCount = CASTLE_UNLOCK_COUNT + oneUpCount + 1;
+    s16 rowsPerColumn = (totalCount + 1) / 2;
+    u8 oneUpLabel[19];
+    static const char *castleOneUpLabels[] = {
+        "FREE 1UPS", "TRGR 1UPS", "BTRFLIES"
+    };
+    static const u8 coinsLabel[] = {
+        ASCII_TO_DIALOG('C'), ASCII_TO_DIALOG('O'), ASCII_TO_DIALOG('I'),
+        ASCII_TO_DIALOG('N'), ASCII_TO_DIALOG('S'), DIALOG_CHAR_TERMINATOR
+    };
 
-    for (u16 i = 0; i < sizeof(sPauseCastleUnlocks) / sizeof(sPauseCastleUnlocks[0]); i++) {
-        const struct PauseCastleUnlock *unlock = &sPauseCastleUnlocks[i];
-        s16 column = i < 6 ? 0 : 1;
-        s16 row = column == 0 ? i : i - 6;
+    for (s16 i = 0; i < totalCount; i++) {
+        s16 column = i / rowsPerColumn;
+        s16 row = i % rowsPerColumn;
         s16 lineY = y - row * 11;
-        render_pause_unlock_status(x + columnOffset[column], lineY, x + statusOffset[column], unlock->label,
-                                   pause_castle_unlock_collected(unlock));
+        if (i < CASTLE_UNLOCK_COUNT) {
+            const struct PauseCastleUnlock *unlock = &sPauseCastleUnlocks[i];
+            render_pause_unlock_status(
+                x + columnOffset[column], lineY, x + statusOffset[column], unlock->label,
+                pause_castle_unlock_collected(unlock));
+        } else if (i < CASTLE_UNLOCK_COUNT + oneUpCount) {
+            s16 oneUpIndex = i - CASTLE_UNLOCK_COUNT;
+            pause_ascii_to_dialog_string(
+                oneUpIndex < 3
+                    ? castleOneUpLabels[oneUpIndex]
+                    : SM64AP_LevelOneUpUnlockName(LEVEL_CASTLE, oneUpIndex),
+                oneUpLabel, 18);
+            render_pause_unlock_status(
+                x + columnOffset[column], lineY, x + statusOffset[column], oneUpLabel,
+                SM64AP_LevelOneUpUnlockEnabled(LEVEL_CASTLE, oneUpIndex));
+        } else {
+            render_pause_unlock_status(
+                x + columnOffset[column], lineY, x + statusOffset[column], coinsLabel,
+                SM64AP_LevelCoinUnlockEnabled(LEVEL_CASTLE, false, 0));
+        }
     }
 }
 
@@ -3146,7 +3239,7 @@ void render_pause_castle_main_strings(s16 x, s16 y) {
         gDialogLineNum = pause_unlock_view_count() - 1;
     }
 
-    handle_pause_unlock_page_scrolling(pause_unlock_view_at(gDialogLineNum)->type != PAUSE_UNLOCK_VIEW_LEVELS);
+    handle_pause_unlock_page_scrolling(true);
     render_pause_unlock_view_page(gDialogLineNum);
 }
 
@@ -3181,8 +3274,7 @@ static void handle_pause_course_unlock_view_scrolling(void) {
         sPauseUnlockViewIndex = pause_unlock_view_count() - 1;
     }
 
-    handle_pause_unlock_page_scrolling(
-        pause_unlock_view_at(sPauseUnlockViewIndex)->type != PAUSE_UNLOCK_VIEW_LEVELS);
+    handle_pause_unlock_page_scrolling(true);
 }
 
 static bool pause_menu_confirm_pressed(void) {

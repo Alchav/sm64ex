@@ -1,5 +1,7 @@
 // butterfly.c.inc
 
+#include "../../sm64ap.h"
+
 void bhv_butterfly_init(void) {
     cur_obj_init_animation(1);
 
@@ -94,6 +96,12 @@ void butterfly_act_return_home(void) {
 }
 
 void bhv_butterfly_loop(void) {
+    if (!SM64AP_HaveOneUpSource(gCurrLevelNum, SM64AP_1UP_SOURCE_BUTTERFLY)) {
+        cur_obj_hide();
+        return;
+    }
+    cur_obj_unhide();
+
     switch (o->oAction) {
         case BUTTERFLY_ACT_RESTING:
             butterfly_act_rest();

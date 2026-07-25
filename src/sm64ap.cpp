@@ -14,8 +14,11 @@ extern "C" {
     #include "seq_ids.h"
     #include "engine/behavior_script.h"
     #include "game/level_update.h"
+    #include "game/ingame_menu.h"
     #include "game/object_list_processor.h"
+    #include "game/segment2.h"
     #include "pc/cheats.h"
+    #include "pc/configfile.h"
     #include "object_constants.h"
     #include "object_fields.h"
 
@@ -69,6 +72,10 @@ bool sm64_have_yoshi = false;
 bool sm64_have_bitfs = false;
 bool sm64_have_hat = false;
 bool sm64_have_vcutm_entrance = false;
+bool sm64_have_rr_level_unlock = false;
+bool sm64_have_wmotr_level_unlock = false;
+int sm64_level_unlock_mode = 1;
+int sm64_one_up_unlock_mode = 0;
 bool sm64_1up_checks_enabled = false;
 bool sm64_buddy_checks_enabled = true;
 bool sm64_bowser_stage_1up_item_behavior = false;
@@ -109,6 +116,8 @@ std::bitset<SM64AP_NUM_LEVEL_MOVE_AREAS * SM64AP_NUM_LEVEL_MOVES> sm64_have_leve
 std::bitset<SM64AP_NUM_FEATURES> sm64_have_features;
 std::bitset<SM64AP_NUM_LEVEL_CAPS> sm64_have_level_caps;
 std::bitset<SM64AP_NUM_OBJECT_ITEMS> sm64_have_object_items;
+std::bitset<SM64AP_NUM_ONE_UP_CATEGORIES> sm64_have_one_up_global_items;
+std::bitset<SM64AP_NUM_ONE_UP_LEVEL_ITEMS> sm64_have_one_up_level_items;
 
 struct SM64APCoinGlobalItem {
     int source;
@@ -151,7 +160,7 @@ int sm64_cost_secondfloordoor = 50;
 int sm64_cost_endlessstairs = 70;
 int sm64_cost_mips1 = 15;
 int sm64_cost_mips2 = 50;
-int msg_frame_duration = 90; // 3 Secounds at 30F/s
+int msg_frame_duration = 90;
 int cur_msg_frame_duration = msg_frame_duration;
 std::queue<int64_t> delayed_queue;
 
@@ -433,6 +442,76 @@ static constexpr SM64APOneUpSource SM64AP_1UP_SOURCES[SM64AP_NUM_1UP_CHECKS] = {
     { LEVEL_TTM, 1, SM64AP_1UP_SOURCE_MONTY_MOLES, 1, 0, 0, 0 },
 };
 
+struct SM64APOneUpLevelItem {
+    s16 level;
+    s16 category;
+    const char *name;
+};
+
+static constexpr SM64APOneUpLevelItem SM64AP_ONE_UP_LEVEL_ITEMS[SM64AP_NUM_ONE_UP_LEVEL_ITEMS] = {
+    { LEVEL_BBH, SM64AP_ONE_UP_CATEGORY_FREESTANDING, "BBH FREE 1UPS" },
+    { LEVEL_BITDW, SM64AP_ONE_UP_CATEGORY_FREESTANDING, "BITDW FREE 1UPS" },
+    { LEVEL_BITFS, SM64AP_ONE_UP_CATEGORY_FREESTANDING, "BITFS FREE 1UPS" },
+    { LEVEL_BITS, SM64AP_ONE_UP_CATEGORY_FREESTANDING, "BITS FREE 1UPS" },
+    { LEVEL_BOB, SM64AP_ONE_UP_CATEGORY_FREESTANDING, "BOB FREE 1UPS" },
+    { LEVEL_CASTLE, SM64AP_ONE_UP_CATEGORY_FREESTANDING, "CASTLE FREE 1UPS" },
+    { LEVEL_CCM, SM64AP_ONE_UP_CATEGORY_FREESTANDING, "CCM FREE 1UPS" },
+    { LEVEL_COTMC, SM64AP_ONE_UP_CATEGORY_FREESTANDING, "COTMC FREE 1UPS" },
+    { LEVEL_JRB, SM64AP_ONE_UP_CATEGORY_FREESTANDING, "JRB FREE 1UPS" },
+    { LEVEL_LLL, SM64AP_ONE_UP_CATEGORY_FREESTANDING, "LLL FREE 1UPS" },
+    { LEVEL_PSS, SM64AP_ONE_UP_CATEGORY_FREESTANDING, "PSS FREE 1UPS" },
+    { LEVEL_RR, SM64AP_ONE_UP_CATEGORY_FREESTANDING, "RR FREE 1UPS" },
+    { LEVEL_SL, SM64AP_ONE_UP_CATEGORY_FREESTANDING, "SL FREE 1UPS" },
+    { LEVEL_SSL, SM64AP_ONE_UP_CATEGORY_FREESTANDING, "SSL FREE 1UPS" },
+    { LEVEL_THI, SM64AP_ONE_UP_CATEGORY_FREESTANDING, "THI FREE 1UPS" },
+    { LEVEL_TTM, SM64AP_ONE_UP_CATEGORY_FREESTANDING, "TTM FREE 1UPS" },
+    { LEVEL_VCUTM, SM64AP_ONE_UP_CATEGORY_FREESTANDING, "VCUTM FREE 1UPS" },
+    { LEVEL_WDW, SM64AP_ONE_UP_CATEGORY_FREESTANDING, "WDW FREE 1UPS" },
+    { LEVEL_WF, SM64AP_ONE_UP_CATEGORY_FREESTANDING, "WF FREE 1UPS" },
+    { LEVEL_WMOTR, SM64AP_ONE_UP_CATEGORY_FREESTANDING, "WMOTR FREE 1UPS" },
+    { LEVEL_BITFS, SM64AP_ONE_UP_CATEGORY_TRIGGER, "BITFS TRIGGER 1UPS" },
+    { LEVEL_BITS, SM64AP_ONE_UP_CATEGORY_TRIGGER, "BITS TRIGGER 1UPS" },
+    { LEVEL_BOB, SM64AP_ONE_UP_CATEGORY_TRIGGER, "BOB TRIGGER 1UPS" },
+    { LEVEL_CASTLE, SM64AP_ONE_UP_CATEGORY_TRIGGER, "CASTLE TRIGGER 1UPS" },
+    { LEVEL_CCM, SM64AP_ONE_UP_CATEGORY_TRIGGER, "CCM TRIGGER 1UPS" },
+    { LEVEL_DDD, SM64AP_ONE_UP_CATEGORY_TRIGGER, "DDD TRIGGER 1UPS" },
+    { LEVEL_HMC, SM64AP_ONE_UP_CATEGORY_TRIGGER, "HMC TRIGGER 1UPS" },
+    { LEVEL_JRB, SM64AP_ONE_UP_CATEGORY_TRIGGER, "JRB TRIGGER 1UPS" },
+    { LEVEL_LLL, SM64AP_ONE_UP_CATEGORY_TRIGGER, "LLL TRIGGER 1UPS" },
+    { LEVEL_PSS, SM64AP_ONE_UP_CATEGORY_TRIGGER, "PSS TRIGGER 1UPS" },
+    { LEVEL_RR, SM64AP_ONE_UP_CATEGORY_TRIGGER, "RR TRIGGER 1UPS" },
+    { LEVEL_SA, SM64AP_ONE_UP_CATEGORY_TRIGGER, "SA TRIGGER 1UPS" },
+    { LEVEL_SL, SM64AP_ONE_UP_CATEGORY_TRIGGER, "SL TRIGGER 1UPS" },
+    { LEVEL_SSL, SM64AP_ONE_UP_CATEGORY_TRIGGER, "SSL TRIGGER 1UPS" },
+    { LEVEL_THI, SM64AP_ONE_UP_CATEGORY_TRIGGER, "THI TRIGGER 1UPS" },
+    { LEVEL_TTC, SM64AP_ONE_UP_CATEGORY_TRIGGER, "TTC TRIGGER 1UPS" },
+    { LEVEL_TTM, SM64AP_ONE_UP_CATEGORY_TRIGGER, "TTM TRIGGER 1UPS" },
+    { LEVEL_VCUTM, SM64AP_ONE_UP_CATEGORY_TRIGGER, "VCUTM TRIGGER 1UPS" },
+    { LEVEL_WDW, SM64AP_ONE_UP_CATEGORY_TRIGGER, "WDW TRIGGER 1UPS" },
+    { LEVEL_WF, SM64AP_ONE_UP_CATEGORY_TRIGGER, "WF TRIGGER 1UPS" },
+    { LEVEL_WMOTR, SM64AP_ONE_UP_CATEGORY_TRIGGER, "WMOTR TRIGGER 1UPS" },
+    { LEVEL_BBH, SM64AP_ONE_UP_CATEGORY_BLOCK, "BBH 1UP BLOCKS" },
+    { LEVEL_BITDW, SM64AP_ONE_UP_CATEGORY_BLOCK, "BITDW 1UP BLOCKS" },
+    { LEVEL_BITFS, SM64AP_ONE_UP_CATEGORY_BLOCK, "BITFS 1UP BLOCKS" },
+    { LEVEL_BITS, SM64AP_ONE_UP_CATEGORY_BLOCK, "BITS 1UP BLOCKS" },
+    { LEVEL_CCM, SM64AP_ONE_UP_CATEGORY_BLOCK, "CCM 1UP BLOCKS" },
+    { LEVEL_COTMC, SM64AP_ONE_UP_CATEGORY_BLOCK, "COTMC 1UP BLOCKS" },
+    { LEVEL_HMC, SM64AP_ONE_UP_CATEGORY_BLOCK, "HMC 1UP BLOCKS" },
+    { LEVEL_RR, SM64AP_ONE_UP_CATEGORY_BLOCK, "RR 1UP BLOCKS" },
+    { LEVEL_SL, SM64AP_ONE_UP_CATEGORY_BLOCK, "SL 1UP BLOCKS" },
+    { LEVEL_SSL, SM64AP_ONE_UP_CATEGORY_BLOCK, "SSL 1UP BLOCKS" },
+    { LEVEL_THI, SM64AP_ONE_UP_CATEGORY_BLOCK, "THI 1UP BLOCKS" },
+    { LEVEL_TTC, SM64AP_ONE_UP_CATEGORY_BLOCK, "TTC 1UP BLOCKS" },
+    { LEVEL_TTM, SM64AP_ONE_UP_CATEGORY_BLOCK, "TTM 1UP BLOCKS" },
+    { LEVEL_VCUTM, SM64AP_ONE_UP_CATEGORY_BLOCK, "VCUTM 1UP BLOCKS" },
+    { LEVEL_WDW, SM64AP_ONE_UP_CATEGORY_BLOCK, "WDW 1UP BLOCKS" },
+    { LEVEL_WMOTR, SM64AP_ONE_UP_CATEGORY_BLOCK, "WMOTR 1UP BLOCKS" },
+    { LEVEL_CASTLE, SM64AP_ONE_UP_CATEGORY_BUTTERFLY, "CASTLE BUTTERFLIES" },
+    { LEVEL_WF, SM64AP_ONE_UP_CATEGORY_BUTTERFLY, "WF BUTTERFLIES" },
+    { LEVEL_THI, SM64AP_ONE_UP_CATEGORY_BUTTERFLY, "THI BUTTERFLIES" },
+    { LEVEL_TTM, SM64AP_ONE_UP_CATEGORY_BUTTERFLY, "TTM BUTTERFLIES" },
+};
+
 static constexpr int SM64AP_RANDOM_MUSIC_POOL[] = {
     SEQ_LEVEL_GRASS,
     SEQ_LEVEL_INSIDE_CASTLE,
@@ -469,6 +548,24 @@ static int SM64AP_CoinCheckOffsetFromLocationId(int locId);
 
 void SM64AP_RecvItem(int64_t idx, bool notify) {
     AP_EnableQueueItemRecvMsgs(true);
+
+    if (idx >= SM64AP_ONE_UP_GLOBAL_ITEM_OFFSET && idx < SM64AP_ONE_UP_LEVEL_ITEM_OFFSET) {
+        sm64_have_one_up_global_items[idx - SM64AP_ONE_UP_GLOBAL_ITEM_OFFSET] = true;
+        SM64AP_RequestLiveObjectReconcile();
+        return;
+    }
+
+    if (idx == SM64AP_ID_GLOBAL_BUTTERFLIES) {
+        sm64_have_one_up_global_items[SM64AP_ONE_UP_CATEGORY_BUTTERFLY] = true;
+        SM64AP_RequestLiveObjectReconcile();
+        return;
+    }
+
+    if (idx >= SM64AP_ONE_UP_LEVEL_ITEM_OFFSET && idx <= SM64AP_ONE_UP_LEVEL_ITEM_END) {
+        sm64_have_one_up_level_items[idx - SM64AP_ONE_UP_LEVEL_ITEM_OFFSET] = true;
+        SM64AP_RequestLiveObjectReconcile();
+        return;
+    }
 
     if (idx >= SM64AP_COIN_GLOBAL_ITEM_OFFSET
         && idx < SM64AP_COIN_GLOBAL_ITEM_OFFSET + SM64AP_NUM_COIN_GLOBAL_ITEMS) {
@@ -554,6 +651,12 @@ void SM64AP_RecvItem(int64_t idx, bool notify) {
             break;
         case SM64AP_ID_VCUTM_ENTRANCE:
             sm64_have_vcutm_entrance = true;
+            break;
+        case SM64AP_ID_RR_LEVEL_UNLOCK:
+            sm64_have_rr_level_unlock = true;
+            break;
+        case SM64AP_ID_WMOTR_LEVEL_UNLOCK:
+            sm64_have_wmotr_level_unlock = true;
             break;
         case SM64AP_ID_BOWSER_STAGE_1UPS:
             sm64_have_bowser_stage_1ups = true;
@@ -880,7 +983,7 @@ const char *SM64AP_LevelCoinUnlockName(s16 level, bool enemies, int index) {
     }
 
     switch (item->source) {
-        case SM64AP_COIN_SOURCE_YELLOW_COIN:         return "SINGLE Y COINS";
+        case SM64AP_COIN_SOURCE_YELLOW_COIN:         return "S YELLOW COINS";
         case SM64AP_COIN_SOURCE_RED_COIN:            return "RED COINS";
         case SM64AP_COIN_SOURCE_MOVING_BLUE_COIN:    return "SINGLE B COIN";
         case SM64AP_COIN_SOURCE_BLUE_COIN_SWITCH:    return "BLUE COIN BLK";
@@ -1065,6 +1168,19 @@ bool SM64AP_HaveBITFS() {
 
 bool SM64AP_HaveHat() {
     return sm64_have_hat;
+}
+
+bool SM64AP_HaveBowserStageExtraOneUps(s16 level) {
+    if (!sm64_bowser_stage_1up_item_behavior) {
+        return true;
+    }
+    if (level == LEVEL_BITDW) {
+        return sm64_have_bowser_stage_1ups || sm64_have_bitdw_1ups;
+    }
+    if (level == LEVEL_BITFS) {
+        return sm64_have_bowser_stage_1ups || sm64_have_bitfs_1ups;
+    }
+    return true;
 }
 
 bool SM64AP_HaveVcutmEntrance() {
@@ -2232,6 +2348,14 @@ void SM64AP_SetPaintingRando(int enabled) {
     }
 }
 
+void SM64AP_SetLevelUnlockMode(int mode) {
+    sm64_level_unlock_mode = mode >= 0 && mode <= 2 ? mode : 1;
+}
+
+void SM64AP_SetOneUpUnlockMode(int mode) {
+    sm64_one_up_unlock_mode = mode >= 0 && mode <= 2 ? mode : 0;
+}
+
 void SM64AP_ResetItems() {
     for (int i = 0; i < SM64AP_NUM_LOCS; i++) {
         sm64_locations[i] = false;
@@ -2251,6 +2375,8 @@ void SM64AP_ResetItems() {
     sm64_have_object_items.reset();
     sm64_have_coin_global_items.reset();
     sm64_have_coin_level_items.reset();
+    sm64_have_one_up_global_items.reset();
+    sm64_have_one_up_level_items.reset();
     sm64_sent_coin_checks.reset();
     sm64_sent_1up_checks.reset();
     sm64_sent_blocksanity_checks.reset();
@@ -2269,6 +2395,10 @@ void SM64AP_ResetItems() {
     sm64_have_bitfs = false;
     sm64_have_hat = false;
     sm64_have_vcutm_entrance = false;
+    sm64_have_rr_level_unlock = false;
+    sm64_have_wmotr_level_unlock = false;
+    sm64_level_unlock_mode = 1;
+    sm64_one_up_unlock_mode = 0;
     sm64_1up_checks_enabled = false;
     sm64_buddy_checks_enabled = true;
     sm64_bowser_stage_1up_item_behavior = false;
@@ -2335,6 +2465,8 @@ void SM64AP_GenericInit() {
     AP_RegisterSlotDataIntCallback("CompletionType", &SM64AP_SetCompletionType);
     AP_RegisterSlotDataIntCallback("MoveRandoVec", &SM64AP_SetMoveRandoVec);
     AP_RegisterSlotDataIntCallback("PaintingRando", &SM64AP_SetPaintingRando);
+    AP_RegisterSlotDataIntCallback("LevelUnlockMode", &SM64AP_SetLevelUnlockMode);
+    AP_RegisterSlotDataIntCallback("OneUpUnlockMode", &SM64AP_SetOneUpUnlockMode);
     AP_RegisterSlotDataIntCallback("GlobalCapItems", &SM64AP_SetGlobalCapDisplay);
     AP_RegisterSlotDataIntCallback("ShowGlobalCapDisplay", &SM64AP_SetGlobalCapDisplay);
     AP_RegisterSlotDataIntCallback("OneUpChecks", &SM64AP_SetOneUpChecks);
@@ -2605,6 +2737,124 @@ static bool SM64AP_IsOneUpBoxLocation(int locId) {
     return false;
 }
 
+static s16 SM64AP_NormalizeOneUpLevel(s16 level) {
+    return level == LEVEL_CASTLE_GROUNDS ? LEVEL_CASTLE : level;
+}
+
+static int SM64AP_OneUpCategoryForSourceType(s16 sourceType) {
+    switch (sourceType) {
+        case SM64AP_1UP_SOURCE_HIDDEN:
+        case SM64AP_1UP_SOURCE_HIDDEN_POLE:
+        case SM64AP_1UP_SOURCE_MONTY_MOLES:
+            return SM64AP_ONE_UP_CATEGORY_TRIGGER;
+        case SM64AP_1UP_SOURCE_BUTTERFLY:
+            return SM64AP_ONE_UP_CATEGORY_BUTTERFLY;
+        case SM64AP_1UP_SOURCE_BOX:
+            return SM64AP_ONE_UP_CATEGORY_BLOCK;
+        default:
+            return SM64AP_ONE_UP_CATEGORY_FREESTANDING;
+    }
+}
+
+bool SM64AP_HaveOneUpSource(s16 level, s16 sourceType) {
+    if (!sm64_1up_checks_enabled || sm64_one_up_unlock_mode == 0) {
+        return true;
+    }
+
+    int category = SM64AP_OneUpCategoryForSourceType(sourceType);
+    if (sm64_one_up_unlock_mode == 1) {
+        return sm64_have_one_up_global_items[category];
+    }
+
+    level = SM64AP_NormalizeOneUpLevel(level);
+    for (int i = 0; i < SM64AP_NUM_ONE_UP_LEVEL_ITEMS; i++) {
+        if (SM64AP_ONE_UP_LEVEL_ITEMS[i].level == level
+            && SM64AP_ONE_UP_LEVEL_ITEMS[i].category == category) {
+            return sm64_have_one_up_level_items[i];
+        }
+    }
+
+    return true;
+}
+
+static int SM64AP_LevelOneUpCategory(s16 level, s16 unlockIndex) {
+    level = SM64AP_NormalizeOneUpLevel(level);
+    int index = 0;
+    for (int category = 0; category < SM64AP_NUM_ONE_UP_CATEGORIES; category++) {
+        for (int item = 0; item < SM64AP_NUM_ONE_UP_LEVEL_ITEMS; item++) {
+            if (SM64AP_ONE_UP_LEVEL_ITEMS[item].level == level
+                && SM64AP_ONE_UP_LEVEL_ITEMS[item].category == category) {
+                if (index == unlockIndex) {
+                    return category;
+                }
+                index++;
+                break;
+            }
+        }
+    }
+    return -1;
+}
+
+int SM64AP_LevelOneUpUnlockCount(s16 level) {
+    int count = 0;
+    while (SM64AP_LevelOneUpCategory(level, count) >= 0) {
+        count++;
+    }
+    return count;
+}
+
+const char *SM64AP_LevelOneUpUnlockName(s16 level, s16 unlockIndex) {
+    static constexpr const char *names[SM64AP_NUM_ONE_UP_CATEGORIES] = {
+        "FREE 1UPS", "TRIGGER 1UPS", "1UP BLOCKS", "BUTTERFLIES"
+    };
+    int category = SM64AP_LevelOneUpCategory(level, unlockIndex);
+    return category >= 0 ? names[category] : "";
+}
+
+bool SM64AP_LevelOneUpUnlockEnabled(s16 level, s16 unlockIndex) {
+    int category = SM64AP_LevelOneUpCategory(level, unlockIndex);
+    if (category < 0 || !sm64_1up_checks_enabled || sm64_one_up_unlock_mode == 0) {
+        return true;
+    }
+    if (sm64_one_up_unlock_mode == 1) {
+        return sm64_have_one_up_global_items[category];
+    }
+
+    level = SM64AP_NormalizeOneUpLevel(level);
+    for (int item = 0; item < SM64AP_NUM_ONE_UP_LEVEL_ITEMS; item++) {
+        if (SM64AP_ONE_UP_LEVEL_ITEMS[item].level == level
+            && SM64AP_ONE_UP_LEVEL_ITEMS[item].category == category) {
+            return sm64_have_one_up_level_items[item];
+        }
+    }
+    return true;
+}
+
+int SM64AP_BowserArenaBombCount(s16 level) {
+    int arena = SM64AP_BowserArenaIndex(level);
+    if (level == LEVEL_BITDW) arena = 0;
+    if (level == LEVEL_BITFS) arena = 1;
+    if (level == LEVEL_BITS) arena = 2;
+    return arena >= 0 ? sm64_bowser_arena_bombs[arena] : -1;
+}
+
+static bool SM64AP_HaveOneUpForLocation(int locId) {
+    int offset = SM64AP_OneUpCheckOffsetFromLocationId(locId);
+    if (offset >= 0) {
+        const SM64APOneUpSource &source = SM64AP_1UP_SOURCES[offset];
+        return SM64AP_HaveOneUpSource(source.level, source.sourceType);
+    }
+
+    for (const auto &boxLocation : map_boxid_locid) {
+        if (boxLocation.second == locId) {
+            return SM64AP_HaveOneUpSource(
+                static_cast<s16>(boxLocation.first / 10), SM64AP_1UP_SOURCE_BOX);
+        }
+    }
+
+    return true;
+}
+
 int SM64AP_ResolveOneUpLocation(s16 level, s16 area, s16 sourceType, s16 sourceParam, s16 x, s16 y, s16 z) {
     for (int i = 0; i < SM64AP_NUM_1UP_CHECKS; i++) {
         const SM64APOneUpSource &source = SM64AP_1UP_SOURCES[i];
@@ -2649,6 +2899,10 @@ int SM64AP_ResolveOneUpLocation(s16 level, s16 area, s16 sourceType, s16 sourceP
 
 bool SM64AP_ShouldSuppressOneUp(int locId) {
     int offset = SM64AP_OneUpCheckOffsetFromLocationId(locId);
+
+    if (!SM64AP_HaveOneUpForLocation(locId)) {
+        return true;
+    }
 
     if (Cheats.EnableCheats && Cheats.RespawnCollectedOneUps) {
         return false;
@@ -3100,8 +3354,11 @@ bool SM64AP_HavePainting(int courseIdx) {
     switch(courseIdx) {
         case 1:  // BOB painting is always unlocked
         case 5:  // BBH doesn't have a painting
-        case 15: // RR doesn't have a painting
             return true;
+        case COURSE_RR:
+            return sm64_level_unlock_mode != 2 || sm64_have_rr_level_unlock;
+        case COURSE_WMOTR:
+            return sm64_level_unlock_mode != 2 || sm64_have_wmotr_level_unlock;
         default:
             // courses are 1-indexed, the items are 0-indexed
             return sm64_have_painting[courseIdx-1];
@@ -3545,6 +3802,7 @@ enum SM64APCheatItemKind {
     SM64AP_CHEAT_ITEM_ABILITY,
     SM64AP_CHEAT_ITEM_LEVEL_MOVE,
     SM64AP_CHEAT_ITEM_COIN_UNLOCK,
+    SM64AP_CHEAT_ITEM_ONE_UP_UNLOCK,
     SM64AP_CHEAT_ITEM_BOWSER_ARENA_BOMB,
 };
 
@@ -3565,6 +3823,8 @@ enum SM64APCheatBoolItem {
     SM64AP_CHEAT_BOOL_WING_CAP,
     SM64AP_CHEAT_BOOL_METAL_CAP,
     SM64AP_CHEAT_BOOL_VANISH_CAP,
+    SM64AP_CHEAT_BOOL_RR_LEVEL_UNLOCK,
+    SM64AP_CHEAT_BOOL_WMOTR_LEVEL_UNLOCK,
 };
 
 struct SM64APCheatItem {
@@ -3749,6 +4009,9 @@ static void SM64AP_InitCheatItems() {
     SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_BOOL, SM64AP_CHEAT_BOOL_WING_CAP, "GLOBAL WING CAP");
     SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_BOOL, SM64AP_CHEAT_BOOL_METAL_CAP, "GLOBAL METAL CAP");
     SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_BOOL, SM64AP_CHEAT_BOOL_VANISH_CAP, "GLOBAL VANISH CAP");
+    SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_BOOL, SM64AP_CHEAT_BOOL_RR_LEVEL_UNLOCK, "RR LEVEL UNLOCK");
+    SM64AP_CheatAdd(
+        SM64AP_CHEAT_ITEM_BOOL, SM64AP_CHEAT_BOOL_WMOTR_LEVEL_UNLOCK, "WMOTR LEVEL UNLOCK");
 
     for (int i = 0; i < 15; i++) {
         SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_CANNON, i, std::string(SM64AP_CHEAT_COURSE_NAMES[i]) + " CANNON");
@@ -3804,6 +4067,25 @@ static void SM64AP_InitCheatItems() {
         SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_COIN_UNLOCK,
                         SM64AP_COIN_LEVEL_ITEM_OFFSET + i,
                         sm64_coin_level_items[i].name);
+    }
+    static constexpr const char *globalOneUpNames[SM64AP_NUM_ONE_UP_CATEGORIES] = {
+        "GLOBAL FREE 1UPS", "GLOBAL TRIGGER 1UPS", "GLOBAL 1UP BLOCKS", "GLOBAL BUTTERFLIES"
+    };
+    static constexpr int globalOneUpIds[SM64AP_NUM_ONE_UP_CATEGORIES] = {
+        SM64AP_ID_GLOBAL_FREESTANDING_1UPS,
+        SM64AP_ID_GLOBAL_TRIGGER_1UPS,
+        SM64AP_ID_GLOBAL_1UP_BLOCKS,
+        SM64AP_ID_GLOBAL_BUTTERFLIES,
+    };
+    for (int i = 0; i < SM64AP_NUM_ONE_UP_CATEGORIES; i++) {
+        SM64AP_CheatAdd(
+            SM64AP_CHEAT_ITEM_ONE_UP_UNLOCK, globalOneUpIds[i],
+            globalOneUpNames[i]);
+    }
+    for (int i = 0; i < SM64AP_NUM_ONE_UP_LEVEL_ITEMS; i++) {
+        SM64AP_CheatAdd(
+            SM64AP_CHEAT_ITEM_ONE_UP_UNLOCK, SM64AP_ONE_UP_LEVEL_ITEM_OFFSET + i,
+            SM64AP_ONE_UP_LEVEL_ITEMS[i].name);
     }
 
     for (int bomb = 1; bomb <= 4; bomb++) {
@@ -3879,6 +4161,10 @@ static bool SM64AP_CheatBoolEnabled(int index) {
             return sm64_have_metalcap;
         case SM64AP_CHEAT_BOOL_VANISH_CAP:
             return sm64_have_vanishcap;
+        case SM64AP_CHEAT_BOOL_RR_LEVEL_UNLOCK:
+            return sm64_have_rr_level_unlock;
+        case SM64AP_CHEAT_BOOL_WMOTR_LEVEL_UNLOCK:
+            return sm64_have_wmotr_level_unlock;
     }
 
     return false;
@@ -3935,6 +4221,12 @@ static void SM64AP_CheatSetBool(int index, bool enabled) {
             break;
         case SM64AP_CHEAT_BOOL_VANISH_CAP:
             sm64_have_vanishcap = enabled;
+            break;
+        case SM64AP_CHEAT_BOOL_RR_LEVEL_UNLOCK:
+            sm64_have_rr_level_unlock = enabled;
+            break;
+        case SM64AP_CHEAT_BOOL_WMOTR_LEVEL_UNLOCK:
+            sm64_have_wmotr_level_unlock = enabled;
             break;
     }
 }
@@ -4051,6 +4343,17 @@ bool SM64AP_CheatItemEnabled(int index) {
                 return sm64_have_coin_level_items[item.index - SM64AP_COIN_LEVEL_ITEM_OFFSET];
             }
             return false;
+        case SM64AP_CHEAT_ITEM_ONE_UP_UNLOCK:
+            if (item.index >= SM64AP_ONE_UP_GLOBAL_ITEM_OFFSET && item.index < SM64AP_ONE_UP_LEVEL_ITEM_OFFSET) {
+                return sm64_have_one_up_global_items[item.index - SM64AP_ONE_UP_GLOBAL_ITEM_OFFSET];
+            }
+            if (item.index == SM64AP_ID_GLOBAL_BUTTERFLIES) {
+                return sm64_have_one_up_global_items[SM64AP_ONE_UP_CATEGORY_BUTTERFLY];
+            }
+            if (item.index >= SM64AP_ONE_UP_LEVEL_ITEM_OFFSET && item.index <= SM64AP_ONE_UP_LEVEL_ITEM_END) {
+                return sm64_have_one_up_level_items[item.index - SM64AP_ONE_UP_LEVEL_ITEM_OFFSET];
+            }
+            return false;
         case SM64AP_CHEAT_ITEM_BOWSER_ARENA_BOMB: {
             int arena = item.index / 10;
             int bomb = item.index % 10;
@@ -4117,6 +4420,16 @@ void SM64AP_CheatSetItemEnabled(int index, bool enabled) {
             } else if (item.index >= SM64AP_COIN_LEVEL_ITEM_OFFSET
                        && item.index < SM64AP_COIN_LEVEL_ITEM_OFFSET + SM64AP_NUM_COIN_LEVEL_ITEMS) {
                 sm64_have_coin_level_items[item.index - SM64AP_COIN_LEVEL_ITEM_OFFSET] = enabled;
+            }
+            break;
+        case SM64AP_CHEAT_ITEM_ONE_UP_UNLOCK:
+            if (item.index >= SM64AP_ONE_UP_GLOBAL_ITEM_OFFSET && item.index < SM64AP_ONE_UP_LEVEL_ITEM_OFFSET) {
+                sm64_have_one_up_global_items[item.index - SM64AP_ONE_UP_GLOBAL_ITEM_OFFSET] = enabled;
+            } else if (item.index == SM64AP_ID_GLOBAL_BUTTERFLIES) {
+                sm64_have_one_up_global_items[SM64AP_ONE_UP_CATEGORY_BUTTERFLY] = enabled;
+            } else if (item.index >= SM64AP_ONE_UP_LEVEL_ITEM_OFFSET
+                       && item.index <= SM64AP_ONE_UP_LEVEL_ITEM_END) {
+                sm64_have_one_up_level_items[item.index - SM64AP_ONE_UP_LEVEL_ITEM_OFFSET] = enabled;
             }
             break;
         case SM64AP_CHEAT_ITEM_BOWSER_ARENA_BOMB: {
@@ -4300,6 +4613,52 @@ bool SM64AP_CanLedgeGrab() {
     return SM64AP_HaveAbilityForCurrentLevel(SM64AP_ID_LEDGEGRAB - SM64AP_ABILITY_OFFSET);
 }
 
+static std::vector<std::string> SM64AP_WrapItemMessage(const std::string &text) {
+    static constexpr size_t glyphWidth = 12;
+    static constexpr size_t horizontalMargin = 2;
+    const size_t maxLineLength = static_cast<size_t>(
+        (GFX_DIMENSIONS_FROM_RIGHT_EDGE(0) - GFX_DIMENSIONS_FROM_LEFT_EDGE(0)) / glyphWidth
+    ) - horizontalMargin;
+    std::vector<std::string> lines;
+    size_t position = 0;
+
+    while (position < text.size()) {
+        size_t remaining = text.size() - position;
+        if (remaining <= maxLineLength) {
+            lines.push_back(text.substr(position));
+            break;
+        }
+
+        size_t end = position + maxLineLength;
+        size_t split = text.rfind(' ', end);
+        if (split == std::string::npos || split < position) {
+            split = end;
+        }
+        lines.push_back(text.substr(position, split - position));
+        position = split;
+        while (position < text.size() && text[position] == ' ') {
+            position++;
+        }
+    }
+
+    if (lines.empty()) {
+        lines.emplace_back();
+    }
+    return lines;
+}
+
+static void SM64AP_PrintWrappedItemMessage(
+    const std::string &itemLine, const std::string &playerLine
+) {
+    std::vector<std::string> lines = SM64AP_WrapItemMessage(itemLine);
+    for (size_t i = 0; i < lines.size(); i++) {
+        print_text(
+            GFX_DIMENSIONS_FROM_LEFT_EDGE(0),
+            static_cast<s32>((lines.size() - i) * 20),
+            lines[i].c_str());
+    }
+    print_text(GFX_DIMENSIONS_FROM_LEFT_EDGE(0), 0, playerLine.c_str());
+}
 
 void SM64AP_PrintNext() {
     if (AP_GetConnectionStatus() == AP_ConnectionStatus::Disconnected) {
@@ -4315,22 +4674,24 @@ void SM64AP_PrintNext() {
     }
     if (!AP_IsMessagePending()) return;
     AP_Message* msg = AP_GetLatestMessage();
+    int display_duration = msg_frame_duration;
     if (msg->type == AP_MessageType::ItemSend) {
         AP_ItemSendMessage* o_msg = static_cast<AP_ItemSendMessage*>(msg);
-        print_text(GFX_DIMENSIONS_FROM_LEFT_EDGE(0), (1-0)*20, (o_msg->item + std::string(" was sent")).c_str());
-        print_text(GFX_DIMENSIONS_FROM_LEFT_EDGE(0), (1-1)*20, (std::string("to ") + o_msg->recvPlayer).c_str());
+        SM64AP_PrintWrappedItemMessage(
+            o_msg->item, "Sent to " + o_msg->recvPlayer);
     } else if (msg->type == AP_MessageType::ItemRecv) {
         AP_ItemRecvMessage* o_msg = static_cast<AP_ItemRecvMessage*>(msg);
-        print_text(GFX_DIMENSIONS_FROM_LEFT_EDGE(0), (1-0)*20, (std::string("Got ") + o_msg->item).c_str());
-        print_text(GFX_DIMENSIONS_FROM_LEFT_EDGE(0), (1-1)*20, (std::string("From ") + o_msg->sendPlayer).c_str());
+        SM64AP_PrintWrappedItemMessage(
+            o_msg->item, "Received from " + o_msg->sendPlayer);
     } else if (msg->type == AP_MessageType::Countdown) {
-        cur_msg_frame_duration = std::min(cur_msg_frame_duration, 30);
+        display_duration = 30;
         AP_CountdownMessage* o_msg = static_cast<AP_CountdownMessage*>(msg);
         print_text(GFX_DIMENSIONS_FROM_LEFT_EDGE(0) + SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, std::to_string(o_msg->timer).c_str());
     } else {
         //print_text(GFX_DIMENSIONS_FROM_LEFT_EDGE(0), (1-0)*20, msg->text.c_str());
     }
-    if (cur_msg_frame_duration > 0) {
+    int displayed_frames = msg_frame_duration - cur_msg_frame_duration;
+    if (displayed_frames + 1 < display_duration) {
         cur_msg_frame_duration--;
     } else {
         AP_ClearLatestMessage();

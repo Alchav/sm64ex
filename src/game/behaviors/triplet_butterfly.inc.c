@@ -170,6 +170,11 @@ static void triplet_butterfly_act_explode(void) {
 }
 
 void bhv_triplet_butterfly_update(void) {
+    if (!SM64AP_HaveOneUpSource(gCurrLevelNum, SM64AP_1UP_SOURCE_BUTTERFLY)) {
+        cur_obj_hide();
+        return;
+    }
+
     cur_obj_update_floor_and_walls();
 
     switch (o->oAction) {
