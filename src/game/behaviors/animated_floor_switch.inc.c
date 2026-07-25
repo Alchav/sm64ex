@@ -64,6 +64,12 @@ void bhv_animates_on_floor_switch_press_init(void) {
 }
 
 void bhv_animates_on_floor_switch_press_loop(void) {
+    if (o->parentObj == NULL
+        || !(o->parentObj->activeFlags & ACTIVE_FLAG_ACTIVE)
+        || !obj_has_behavior(o->parentObj, bhvFloorSwitchAnimatesObject)) {
+        o->parentObj = cur_obj_nearest_object_with_behavior(bhvFloorSwitchAnimatesObject);
+    }
+
     if (o->parentObj == NULL) {
         reset_floor_switch_press_animation_to_default_frame();
         set_floor_switch_press_animation_frame();
