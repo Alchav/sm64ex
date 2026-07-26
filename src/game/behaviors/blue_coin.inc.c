@@ -12,6 +12,11 @@
 void bhv_hidden_blue_coin_loop(void) {
     struct Object *blueCoinSwitch;
 
+    if (SM64AP_ShouldSuppressPermanentCoin(o, 5)) {
+        obj_mark_for_deletion(o);
+        return;
+    }
+
     switch (o->oAction) {
         case HIDDEN_BLUE_COIN_ACT_INACTIVE:
             // Become invisible and intangible
