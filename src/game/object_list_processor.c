@@ -609,8 +609,8 @@ static void reconcile_permanent_coin_objects(void) {
         if (!(object->activeFlags & ACTIVE_FLAG_ACTIVE)) {
             continue;
         }
-        if (obj_has_behavior(object, bhvRedCoin)
-            && SM64AP_ShouldSuppressPermanentCoin(object, 2)) {
+        if (object->apCoinValue > 0
+            && SM64AP_ShouldSuppressPermanentCoin(object, object->apCoinValue)) {
             object->activeFlags = ACTIVE_FLAG_DEACTIVATED;
         } else if (obj_has_behavior(object, bhvHiddenRedCoinStar)) {
             object->oHiddenStarTriggerCounter = -2;
@@ -745,6 +745,7 @@ void update_objects(UNUSED s32 unused) {
 
     gObjectLists = gObjectListArray;
 
+    SM64AP_UpdatePermanentCoinTrap();
     reconcile_permanent_coin_objects();
     SM64AP_RestorePermanentCoinCount();
     spawn_outstanding_permanent_coin_star();

@@ -57,6 +57,7 @@ extern "C" {
 #define SM64AP_ID_CHUCK_TRAP     (SM64AP_ID_OFFSET+1763)
 #define SM64AP_ID_SPIN_TRAP      (SM64AP_ID_OFFSET+1764)
 #define SM64AP_ID_GUST_TRAP      (SM64AP_ID_OFFSET+1765)
+#define SM64AP_ID_UNCOLLECT_COIN_TRAP (SM64AP_ID_OFFSET+1766)
 
 
 #define SM64AP_LOCATIONID_BOARDBOWSERSSUB (SM64AP_ID_OFFSET + 56)
@@ -462,6 +463,9 @@ AP_EXTERN_C void SM64AP_RestorePermanentCoinCount();
 AP_EXTERN_C bool SM64AP_ConsumePermanentCoinReconcileRequest();
 AP_EXTERN_C bool SM64AP_ShouldSpawnOutstandingCoinStar();
 AP_EXTERN_C void SM64AP_FlushPermanentCoinLedger();
+AP_EXTERN_C void SM64AP_UpdatePermanentCoinTrap();
+AP_EXTERN_C bool SM64AP_ReadyToStart();
+AP_EXTERN_C void SM64AP_PrintTitleConnectionStatus();
 AP_EXTERN_C void SM64AP_RequestLiveObjectReconcile();
 AP_EXTERN_C bool SM64AP_ConsumeLiveObjectReconcileRequest();
 AP_EXTERN_C bool SM64AP_DeathLinkPending();

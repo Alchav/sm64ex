@@ -13,6 +13,7 @@
 #include "level_table.h"
 #include "seq_ids.h"
 #include "sm64.h"
+#include "sm64ap.h"
 
 #define PRESS_START_DEMO_TIMER 800
 
@@ -167,10 +168,16 @@ int intro_default(void) {
         D_U_801A7C34 = 0;
     }
 #endif
+    if (!SM64AP_ReadyToStart()) {
+        SM64AP_PrintTitleConnectionStatus();
+        return 0;
+    }
+
     print_intro_text();
 
     if (gPlayer1Controller->buttonPressed & START_BUTTON) {
         play_sound(SOUND_MENU_STAR_SOUND, gDefaultSoundArgs);
+        gCurrSaveFileNum = 1;
         sp1C = 100 + gDebugLevelSelect;
 #ifndef VERSION_JP        
         D_U_801A7C34 = 1;
@@ -189,10 +196,16 @@ int intro_game_over(void) {
     }
 #endif
 
+    if (!SM64AP_ReadyToStart()) {
+        SM64AP_PrintTitleConnectionStatus();
+        return 0;
+    }
+
     print_intro_text();
 
     if (gPlayer1Controller->buttonPressed & START_BUTTON) {
         play_sound(SOUND_MENU_STAR_SOUND, gDefaultSoundArgs);
+        gCurrSaveFileNum = 1;
         sp1C = 100 + gDebugLevelSelect;
 #ifndef VERSION_JP
         gameOverNotPlayed = 1;

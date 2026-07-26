@@ -48,6 +48,8 @@ extern "C" {
 #include <algorithm>
 #include <cstring>
 #include <sstream>
+#include <mutex>
+#include <limits>
 
 #define WARP_NODE_CREDITS_MIN 0xF8 // level_update.c
 #define NUM_PAINTING_LOCKS SM64AP_NUM_PAINTING_LOCKS
@@ -101,11 +103,43 @@ struct SM64APPermanentCoinRecord {
 };
 
 static std::map<std::pair<u64, u8>, SM64APPermanentCoinRecord> sm64_permanent_coins;
-static bool sm64_permanent_coin_ledger_dirty = false;
+static std::map<std::pair<u64, u8>, SM64APPermanentCoinRecord> sm64_permanent_coin_updates;
+static std::map<std::pair<u64, u8>, SM64APPermanentCoinRecord> sm64_pending_permanent_coins;
+static std::set<std::pair<u64, u8>> sm64_uncollected_coin_tombstones;
+static std::mutex sm64_permanent_coin_mutex;
+static bool sm64_pending_permanent_coin_snapshot = false;
 static bool sm64_permanent_coin_storage_initialized = false;
 static bool sm64_permanent_coin_reconcile_requested = false;
 static std::string sm64_permanent_coin_ledger_key;
+static bool sm64_finished_bowser_storage_received = false;
+static bool sm64_moat_storage_received = false;
+static bool sm64_permanent_coin_storage_received = false;
+static int sm64_title_connection_wait_frames = 0;
 static void SM64AP_LoadPermanentCoins(const std::string &rawLedger);
+
+struct SM64APUncollectTrapState {
+    int ordinal;
+    int candidate;
+    int winner;
+    int frames;
+    bool eventReceived;
+    std::string claimKey;
+    std::string eventKey;
+};
+
+struct SM64APUncollectTrapEvent {
+    int ordinal;
+    u64 source;
+    u8 slot;
+    u8 course;
+    u8 value;
+};
+
+static int sm64_received_uncollect_coin_traps = 0;
+static std::queue<int> sm64_pending_uncollect_coin_traps;
+static std::map<int, SM64APUncollectTrapState> sm64_uncollect_trap_states;
+static std::queue<SM64APUncollectTrapEvent> sm64_pending_uncollect_trap_events;
+static constexpr int SM64AP_UNCOLLECT_TRAP_ELECTION_FRAMES = 90;
 bool sm64_show_global_cap_display = false;
 int sm64_moat_state = 0;
 bool sm64_have_cannon[15];
@@ -734,6 +768,13 @@ void SM64AP_RecvItem(int64_t idx, bool notify) {
         case SM64AP_ID_1_HEALTH_PIP ... SM64AP_ID_GUST_TRAP:
             if(!notify) break;
             delayed_queue.push(idx);
+            break;
+        case SM64AP_ID_UNCOLLECT_COIN_TRAP:
+            sm64_received_uncollect_coin_traps++;
+            if (notify && sm64_permanent_coin_collection) {
+                std::lock_guard<std::mutex> lock(sm64_permanent_coin_mutex);
+                sm64_pending_uncollect_coin_traps.push(sm64_received_uncollect_coin_traps);
+            }
             break;
         case SM64AP_ID_FEATURE(0) ... SM64AP_ID_FEATURE(SM64AP_NUM_FEATURES-1):
             sm64_have_features[idx-(SM64AP_ID_FEATURE(0))] = true;
@@ -1915,6 +1956,9 @@ void SM64AP_SetNoDespawn(int enabled) {
 
 static void SM64AP_SetPermanentCoinCollection(int enabled) {
     sm64_permanent_coin_collection = enabled != 0;
+    if (sm64_permanent_coin_collection && sm64_permanent_coin_ledger_key.empty()) {
+        sm64_permanent_coin_storage_initialized = false;
+    }
     SM64AP_RestorePermanentCoinCount();
 }
 
@@ -2359,6 +2403,17 @@ void SM64AP_SetOneUpUnlockMode(int mode) {
 }
 
 void SM64AP_ResetItems() {
+    {
+        std::lock_guard<std::mutex> lock(sm64_permanent_coin_mutex);
+        sm64_received_uncollect_coin_traps = 0;
+        while (!sm64_pending_uncollect_coin_traps.empty()) {
+            sm64_pending_uncollect_coin_traps.pop();
+        }
+        sm64_uncollect_trap_states.clear();
+        while (!sm64_pending_uncollect_trap_events.empty()) {
+            sm64_pending_uncollect_trap_events.pop();
+        }
+    }
     for (int i = 0; i < SM64AP_NUM_LOCS; i++) {
         sm64_locations[i] = false;
     }
@@ -2417,19 +2472,12 @@ void SM64AP_ResetItems() {
     }
     starsCollected = 0;
 
-    AP_SetServerDataRequest moat_request;
-    moat_request.key = AP_GetPrivateServerDataPrefix() + "MoatDrained";
-    moat_request.type = AP_DataType::Int;
-    int def_val = 0;
-    moat_request.operations = {{ "default", &def_val }};
-    moat_request.default_value = &def_val;
-    moat_request.want_reply = true;
-    AP_SetServerData(&moat_request);
     SM64AP_RequestLiveObjectReconcile();
 }
 
 void SM64AP_SetReplyHandler(AP_SetReply reply) {
     if (reply.key == AP_GetPrivateServerDataPrefix() + "FinishedBowser") {
+        sm64_finished_bowser_storage_received = true;
         switch (sm64_completion_type) {
             case 0: // Only BitS
                 if ((*(int*)(reply.value) & 0b100) > 0) AP_StoryComplete();
@@ -2440,17 +2488,92 @@ void SM64AP_SetReplyHandler(AP_SetReply reply) {
         }
     } else if (reply.key == AP_GetPrivateServerDataPrefix() + "MoatDrained") {
         sm64_moat_state = *(int *) (reply.value);
+        sm64_moat_storage_received = true;
     } else if (reply.key == sm64_permanent_coin_ledger_key) {
         SM64AP_LoadPermanentCoins(*(std::string *) reply.value);
+        sm64_permanent_coin_storage_received = true;
+    } else {
+        std::lock_guard<std::mutex> lock(sm64_permanent_coin_mutex);
+        for (auto &entry : sm64_uncollect_trap_states) {
+            SM64APUncollectTrapState &state = entry.second;
+            if (reply.key == state.claimKey) {
+                state.winner = *(int *) reply.value;
+                return;
+            }
+            if (reply.key == state.eventKey) {
+                const std::string &raw = *(std::string *) reply.value;
+                std::string::size_type pos = 0;
+                int ordinal = 0;
+                int slot = 0;
+                int course = 0;
+                int value = 0;
+                u64 source = 0;
+                if (raw == "{}"
+                    || !SM64AP_ConsumeJsonChar(raw, pos, '{')
+                    || raw.find("\"ordinal\"", pos) == std::string::npos) {
+                    return;
+                }
+
+                auto parseField = [&raw, &pos](const char *name, int &field) {
+                    std::string key = std::string("\"") + name + "\"";
+                    pos = raw.find(key, pos);
+                    if (pos == std::string::npos) {
+                        return false;
+                    }
+                    pos += key.size();
+                    return SM64AP_ConsumeJsonChar(raw, pos, ':')
+                        && SM64AP_ParseJsonInt(raw, pos, field);
+                };
+
+                int sourceHigh = 0;
+                int sourceLow = 0;
+                pos = 0;
+                if (!parseField("ordinal", ordinal)
+                    || !parseField("source_high", sourceHigh)
+                    || !parseField("source_low", sourceLow)
+                    || !parseField("slot", slot)
+                    || !parseField("course", course)
+                    || !parseField("value", value)
+                    || ordinal != state.ordinal
+                    || slot < 0 || slot > 63
+                    || course < 0 || course > COURSE_MAX
+                    || value < 0 || value > 5) {
+                    return;
+                }
+                source = (static_cast<u64>(static_cast<u32>(sourceHigh)) << 32)
+                    | static_cast<u32>(sourceLow);
+                sm64_pending_uncollect_trap_events.push({
+                    ordinal, source, static_cast<u8>(slot),
+                    static_cast<u8>(course), static_cast<u8>(value)
+                });
+                state.eventReceived = true;
+                return;
+            }
+        }
     }
 }
 
 void SM64AP_GenericInit() {
     sm64_permanent_coins.clear();
-    sm64_permanent_coin_ledger_dirty = false;
+    sm64_permanent_coin_updates.clear();
+    sm64_pending_permanent_coins.clear();
+    sm64_uncollected_coin_tombstones.clear();
+    sm64_pending_permanent_coin_snapshot = false;
     sm64_permanent_coin_storage_initialized = false;
     sm64_permanent_coin_reconcile_requested = false;
     sm64_permanent_coin_ledger_key.clear();
+    sm64_finished_bowser_storage_received = false;
+    sm64_moat_storage_received = false;
+    sm64_permanent_coin_storage_received = false;
+    sm64_title_connection_wait_frames = 0;
+    sm64_received_uncollect_coin_traps = 0;
+    while (!sm64_pending_uncollect_coin_traps.empty()) {
+        sm64_pending_uncollect_coin_traps.pop();
+    }
+    sm64_uncollect_trap_states.clear();
+    while (!sm64_pending_uncollect_trap_events.empty()) {
+        sm64_pending_uncollect_trap_events.pop();
+    }
     AP_SetDeathLinkSupported(true);
     AP_SetItemClearCallback(&SM64AP_ResetItems);
     AP_SetLocationCheckedCallback(&SM64AP_CheckLocation);
@@ -3545,38 +3668,52 @@ bool SM64AP_ShouldSuppressPermanentCoin(struct Object *coin, int value) {
     return SM64AP_PermanentCoinSlotCollected(coin->apCoinSourceId, coin->apCoinSlot);
 }
 
-static std::string SM64AP_SerializePermanentCoins() {
+static std::string SM64AP_PermanentCoinKey(u64 source, u8 slot) {
+    return std::to_string(source) + ":" + std::to_string(static_cast<int>(slot));
+}
+
+static std::string SM64AP_SerializePermanentCoinEntries(
+    const std::map<std::pair<u64, u8>, SM64APPermanentCoinRecord> &entries) {
     std::ostringstream output;
-    output << "{\"version\":1,\"coins\":[";
+    output << '{';
     bool first = true;
-    for (const auto &entry : sm64_permanent_coins) {
+    for (const auto &entry : entries) {
         if (!first) {
             output << ',';
         }
         first = false;
-        output << "[\"" << entry.first.first << "\"," << static_cast<int>(entry.first.second)
-               << ',' << static_cast<int>(entry.second.course)
-               << ',' << static_cast<int>(entry.second.value) << ']';
+        output << '"' << SM64AP_PermanentCoinKey(entry.first.first, entry.first.second) << "\":["
+               << static_cast<int>(entry.second.course) << ','
+               << static_cast<int>(entry.second.value) << ']';
     }
-    output << "]}";
+    output << '}';
     return output.str();
 }
 
-static bool SM64AP_ParseJsonQuotedU64(
-    const std::string &text, std::string::size_type &pos, u64 &value) {
+static bool SM64AP_ParsePermanentCoinKey(
+    const std::string &text, std::string::size_type &pos, u64 &source, int &slot) {
     SM64AP_SkipJsonWhitespace(text, pos);
     if (pos >= text.size() || text[pos++] != '"') {
         return false;
     }
-    std::string::size_type start = pos;
+    std::string::size_type sourceStart = pos;
     while (pos < text.size() && std::isdigit(static_cast<unsigned char>(text[pos]))) {
         pos++;
     }
-    if (start == pos || pos >= text.size() || text[pos++] != '"') {
+    if (sourceStart == pos || pos >= text.size() || text[pos++] != ':') {
         return false;
     }
+    std::string::size_type slotStart = pos;
+    while (pos < text.size() && std::isdigit(static_cast<unsigned char>(text[pos]))) {
+        pos++;
+    }
+    if (slotStart == pos || pos >= text.size() || text[pos++] != '"') {
+        return false;
+    }
+
     try {
-        value = std::stoull(text.substr(start, pos - start - 1));
+        source = std::stoull(text.substr(sourceStart, slotStart - sourceStart - 1));
+        slot = std::stoi(text.substr(slotStart, pos - slotStart - 1));
     } catch (...) {
         return false;
     }
@@ -3584,33 +3721,25 @@ static bool SM64AP_ParseJsonQuotedU64(
 }
 
 static void SM64AP_LoadPermanentCoins(const std::string &rawLedger) {
-    std::string::size_type coinsPos = rawLedger.find("\"coins\"");
-    if (coinsPos == std::string::npos) {
+    std::map<std::pair<u64, u8>, SM64APPermanentCoinRecord> parsed;
+    std::string::size_type pos = 0;
+    if (!SM64AP_ConsumeJsonChar(rawLedger, pos, '{')) {
         return;
     }
-    std::string::size_type pos = rawLedger.find('[', coinsPos);
-    if (pos == std::string::npos) {
-        return;
-    }
-    pos++;
 
     while (pos < rawLedger.size()) {
         SM64AP_SkipJsonWhitespace(rawLedger, pos);
-        if (pos < rawLedger.size() && rawLedger[pos] == ']') {
+        if (pos < rawLedger.size() && rawLedger[pos] == '}') {
             break;
-        }
-        if (!SM64AP_ConsumeJsonChar(rawLedger, pos, '[')) {
-            return;
         }
 
         u64 source = 0;
         int slot = 0;
         int course = 0;
         int value = 0;
-        if (!SM64AP_ParseJsonQuotedU64(rawLedger, pos, source)
-            || !SM64AP_ConsumeJsonChar(rawLedger, pos, ',')
-            || !SM64AP_ParseJsonInt(rawLedger, pos, slot)
-            || !SM64AP_ConsumeJsonChar(rawLedger, pos, ',')
+        if (!SM64AP_ParsePermanentCoinKey(rawLedger, pos, source, slot)
+            || !SM64AP_ConsumeJsonChar(rawLedger, pos, ':')
+            || !SM64AP_ConsumeJsonChar(rawLedger, pos, '[')
             || !SM64AP_ParseJsonInt(rawLedger, pos, course)
             || !SM64AP_ConsumeJsonChar(rawLedger, pos, ',')
             || !SM64AP_ParseJsonInt(rawLedger, pos, value)
@@ -3620,7 +3749,7 @@ static void SM64AP_LoadPermanentCoins(const std::string &rawLedger) {
         if (source != 0 && slot >= 0 && slot < 64
             && course > COURSE_NONE && course <= COURSE_MAX
             && value > 0 && value <= 5) {
-            sm64_permanent_coins[std::make_pair(source, static_cast<u8>(slot))] = {
+            parsed[std::make_pair(source, static_cast<u8>(slot))] = {
                 static_cast<u8>(course), static_cast<u8>(value)
             };
         }
@@ -3628,12 +3757,14 @@ static void SM64AP_LoadPermanentCoins(const std::string &rawLedger) {
         SM64AP_SkipJsonWhitespace(rawLedger, pos);
         if (pos < rawLedger.size() && rawLedger[pos] == ',') {
             pos++;
-        } else if (pos < rawLedger.size() && rawLedger[pos] != ']') {
+        } else if (pos < rawLedger.size() && rawLedger[pos] != '}') {
             return;
         }
     }
-    sm64_permanent_coin_reconcile_requested = true;
-    SM64AP_RestorePermanentCoinCount();
+
+    std::lock_guard<std::mutex> lock(sm64_permanent_coin_mutex);
+    sm64_pending_permanent_coins = std::move(parsed);
+    sm64_pending_permanent_coin_snapshot = true;
 }
 
 static void SM64AP_InitializeServerStorage() {
@@ -3643,17 +3774,104 @@ static void SM64AP_InitializeServerStorage() {
     }
 
     std::string prefix = AP_GetPrivateServerDataPrefix();
-    AP_SetNotify(prefix + "FinishedBowser", AP_DataType::Int);
-    AP_SetNotify(prefix + "MoatDrained", AP_DataType::Int);
-    sm64_permanent_coin_ledger_key = prefix + "PermanentCoins";
-    AP_SetNotify(sm64_permanent_coin_ledger_key, AP_DataType::Raw, true);
+    std::string finishedBowserKey = prefix + "FinishedBowser";
+    std::string moatDrainedKey = prefix + "MoatDrained";
+    AP_SetNotify({
+        { finishedBowserKey, AP_DataType::Int },
+        { moatDrainedKey, AP_DataType::Int },
+    });
+
+    int defaultValue = 0;
+    AP_SetServerDataRequest finishedBowserRequest;
+    AP_DataStorageOperation defaultFinishedBowser = { "default", &defaultValue };
+    finishedBowserRequest.key = finishedBowserKey;
+    finishedBowserRequest.operations = { defaultFinishedBowser };
+    finishedBowserRequest.default_value = &defaultValue;
+    finishedBowserRequest.type = AP_DataType::Int;
+    finishedBowserRequest.want_reply = true;
+    AP_BulkSetServerData(&finishedBowserRequest);
+
+    AP_SetServerDataRequest moatDrainedRequest;
+    AP_DataStorageOperation defaultMoatDrained = { "default", &defaultValue };
+    moatDrainedRequest.key = moatDrainedKey;
+    moatDrainedRequest.operations = { defaultMoatDrained };
+    moatDrainedRequest.default_value = &defaultValue;
+    moatDrainedRequest.type = AP_DataType::Int;
+    moatDrainedRequest.want_reply = true;
+    AP_BulkSetServerData(&moatDrainedRequest);
+
+    if (sm64_permanent_coin_collection) {
+        sm64_permanent_coin_ledger_key = prefix + "PermanentCoins";
+        AP_SetNotify(sm64_permanent_coin_ledger_key, AP_DataType::Raw, true);
+    } else {
+        AP_CommitServerData();
+    }
     sm64_permanent_coin_storage_initialized = true;
 }
 
+bool SM64AP_ReadyToStart() {
+    SM64AP_InitializeServerStorage();
+    bool ready = AP_GetConnectionStatus() == AP_ConnectionStatus::Authenticated
+        && sm64_permanent_coin_storage_initialized
+        && sm64_finished_bowser_storage_received
+        && sm64_moat_storage_received
+        && (!sm64_permanent_coin_collection || sm64_permanent_coin_storage_received);
+    if (ready) {
+        sm64_title_connection_wait_frames = 0;
+    }
+    return ready;
+}
+
+void SM64AP_PrintTitleConnectionStatus() {
+    if (AP_GetConnectionStatus() != AP_ConnectionStatus::ConnectionRefused
+        && ++sm64_title_connection_wait_frames < 15) {
+        return;
+    }
+
+    switch (AP_GetConnectionStatus()) {
+        case AP_ConnectionStatus::ConnectionRefused:
+            print_text_centered(SCREEN_WIDTH / 2, 38, "CONNECTION REFUSED");
+            print_text_centered(SCREEN_WIDTH / 2, 20, "CHECK CONNECTION SETTINGS");
+            break;
+        case AP_ConnectionStatus::Authenticated:
+            print_text_centered(SCREEN_WIDTH / 2, 20, "LOADING SERVER DATA");
+            break;
+        default:
+            print_text_centered(SCREEN_WIDTH / 2, 20, "CONNECTING TO SERVER");
+            break;
+    }
+}
+
 bool SM64AP_ConsumePermanentCoinReconcileRequest() {
+    std::map<std::pair<u64, u8>, SM64APPermanentCoinRecord> pending;
+    {
+        std::lock_guard<std::mutex> lock(sm64_permanent_coin_mutex);
+        if (sm64_pending_permanent_coin_snapshot) {
+            pending = std::move(sm64_pending_permanent_coins);
+            sm64_pending_permanent_coins.clear();
+            sm64_pending_permanent_coin_snapshot = false;
+        }
+    }
+
+    for (const auto &entry : pending) {
+        if (sm64_uncollected_coin_tombstones.count(entry.first) == 0
+            && sm64_permanent_coins.count(entry.first) == 0) {
+            sm64_permanent_coins[entry.first] = entry.second;
+            sm64_permanent_coin_reconcile_requested = true;
+        }
+    }
+
     bool requested = sm64_permanent_coin_reconcile_requested;
     sm64_permanent_coin_reconcile_requested = false;
     return requested;
+}
+
+static void SM64AP_RecordPermanentCoin(
+    const std::pair<u64, u8> &key, u8 course, u8 value) {
+    SM64APPermanentCoinRecord record = { course, value };
+    sm64_permanent_coins[key] = record;
+    sm64_permanent_coin_updates[key] = record;
+    sm64_uncollected_coin_tombstones.erase(key);
 }
 
 bool SM64AP_CollectPermanentCoin(struct Object *coin, int value) {
@@ -3668,12 +3886,11 @@ bool SM64AP_CollectPermanentCoin(struct Object *coin, int value) {
             }
         }
         for (int slot = 0; slot < coin->apCoinSlotCount; slot++) {
-            sm64_permanent_coins[std::make_pair(coin->apCoinSourceId, static_cast<u8>(slot))] = {
+            SM64AP_RecordPermanentCoin(
+                std::make_pair(coin->apCoinSourceId, static_cast<u8>(slot)),
                 coin->apCoinCourse != 0 ? coin->apCoinCourse : static_cast<u8>(gCurrCourseNum),
-                1
-            };
+                1);
         }
-        sm64_permanent_coin_ledger_dirty = true;
         return true;
     }
 
@@ -3682,12 +3899,11 @@ bool SM64AP_CollectPermanentCoin(struct Object *coin, int value) {
         return false;
     }
 
-    sm64_permanent_coins[key] = {
+    SM64AP_RecordPermanentCoin(
+        key,
         coin->apCoinCourse != 0 ? coin->apCoinCourse : static_cast<u8>(gCurrCourseNum),
-        static_cast<u8>(value)
-    };
+        static_cast<u8>(value));
     coin->apCoinValue = value;
-    sm64_permanent_coin_ledger_dirty = true;
     return true;
 }
 
@@ -3704,15 +3920,12 @@ int SM64AP_CollectPermanentCoinOutputs(
         if (sm64_permanent_coins.count(key) != 0) {
             continue;
         }
-        sm64_permanent_coins[key] = {
+        SM64AP_RecordPermanentCoin(
+            key,
             source->apCoinCourse != 0 ? source->apCoinCourse : static_cast<u8>(gCurrCourseNum),
-            static_cast<u8>(value)
-        };
+            static_cast<u8>(value));
         collectedValue += value;
         requestedSlots--;
-    }
-    if (collectedValue > 0) {
-        sm64_permanent_coin_ledger_dirty = true;
     }
     return collectedValue;
 }
@@ -3763,22 +3976,156 @@ bool SM64AP_ShouldSpawnOutstandingCoinStar() {
 }
 
 void SM64AP_FlushPermanentCoinLedger() {
-    if (!sm64_permanent_coin_ledger_dirty || sm64_permanent_coin_ledger_key.empty()) {
+    if (sm64_permanent_coin_updates.empty() || sm64_permanent_coin_ledger_key.empty()) {
         return;
     }
 
-    std::string serialized = SM64AP_SerializePermanentCoins();
+    std::string serialized = SM64AP_SerializePermanentCoinEntries(sm64_permanent_coin_updates);
+    std::string defaultValue = "{}";
     AP_SetServerDataRequest request;
-    AP_DataStorageOperation replace;
-    replace.operation = "replace";
-    replace.value = &serialized;
+    AP_DataStorageOperation update;
+    update.operation = "update";
+    update.value = &serialized;
     request.key = sm64_permanent_coin_ledger_key;
-    request.operations = { replace };
-    request.default_value = nullptr;
+    request.operations = { update };
+    request.default_value = &defaultValue;
     request.type = AP_DataType::Raw;
     request.want_reply = false;
     AP_SetServerData(&request);
-    sm64_permanent_coin_ledger_dirty = false;
+    sm64_permanent_coin_updates.clear();
+}
+
+static std::string SM64AP_SerializeUncollectTrapEvent(
+    int ordinal, const std::pair<u64, u8> &key, const SM64APPermanentCoinRecord &record) {
+    std::ostringstream output;
+    output << "{\"ordinal\":" << ordinal
+           << ",\"source_high\":" << static_cast<s32>(key.first >> 32)
+           << ",\"source_low\":" << static_cast<s32>(key.first)
+           << ",\"slot\":" << static_cast<int>(key.second)
+           << ",\"course\":" << static_cast<int>(record.course)
+           << ",\"value\":" << static_cast<int>(record.value) << '}';
+    return output.str();
+}
+
+static void SM64AP_ApplyUncollectTrapEvent(const SM64APUncollectTrapEvent &event) {
+    if (event.source == 0) {
+        return;
+    }
+
+    std::pair<u64, u8> key = std::make_pair(event.source, event.slot);
+    sm64_permanent_coins.erase(key);
+    sm64_permanent_coin_updates.erase(key);
+    sm64_uncollected_coin_tombstones.insert(key);
+}
+
+void SM64AP_UpdatePermanentCoinTrap() {
+    std::queue<int> pendingTraps;
+    std::queue<SM64APUncollectTrapEvent> pendingEvents;
+    {
+        std::lock_guard<std::mutex> lock(sm64_permanent_coin_mutex);
+        std::swap(pendingTraps, sm64_pending_uncollect_coin_traps);
+        std::swap(pendingEvents, sm64_pending_uncollect_trap_events);
+    }
+
+    while (!pendingEvents.empty()) {
+        SM64AP_ApplyUncollectTrapEvent(pendingEvents.front());
+        pendingEvents.pop();
+    }
+
+    while (!pendingTraps.empty()) {
+        int ordinal = pendingTraps.front();
+        pendingTraps.pop();
+        std::string prefix = AP_GetPrivateServerDataPrefix();
+        int candidate = static_cast<int>(
+            ((AP_GetUUID() ^ (static_cast<u64>(random_u16()) << 16) ^ random_u16())
+             % (std::numeric_limits<int>::max() - 1)) + 1);
+        SM64APUncollectTrapState state = {
+            ordinal,
+            candidate,
+            std::numeric_limits<int>::max(),
+            0,
+            false,
+            prefix + "PermanentCoinTrapClaim;" + std::to_string(ordinal),
+            prefix + "PermanentCoinTrapEvent;" + std::to_string(ordinal),
+        };
+        {
+            std::lock_guard<std::mutex> lock(sm64_permanent_coin_mutex);
+            sm64_uncollect_trap_states[ordinal] = state;
+        }
+
+        AP_SetServerDataRequest claimRequest;
+        AP_DataStorageOperation claimMinimum = { "min", &candidate };
+        int defaultCandidate = std::numeric_limits<int>::max();
+        claimRequest.key = state.claimKey;
+        claimRequest.operations = { claimMinimum };
+        claimRequest.default_value = &defaultCandidate;
+        claimRequest.type = AP_DataType::Int;
+        claimRequest.want_reply = true;
+        AP_SetServerData(&claimRequest);
+        AP_SetNotify(state.claimKey, AP_DataType::Int, false);
+        AP_SetNotify(state.eventKey, AP_DataType::Raw, true);
+    }
+
+    std::vector<int> winningOrdinals;
+    {
+        std::lock_guard<std::mutex> lock(sm64_permanent_coin_mutex);
+        for (auto &entry : sm64_uncollect_trap_states) {
+            SM64APUncollectTrapState &state = entry.second;
+            if (state.eventReceived || state.winner == std::numeric_limits<int>::max()) {
+                continue;
+            }
+            state.frames++;
+            if (state.frames >= SM64AP_UNCOLLECT_TRAP_ELECTION_FRAMES
+                && state.winner == state.candidate) {
+                state.eventReceived = true;
+                winningOrdinals.push_back(state.ordinal);
+            }
+        }
+    }
+
+    for (int ordinal : winningOrdinals) {
+        SM64APUncollectTrapState state;
+        {
+            std::lock_guard<std::mutex> lock(sm64_permanent_coin_mutex);
+            state = sm64_uncollect_trap_states.at(ordinal);
+        }
+
+        std::pair<u64, u8> selectedKey = { 0, 0 };
+        SM64APPermanentCoinRecord selectedRecord = { 0, 0 };
+        if (!sm64_permanent_coins.empty()) {
+            u64 selectionHash = AP_GetUUID() ^ (static_cast<u64>(ordinal) * 0x9E3779B97F4A7C15ULL);
+            auto selected = sm64_permanent_coins.begin();
+            std::advance(selected, selectionHash % sm64_permanent_coins.size());
+            selectedKey = selected->first;
+            selectedRecord = selected->second;
+        }
+
+        std::string eventJson =
+            SM64AP_SerializeUncollectTrapEvent(ordinal, selectedKey, selectedRecord);
+        std::string emptyObject = "{}";
+        AP_SetServerDataRequest eventRequest;
+        AP_DataStorageOperation replaceEvent = { "replace", &eventJson };
+        eventRequest.key = state.eventKey;
+        eventRequest.operations = { replaceEvent };
+        eventRequest.default_value = &emptyObject;
+        eventRequest.type = AP_DataType::Raw;
+        eventRequest.want_reply = true;
+        AP_BulkSetServerData(&eventRequest);
+
+        if (selectedKey.first != 0) {
+            std::string serializedKey = "\"" + SM64AP_PermanentCoinKey(
+                selectedKey.first, selectedKey.second) + "\"";
+            AP_SetServerDataRequest ledgerRequest;
+            AP_DataStorageOperation removeCoin = { "pop", &serializedKey };
+            ledgerRequest.key = sm64_permanent_coin_ledger_key;
+            ledgerRequest.operations = { removeCoin };
+            ledgerRequest.default_value = &emptyObject;
+            ledgerRequest.type = AP_DataType::Raw;
+            ledgerRequest.want_reply = true;
+            AP_BulkSetServerData(&ledgerRequest);
+        }
+        AP_CommitServerData();
+    }
 }
 
 void SM64AP_RequestLiveObjectReconcile() {

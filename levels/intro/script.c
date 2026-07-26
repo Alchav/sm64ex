@@ -119,8 +119,8 @@ const LevelScript script_intro_L1[] = {
     SLEEP(/*frames*/ 16),
     CLEAR_LEVEL(),
     SLEEP(/*frames*/ 2),
-    SET_REG(/*value*/ 16),
-    EXIT_AND_EXECUTE(/*seg*/ 0x14, _menuSegmentRomStart, _menuSegmentRomEnd, level_main_menu_entry_1),
+    SET_REG(/*value*/ LEVEL_CASTLE_GROUNDS),
+    EXIT_AND_EXECUTE(/*seg*/ 0x15, _scriptsSegmentRomStart, _scriptsSegmentRomEnd, level_main_scripts_entry),
 };
 
 const LevelScript script_intro_L2[] = {
