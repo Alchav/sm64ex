@@ -446,7 +446,6 @@ AP_EXTERN_C int SM64AP_BowserInTheSkyStageCollapseHits();
 AP_EXTERN_C bool SM64AP_ShouldCreateWhirlpool(s16, s16, s8, s8, s16, s16, s16, s16);
 AP_EXTERN_C bool SM64AP_HavePainting(int);
 AP_EXTERN_C bool SM64AP_HavePaintingForArea(int, int);
-AP_EXTERN_C bool SM64AP_PaintingRandoEnabled();
 AP_EXTERN_C bool SM64AP_EasyButterflies();
 AP_EXTERN_C bool SM64AP_NoDespawn();
 AP_EXTERN_C bool SM64AP_PermanentCoinCollection();

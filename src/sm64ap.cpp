@@ -76,7 +76,6 @@ bool sm64_have_hat = false;
 bool sm64_have_vcutm_entrance = false;
 bool sm64_have_rr_level_unlock = false;
 bool sm64_have_wmotr_level_unlock = false;
-int sm64_level_unlock_mode = 1;
 int sm64_one_up_unlock_mode = 0;
 bool sm64_1up_checks_enabled = false;
 bool sm64_buddy_checks_enabled = true;
@@ -145,7 +144,6 @@ int sm64_moat_state = 0;
 bool sm64_have_cannon[15];
 bool sm64_have_painting[NUM_PAINTING_LOCKS];
 bool sm64_have_thi_tiny_painting = false;
-bool sm64_painting_rando_enabled = false;
 int sm64_completion_type = 0;
 std::bitset<SM64AP_NUM_ABILITIES> sm64_have_abilities;
 std::bitset<SM64AP_NUM_LEVEL_MOVE_AREAS * SM64AP_NUM_LEVEL_MOVES> sm64_have_level_moves;
@@ -2384,14 +2382,6 @@ void SM64AP_SetMoveRandoVec(int vec) {
         sm64_have_abilities[i] = !std::bitset<SM64AP_NUM_ABILITIES>(vec).test(i) || sm64_have_abilities[i];
     }
 }
-void SM64AP_SetPaintingRando(int enabled) {
-    sm64_painting_rando_enabled = enabled != 0;
-}
-
-void SM64AP_SetLevelUnlockMode(int mode) {
-    sm64_level_unlock_mode = mode >= 0 && mode <= 2 ? mode : 1;
-}
-
 void SM64AP_SetOneUpUnlockMode(int mode) {
     sm64_one_up_unlock_mode = mode >= 0 && mode <= 2 ? mode : 0;
 }
@@ -2418,7 +2408,6 @@ void SM64AP_ResetItems() {
         sm64_have_painting[i] = false;
     }
     sm64_have_thi_tiny_painting = false;
-    sm64_painting_rando_enabled = false;
     sm64_have_abilities.reset();
     sm64_have_level_moves.reset();
     sm64_have_features.reset();
@@ -2448,7 +2437,6 @@ void SM64AP_ResetItems() {
     sm64_have_vcutm_entrance = false;
     sm64_have_rr_level_unlock = false;
     sm64_have_wmotr_level_unlock = false;
-    sm64_level_unlock_mode = 1;
     sm64_one_up_unlock_mode = 0;
     sm64_1up_checks_enabled = false;
     sm64_buddy_checks_enabled = true;
@@ -2581,8 +2569,6 @@ void SM64AP_GenericInit() {
     AP_RegisterSlotDataIntCallback("StarsToFinish", &SM64AP_SetStarsToFinish);
     AP_RegisterSlotDataIntCallback("CompletionType", &SM64AP_SetCompletionType);
     AP_RegisterSlotDataIntCallback("MoveRandoVec", &SM64AP_SetMoveRandoVec);
-    AP_RegisterSlotDataIntCallback("PaintingRando", &SM64AP_SetPaintingRando);
-    AP_RegisterSlotDataIntCallback("LevelUnlockMode", &SM64AP_SetLevelUnlockMode);
     AP_RegisterSlotDataIntCallback("OneUpUnlockMode", &SM64AP_SetOneUpUnlockMode);
     AP_RegisterSlotDataIntCallback("GlobalCapItems", &SM64AP_SetGlobalCapDisplay);
     AP_RegisterSlotDataIntCallback("ShowGlobalCapDisplay", &SM64AP_SetGlobalCapDisplay);
@@ -3488,10 +3474,6 @@ bool SM64AP_HavePaintingForArea(int courseIdx, int areaIdx) {
     }
 
     return SM64AP_HavePainting(courseIdx);
-}
-
-bool SM64AP_PaintingRandoEnabled() {
-    return sm64_painting_rando_enabled;
 }
 
 bool SM64AP_EasyButterflies() {
