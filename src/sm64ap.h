@@ -459,6 +459,7 @@ AP_EXTERN_C bool SM64AP_CollectPermanentCoin(struct Object *, int);
 AP_EXTERN_C int SM64AP_CollectPermanentCoinOutputs(struct Object *, int, int, int);
 AP_EXTERN_C u64 SM64AP_PermanentCoinMask(struct Object *, int, int);
 AP_EXTERN_C void SM64AP_RestorePermanentCoinCount();
+AP_EXTERN_C bool SM64AP_ConsumePermanentCoinReconcileRequest();
 AP_EXTERN_C bool SM64AP_ShouldSpawnOutstandingCoinStar();
 AP_EXTERN_C void SM64AP_FlushPermanentCoinLedger();
 AP_EXTERN_C void SM64AP_RequestLiveObjectReconcile();

@@ -102,6 +102,8 @@ struct SM64APPermanentCoinRecord {
 
 static std::map<std::pair<u64, u8>, SM64APPermanentCoinRecord> sm64_permanent_coins;
 static bool sm64_permanent_coin_ledger_dirty = false;
+static bool sm64_permanent_coin_storage_initialized = false;
+static bool sm64_permanent_coin_reconcile_requested = false;
 static std::string sm64_permanent_coin_ledger_key;
 static void SM64AP_LoadPermanentCoins(const std::string &rawLedger);
 bool sm64_show_global_cap_display = false;
@@ -2446,16 +2448,14 @@ void SM64AP_SetReplyHandler(AP_SetReply reply) {
 void SM64AP_GenericInit() {
     sm64_permanent_coins.clear();
     sm64_permanent_coin_ledger_dirty = false;
+    sm64_permanent_coin_storage_initialized = false;
+    sm64_permanent_coin_reconcile_requested = false;
+    sm64_permanent_coin_ledger_key.clear();
     AP_SetDeathLinkSupported(true);
     AP_SetItemClearCallback(&SM64AP_ResetItems);
     AP_SetLocationCheckedCallback(&SM64AP_CheckLocation);
     AP_SetItemRecvCallback(&SM64AP_RecvItem);
     AP_RegisterSetReplyCallback(&SM64AP_SetReplyHandler);
-    AP_SetNotify(AP_GetPrivateServerDataPrefix() + "FinishedBowser", AP_DataType::Int);
-    AP_SetNotify(AP_GetPrivateServerDataPrefix() + "MoatDrained", AP_DataType::Int);
-    sm64_permanent_coin_ledger_key = AP_GetPrivateServerDataPrefix() + "PermanentCoins";
-    AP_SetNotify(sm64_permanent_coin_ledger_key, AP_DataType::Raw, true);
-
     AP_RegisterSlotDataIntCallback("FirstBowserDoorCost", &SM64AP_SetFirstBowserDoorCost);
     AP_RegisterSlotDataIntCallback("BasementDoorCost", &SM64AP_SetBasementDoorCost);
     AP_RegisterSlotDataIntCallback("SecondFloorDoorCost", &SM64AP_SetSecondFloorDoorCost);
@@ -3632,7 +3632,28 @@ static void SM64AP_LoadPermanentCoins(const std::string &rawLedger) {
             return;
         }
     }
+    sm64_permanent_coin_reconcile_requested = true;
     SM64AP_RestorePermanentCoinCount();
+}
+
+static void SM64AP_InitializeServerStorage() {
+    if (sm64_permanent_coin_storage_initialized
+        || AP_GetConnectionStatus() != AP_ConnectionStatus::Authenticated) {
+        return;
+    }
+
+    std::string prefix = AP_GetPrivateServerDataPrefix();
+    AP_SetNotify(prefix + "FinishedBowser", AP_DataType::Int);
+    AP_SetNotify(prefix + "MoatDrained", AP_DataType::Int);
+    sm64_permanent_coin_ledger_key = prefix + "PermanentCoins";
+    AP_SetNotify(sm64_permanent_coin_ledger_key, AP_DataType::Raw, true);
+    sm64_permanent_coin_storage_initialized = true;
+}
+
+bool SM64AP_ConsumePermanentCoinReconcileRequest() {
+    bool requested = sm64_permanent_coin_reconcile_requested;
+    sm64_permanent_coin_reconcile_requested = false;
+    return requested;
 }
 
 bool SM64AP_CollectPermanentCoin(struct Object *coin, int value) {
@@ -4661,6 +4682,7 @@ static void SM64AP_PrintWrappedItemMessage(
 }
 
 void SM64AP_PrintNext() {
+    SM64AP_InitializeServerStorage();
     if (AP_GetConnectionStatus() == AP_ConnectionStatus::Disconnected) {
         print_text(GFX_DIMENSIONS_FROM_LEFT_EDGE(SCREEN_WIDTH / 2) - 7, SCREEN_HEIGHT / 2, "Connecting");
     }

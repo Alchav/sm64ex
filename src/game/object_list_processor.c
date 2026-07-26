@@ -597,6 +597,29 @@ static void spawn_outstanding_permanent_coin_star(void) {
     obj_set_angle(star, 0, 0, 0);
 }
 
+static void reconcile_permanent_coin_objects(void) {
+    s32 index;
+
+    if (!SM64AP_ConsumePermanentCoinReconcileRequest()) {
+        return;
+    }
+
+    for (index = 0; index < OBJECT_POOL_CAPACITY; index++) {
+        struct Object *object = &gObjectPool[index];
+        if (!(object->activeFlags & ACTIVE_FLAG_ACTIVE)) {
+            continue;
+        }
+        if (obj_has_behavior(object, bhvRedCoin)
+            && SM64AP_ShouldSuppressPermanentCoin(object, 2)) {
+            object->activeFlags = ACTIVE_FLAG_DEACTIVATED;
+        } else if (obj_has_behavior(object, bhvHiddenRedCoinStar)) {
+            object->oHiddenStarTriggerCounter = -2;
+        } else if (obj_has_behavior(object, bhvBowserCourseRedCoinStar)) {
+            object->oHiddenStarTriggerCounter = -1;
+        }
+    }
+}
+
 void stub_obj_list_processor_1(void) {
 }
 
@@ -632,6 +655,7 @@ void clear_objects(void) {
     gObjectMemoryPool = mem_pool_init(0x800, MEMORY_POOL_LEFT);
     gObjectLists = gObjectListArray;
 
+    reconcile_permanent_coin_objects();
     SM64AP_RestorePermanentCoinCount();
     spawn_outstanding_permanent_coin_star();
     SM64AP_FlushPermanentCoinLedger();
@@ -721,6 +745,7 @@ void update_objects(UNUSED s32 unused) {
 
     gObjectLists = gObjectListArray;
 
+    reconcile_permanent_coin_objects();
     SM64AP_RestorePermanentCoinCount();
     spawn_outstanding_permanent_coin_star();
     SM64AP_FlushPermanentCoinLedger();
