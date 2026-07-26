@@ -879,6 +879,12 @@ u32 interact_bbh_entrance(struct MarioState *m, UNUSED u32 interactType, struct 
 u32 interact_warp(struct MarioState *m, UNUSED u32 interactType, struct Object *o) {
     u32 action;
 
+    if (gCurrLevelNum == LEVEL_CASTLE && gCurrentArea->index == 2
+        && o->oBehParams2ndByte == 0x0A && !SM64AP_HavePainting(COURSE_WMOTR)) {
+        reject_mario_from_locked_third_floor_alcove(m);
+        return TRUE;
+    }
+
     if (o->oInteractionSubtype & INT_SUBTYPE_FADING_WARP) {
         action = m->action;
 

@@ -130,5 +130,6 @@ s32 lvl_set_current_level(UNUSED s16 arg0, s32 levelNum);
 s32 lvl_play_the_end_screen_sound(UNUSED s16 arg0, UNUSED s32 arg1);
 void basic_update(UNUSED s16 *arg);
 struct WarpNode *get_painting_warp_node(void);
+void reject_mario_from_locked_third_floor_alcove(struct MarioState *m);
 
 #endif // LEVEL_UPDATE_H

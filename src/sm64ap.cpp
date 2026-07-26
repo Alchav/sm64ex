@@ -2386,12 +2386,6 @@ void SM64AP_SetMoveRandoVec(int vec) {
 }
 void SM64AP_SetPaintingRando(int enabled) {
     sm64_painting_rando_enabled = enabled != 0;
-    if(!sm64_painting_rando_enabled) {
-        // Not enabled, so unlock all paintings
-        for (int i = 0; i < NUM_PAINTING_LOCKS; i++)
-            sm64_have_painting[i] = true;
-        sm64_have_thi_tiny_painting = true;
-    }
 }
 
 void SM64AP_SetLevelUnlockMode(int mode) {
@@ -3479,9 +3473,9 @@ bool SM64AP_HavePainting(int courseIdx) {
         case 5:  // BBH doesn't have a painting
             return true;
         case COURSE_RR:
-            return sm64_level_unlock_mode != 2 || sm64_have_rr_level_unlock;
+            return sm64_have_rr_level_unlock;
         case COURSE_WMOTR:
-            return sm64_level_unlock_mode != 2 || sm64_have_wmotr_level_unlock;
+            return sm64_have_wmotr_level_unlock;
         default:
             // courses are 1-indexed, the items are 0-indexed
             return sm64_have_painting[courseIdx-1];
@@ -3489,10 +3483,6 @@ bool SM64AP_HavePainting(int courseIdx) {
 }
 
 bool SM64AP_HavePaintingForArea(int courseIdx, int areaIdx) {
-    if (!sm64_painting_rando_enabled) {
-        return true;
-    }
-
     if (courseIdx == COURSE_THI && areaIdx == 2) {
         return sm64_have_thi_tiny_painting;
     }

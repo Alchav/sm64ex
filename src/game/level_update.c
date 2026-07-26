@@ -687,6 +687,20 @@ static s32 get_ap_painting_source_entrance(s16 destLevel) {
     return 0;
 }
 
+void reject_mario_from_locked_third_floor_alcove(struct MarioState *m) {
+    Vec3f safePos = { -205.0f, 2918.0f, 7300.0f };
+
+    vec3f_copy(m->pos, safePos);
+    vec3f_copy(m->marioObj->header.gfx.pos, safePos);
+    m->marioObj->oPosX = safePos[0];
+    m->marioObj->oPosY = safePos[1];
+    m->marioObj->oPosZ = safePos[2];
+    m->forwardVel = 0.0f;
+    vec3f_set(m->vel, 0.0f, 0.0f, 0.0f);
+    set_mario_action(m, ACT_FREEFALL, 0);
+    play_sound(SOUND_GENERAL_PAINTING_EJECT, gDefaultSoundArgs);
+}
+
 void reject_mario_from_painting(s16 courseNum, s16 destArea) {
     Vec3s rejectAngle = {0, 0, 0};
     f32 newYaw = 0.0f;
@@ -694,6 +708,12 @@ void reject_mario_from_painting(s16 courseNum, s16 destArea) {
     f32 ejectDistance = 50.0f;
     f32 minYDiff = 30.0f;
     struct Painting p;
+
+    if (courseNum == COURSE_RR || courseNum == COURSE_WMOTR) {
+        reject_mario_from_locked_third_floor_alcove(gMarioState);
+        return;
+    }
+
     switch(courseNum) {
         case 1:  p = bob_painting;      break;
         case 2:  p = wf_painting;       break;
