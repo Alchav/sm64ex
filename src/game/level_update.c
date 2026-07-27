@@ -688,7 +688,7 @@ static s32 get_ap_painting_source_entrance(s16 destLevel) {
 }
 
 void reject_mario_from_locked_third_floor_alcove(struct MarioState *m) {
-    Vec3f safePos = { -205.0f, 2918.0f, 7300.0f };
+    Vec3f safePos = { -205.0f, 2918.0f, 5886.0f };
 
     vec3f_copy(m->pos, safePos);
     vec3f_copy(m->marioObj->header.gfx.pos, safePos);

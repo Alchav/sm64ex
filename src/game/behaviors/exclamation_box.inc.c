@@ -46,22 +46,44 @@ static bool exclamation_box_one_up_unlocked(void) {
     return true;
 }
 
+static bool exclamation_box_coin_unlocked(void) {
+    // AP 1-Up blocks use 0x1404 as their upper behavior parameters; the 0x04 is not coin contents.
+    if ((o->oBehParams >> 16) == 0x1404) {
+        return true;
+    }
+
+    switch (o->oBehParams2ndByte) {
+        case 4:
+            return SM64AP_HaveCoinSource(SM64AP_COIN_SOURCE_ONE_COIN_BOX, gCurrLevelNum);
+        case 5:
+            return SM64AP_HaveCoinSource(SM64AP_COIN_SOURCE_THREE_COIN_BOX, gCurrLevelNum);
+        case 6:
+            return SM64AP_HaveCoinSource(SM64AP_COIN_SOURCE_TEN_COIN_BOX, gCurrLevelNum);
+        default:
+            return true;
+    }
+}
+
+static bool exclamation_box_unlocked(void) {
+    if (!exclamation_box_one_up_unlocked() || !exclamation_box_coin_unlocked()) {
+        return false;
+    }
+    return o->oBehParams2ndByte >= 3
+        || SM64AP_HaveCap(D_8032F0C0[o->oBehParams2ndByte]);
+}
+
 void exclamation_box_act_0(void) {
     if ((o->oBehParams >> 16) == 0x1404) {
         o->oAnimState = 3;
-        o->oAction = exclamation_box_one_up_unlocked() ? 2 : 1;
+        o->oAction = exclamation_box_unlocked() ? 2 : 1;
         return;
     }
     if (o->oBehParams2ndByte < 3) {
         o->oAnimState = o->oBehParams2ndByte;
-        if ((o->oBehParams >> 16) == 0x1404 || SM64AP_HaveCap(D_8032F0C0[o->oBehParams2ndByte]))
-            o->oAction = 2;
-        else
-            o->oAction = 1;
     } else {
         o->oAnimState = 3;
-        o->oAction = 2;
     }
+    o->oAction = exclamation_box_unlocked() ? 2 : 1;
 }
 
 void exclamation_box_act_1(void) {
@@ -70,17 +92,14 @@ void exclamation_box_act_1(void) {
         spawn_object(o, MODEL_EXCLAMATION_POINT, bhvRotatingExclamationMark);
         cur_obj_set_model(MODEL_EXCLAMATION_BOX_OUTLINE);
     }
-    if (exclamation_box_one_up_unlocked()
-        && ((o->oBehParams >> 16) == 0x1404
-            || o->oBehParams2ndByte >= 3
-            || SM64AP_HaveCap(D_8032F0C0[o->oBehParams2ndByte]))) {
+    if (exclamation_box_unlocked()) {
         o->oAction = 2;
         cur_obj_set_model(MODEL_EXCLAMATION_BOX);
     }
 }
 
 void exclamation_box_act_2(void) {
-    if (!exclamation_box_one_up_unlocked()) {
+    if (!exclamation_box_unlocked()) {
         o->oAction = 1;
         return;
     }
