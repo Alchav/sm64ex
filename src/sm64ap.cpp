@@ -657,7 +657,7 @@ void SM64AP_RecvItem(int64_t idx, bool notify) {
         case SM64AP_ID_PROGRESSIVE_BOWSER_ARENA_BOMB:
             SM64AP_IncrementClamped(sm64_bowser_arena_bombs[0], 4);
             SM64AP_IncrementClamped(sm64_bowser_arena_bombs[1], 4);
-            SM64AP_IncrementClamped(sm64_bowser_arena_bombs[2], 4);
+            SM64AP_IncrementClamped(sm64_bowser_arena_bombs[2], 5);
             break;
         case SM64AP_ID_BITDW_PROGRESSIVE_BOWSER_ARENA_BOMB:
             SM64AP_IncrementClamped(sm64_bowser_arena_bombs[0], 4);
@@ -731,6 +731,42 @@ void SM64AP_RecvItem(int64_t idx, bool notify) {
             break;
         case SM64AP_ID_THI_PURPLE_SWITCHES:
             sm64_have_object_items[SM64AP_OBJECT_ITEM_THI_PURPLE_SWITCHES] = true;
+            break;
+        case SM64AP_ID_CCM_BOBOMB_BUDDY:
+            sm64_have_object_items[SM64AP_OBJECT_ITEM_CCM_BOBOMB_BUDDY] = true;
+            break;
+        case SM64AP_ID_SSL_BOBOMB_BUDDY:
+            sm64_have_object_items[SM64AP_OBJECT_ITEM_SSL_BOBOMB_BUDDY] = true;
+            break;
+        case SM64AP_ID_SL_BOBOMB_BUDDY:
+            sm64_have_object_items[SM64AP_OBJECT_ITEM_SL_BOBOMB_BUDDY] = true;
+            break;
+        case SM64AP_ID_WDW_BOBOMB_BUDDY:
+            sm64_have_object_items[SM64AP_OBJECT_ITEM_WDW_BOBOMB_BUDDY] = true;
+            break;
+        case SM64AP_ID_TTM_BOBOMB_BUDDY:
+            sm64_have_object_items[SM64AP_OBJECT_ITEM_TTM_BOBOMB_BUDDY] = true;
+            break;
+        case SM64AP_ID_THI_BOBOMB_BUDDY:
+            sm64_have_object_items[SM64AP_OBJECT_ITEM_THI_BOBOMB_BUDDY] = true;
+            break;
+        case SM64AP_ID_RR_BOBOMB_BUDDY:
+            sm64_have_object_items[SM64AP_OBJECT_ITEM_RR_BOBOMB_BUDDY] = true;
+            break;
+        case SM64AP_ID_WMOTR_BOBOMB_BUDDY:
+            sm64_have_object_items[SM64AP_OBJECT_ITEM_WMOTR_BOBOMB_BUDDY] = true;
+            break;
+        case SM64AP_ID_GLOBAL_BOBOMB_BUDDIES:
+            sm64_have_object_items[SM64AP_OBJECT_ITEM_GLOBAL_BOBOMB_BUDDIES] = true;
+            break;
+        case SM64AP_ID_JRB_TREASURE_CHESTS:
+            sm64_have_object_items[SM64AP_OBJECT_ITEM_JRB_TREASURE_CHESTS] = true;
+            break;
+        case SM64AP_ID_DDD_TREASURE_CHESTS:
+            sm64_have_object_items[SM64AP_OBJECT_ITEM_DDD_TREASURE_CHESTS] = true;
+            break;
+        case SM64AP_ID_GLOBAL_TREASURE_CHESTS:
+            sm64_have_object_items[SM64AP_OBJECT_ITEM_GLOBAL_TREASURE_CHESTS] = true;
             break;
         case SM64AP_ID_WINGCAP:
             sm64_have_wingcap = true;
@@ -1270,8 +1306,53 @@ static bool SM64AP_IsKoopaTheQuick(u32 behParam, const void *behavior) {
     }
 }
 
+static bool SM64AP_HaveBobombBuddy(s16 level) {
+    if (SM64AP_HaveObjectItem(SM64AP_OBJECT_ITEM_GLOBAL_BOBOMB_BUDDIES)) {
+        return true;
+    }
+    switch (level) {
+        case LEVEL_BOB:
+            return SM64AP_HaveFeature(SM64AP_FEATURE_BOB_BOBOMB_BUDDY);
+        case LEVEL_WF:
+            return SM64AP_HaveFeature(SM64AP_FEATURE_WF_BOBOMB_BUDDY);
+        case LEVEL_JRB:
+            return SM64AP_HaveFeature(SM64AP_FEATURE_JRB_BOBOMB_BUDDY);
+        case LEVEL_CCM:
+            return SM64AP_HaveObjectItem(SM64AP_OBJECT_ITEM_CCM_BOBOMB_BUDDY);
+        case LEVEL_SSL:
+            return SM64AP_HaveObjectItem(SM64AP_OBJECT_ITEM_SSL_BOBOMB_BUDDY);
+        case LEVEL_SL:
+            return SM64AP_HaveObjectItem(SM64AP_OBJECT_ITEM_SL_BOBOMB_BUDDY);
+        case LEVEL_WDW:
+            return SM64AP_HaveObjectItem(SM64AP_OBJECT_ITEM_WDW_BOBOMB_BUDDY);
+        case LEVEL_TTM:
+            return SM64AP_HaveObjectItem(SM64AP_OBJECT_ITEM_TTM_BOBOMB_BUDDY);
+        case LEVEL_THI:
+            return SM64AP_HaveObjectItem(SM64AP_OBJECT_ITEM_THI_BOBOMB_BUDDY);
+        case LEVEL_RR:
+            return SM64AP_HaveObjectItem(SM64AP_OBJECT_ITEM_RR_BOBOMB_BUDDY);
+        case LEVEL_WMOTR:
+            return SM64AP_HaveObjectItem(SM64AP_OBJECT_ITEM_WMOTR_BOBOMB_BUDDY);
+        default:
+            return true;
+    }
+}
+
+static bool SM64AP_HaveTreasureChests(s16 level) {
+    if (SM64AP_HaveObjectItem(SM64AP_OBJECT_ITEM_GLOBAL_TREASURE_CHESTS)) {
+        return true;
+    }
+    if (level == LEVEL_JRB) {
+        return SM64AP_HaveObjectItem(SM64AP_OBJECT_ITEM_JRB_TREASURE_CHESTS);
+    }
+    if (level == LEVEL_DDD) {
+        return SM64AP_HaveObjectItem(SM64AP_OBJECT_ITEM_DDD_TREASURE_CHESTS);
+    }
+    return true;
+}
+
 static bool SM64AP_ShouldSpawnBobObject(s16 x, s16, s16, u32 behParam, const void *behavior) {
-    bool haveBobombBuddy = SM64AP_HaveFeature(SM64AP_FEATURE_BOB_BOBOMB_BUDDY);
+    bool haveBobombBuddy = SM64AP_HaveBobombBuddy(LEVEL_BOB);
     bool haveBobCannon = SM64AP_HaveCannon(AP_COURSE_BOB);
 
     if (behavior_is(behavior, bhvKingBobomb)) {
@@ -1316,7 +1397,7 @@ static bool SM64AP_ShouldSpawnWfObject(u32 behParam, const void *behavior) {
         return SM64AP_HaveFeature(SM64AP_FEATURE_WF_FORTRESS);
     }
     if (behavior_is(behavior, bhvBobombBuddyOpensCannon)) {
-        return SM64AP_HaveFeature(SM64AP_FEATURE_WF_BOBOMB_BUDDY);
+        return SM64AP_HaveBobombBuddy(LEVEL_WF);
     }
     if (behavior_is(behavior, bhvHoot)) {
         return SM64AP_HaveFeature(SM64AP_FEATURE_WF_HOOT);
@@ -1352,7 +1433,11 @@ static bool SM64AP_ShouldSpawnJrbObject(u32 behParam, const void *behavior) {
         return SM64AP_HaveFeature(SM64AP_FEATURE_JRB_RAISED_SHIP);
     }
     if (behavior_is(behavior, bhvBobombBuddyOpensCannon)) {
-        return SM64AP_HaveFeature(SM64AP_FEATURE_JRB_BOBOMB_BUDDY);
+        return SM64AP_HaveBobombBuddy(LEVEL_JRB);
+    }
+    if (behavior_is(behavior, bhvTreasureChestsJrb)
+        || behavior_is(behavior, bhvTreasureChestsShip)) {
+        return SM64AP_HaveTreasureChests(LEVEL_JRB);
     }
     if (behavior_is(behavior, bhvJetStream)
         || (behavior_is(behavior, bhvStar) && beh_param_star(behParam) == 5)) {
@@ -1396,6 +1481,9 @@ static bool SM64AP_ShouldSpawnSslObject(u32 behParam, const void *behavior) {
 }
 
 static bool SM64AP_ShouldSpawnDddObject(u32 behParam, const void *behavior) {
+    if (behavior_is(behavior, bhvTreasureChests)) {
+        return SM64AP_HaveTreasureChests(LEVEL_DDD);
+    }
     if (behavior_is(behavior, bhvMantaRay)) {
         return SM64AP_HaveFeature(SM64AP_FEATURE_DDD_MANTA_RAY);
     }
@@ -1495,6 +1583,11 @@ bool SM64AP_ShouldSpawnLevelObject(s16 level, s16, s16 model, s16 x, s16 y, s16 
 
     if (behavior_is(behavior, bhvHiddenAt120Stars)) {
         return !SM64AP_HaveCastleCannon();
+    }
+
+    if (behavior_is(behavior, bhvBobombBuddyOpensCannon)
+        && !SM64AP_HaveBobombBuddy(level)) {
+        return false;
     }
 
     if (behavior_is(behavior, bhv1Up)
@@ -4320,6 +4413,18 @@ static constexpr const char *SM64AP_CHEAT_OBJECT_ITEM_NAMES[SM64AP_NUM_OBJECT_IT
     "DDD PURPLE SWITCH",
     "TTM PURPLE SWITCH",
     "THI PURPLE SWITCH",
+    "CCM BUDDY",
+    "SSL BUDDY",
+    "SL BUDDY",
+    "WDW BUDDY",
+    "TTM BUDDY",
+    "THI BUDDY",
+    "RR BUDDY",
+    "WMOTR BUDDY",
+    "BOBOMB BUDDIES",
+    "JRB TREASURE CHESTS",
+    "DDD TREASURE CHESTS",
+    "TREASURE CHESTS",
 };
 
 static constexpr const char *SM64AP_CHEAT_ABILITY_NAMES[SM64AP_NUM_ABILITIES] = {
@@ -4427,7 +4532,9 @@ static void SM64AP_InitCheatItems() {
         if (i != SM64AP_OBJECT_ITEM_RESERVED_BITFS) {
             bool globalItem = i == SM64AP_OBJECT_ITEM_CHECKERBOARD_PLATFORMS
                 || i == SM64AP_OBJECT_ITEM_ROLLING_LOGS
-                || i == SM64AP_OBJECT_ITEM_PURPLE_SWITCHES;
+                || i == SM64AP_OBJECT_ITEM_PURPLE_SWITCHES
+                || i == SM64AP_OBJECT_ITEM_GLOBAL_BOBOMB_BUDDIES
+                || i == SM64AP_OBJECT_ITEM_GLOBAL_TREASURE_CHESTS;
             SM64AP_CheatAdd(
                 SM64AP_CHEAT_ITEM_OBJECT, i,
                 globalItem
