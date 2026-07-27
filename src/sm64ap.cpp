@@ -209,6 +209,9 @@ int sm64_wdw_entrance_variant = 0;
 int sm64_ttc_entrance_variant = SM64AP_ENTRANCE_TTC_STOPPED;
 int sm64_music_shuffle_mode = 0;
 std::map<int,int> map_music;
+int sm64_skybox_shuffle_mode = 0;
+std::map<int,int> map_skybox;
+static int sm64_loaded_skybox = -1;
 std::map<int,int> map_start_inventory;
 int sm64_coin_star_requirements[15] = {
     100, 100, 100, 100, 100,
@@ -219,6 +222,9 @@ int sm64_coin_star_requirements[15] = {
 static constexpr int SM64AP_MUSIC_SHUFFLE_OFF = 0;
 static constexpr int SM64AP_MUSIC_SHUFFLE_MAP = 1;
 static constexpr int SM64AP_MUSIC_SHUFFLE_RANDOM_ON_LOAD = 2;
+static constexpr int SM64AP_SKYBOX_SHUFFLE_OFF = 0;
+static constexpr int SM64AP_SKYBOX_SHUFFLE_MAP = 1;
+static constexpr int SM64AP_SKYBOX_SHUFFLE_RANDOM_ON_LOAD = 2;
 static constexpr int SM64AP_NUM_COIN_STAR_REQUIREMENTS = 15;
 static constexpr int SM64AP_NUM_COIN_CHECK_COURSES = 24;
 static constexpr int SM64AP_DEFAULT_COIN_STAR_REQUIREMENT = 100;
@@ -1928,6 +1934,12 @@ void SM64AP_SetMusicShuffleMode(int mode) {
     }
 }
 
+void SM64AP_SetSkyboxShuffleMode(int mode) {
+    sm64_skybox_shuffle_mode =
+        mode == SM64AP_SKYBOX_SHUFFLE_MAP || mode == SM64AP_SKYBOX_SHUFFLE_RANDOM_ON_LOAD
+        ? mode : SM64AP_SKYBOX_SHUFFLE_OFF;
+}
+
 void SM64AP_SetGlobalCapDisplay(int enabled) {
     sm64_show_global_cap_display = enabled != 0;
 }
@@ -2266,6 +2278,12 @@ static void SM64AP_SetMusicMap(std::string rawMap) {
     map_music.clear();
 }
 
+static void SM64AP_SetSkyboxMap(std::string rawMap) {
+    if (!SM64AP_ParseJsonIntMap(rawMap, map_skybox)) {
+        map_skybox.clear();
+    }
+}
+
 static void SM64AP_SkipJsonWhitespace(const std::string &text, std::string::size_type &pos) {
     while (pos < text.size() && std::isspace((unsigned char) text[pos])) {
         pos++;
@@ -2587,6 +2605,8 @@ void SM64AP_GenericInit() {
     AP_RegisterSlotDataRawCallback("StartInventory", static_cast<void (*)(std::string)>(&SM64AP_SetStartInventory));
     AP_RegisterSlotDataIntCallback("MusicShuffleMode", &SM64AP_SetMusicShuffleMode);
     AP_RegisterSlotDataRawCallback("MusicMap", static_cast<void (*)(std::string)>(&SM64AP_SetMusicMap));
+    AP_RegisterSlotDataIntCallback("SkyboxShuffleMode", &SM64AP_SetSkyboxShuffleMode);
+    AP_RegisterSlotDataRawCallback("SkyboxMap", static_cast<void (*)(std::string)>(&SM64AP_SetSkyboxMap));
     AP_RegisterSlotDataRawCallback("MarioColors", &SM64AP_SetMarioColors);
     AP_RegisterSlotDataRawCallback("CoinStarRequirements", &SM64AP_SetCoinStarRequirements);
 
@@ -3213,6 +3233,24 @@ s16 SM64AP_ResolveAreaMusic(s16 level, s16 area, s16 vanillaSeq) {
         default:
             return vanillaSeq;
     }
+}
+
+void SM64AP_SelectSkybox(s16 level, s16 area, s16 vanillaSkybox) {
+    int selectedSkybox = vanillaSkybox;
+    if (sm64_skybox_shuffle_mode == SM64AP_SKYBOX_SHUFFLE_MAP) {
+        auto entry = map_skybox.find(SM64AP_ENTRANCE_ID(level, area));
+        if (entry != map_skybox.end() && entry->second >= 0 && entry->second < 10) {
+            selectedSkybox = entry->second;
+        }
+    } else if (sm64_skybox_shuffle_mode == SM64AP_SKYBOX_SHUFFLE_RANDOM_ON_LOAD) {
+        selectedSkybox = random_u16() % 10;
+    }
+
+    sm64_loaded_skybox = selectedSkybox;
+}
+
+s16 SM64AP_ResolveSkyboxBackground(s16 vanillaSkybox) {
+    return sm64_loaded_skybox >= 0 ? static_cast<s16>(sm64_loaded_skybox) : vanillaSkybox;
 }
 
 bool SM64AP_HaveKey1() {

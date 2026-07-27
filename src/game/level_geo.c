@@ -1,6 +1,7 @@
 #include <ultra64.h>
 
 #include "sm64.h"
+#include "sm64ap.h"
 #include "rendering_graph_node.h"
 #include "mario_misc.h"
 #include "skybox.h"
@@ -64,12 +65,14 @@ Gfx *geo_skybox_main(s32 callContext, struct GraphNode *node, UNUSED Mat4 *mtx) 
 
     if (callContext == GEO_CONTEXT_AREA_LOAD) {
         backgroundNode->unused = 0;
+        SM64AP_SelectSkybox(gCurrLevelNum, gCurrAreaIndex, backgroundNode->background);
     } else if (callContext == GEO_CONTEXT_RENDER) {
         struct GraphNodeCamera *camNode = (struct GraphNodeCamera *) gCurGraphNodeRoot->views[0];
         struct GraphNodePerspective *camFrustum =
             (struct GraphNodePerspective *) camNode->fnNode.node.parent;
 
-        gfx = create_skybox_facing_camera(0, backgroundNode->background, camFrustum->fov, gLakituState.pos[0],
+        gfx = create_skybox_facing_camera(0, SM64AP_ResolveSkyboxBackground(backgroundNode->background),
+                            camFrustum->fov, gLakituState.pos[0],
                             gLakituState.pos[1], gLakituState.pos[2], gLakituState.focus[0],
                             gLakituState.focus[1], gLakituState.focus[2]);
     }
