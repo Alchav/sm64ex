@@ -4004,7 +4004,7 @@ void SM64AP_UpdatePermanentCoinTrap() {
         pendingEvents.pop();
     }
 
-    while (!pendingTraps.empty()) {
+    if (!pendingTraps.empty()) {
         int ordinal = pendingTraps.front();
         pendingTraps.pop();
         std::string prefix = AP_GetPrivateServerDataPrefix();
@@ -4034,8 +4034,18 @@ void SM64AP_UpdatePermanentCoinTrap() {
         claimRequest.type = AP_DataType::Int;
         claimRequest.want_reply = true;
         AP_SetServerData(&claimRequest);
-        AP_SetNotify(state.claimKey, AP_DataType::Int, false);
-        AP_SetNotify(state.eventKey, AP_DataType::Raw, true);
+        AP_SetNotify({
+            { state.claimKey, AP_DataType::Int },
+            { state.eventKey, AP_DataType::Raw },
+        }, true);
+    }
+
+    if (!pendingTraps.empty()) {
+        std::lock_guard<std::mutex> lock(sm64_permanent_coin_mutex);
+        while (!pendingTraps.empty()) {
+            sm64_pending_uncollect_coin_traps.push(pendingTraps.front());
+            pendingTraps.pop();
+        }
     }
 
     std::vector<int> winningOrdinals;
@@ -4074,6 +4084,11 @@ void SM64AP_UpdatePermanentCoinTrap() {
 
         std::string eventJson =
             SM64AP_SerializeUncollectTrapEvent(ordinal, selectedKey, selectedRecord);
+        SM64AP_ApplyUncollectTrapEvent({
+            ordinal, selectedKey.first, selectedKey.second,
+            selectedRecord.course, selectedRecord.value
+        });
+
         std::string emptyObject = "{}";
         AP_SetServerDataRequest eventRequest;
         AP_DataStorageOperation replaceEvent = { "replace", &eventJson };
