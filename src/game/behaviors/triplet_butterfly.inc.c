@@ -64,6 +64,11 @@ static void triplet_butterfly_act_init(void) {
     }
 }
 
+static void triplet_butterfly_stop_spawner_sparkles(void) {
+    o->oActiveParticleFlags &= ~ACTIVE_PARTICLE_SPARKLES;
+}
+
+
 static void triplet_butterfly_act_wander(void) {
     bool easyOneUp = triplet_butterfly_is_easy_1up();
 
@@ -169,6 +174,21 @@ static void triplet_butterfly_act_explode(void) {
     }
 }
 
+
+static void triplet_butterfly_spawn_spawner_sparkles(void) {
+    struct Object *sparkle;
+
+    if ((o->oBehParams2ndByte & TRIPLET_BUTTERFLY_BP_BUTTERFLY_NUM) != 0) {
+        return;
+    }
+
+    if (!(o->oActiveParticleFlags & ACTIVE_PARTICLE_SPARKLES) && (o->oTimer % 15) == 0) {
+        o->oActiveParticleFlags |= ACTIVE_PARTICLE_SPARKLES;
+        sparkle = spawn_object_at_origin(o, 0, MODEL_PURPLE_SPARKLES, bhvSparkleParticleSpawner);
+        obj_copy_pos_and_angle(sparkle, o);
+    }
+}
+
 void bhv_triplet_butterfly_update(void) {
     if (!SM64AP_HaveOneUpSource(gCurrLevelNum, SM64AP_1UP_SOURCE_BUTTERFLY)) {
         cur_obj_hide();
@@ -179,9 +199,11 @@ void bhv_triplet_butterfly_update(void) {
 
     switch (o->oAction) {
         case TRIPLET_BUTTERFLY_ACT_INIT:
+			triplet_butterfly_spawn_spawner_sparkles();
             triplet_butterfly_act_init();
             break;
         case TRIPLET_BUTTERFLY_ACT_WANDER:
+			triplet_butterfly_stop_spawner_sparkles();
             triplet_butterfly_act_wander();
             break;
         case TRIPLET_BUTTERFLY_ACT_ACTIVATE:

@@ -35,6 +35,14 @@ void bhv_hidden_star_loop(void) {
 /* TODO: this is likely not a checkpoint but a Secret */
 void bhv_hidden_star_trigger_loop(void) {
     struct Object *hiddenStar;
+    struct Object *sparkle;
+
+    if (!(o->oActiveParticleFlags & ACTIVE_PARTICLE_SPARKLES) && (o->oTimer % 15) == 0) {
+        o->oActiveParticleFlags |= ACTIVE_PARTICLE_SPARKLES;
+        sparkle = spawn_object_at_origin(o, 0, MODEL_SPARKLES, bhvSparkleParticleSpawner);
+        obj_copy_pos_and_angle(sparkle, o);
+    }
+
     if (obj_check_if_collided_with_object(o, gMarioObject) == 1) {
         hiddenStar = cur_obj_nearest_object_with_behavior(bhvHiddenStar);
         if (hiddenStar != NULL) {

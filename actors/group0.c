@@ -20,6 +20,10 @@
 
 #include "sparkle/model.inc.c"
 
+#include "green_sparkle/model.inc.c"
+
+#include "purple_sparkle/model.inc.c"
+
 #include "water_splash/model.inc.c"
 
 #include "white_particle_small/model.inc.c"

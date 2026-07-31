@@ -389,6 +389,14 @@ void bhv_1up_hidden_loop(void) {
 
 void bhv_1up_hidden_trigger_loop(void) {
     struct Object *sp1C;
+    struct Object *sparkle;
+
+    if (!(o->oActiveParticleFlags & ACTIVE_PARTICLE_SPARKLES) && (o->oTimer % 15) == 0) {
+        o->oActiveParticleFlags |= ACTIVE_PARTICLE_SPARKLES;
+        sparkle = spawn_object_at_origin(o, 0, MODEL_GREEN_SPARKLES, bhvSparkleParticleSpawner);
+        obj_copy_pos_and_angle(sparkle, o);
+    }
+
     if (obj_check_if_collided_with_object(o, gMarioObject) == 1) {
         sp1C = cur_obj_nearest_object_with_behavior(bhvHidden1up);
         if (sp1C != NULL)
@@ -438,6 +446,11 @@ void bhv_1up_hidden_in_pole_loop(void) {
 
 void bhv_1up_hidden_in_pole_trigger_loop(void) {
     struct Object *sp1C;
+
+	if (!(o->oActiveParticleFlags & ACTIVE_PARTICLE_SPARKLES) && (o->oTimer % 15) == 0) {
+    o->oActiveParticleFlags |= ACTIVE_PARTICLE_SPARKLES;
+    obj_copy_pos_and_angle(spawn_object_at_origin(o, 0, MODEL_GREEN_SPARKLES, bhvSparkleParticleSpawner), o);
+	}
 
     if (obj_check_if_collided_with_object(o, gMarioObject) == 1) {
         sp1C = cur_obj_nearest_object_with_behavior(bhvHidden1upInPole);
