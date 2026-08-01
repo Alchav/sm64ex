@@ -50,6 +50,7 @@ extern "C" {
 #include <sstream>
 #include <mutex>
 #include <limits>
+#include <tuple>
 
 #define WARP_NODE_CREDITS_MIN 0xF8 // level_update.c
 #define NUM_PAINTING_LOCKS SM64AP_NUM_PAINTING_LOCKS
@@ -76,7 +77,6 @@ bool sm64_have_hat = false;
 bool sm64_have_vcutm_entrance = false;
 bool sm64_have_rr_level_unlock = false;
 bool sm64_have_wmotr_level_unlock = false;
-int sm64_one_up_unlock_mode = 0;
 bool sm64_1up_checks_enabled = false;
 bool sm64_buddy_checks_enabled = true;
 bool sm64_bowser_stage_1up_item_behavior = false;
@@ -152,6 +152,7 @@ std::bitset<SM64AP_NUM_LEVEL_CAPS> sm64_have_level_caps;
 std::bitset<SM64AP_NUM_OBJECT_ITEMS> sm64_have_object_items;
 std::bitset<SM64AP_NUM_ONE_UP_CATEGORIES> sm64_have_one_up_global_items;
 std::bitset<SM64AP_NUM_ONE_UP_LEVEL_ITEMS> sm64_have_one_up_level_items;
+static std::set<std::tuple<s16, s16, bool>> sm64_logged_global_one_up_evaluations;
 
 struct SM64APCoinGlobalItem {
     int source;
@@ -590,19 +591,33 @@ void SM64AP_RecvItem(int64_t idx, bool notify) {
     AP_EnableQueueItemRecvMsgs(true);
 
     if (idx >= SM64AP_ONE_UP_GLOBAL_ITEM_OFFSET && idx < SM64AP_ONE_UP_LEVEL_ITEM_OFFSET) {
-        sm64_have_one_up_global_items[idx - SM64AP_ONE_UP_GLOBAL_ITEM_OFFSET] = true;
+        int category = idx - SM64AP_ONE_UP_GLOBAL_ITEM_OFFSET;
+        sm64_have_one_up_global_items[category] = true;
+        sm64_logged_global_one_up_evaluations.clear();
+        std::fprintf(stderr,
+                     "[SM64AP global 1-up] received item %lld: category=%d bits=0x%lx\n",
+                     static_cast<long long>(idx), category,
+                     sm64_have_one_up_global_items.to_ulong());
+        std::fflush(stderr);
         SM64AP_RequestLiveObjectReconcile();
         return;
     }
 
     if (idx == SM64AP_ID_GLOBAL_BUTTERFLIES) {
         sm64_have_one_up_global_items[SM64AP_ONE_UP_CATEGORY_BUTTERFLY] = true;
+        sm64_logged_global_one_up_evaluations.clear();
+        std::fprintf(stderr,
+                     "[SM64AP global 1-up] received item %lld: category=%d bits=0x%lx\n",
+                     static_cast<long long>(idx), SM64AP_ONE_UP_CATEGORY_BUTTERFLY,
+                     sm64_have_one_up_global_items.to_ulong());
+        std::fflush(stderr);
         SM64AP_RequestLiveObjectReconcile();
         return;
     }
 
     if (idx >= SM64AP_ONE_UP_LEVEL_ITEM_OFFSET && idx <= SM64AP_ONE_UP_LEVEL_ITEM_END) {
         sm64_have_one_up_level_items[idx - SM64AP_ONE_UP_LEVEL_ITEM_OFFSET] = true;
+        sm64_logged_global_one_up_evaluations.clear();
         SM64AP_RequestLiveObjectReconcile();
         return;
     }
@@ -1567,6 +1582,24 @@ static int SM64AP_BowserArenaBombIndex(s16 level, s16 x, s16 z) {
     return -1;
 }
 
+static int SM64AP_OneUpPlacementSourceType(const void *behavior) {
+    if (behavior_is(behavior, bhv1Up)) return SM64AP_1UP_SOURCE_OBJECT;
+    if (behavior_is(behavior, bhv1upSliding)) return SM64AP_1UP_SOURCE_SLIDING;
+    if (behavior_is(behavior, bhv1upJumpOnApproach)) return SM64AP_1UP_SOURCE_JUMP_ON_APPROACH;
+    if (behavior_is(behavior, bhvHidden1up)
+        || behavior_is(behavior, bhvHidden1upTrigger)) {
+        return SM64AP_1UP_SOURCE_HIDDEN;
+    }
+    if (behavior_is(behavior, bhvHidden1upInPole)
+        || behavior_is(behavior, bhvHidden1upInPoleTrigger)
+        || behavior_is(behavior, bhvHidden1upInPoleSpawner)) {
+        return SM64AP_1UP_SOURCE_HIDDEN_POLE;
+    }
+    if (behavior_is(behavior, bhv1upWalking)) return SM64AP_1UP_SOURCE_WALKING;
+    if (behavior_is(behavior, bhv1upRunningAway)) return SM64AP_1UP_SOURCE_RUNNING_AWAY;
+    return -1;
+}
+
 bool SM64AP_ShouldSpawnLevelObject(s16 level, s16, s16 model, s16 x, s16 y, s16 z, u32 behParam, const void *behavior) {
     if (behavior_is(behavior, bhvToadMessage)) {
         return SM64AP_HaveToads();
@@ -1594,6 +1627,11 @@ bool SM64AP_ShouldSpawnLevelObject(s16 level, s16, s16 model, s16 x, s16 y, s16 
         && (((behParam >> 16) & 0xFF) == 1 || ((behParam >> 16) & 0xFF) == 2)) {
         return SM64AP_ShouldSpawnBowserStageOneUp(
             level, (behParam >> 16) & 0xFF, save_file_get_flags());
+    }
+
+    int oneUpSource = SM64AP_OneUpPlacementSourceType(behavior);
+    if (oneUpSource >= 0 && !SM64AP_HaveOneUpSource(level, oneUpSource)) {
+        return false;
     }
 
     if (behavior_is(behavior, bhvBowserBomb)) {
@@ -2493,10 +2531,6 @@ void SM64AP_SetMoveRandoVec(int vec) {
         sm64_have_abilities[i] = !std::bitset<SM64AP_NUM_ABILITIES>(vec).test(i) || sm64_have_abilities[i];
     }
 }
-void SM64AP_SetOneUpUnlockMode(int mode) {
-    sm64_one_up_unlock_mode = mode >= 0 && mode <= 2 ? mode : 0;
-}
-
 void SM64AP_ResetItems() {
     {
         std::lock_guard<std::mutex> lock(sm64_permanent_coin_mutex);
@@ -2528,6 +2562,7 @@ void SM64AP_ResetItems() {
     sm64_have_coin_level_items.reset();
     sm64_have_one_up_global_items.reset();
     sm64_have_one_up_level_items.reset();
+    sm64_logged_global_one_up_evaluations.clear();
     sm64_sent_coin_checks.reset();
     sm64_sent_1up_checks.reset();
     sm64_sent_blocksanity_checks.reset();
@@ -2548,7 +2583,6 @@ void SM64AP_ResetItems() {
     sm64_have_vcutm_entrance = false;
     sm64_have_rr_level_unlock = false;
     sm64_have_wmotr_level_unlock = false;
-    sm64_one_up_unlock_mode = 0;
     sm64_1up_checks_enabled = false;
     sm64_buddy_checks_enabled = true;
     sm64_bowser_stage_1up_item_behavior = false;
@@ -2680,7 +2714,6 @@ void SM64AP_GenericInit() {
     AP_RegisterSlotDataIntCallback("StarsToFinish", &SM64AP_SetStarsToFinish);
     AP_RegisterSlotDataIntCallback("CompletionType", &SM64AP_SetCompletionType);
     AP_RegisterSlotDataIntCallback("MoveRandoVec", &SM64AP_SetMoveRandoVec);
-    AP_RegisterSlotDataIntCallback("OneUpUnlockMode", &SM64AP_SetOneUpUnlockMode);
     AP_RegisterSlotDataIntCallback("GlobalCapItems", &SM64AP_SetGlobalCapDisplay);
     AP_RegisterSlotDataIntCallback("ShowGlobalCapDisplay", &SM64AP_SetGlobalCapDisplay);
     AP_RegisterSlotDataIntCallback("OneUpChecks", &SM64AP_SetOneUpChecks);
@@ -2978,24 +3011,34 @@ bool SM64AP_HaveOneUpSource(s16 level, s16 sourceType) {
         return true;
     }
 
-    if (!sm64_1up_checks_enabled || sm64_one_up_unlock_mode == 0) {
+    if (!sm64_1up_checks_enabled) {
         return true;
     }
 
     int category = SM64AP_OneUpCategoryForSourceType(sourceType);
-    if (sm64_one_up_unlock_mode == 1) {
-        return sm64_have_one_up_global_items[category];
-    }
-
     level = SM64AP_NormalizeOneUpLevel(level);
+    bool enabled = sm64_have_one_up_global_items[category];
+    bool hasLevelItem = false;
     for (int i = 0; i < SM64AP_NUM_ONE_UP_LEVEL_ITEMS; i++) {
         if (SM64AP_ONE_UP_LEVEL_ITEMS[i].level == level
             && SM64AP_ONE_UP_LEVEL_ITEMS[i].category == category) {
-            return sm64_have_one_up_level_items[i];
+            hasLevelItem = true;
+            enabled = enabled || sm64_have_one_up_level_items[i];
+            break;
         }
     }
 
-    return true;
+    // Sources without a corresponding level item are not part of this unlock category.
+    enabled = enabled || !hasLevelItem;
+    auto result = sm64_logged_global_one_up_evaluations.emplace(level, sourceType, enabled);
+    if (result.second) {
+        std::fprintf(stderr,
+                     "[SM64AP global 1-up] evaluate: level=%d source=%d category=%d global=%d enabled=%d bits=0x%lx\n",
+                     level, sourceType, category, sm64_have_one_up_global_items[category] ? 1 : 0,
+                     enabled ? 1 : 0, sm64_have_one_up_global_items.to_ulong());
+        std::fflush(stderr);
+    }
+    return enabled;
 }
 
 static int SM64AP_LevelOneUpCategory(s16 level, s16 unlockIndex) {
@@ -3034,11 +3077,11 @@ const char *SM64AP_LevelOneUpUnlockName(s16 level, s16 unlockIndex) {
 
 bool SM64AP_LevelOneUpUnlockEnabled(s16 level, s16 unlockIndex) {
     int category = SM64AP_LevelOneUpCategory(level, unlockIndex);
-    if (category < 0 || !sm64_1up_checks_enabled || sm64_one_up_unlock_mode == 0) {
+    if (category < 0 || !sm64_1up_checks_enabled) {
         return true;
     }
-    if (sm64_one_up_unlock_mode == 1) {
-        return sm64_have_one_up_global_items[category];
+    if (sm64_have_one_up_global_items[category]) {
+        return true;
     }
 
     level = SM64AP_NormalizeOneUpLevel(level);
