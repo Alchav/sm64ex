@@ -435,6 +435,7 @@ AP_EXTERN_C bool SM64AP_HaveKey1();
 AP_EXTERN_C bool SM64AP_HaveKey2();
 AP_EXTERN_C bool SM64AP_HaveCastleKey(int);
 AP_EXTERN_C bool SM64AP_HaveProgressiveMips(int);
+AP_EXTERN_C int SM64AP_MipsSpawnTier(void);
 AP_EXTERN_C bool SM64AP_HaveWingCapLight();
 AP_EXTERN_C bool SM64AP_HaveBBH();
 AP_EXTERN_C bool SM64AP_HaveToads();

@@ -10,17 +10,11 @@
 #include "sm64ap.h"
 
 void bhv_mips_init(void) {
-    if (SM64AP_HaveProgressiveMips(1) && !SM64AP_CheckedLoc(SM64AP_LOCATIONID_MIPS1)) {
-        o->oBehParams2ndByte = 0;
+    s32 mipsTier = SM64AP_MipsSpawnTier();
+    if (mipsTier >= 0) {
+        o->oBehParams2ndByte = mipsTier;
 #ifndef VERSION_JP
-        o->oMipsForwardVelocity = 40.0f;
-#endif
-    }
-    else if (SM64AP_HaveProgressiveMips(2) && SM64AP_CheckedLoc(SM64AP_LOCATIONID_MIPS1)
-             && !SM64AP_CheckedLoc(SM64AP_LOCATIONID_MIPS2)) {
-        o->oBehParams2ndByte = 1;
-#ifndef VERSION_JP
-        o->oMipsForwardVelocity = 45.0f;
+        o->oMipsForwardVelocity = mipsTier == 0 ? 40.0f : 45.0f;
 #endif
     } else {
         // No MIPS stars are available, hide MIPS.

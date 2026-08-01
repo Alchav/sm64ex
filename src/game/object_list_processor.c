@@ -553,7 +553,7 @@ static void reconcile_level_script_objects(void) {
             spawnInfo->behaviorArg, spawnInfo->behaviorScript);
 
         if (desired && object != NULL && obj_has_behavior(object, bhvMips)) {
-            s32 expectedTier = SM64AP_CheckedLoc(SM64AP_LOCATIONID_MIPS1) ? 1 : 0;
+            s32 expectedTier = SM64AP_MipsSpawnTier();
             if (object->oBehParams2ndByte != expectedTier) {
                 spawnInfo->apSuppressed = TRUE;
                 object->oFlags |= OBJ_FLAG_PERSISTENT_RESPAWN;

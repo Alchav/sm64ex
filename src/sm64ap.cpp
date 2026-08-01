@@ -87,6 +87,7 @@ bool sm64_hat_restore_without_animation_pending = false;
 bool sm64_easy_butterflies = false;
 bool sm64_no_despawn = false;
 bool sm64_permanent_coin_collection = false;
+bool sm64_mips_skip_enabled = false;
 bool sm64_live_object_reconcile_requested = false;
 bool sm64_have_wingcap = false;
 bool sm64_have_metalcap = false;
@@ -1665,8 +1666,7 @@ bool SM64AP_ShouldSpawnLevelObject(s16 level, s16, s16 model, s16 x, s16 y, s16 
     }
 
     if (behavior_is(behavior, bhvMips)) {
-        return (SM64AP_HaveProgressiveMips(1) && !SM64AP_CheckedLoc(SM64AP_LOCATIONID_MIPS1))
-            || (SM64AP_HaveProgressiveMips(2) && !SM64AP_CheckedLoc(SM64AP_LOCATIONID_MIPS2));
+        return SM64AP_MipsSpawnTier() >= 0;
     }
 
     if (behavior_is(behavior, bhvYoshi)) {
@@ -2160,6 +2160,11 @@ static void SM64AP_SetPermanentCoinCollection(int enabled) {
         sm64_permanent_coin_storage_initialized = false;
     }
     SM64AP_RestorePermanentCoinCount();
+}
+
+static void SM64AP_SetMipsSkipEnabled(int enabled) {
+    sm64_mips_skip_enabled = enabled != 0;
+    SM64AP_RequestLiveObjectReconcile();
 }
 
 static void SM64AP_SetBowserInTheDarkWorldHits(int hits) {
@@ -2816,6 +2821,7 @@ void SM64AP_GenericInit() {
     AP_RegisterSlotDataIntCallback("EasyButterflies", &SM64AP_SetEasyButterflies);
     AP_RegisterSlotDataIntCallback("NoDespawn", &SM64AP_SetNoDespawn);
     AP_RegisterSlotDataIntCallback("PermanentCoinCollection", &SM64AP_SetPermanentCoinCollection);
+    AP_RegisterSlotDataIntCallback("MipsSkipEnabled", &SM64AP_SetMipsSkipEnabled);
     AP_RegisterSlotDataIntCallback("BowserInTheDarkWorldHits", &SM64AP_SetBowserInTheDarkWorldHits);
     AP_RegisterSlotDataIntCallback("BowserInTheFireSeaHits", &SM64AP_SetBowserInTheFireSeaHits);
     AP_RegisterSlotDataIntCallback("BowserInTheSkyHits", &SM64AP_SetBowserInTheSkyHits);
@@ -3509,6 +3515,22 @@ bool SM64AP_HaveCastleKey(int key) {
 
 bool SM64AP_HaveProgressiveMips(int tier) {
     return sm64_have_progressive_mips >= tier;
+}
+
+int SM64AP_MipsSpawnTier(void) {
+    if (!SM64AP_HaveProgressiveMips(1)) {
+        return -1;
+    }
+    if (!SM64AP_CheckedLoc(SM64AP_LOCATIONID_MIPS1)) {
+        return 0;
+    }
+    if (SM64AP_HaveProgressiveMips(2) && !SM64AP_CheckedLoc(SM64AP_LOCATIONID_MIPS2)) {
+        return 1;
+    }
+    if (sm64_mips_skip_enabled) {
+        return SM64AP_HaveProgressiveMips(2) ? 1 : 0;
+    }
+    return -1;
 }
 
 bool SM64AP_HaveWingCapLight() {
