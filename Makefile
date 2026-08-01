@@ -45,8 +45,6 @@ NODRAWINGDISTANCE ?= 0
 TEXTURE_FIX ?= 0
 # Enable extended options menu by default
 EXT_OPTIONS_MENU ?= 1
-# Disable text-based save-files by default
-TEXTSAVES ?= 0
 # Load resources from external files
 EXTERNAL_DATA ?= 0
 # Enable Discord Rich Presence
@@ -580,11 +578,6 @@ ifeq ($(BETTERCAMERA),1)
   CC_CHECK += -DBETTERCAMERA
   CFLAGS += -DBETTERCAMERA
   EXT_OPTIONS_MENU := 1
-endif
-
-ifeq ($(TEXTSAVES),1)
-  CC_CHECK += -DTEXTSAVES
-  CFLAGS += -DTEXTSAVES
 endif
 
 # Check for no drawing distance option

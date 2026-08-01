@@ -54,6 +54,7 @@ unsigned int configMasterVolume = MAX_VOLUME; // 0 - MAX_VOLUME
 unsigned int configMusicVolume = MAX_VOLUME;
 unsigned int configSfxVolume = MAX_VOLUME;
 unsigned int configEnvVolume = MAX_VOLUME;
+unsigned int configSoundMode = 0;
 
 // Keyboard mappings (VK_ values, by default keyboard/gamepad/mouse)
 unsigned int configKeyA[MAX_BINDS]          = { 0x0026,   0x1000,     0x1103     };
@@ -106,6 +107,7 @@ static const struct ConfigOption options[] = {
     {.name = "music_volume",         .type = CONFIG_TYPE_UINT, .uintValue = &configMusicVolume},
     {.name = "sfx_volume",           .type = CONFIG_TYPE_UINT, .uintValue = &configSfxVolume},
     {.name = "env_volume",           .type = CONFIG_TYPE_UINT, .uintValue = &configEnvVolume},
+    {.name = "sound_mode",           .type = CONFIG_TYPE_UINT, .uintValue = &configSoundMode},
     {.name = "key_a",                .type = CONFIG_TYPE_BIND, .uintValue = configKeyA},
     {.name = "key_b",                .type = CONFIG_TYPE_BIND, .uintValue = configKeyB},
     {.name = "key_start",            .type = CONFIG_TYPE_BIND, .uintValue = configKeyStart},

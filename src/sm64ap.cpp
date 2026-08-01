@@ -50,7 +50,6 @@ extern "C" {
 #include <sstream>
 #include <mutex>
 #include <limits>
-#include <tuple>
 
 #define WARP_NODE_CREDITS_MIN 0xF8 // level_update.c
 #define NUM_PAINTING_LOCKS SM64AP_NUM_PAINTING_LOCKS
@@ -113,6 +112,12 @@ static std::string sm64_permanent_coin_ledger_key;
 static bool sm64_finished_bowser_storage_received = false;
 static bool sm64_moat_storage_received = false;
 static bool sm64_permanent_coin_storage_received = false;
+static bool sm64_save_flags_storage_received = false;
+static bool sm64_cannon_flags_storage_received = false;
+static int sm64_coin_scores_storage_received = 0;
+static u32 sm64_server_save_flags = 0;
+static u32 sm64_server_cannon_flags = 0;
+static int sm64_server_coin_high_scores[COURSE_STAGES_COUNT] = {};
 static int sm64_title_connection_wait_frames = 0;
 static void SM64AP_LoadPermanentCoins(const std::string &rawLedger);
 
@@ -152,7 +157,6 @@ std::bitset<SM64AP_NUM_LEVEL_CAPS> sm64_have_level_caps;
 std::bitset<SM64AP_NUM_OBJECT_ITEMS> sm64_have_object_items;
 std::bitset<SM64AP_NUM_ONE_UP_CATEGORIES> sm64_have_one_up_global_items;
 std::bitset<SM64AP_NUM_ONE_UP_LEVEL_ITEMS> sm64_have_one_up_level_items;
-static std::set<std::tuple<s16, s16, bool>> sm64_logged_global_one_up_evaluations;
 
 struct SM64APCoinGlobalItem {
     int source;
@@ -593,31 +597,18 @@ void SM64AP_RecvItem(int64_t idx, bool notify) {
     if (idx >= SM64AP_ONE_UP_GLOBAL_ITEM_OFFSET && idx < SM64AP_ONE_UP_LEVEL_ITEM_OFFSET) {
         int category = idx - SM64AP_ONE_UP_GLOBAL_ITEM_OFFSET;
         sm64_have_one_up_global_items[category] = true;
-        sm64_logged_global_one_up_evaluations.clear();
-        std::fprintf(stderr,
-                     "[SM64AP global 1-up] received item %lld: category=%d bits=0x%lx\n",
-                     static_cast<long long>(idx), category,
-                     sm64_have_one_up_global_items.to_ulong());
-        std::fflush(stderr);
         SM64AP_RequestLiveObjectReconcile();
         return;
     }
 
     if (idx == SM64AP_ID_GLOBAL_BUTTERFLIES) {
         sm64_have_one_up_global_items[SM64AP_ONE_UP_CATEGORY_BUTTERFLY] = true;
-        sm64_logged_global_one_up_evaluations.clear();
-        std::fprintf(stderr,
-                     "[SM64AP global 1-up] received item %lld: category=%d bits=0x%lx\n",
-                     static_cast<long long>(idx), SM64AP_ONE_UP_CATEGORY_BUTTERFLY,
-                     sm64_have_one_up_global_items.to_ulong());
-        std::fflush(stderr);
         SM64AP_RequestLiveObjectReconcile();
         return;
     }
 
     if (idx >= SM64AP_ONE_UP_LEVEL_ITEM_OFFSET && idx <= SM64AP_ONE_UP_LEVEL_ITEM_END) {
         sm64_have_one_up_level_items[idx - SM64AP_ONE_UP_LEVEL_ITEM_OFFSET] = true;
-        sm64_logged_global_one_up_evaluations.clear();
         SM64AP_RequestLiveObjectReconcile();
         return;
     }
@@ -1301,6 +1292,76 @@ void SM64AP_HatRestoreComplete() {
 bool SM64AP_CollectedCourseStar(int courseIdx, int starIdx) {
     return courseIdx >= 0 && starIdx >= 0 && starIdx < 7
         && (SM64AP_CourseStarFlags(courseIdx) & (1 << starIdx));
+}
+
+u32 SM64AP_ServerSaveFlags() {
+    return sm64_server_save_flags;
+}
+
+static void SM64AP_UpdateServerBits(const std::string &suffix, const char *operation, u32 value) {
+    int operand = static_cast<int>(value);
+    int defaultValue = 0;
+    AP_SetServerDataRequest request;
+    AP_DataStorageOperation update = { operation, &operand };
+    request.key = AP_GetPrivateServerDataPrefix() + suffix;
+    request.operations = { update };
+    request.default_value = &defaultValue;
+    request.type = AP_DataType::Int;
+    request.want_reply = true;
+    AP_SetServerData(&request);
+}
+
+static void SM64AP_SetServerInt(const std::string &key, const char *operation, int value) {
+    int defaultValue = 0;
+    AP_SetServerDataRequest request;
+    AP_DataStorageOperation update = { operation, &value };
+    request.key = key;
+    request.operations = { update };
+    request.default_value = &defaultValue;
+    request.type = AP_DataType::Int;
+    request.want_reply = true;
+    AP_SetServerData(&request);
+}
+
+void SM64AP_SetServerSaveFlags(u32 flags) {
+    sm64_server_save_flags |= flags;
+    SM64AP_UpdateServerBits("SaveFlags", "or", flags);
+}
+
+void SM64AP_ClearServerSaveFlags(u32 flags) {
+    sm64_server_save_flags &= ~flags;
+    SM64AP_UpdateServerBits("SaveFlags", "and", ~flags);
+}
+
+u32 SM64AP_ServerCannonFlags() {
+    return sm64_server_cannon_flags;
+}
+
+void SM64AP_SetServerCannonFlag(int course) {
+    if (course < 0 || course >= 32) return;
+    u32 flag = 1U << course;
+    sm64_server_cannon_flags |= flag;
+    SM64AP_UpdateServerBits("CannonFlags", "or", flag);
+}
+
+int SM64AP_ServerCoinHighScore(int course) {
+    return course >= 0 && course < COURSE_STAGES_COUNT
+        ? std::max(sm64_server_coin_high_scores[course], 0) : 0;
+}
+
+void SM64AP_SetServerCoinHighScore(int course, int score) {
+    if (course < 0 || course >= COURSE_STAGES_COUNT
+        || score <= sm64_server_coin_high_scores[course]) return;
+    sm64_server_coin_high_scores[course] = score;
+    AP_SetServerDataRequest request;
+    AP_DataStorageOperation update = { "max", &score };
+    int defaultValue = 0;
+    request.key = AP_GetPrivateServerDataPrefix() + "CoinHighScore;" + std::to_string(course);
+    request.operations = { update };
+    request.default_value = &defaultValue;
+    request.type = AP_DataType::Int;
+    request.want_reply = true;
+    AP_SetServerData(&request);
 }
 
 static bool SM64AP_IsKoopaTheQuick(u32 behParam, const void *behavior) {
@@ -2560,7 +2621,6 @@ void SM64AP_ResetItems() {
     sm64_have_coin_level_items.reset();
     sm64_have_one_up_global_items.reset();
     sm64_have_one_up_level_items.reset();
-    sm64_logged_global_one_up_evaluations.clear();
     sm64_sent_coin_checks.reset();
     sm64_sent_1up_checks.reset();
     sm64_sent_blocksanity_checks.reset();
@@ -2614,10 +2674,30 @@ void SM64AP_SetReplyHandler(AP_SetReply reply) {
     } else if (reply.key == AP_GetPrivateServerDataPrefix() + "MoatDrained") {
         sm64_moat_state = *(int *) (reply.value);
         sm64_moat_storage_received = true;
+    } else if (reply.key == AP_GetPrivateServerDataPrefix() + "SaveFlags") {
+        sm64_server_save_flags = *(int *) reply.value;
+        sm64_save_flags_storage_received = true;
+    } else if (reply.key == AP_GetPrivateServerDataPrefix() + "CannonFlags") {
+        sm64_server_cannon_flags = *(int *) reply.value;
+        sm64_cannon_flags_storage_received = true;
     } else if (reply.key == sm64_permanent_coin_ledger_key) {
         SM64AP_LoadPermanentCoins(*(std::string *) reply.value);
         sm64_permanent_coin_storage_received = true;
     } else {
+        std::string coinScorePrefix = AP_GetPrivateServerDataPrefix() + "CoinHighScore;";
+        if (reply.key.compare(0, coinScorePrefix.size(), coinScorePrefix) == 0) {
+            int course = std::stoi(reply.key.substr(coinScorePrefix.size()));
+            if (course >= 0 && course < COURSE_STAGES_COUNT) {
+                if (sm64_server_coin_high_scores[course] < 0) sm64_coin_scores_storage_received++;
+                int score = *(int *) reply.value;
+                if (score < 0 || score > UINT8_MAX) {
+                    score = 0;
+                    SM64AP_SetServerInt(reply.key, "replace", score);
+                }
+                sm64_server_coin_high_scores[course] = score;
+            }
+            return;
+        }
         std::lock_guard<std::mutex> lock(sm64_permanent_coin_mutex);
         for (auto &entry : sm64_uncollect_trap_states) {
             SM64APUncollectTrapState &state = entry.second;
@@ -2690,6 +2770,12 @@ void SM64AP_GenericInit() {
     sm64_finished_bowser_storage_received = false;
     sm64_moat_storage_received = false;
     sm64_permanent_coin_storage_received = false;
+    sm64_save_flags_storage_received = false;
+    sm64_cannon_flags_storage_received = false;
+    sm64_coin_scores_storage_received = 0;
+    sm64_server_save_flags = 0;
+    sm64_server_cannon_flags = 0;
+    std::fill_n(sm64_server_coin_high_scores, COURSE_STAGES_COUNT, -1);
     sm64_title_connection_wait_frames = 0;
     sm64_received_uncollect_coin_traps = 0;
     while (!sm64_pending_uncollect_coin_traps.empty()) {
@@ -3028,14 +3114,6 @@ bool SM64AP_HaveOneUpSource(s16 level, s16 sourceType) {
 
     // Sources without a corresponding level item are not part of this unlock category.
     enabled = enabled || !hasLevelItem;
-    auto result = sm64_logged_global_one_up_evaluations.emplace(level, sourceType, enabled);
-    if (result.second) {
-        std::fprintf(stderr,
-                     "[SM64AP global 1-up] evaluate: level=%d source=%d category=%d global=%d enabled=%d bits=0x%lx\n",
-                     level, sourceType, category, sm64_have_one_up_global_items[category] ? 1 : 0,
-                     enabled ? 1 : 0, sm64_have_one_up_global_items.to_ulong());
-        std::fflush(stderr);
-    }
     return enabled;
 }
 
@@ -3925,35 +4003,27 @@ static void SM64AP_InitializeServerStorage() {
     std::string prefix = AP_GetPrivateServerDataPrefix();
     std::string finishedBowserKey = prefix + "FinishedBowser";
     std::string moatDrainedKey = prefix + "MoatDrained";
-    AP_SetNotify({
+    std::string saveFlagsKey = prefix + "SaveFlags";
+    std::string cannonFlagsKey = prefix + "CannonFlags";
+    std::map<std::string, AP_DataType> integerStorageKeys = {
         { finishedBowserKey, AP_DataType::Int },
         { moatDrainedKey, AP_DataType::Int },
-    });
+        { saveFlagsKey, AP_DataType::Int },
+        { cannonFlagsKey, AP_DataType::Int },
+    };
 
-    int defaultValue = 0;
-    AP_SetServerDataRequest finishedBowserRequest;
-    AP_DataStorageOperation defaultFinishedBowser = { "default", &defaultValue };
-    finishedBowserRequest.key = finishedBowserKey;
-    finishedBowserRequest.operations = { defaultFinishedBowser };
-    finishedBowserRequest.default_value = &defaultValue;
-    finishedBowserRequest.type = AP_DataType::Int;
-    finishedBowserRequest.want_reply = true;
-    AP_BulkSetServerData(&finishedBowserRequest);
-
-    AP_SetServerDataRequest moatDrainedRequest;
-    AP_DataStorageOperation defaultMoatDrained = { "default", &defaultValue };
-    moatDrainedRequest.key = moatDrainedKey;
-    moatDrainedRequest.operations = { defaultMoatDrained };
-    moatDrainedRequest.default_value = &defaultValue;
-    moatDrainedRequest.type = AP_DataType::Int;
-    moatDrainedRequest.want_reply = true;
-    AP_BulkSetServerData(&moatDrainedRequest);
+    for (int course = 0; course < COURSE_STAGES_COUNT; course++) {
+        std::string key = prefix + "CoinHighScore;" + std::to_string(course);
+        integerStorageKeys[key] = AP_DataType::Int;
+    }
+    AP_SetNotify(integerStorageKeys, false);
+    for (const auto &entry : integerStorageKeys) {
+        SM64AP_SetServerInt(entry.first, "default", 0);
+    }
 
     if (sm64_permanent_coin_collection) {
         sm64_permanent_coin_ledger_key = prefix + "PermanentCoins";
         AP_SetNotify(sm64_permanent_coin_ledger_key, AP_DataType::Raw, true);
-    } else {
-        AP_CommitServerData();
     }
     sm64_permanent_coin_storage_initialized = true;
 }
@@ -3964,6 +4034,9 @@ bool SM64AP_ReadyToStart() {
         && sm64_permanent_coin_storage_initialized
         && sm64_finished_bowser_storage_received
         && sm64_moat_storage_received
+        && sm64_save_flags_storage_received
+        && sm64_cannon_flags_storage_received
+        && sm64_coin_scores_storage_received == COURSE_STAGES_COUNT
         && (!sm64_permanent_coin_collection || sm64_permanent_coin_storage_received);
     if (ready) {
         sm64_title_connection_wait_frames = 0;
