@@ -35,6 +35,70 @@ struct ObjShape *gShapeRedSpark = NULL;    // @ 801A82EC
 struct ObjShape *gShapeSilverSpark = NULL;    // @ 801A82F0
 struct ObjShape *gShapeRedStar = NULL;     // @ 801A82F4
 struct ObjShape *gShapeSilverStar = NULL;  // @ 801A82F8
+static u8 sMarioHeadHatColor[3] = { 255, 0, 0 };
+static u8 sMarioHeadSkinColor[3] = { 254, 193, 121 };
+static u8 sMarioHeadHairColor[3] = { 115, 6, 0 };
+
+static void sm64ap_set_head_material_color(struct ObjMaterial *material, const u8 color[3]) {
+    material->Ka.r = material->Kd.r = color[0] / 255.0f;
+    material->Ka.g = material->Kd.g = color[1] / 255.0f;
+    material->Ka.b = material->Kd.b = color[2] / 255.0f;
+}
+
+static s32 sm64ap_apply_mario_head_shape_palette(struct ObjShape *shape) {
+    // The main face is the only Mario-head shape with this eight-material palette.
+    if (shape->mtlGroup == NULL || shape->mtlGroup->objCount != 8) {
+        return FALSE;
+    }
+
+    for (struct Links *link = shape->mtlGroup->link1C; link != NULL; link = link->next) {
+        if (link->obj->type != OBJ_TYPE_MATERIALS) {
+            continue;
+        }
+
+        struct ObjMaterial *material = (struct ObjMaterial *) link->obj;
+        switch (material->id) {
+            case 1:
+                sm64ap_set_head_material_color(material, sMarioHeadSkinColor);
+                break;
+            case 2:
+            case 5:
+                sm64ap_set_head_material_color(material, sMarioHeadHairColor);
+                break;
+            case 7:
+                sm64ap_set_head_material_color(material, sMarioHeadHatColor);
+                break;
+        }
+    }
+    return TRUE;
+}
+
+void SM64AP_SetMarioHeadColors(u8 hatR, u8 hatG, u8 hatB, u8 skinR, u8 skinG, u8 skinB,
+                               u8 hairR, u8 hairG, u8 hairB) {
+    sMarioHeadHatColor[0] = hatR;
+    sMarioHeadHatColor[1] = hatG;
+    sMarioHeadHatColor[2] = hatB;
+    sMarioHeadSkinColor[0] = skinR;
+    sMarioHeadSkinColor[1] = skinG;
+    sMarioHeadSkinColor[2] = skinB;
+    sMarioHeadHairColor[0] = hairR;
+    sMarioHeadHairColor[1] = hairG;
+    sMarioHeadHairColor[2] = hairB;
+}
+
+void SM64AP_ApplyMarioHeadColors(void) {
+    if (gMarioFaceGrp == NULL) {
+        return;
+    }
+
+    for (struct GdObj *object = gGdObjectList; object != NULL; object = object->next) {
+        if (object->type == OBJ_TYPE_SHAPES
+            && sm64ap_apply_mario_head_shape_palette((struct ObjShape *) object)) {
+            break;
+        }
+    }
+}
+
 static struct UnkData sUnref801A82FC = { { {
                                                1.0,
                                                1.0,

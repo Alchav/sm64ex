@@ -95,7 +95,7 @@ enum {
     SM64AP_FEATURE_WF_FORTRESS,
     SM64AP_FEATURE_WF_BOBOMB_BUDDY,
     SM64AP_FEATURE_WF_HOOT,
-    SM64AP_FEATURE_CCM_SNOWMANS_HEAD,
+    SM64AP_FEATURE_CCM_SNOWMANS_BODY,
     SM64AP_FEATURE_CCM_BIG_PENGUIN,
     SM64AP_FEATURE_JRB_SUNKEN_SHIP,
     SM64AP_FEATURE_JRB_RAISED_SHIP,
@@ -466,6 +466,15 @@ AP_EXTERN_C bool SM64AP_HaveLevelCapOrGlobal(int);
 AP_EXTERN_C int SM64AP_LevelMoveAreaForLevel(s16);
 AP_EXTERN_C bool SM64AP_HaveLevelMoveOrGlobal(int, int);
 AP_EXTERN_C bool SM64AP_CollectedCourseStar(int, int);
+AP_EXTERN_C u32 SM64AP_ServerSaveFlags();
+AP_EXTERN_C void SM64AP_SetServerSaveFlags(u32);
+AP_EXTERN_C void SM64AP_ClearServerSaveFlags(u32);
+AP_EXTERN_C u32 SM64AP_ServerCannonFlags();
+AP_EXTERN_C void SM64AP_SetServerCannonFlag(int);
+AP_EXTERN_C int SM64AP_ServerCoinHighScore(int);
+AP_EXTERN_C void SM64AP_SetServerCoinHighScore(int, int);
+AP_EXTERN_C void SM64AP_SetMarioHeadColors(u8, u8, u8, u8, u8, u8, u8, u8, u8);
+AP_EXTERN_C void SM64AP_ApplyMarioHeadColors(void);
 AP_EXTERN_C bool SM64AP_ShouldSpawnLevelObject(s16, s16, s16, s16, s16, s16, u32, const void *);
 AP_EXTERN_C int SM64AP_BowserHitRequirement(s16);
 AP_EXTERN_C int SM64AP_BowserInTheSkyStageCollapseHits();

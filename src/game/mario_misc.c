@@ -90,6 +90,7 @@ Gfx *geo_draw_mario_head_goddard(s32 callContext, struct GraphNode *node, Mat4 *
             gd_copy_p1_contpad(gPlayer1Controller->controllerData);
         }
         gfx = (Gfx *) PHYSICAL_TO_VIRTUAL(gdm_gettestdl(asGenerated->parameter));
+        SM64AP_ApplyMarioHeadColors();
         D_8032C6A0 = gd_vblank;
         sfx = gd_sfx_to_play();
         play_menu_sounds(sfx);

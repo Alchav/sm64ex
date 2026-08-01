@@ -162,26 +162,11 @@ void bhv_snowmans_bottom_loop(void) {
 }
 
 void bhv_snowmans_head_init(void) {
-    u8 sp37;
-    s8 sp36;
-
-    sp37 = save_file_get_star_flags(gCurrSaveFileNum - 1, gCurrCourseNum - 1);
-    sp36 = (o->oBehParams >> 24) & 0xFF;
-
     cur_obj_scale(0.7f);
 
     o->oGravity = 5.0f;
     o->oFriction = 0.999f;
     o->oBuoyancy = 2.0f;
-
-    if (sp37 & (1 << sp36)) {
-        spawn_object_abs_with_rot(o, 0, MODEL_CCM_SNOWMAN_BASE, bhvBigSnowmanWhole, -4230, -1344, 1813,
-                                  0, 0, 0);
-        o->oPosX = -4230.0f;
-        o->oPosY = -994.0f;
-        o->oPosZ = 1813.0f;
-        o->oAction = 1;
-    }
 }
 
 void bhv_snowmans_head_loop(void) {

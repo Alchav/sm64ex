@@ -63,6 +63,10 @@ sm64config.txt
 /levels/**/*.png
 /actors/**/*.png
 /textures/**/*.png
+!/textures/title_screen_bg/title_screen_bg.001C0.rgba16.png
+!/textures/title_screen_bg/title_screen_bg.00E40.rgba16.png
+!/textures/title_screen_bg/title_screen_bg.01AC0.rgba16.png
+!/textures/title_screen_bg/title_screen_bg.02740.rgba16.png
 /assets/**/*.bin
 /sound/**/*.m64
 /sound/**/*.aiff

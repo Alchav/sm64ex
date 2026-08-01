@@ -76,7 +76,6 @@ bool sm64_have_hat = false;
 bool sm64_have_vcutm_entrance = false;
 bool sm64_have_rr_level_unlock = false;
 bool sm64_have_wmotr_level_unlock = false;
-int sm64_one_up_unlock_mode = 0;
 bool sm64_1up_checks_enabled = false;
 bool sm64_buddy_checks_enabled = true;
 bool sm64_bowser_stage_1up_item_behavior = false;
@@ -113,6 +112,12 @@ static std::string sm64_permanent_coin_ledger_key;
 static bool sm64_finished_bowser_storage_received = false;
 static bool sm64_moat_storage_received = false;
 static bool sm64_permanent_coin_storage_received = false;
+static bool sm64_save_flags_storage_received = false;
+static bool sm64_cannon_flags_storage_received = false;
+static int sm64_coin_scores_storage_received = 0;
+static u32 sm64_server_save_flags = 0;
+static u32 sm64_server_cannon_flags = 0;
+static int sm64_server_coin_high_scores[COURSE_STAGES_COUNT] = {};
 static int sm64_title_connection_wait_frames = 0;
 static void SM64AP_LoadPermanentCoins(const std::string &rawLedger);
 
@@ -590,7 +595,8 @@ void SM64AP_RecvItem(int64_t idx, bool notify) {
     AP_EnableQueueItemRecvMsgs(true);
 
     if (idx >= SM64AP_ONE_UP_GLOBAL_ITEM_OFFSET && idx < SM64AP_ONE_UP_LEVEL_ITEM_OFFSET) {
-        sm64_have_one_up_global_items[idx - SM64AP_ONE_UP_GLOBAL_ITEM_OFFSET] = true;
+        int category = idx - SM64AP_ONE_UP_GLOBAL_ITEM_OFFSET;
+        sm64_have_one_up_global_items[category] = true;
         SM64AP_RequestLiveObjectReconcile();
         return;
     }
@@ -1288,6 +1294,76 @@ bool SM64AP_CollectedCourseStar(int courseIdx, int starIdx) {
         && (SM64AP_CourseStarFlags(courseIdx) & (1 << starIdx));
 }
 
+u32 SM64AP_ServerSaveFlags() {
+    return sm64_server_save_flags;
+}
+
+static void SM64AP_UpdateServerBits(const std::string &suffix, const char *operation, u32 value) {
+    int operand = static_cast<int>(value);
+    int defaultValue = 0;
+    AP_SetServerDataRequest request;
+    AP_DataStorageOperation update = { operation, &operand };
+    request.key = AP_GetPrivateServerDataPrefix() + suffix;
+    request.operations = { update };
+    request.default_value = &defaultValue;
+    request.type = AP_DataType::Int;
+    request.want_reply = true;
+    AP_SetServerData(&request);
+}
+
+static void SM64AP_SetServerInt(const std::string &key, const char *operation, int value) {
+    int defaultValue = 0;
+    AP_SetServerDataRequest request;
+    AP_DataStorageOperation update = { operation, &value };
+    request.key = key;
+    request.operations = { update };
+    request.default_value = &defaultValue;
+    request.type = AP_DataType::Int;
+    request.want_reply = true;
+    AP_SetServerData(&request);
+}
+
+void SM64AP_SetServerSaveFlags(u32 flags) {
+    sm64_server_save_flags |= flags;
+    SM64AP_UpdateServerBits("SaveFlags", "or", flags);
+}
+
+void SM64AP_ClearServerSaveFlags(u32 flags) {
+    sm64_server_save_flags &= ~flags;
+    SM64AP_UpdateServerBits("SaveFlags", "and", ~flags);
+}
+
+u32 SM64AP_ServerCannonFlags() {
+    return sm64_server_cannon_flags;
+}
+
+void SM64AP_SetServerCannonFlag(int course) {
+    if (course < 0 || course >= 32) return;
+    u32 flag = 1U << course;
+    sm64_server_cannon_flags |= flag;
+    SM64AP_UpdateServerBits("CannonFlags", "or", flag);
+}
+
+int SM64AP_ServerCoinHighScore(int course) {
+    return course >= 0 && course < COURSE_STAGES_COUNT
+        ? std::max(sm64_server_coin_high_scores[course], 0) : 0;
+}
+
+void SM64AP_SetServerCoinHighScore(int course, int score) {
+    if (course < 0 || course >= COURSE_STAGES_COUNT
+        || score <= sm64_server_coin_high_scores[course]) return;
+    sm64_server_coin_high_scores[course] = score;
+    AP_SetServerDataRequest request;
+    AP_DataStorageOperation update = { "max", &score };
+    int defaultValue = 0;
+    request.key = AP_GetPrivateServerDataPrefix() + "CoinHighScore;" + std::to_string(course);
+    request.operations = { update };
+    request.default_value = &defaultValue;
+    request.type = AP_DataType::Int;
+    request.want_reply = true;
+    AP_SetServerData(&request);
+}
+
 static bool SM64AP_IsKoopaTheQuick(u32 behParam, const void *behavior) {
     if (behavior_is(behavior, bhvKoopaRaceEndpoint)) {
         return true;
@@ -1406,16 +1482,14 @@ static bool SM64AP_ShouldSpawnWfObject(u32 behParam, const void *behavior) {
 }
 
 static bool SM64AP_ShouldSpawnCcmObject(const void *behavior) {
-    bool snowmanStar = SM64AP_CollectedCourseStar(AP_COURSE_CCM, 4);
-
     if (behavior_is(behavior, bhvSmallPenguin)) {
         return SM64AP_HaveObjectItem(SM64AP_OBJECT_ITEM_CCM_BABY_PENGUINS);
     }
     if (behavior_is(behavior, bhvSnowmansBottom)) {
-        return SM64AP_HaveFeature(SM64AP_FEATURE_CCM_SNOWMANS_HEAD) && !snowmanStar;
+        return SM64AP_HaveFeature(SM64AP_FEATURE_CCM_SNOWMANS_BODY);
     }
     if (behavior_is(behavior, bhvSnowmansHead)) {
-        return SM64AP_HaveFeature(SM64AP_FEATURE_CCM_SNOWMANS_HEAD) || snowmanStar;
+        return SM64AP_HaveFeature(SM64AP_FEATURE_CCM_SNOWMANS_BODY);
     }
     if (behavior_is(behavior, bhvRacingPenguin)) {
         return SM64AP_HaveFeature(SM64AP_FEATURE_CCM_BIG_PENGUIN);
@@ -1567,6 +1641,24 @@ static int SM64AP_BowserArenaBombIndex(s16 level, s16 x, s16 z) {
     return -1;
 }
 
+static int SM64AP_OneUpPlacementSourceType(const void *behavior) {
+    if (behavior_is(behavior, bhv1Up)) return SM64AP_1UP_SOURCE_OBJECT;
+    if (behavior_is(behavior, bhv1upSliding)) return SM64AP_1UP_SOURCE_SLIDING;
+    if (behavior_is(behavior, bhv1upJumpOnApproach)) return SM64AP_1UP_SOURCE_JUMP_ON_APPROACH;
+    if (behavior_is(behavior, bhvHidden1up)
+        || behavior_is(behavior, bhvHidden1upTrigger)) {
+        return SM64AP_1UP_SOURCE_HIDDEN;
+    }
+    if (behavior_is(behavior, bhvHidden1upInPole)
+        || behavior_is(behavior, bhvHidden1upInPoleTrigger)
+        || behavior_is(behavior, bhvHidden1upInPoleSpawner)) {
+        return SM64AP_1UP_SOURCE_HIDDEN_POLE;
+    }
+    if (behavior_is(behavior, bhv1upWalking)) return SM64AP_1UP_SOURCE_WALKING;
+    if (behavior_is(behavior, bhv1upRunningAway)) return SM64AP_1UP_SOURCE_RUNNING_AWAY;
+    return -1;
+}
+
 bool SM64AP_ShouldSpawnLevelObject(s16 level, s16, s16 model, s16 x, s16 y, s16 z, u32 behParam, const void *behavior) {
     if (behavior_is(behavior, bhvToadMessage)) {
         return SM64AP_HaveToads();
@@ -1594,6 +1686,11 @@ bool SM64AP_ShouldSpawnLevelObject(s16 level, s16, s16 model, s16 x, s16 y, s16 
         && (((behParam >> 16) & 0xFF) == 1 || ((behParam >> 16) & 0xFF) == 2)) {
         return SM64AP_ShouldSpawnBowserStageOneUp(
             level, (behParam >> 16) & 0xFF, save_file_get_flags());
+    }
+
+    int oneUpSource = SM64AP_OneUpPlacementSourceType(behavior);
+    if (oneUpSource >= 0 && !SM64AP_HaveOneUpSource(level, oneUpSource)) {
+        return false;
     }
 
     if (behavior_is(behavior, bhvBowserBomb)) {
@@ -2456,15 +2553,20 @@ static void SM64AP_SetMarioColors(std::string rawColors) {
 
     u8 color[3];
     u8 shirtColor[3];
+    u8 hatColor[3] = { 255, 0, 0 };
+    u8 skinColor[3] = { 254, 193, 121 };
+    u8 hairColor[3] = { 115, 6, 0 };
     bool haveShirtColor = SM64AP_ReadMarioColor(rawColors, "shirt", shirtColor);
 
     if (haveShirtColor) {
         SM64AP_SetMarioShirtColor(shirtColor[0], shirtColor[1], shirtColor[2]);
     }
     if (SM64AP_ReadMarioColor(rawColors, "hat", color)) {
+        std::copy_n(color, 3, hatColor);
         SM64AP_SetMarioHatColor(color[0], color[1], color[2]);
         SM64AP_SetMarioCapShirtColor(color[0], color[1], color[2]);
     } else if (haveShirtColor) {
+        std::copy_n(shirtColor, 3, hatColor);
         SM64AP_SetMarioHatColor(shirtColor[0], shirtColor[1], shirtColor[2]);
         SM64AP_SetMarioCapShirtColor(shirtColor[0], shirtColor[1], shirtColor[2]);
     }
@@ -2479,13 +2581,18 @@ static void SM64AP_SetMarioColors(std::string rawColors) {
         SM64AP_SetMarioShoesColor(color[0], color[1], color[2]);
     }
     if (SM64AP_ReadMarioColor(rawColors, "skin", color)) {
+        std::copy_n(color, 3, skinColor);
         SM64AP_SetMarioSkinColor(color[0], color[1], color[2]);
     }
     if (SM64AP_ReadMarioColor(rawColors, "hair", color)) {
+        std::copy_n(color, 3, hairColor);
         SM64AP_SetMarioHairColor(color[0], color[1], color[2]);
         SM64AP_SetMarioSideburnColor(color[0], color[1], color[2]);
         SM64AP_SetMarioCapHairColor(color[0], color[1], color[2]);
     }
+    SM64AP_SetMarioHeadColors(hatColor[0], hatColor[1], hatColor[2],
+                              skinColor[0], skinColor[1], skinColor[2],
+                              hairColor[0], hairColor[1], hairColor[2]);
 }
 
 void SM64AP_SetMoveRandoVec(int vec) {
@@ -2493,10 +2600,6 @@ void SM64AP_SetMoveRandoVec(int vec) {
         sm64_have_abilities[i] = !std::bitset<SM64AP_NUM_ABILITIES>(vec).test(i) || sm64_have_abilities[i];
     }
 }
-void SM64AP_SetOneUpUnlockMode(int mode) {
-    sm64_one_up_unlock_mode = mode >= 0 && mode <= 2 ? mode : 0;
-}
-
 void SM64AP_ResetItems() {
     {
         std::lock_guard<std::mutex> lock(sm64_permanent_coin_mutex);
@@ -2548,7 +2651,6 @@ void SM64AP_ResetItems() {
     sm64_have_vcutm_entrance = false;
     sm64_have_rr_level_unlock = false;
     sm64_have_wmotr_level_unlock = false;
-    sm64_one_up_unlock_mode = 0;
     sm64_1up_checks_enabled = false;
     sm64_buddy_checks_enabled = true;
     sm64_bowser_stage_1up_item_behavior = false;
@@ -2582,10 +2684,30 @@ void SM64AP_SetReplyHandler(AP_SetReply reply) {
     } else if (reply.key == AP_GetPrivateServerDataPrefix() + "MoatDrained") {
         sm64_moat_state = *(int *) (reply.value);
         sm64_moat_storage_received = true;
+    } else if (reply.key == AP_GetPrivateServerDataPrefix() + "SaveFlags") {
+        sm64_server_save_flags = *(int *) reply.value;
+        sm64_save_flags_storage_received = true;
+    } else if (reply.key == AP_GetPrivateServerDataPrefix() + "CannonFlags") {
+        sm64_server_cannon_flags = *(int *) reply.value;
+        sm64_cannon_flags_storage_received = true;
     } else if (reply.key == sm64_permanent_coin_ledger_key) {
         SM64AP_LoadPermanentCoins(*(std::string *) reply.value);
         sm64_permanent_coin_storage_received = true;
     } else {
+        std::string coinScorePrefix = AP_GetPrivateServerDataPrefix() + "CoinHighScore;";
+        if (reply.key.compare(0, coinScorePrefix.size(), coinScorePrefix) == 0) {
+            int course = std::stoi(reply.key.substr(coinScorePrefix.size()));
+            if (course >= 0 && course < COURSE_STAGES_COUNT) {
+                if (sm64_server_coin_high_scores[course] < 0) sm64_coin_scores_storage_received++;
+                int score = *(int *) reply.value;
+                if (score < 0 || score > UINT8_MAX) {
+                    score = 0;
+                    SM64AP_SetServerInt(reply.key, "replace", score);
+                }
+                sm64_server_coin_high_scores[course] = score;
+            }
+            return;
+        }
         std::lock_guard<std::mutex> lock(sm64_permanent_coin_mutex);
         for (auto &entry : sm64_uncollect_trap_states) {
             SM64APUncollectTrapState &state = entry.second;
@@ -2658,6 +2780,12 @@ void SM64AP_GenericInit() {
     sm64_finished_bowser_storage_received = false;
     sm64_moat_storage_received = false;
     sm64_permanent_coin_storage_received = false;
+    sm64_save_flags_storage_received = false;
+    sm64_cannon_flags_storage_received = false;
+    sm64_coin_scores_storage_received = 0;
+    sm64_server_save_flags = 0;
+    sm64_server_cannon_flags = 0;
+    std::fill_n(sm64_server_coin_high_scores, COURSE_STAGES_COUNT, -1);
     sm64_title_connection_wait_frames = 0;
     sm64_received_uncollect_coin_traps = 0;
     while (!sm64_pending_uncollect_coin_traps.empty()) {
@@ -2680,7 +2808,6 @@ void SM64AP_GenericInit() {
     AP_RegisterSlotDataIntCallback("StarsToFinish", &SM64AP_SetStarsToFinish);
     AP_RegisterSlotDataIntCallback("CompletionType", &SM64AP_SetCompletionType);
     AP_RegisterSlotDataIntCallback("MoveRandoVec", &SM64AP_SetMoveRandoVec);
-    AP_RegisterSlotDataIntCallback("OneUpUnlockMode", &SM64AP_SetOneUpUnlockMode);
     AP_RegisterSlotDataIntCallback("GlobalCapItems", &SM64AP_SetGlobalCapDisplay);
     AP_RegisterSlotDataIntCallback("ShowGlobalCapDisplay", &SM64AP_SetGlobalCapDisplay);
     AP_RegisterSlotDataIntCallback("OneUpChecks", &SM64AP_SetOneUpChecks);
@@ -2973,24 +3100,31 @@ static int SM64AP_OneUpCategoryForSourceType(s16 sourceType) {
 }
 
 bool SM64AP_HaveOneUpSource(s16 level, s16 sourceType) {
-    if (!sm64_1up_checks_enabled || sm64_one_up_unlock_mode == 0) {
+    // Monty Mole rewards are controlled by the Monty Moles unlock itself.
+    if (sourceType == SM64AP_1UP_SOURCE_MONTY_MOLES) {
+        return true;
+    }
+
+    if (!sm64_1up_checks_enabled) {
         return true;
     }
 
     int category = SM64AP_OneUpCategoryForSourceType(sourceType);
-    if (sm64_one_up_unlock_mode == 1) {
-        return sm64_have_one_up_global_items[category];
-    }
-
     level = SM64AP_NormalizeOneUpLevel(level);
+    bool enabled = sm64_have_one_up_global_items[category];
+    bool hasLevelItem = false;
     for (int i = 0; i < SM64AP_NUM_ONE_UP_LEVEL_ITEMS; i++) {
         if (SM64AP_ONE_UP_LEVEL_ITEMS[i].level == level
             && SM64AP_ONE_UP_LEVEL_ITEMS[i].category == category) {
-            return sm64_have_one_up_level_items[i];
+            hasLevelItem = true;
+            enabled = enabled || sm64_have_one_up_level_items[i];
+            break;
         }
     }
 
-    return true;
+    // Sources without a corresponding level item are not part of this unlock category.
+    enabled = enabled || !hasLevelItem;
+    return enabled;
 }
 
 static int SM64AP_LevelOneUpCategory(s16 level, s16 unlockIndex) {
@@ -3029,11 +3163,11 @@ const char *SM64AP_LevelOneUpUnlockName(s16 level, s16 unlockIndex) {
 
 bool SM64AP_LevelOneUpUnlockEnabled(s16 level, s16 unlockIndex) {
     int category = SM64AP_LevelOneUpCategory(level, unlockIndex);
-    if (category < 0 || !sm64_1up_checks_enabled || sm64_one_up_unlock_mode == 0) {
+    if (category < 0 || !sm64_1up_checks_enabled) {
         return true;
     }
-    if (sm64_one_up_unlock_mode == 1) {
-        return sm64_have_one_up_global_items[category];
+    if (sm64_have_one_up_global_items[category]) {
+        return true;
     }
 
     level = SM64AP_NormalizeOneUpLevel(level);
@@ -3879,35 +4013,27 @@ static void SM64AP_InitializeServerStorage() {
     std::string prefix = AP_GetPrivateServerDataPrefix();
     std::string finishedBowserKey = prefix + "FinishedBowser";
     std::string moatDrainedKey = prefix + "MoatDrained";
-    AP_SetNotify({
+    std::string saveFlagsKey = prefix + "SaveFlags";
+    std::string cannonFlagsKey = prefix + "CannonFlags";
+    std::map<std::string, AP_DataType> integerStorageKeys = {
         { finishedBowserKey, AP_DataType::Int },
         { moatDrainedKey, AP_DataType::Int },
-    });
+        { saveFlagsKey, AP_DataType::Int },
+        { cannonFlagsKey, AP_DataType::Int },
+    };
 
-    int defaultValue = 0;
-    AP_SetServerDataRequest finishedBowserRequest;
-    AP_DataStorageOperation defaultFinishedBowser = { "default", &defaultValue };
-    finishedBowserRequest.key = finishedBowserKey;
-    finishedBowserRequest.operations = { defaultFinishedBowser };
-    finishedBowserRequest.default_value = &defaultValue;
-    finishedBowserRequest.type = AP_DataType::Int;
-    finishedBowserRequest.want_reply = true;
-    AP_BulkSetServerData(&finishedBowserRequest);
-
-    AP_SetServerDataRequest moatDrainedRequest;
-    AP_DataStorageOperation defaultMoatDrained = { "default", &defaultValue };
-    moatDrainedRequest.key = moatDrainedKey;
-    moatDrainedRequest.operations = { defaultMoatDrained };
-    moatDrainedRequest.default_value = &defaultValue;
-    moatDrainedRequest.type = AP_DataType::Int;
-    moatDrainedRequest.want_reply = true;
-    AP_BulkSetServerData(&moatDrainedRequest);
+    for (int course = 0; course < COURSE_STAGES_COUNT; course++) {
+        std::string key = prefix + "CoinHighScore;" + std::to_string(course);
+        integerStorageKeys[key] = AP_DataType::Int;
+    }
+    AP_SetNotify(integerStorageKeys, false);
+    for (const auto &entry : integerStorageKeys) {
+        SM64AP_SetServerInt(entry.first, "default", 0);
+    }
 
     if (sm64_permanent_coin_collection) {
         sm64_permanent_coin_ledger_key = prefix + "PermanentCoins";
         AP_SetNotify(sm64_permanent_coin_ledger_key, AP_DataType::Raw, true);
-    } else {
-        AP_CommitServerData();
     }
     sm64_permanent_coin_storage_initialized = true;
 }
@@ -3918,6 +4044,9 @@ bool SM64AP_ReadyToStart() {
         && sm64_permanent_coin_storage_initialized
         && sm64_finished_bowser_storage_received
         && sm64_moat_storage_received
+        && sm64_save_flags_storage_received
+        && sm64_cannon_flags_storage_received
+        && sm64_coin_scores_storage_received == COURSE_STAGES_COUNT
         && (!sm64_permanent_coin_collection || sm64_permanent_coin_storage_received);
     if (ready) {
         sm64_title_connection_wait_frames = 0;
@@ -4344,7 +4473,7 @@ static constexpr const char *SM64AP_CHEAT_FEATURE_NAMES[SM64AP_NUM_FEATURES] = {
     "WF FORTRESS",
     "WF BUDDY",
     "WF HOOT",
-    "CCM SNOWMAN HEAD",
+    "CCM SNOWMAN BODY",
     "CCM BIG PENGUIN",
     "JRB SUNKEN SHIP",
     "JRB RAISED SHIP",
