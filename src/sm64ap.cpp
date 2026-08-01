@@ -1421,16 +1421,14 @@ static bool SM64AP_ShouldSpawnWfObject(u32 behParam, const void *behavior) {
 }
 
 static bool SM64AP_ShouldSpawnCcmObject(const void *behavior) {
-    bool snowmanStar = SM64AP_CollectedCourseStar(AP_COURSE_CCM, 4);
-
     if (behavior_is(behavior, bhvSmallPenguin)) {
         return SM64AP_HaveObjectItem(SM64AP_OBJECT_ITEM_CCM_BABY_PENGUINS);
     }
     if (behavior_is(behavior, bhvSnowmansBottom)) {
-        return SM64AP_HaveFeature(SM64AP_FEATURE_CCM_SNOWMANS_HEAD) && !snowmanStar;
+        return SM64AP_HaveFeature(SM64AP_FEATURE_CCM_SNOWMANS_BODY);
     }
     if (behavior_is(behavior, bhvSnowmansHead)) {
-        return SM64AP_HaveFeature(SM64AP_FEATURE_CCM_SNOWMANS_HEAD) || snowmanStar;
+        return SM64AP_HaveFeature(SM64AP_FEATURE_CCM_SNOWMANS_BODY);
     }
     if (behavior_is(behavior, bhvRacingPenguin)) {
         return SM64AP_HaveFeature(SM64AP_FEATURE_CCM_BIG_PENGUIN);
@@ -4392,7 +4390,7 @@ static constexpr const char *SM64AP_CHEAT_FEATURE_NAMES[SM64AP_NUM_FEATURES] = {
     "WF FORTRESS",
     "WF BUDDY",
     "WF HOOT",
-    "CCM SNOWMAN HEAD",
+    "CCM SNOWMAN BODY",
     "CCM BIG PENGUIN",
     "JRB SUNKEN SHIP",
     "JRB RAISED SHIP",
