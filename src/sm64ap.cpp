@@ -2973,6 +2973,11 @@ static int SM64AP_OneUpCategoryForSourceType(s16 sourceType) {
 }
 
 bool SM64AP_HaveOneUpSource(s16 level, s16 sourceType) {
+    // Monty Mole rewards are controlled by the Monty Moles unlock itself.
+    if (sourceType == SM64AP_1UP_SOURCE_MONTY_MOLES) {
+        return true;
+    }
+
     if (!sm64_1up_checks_enabled || sm64_one_up_unlock_mode == 0) {
         return true;
     }
