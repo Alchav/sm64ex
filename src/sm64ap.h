@@ -473,6 +473,8 @@ AP_EXTERN_C u32 SM64AP_ServerCannonFlags();
 AP_EXTERN_C void SM64AP_SetServerCannonFlag(int);
 AP_EXTERN_C int SM64AP_ServerCoinHighScore(int);
 AP_EXTERN_C void SM64AP_SetServerCoinHighScore(int, int);
+AP_EXTERN_C void SM64AP_SetMarioHeadColors(u8, u8, u8, u8, u8, u8, u8, u8, u8);
+AP_EXTERN_C void SM64AP_ApplyMarioHeadColors(void);
 AP_EXTERN_C bool SM64AP_ShouldSpawnLevelObject(s16, s16, s16, s16, s16, s16, u32, const void *);
 AP_EXTERN_C int SM64AP_BowserHitRequirement(s16);
 AP_EXTERN_C int SM64AP_BowserInTheSkyStageCollapseHits();
