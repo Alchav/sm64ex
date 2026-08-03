@@ -3761,10 +3761,14 @@ s16 render_course_complete_screen(void) {
         case DIALOG_STATE_OPENING:
             render_course_complete_lvl_info_and_hud_str();
             if (gCourseDoneMenuTimer > 100 && gCourseCompleteCoinsEqual == 1) {
-                gDialogBoxState = DIALOG_STATE_VERTICAL;
-                level_set_transition(-1, 0);
-                gDialogTextAlpha = 0;
-                gDialogLineNum = 1;
+                level_set_transition(0, 0);
+                gDialogBoxState = DIALOG_STATE_OPENING;
+                gMenuMode = -1;
+                gCourseDoneMenuTimer = 0;
+                gCourseCompleteCoins = 0;
+                gCourseCompleteCoinsEqual = 0;
+                gHudFlash = 0;
+                return 1;
             }
             break;
         case DIALOG_STATE_VERTICAL:
