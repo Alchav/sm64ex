@@ -4204,6 +4204,21 @@ u64 SM64AP_PermanentCoinMask(struct Object *source, int slotCount, int value) {
     return mask;
 }
 
+int SM64AP_CollectedPermanentRedCoins(int course) {
+    int collected = 0;
+
+    if (!sm64_permanent_coin_collection) {
+        return 0;
+    }
+
+    for (const auto &entry : sm64_permanent_coins) {
+        if (entry.second.course == course && entry.second.value == 2) {
+            collected++;
+        }
+    }
+    return collected;
+}
+
 void SM64AP_RestorePermanentCoinCount() {
     if (!sm64_permanent_coin_collection || gMarioState == nullptr
         || gCurrCourseNum <= COURSE_NONE || gCurrCourseNum > COURSE_MAX) {

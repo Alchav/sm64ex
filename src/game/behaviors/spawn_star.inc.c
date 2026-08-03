@@ -181,6 +181,8 @@ void bhv_hidden_red_coin_star_init(void) {
 
 void bhv_hidden_red_coin_star_loop(void) {
     if (SM64AP_PermanentCoinCollection()) {
+        s16 collectedRedCoins;
+
         if (o->oHiddenStarTriggerCounter == -2) {
             o->oHiddenStarTriggerCounter = -1;
             gRedCoinsCollected = 0;
@@ -188,6 +190,13 @@ void bhv_hidden_red_coin_star_loop(void) {
         }
         if (o->oHiddenStarTriggerCounter == -1) {
             o->oHiddenStarTriggerCounter = count_collected_permanent_red_coins();
+        } else {
+            // Coin formations can initialize after the star controller. Keep incorporating
+            // restored red coins without lowering red coins collected during this visit.
+            collectedRedCoins = count_collected_permanent_red_coins();
+            if (o->oHiddenStarTriggerCounter < collectedRedCoins) {
+                o->oHiddenStarTriggerCounter = collectedRedCoins;
+            }
         }
     }
 

@@ -2170,8 +2170,19 @@ void print_animated_red_coin(s16 x, s16 y) {
 
 void render_pause_red_coins(void) {
     s8 x;
+    s8 redCoinsCollected = gRedCoinsCollected;
 
-    for (x = 0; x < gRedCoinsCollected; x++) {
+    if (SM64AP_PermanentCoinCollection()) {
+        s8 permanentRedCoins = SM64AP_CollectedPermanentRedCoins(gCurrCourseNum);
+        if (redCoinsCollected < permanentRedCoins) {
+            redCoinsCollected = permanentRedCoins;
+        }
+    }
+    if (redCoinsCollected > 8) {
+        redCoinsCollected = 8;
+    }
+
+    for (x = 0; x < redCoinsCollected; x++) {
         print_animated_red_coin(GFX_DIMENSIONS_FROM_RIGHT_EDGE(30) - x * 20, 16);
     }
 }
@@ -2213,37 +2224,26 @@ void render_pause_my_score_coins(void) {
     u8 textCourse[] = { TEXT_COURSE };
     u8 textMyScore[] = { TEXT_MY_SCORE };
 #endif
-    u8 textStar[] = { TEXT_STAR };
-    u8 textUnfilledStar[] = { TEXT_UNFILLED_STAR };
-
     u8 strCourseNum[4];
     void **courseNameTbl;
     u8 *courseName;
-    void **actNameTbl;
-    u8 *actName;
     u8 courseIndex;
-    u8 starFlags;
 
 #ifndef VERSION_EU
     courseNameTbl = segmented_to_virtual(seg2_course_name_table);
-    actNameTbl = segmented_to_virtual(seg2_act_name_table);
 #endif
 
     courseIndex = gCurrCourseNum - 1;
-    starFlags = save_file_get_star_flags(gCurrSaveFileNum - 1, gCurrCourseNum - 1);
 
 #ifdef VERSION_EU
     switch (gInGameLanguage) {
         case LANGUAGE_ENGLISH:
-            actNameTbl = segmented_to_virtual(act_name_table_eu_en);
             courseNameTbl = segmented_to_virtual(course_name_table_eu_en);
             break;
         case LANGUAGE_FRENCH:
-            actNameTbl = segmented_to_virtual(act_name_table_eu_fr);
             courseNameTbl = segmented_to_virtual(course_name_table_eu_fr);
             break;
         case LANGUAGE_GERMAN:
-            actNameTbl = segmented_to_virtual(act_name_table_eu_de);
             courseNameTbl = segmented_to_virtual(course_name_table_eu_de);
             break;
     }
@@ -2253,8 +2253,8 @@ void render_pause_my_score_coins(void) {
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
 
     if (courseIndex < COURSE_STAGES_COUNT) {
-        print_hud_my_score_coins(1, gCurrSaveFileNum - 1, courseIndex, 178, 103);
-        print_hud_my_score_stars(gCurrSaveFileNum - 1, courseIndex, 118, 103);
+        print_hud_my_score_coins(1, gCurrSaveFileNum - 1, courseIndex, 178, 84);
+        print_hud_my_score_stars(gCurrSaveFileNum - 1, courseIndex, 118, 84);
     }
 
     gSPDisplayList(gDisplayListHead++, dl_rgba16_text_end);
@@ -2263,7 +2263,7 @@ void render_pause_my_score_coins(void) {
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
 
     if (courseIndex < COURSE_STAGES_COUNT && save_file_get_course_star_count(gCurrSaveFileNum - 1, courseIndex) != 0) {
-        print_generic_string(MYSCORE_X, 121, textMyScore);
+        print_generic_string(MYSCORE_X, 140, textMyScore);
     }
 
     courseName = segmented_to_virtual(courseNameTbl[courseIndex]);
@@ -2281,14 +2281,6 @@ void render_pause_my_score_coins(void) {
         print_generic_string(CRS_NUM_X1, 157, strCourseNum);
 #endif
 
-        actName = segmented_to_virtual(actNameTbl[(gCurrCourseNum - 1) * 6 + gDialogCourseActNum - 1]);
-
-        if (starFlags & (1 << (gDialogCourseActNum - 1))) {
-            print_generic_string(TXT_STAR_X, 140, textStar);
-        } else {
-            print_generic_string(TXT_STAR_X, 140, textUnfilledStar);
-        }
-        print_generic_string(ACT_NAME_X, 140, actName);
 #ifndef VERSION_JP
         print_generic_string(LVL_NAME_X, 157, &courseName[3]);
 #endif
@@ -3382,7 +3374,7 @@ s16 render_pause_courses_and_castle(void) {
 
 /* Added support for the "Exit course at any time" cheat */
             if ((gMarioStates[0].action & ACT_FLAG_PAUSE_EXIT) || (Cheats.EnableCheats && Cheats.ExitAnywhere)) {
-                render_pause_course_options(99, 93, &gDialogLineNum, 15);
+                render_pause_course_options(99, 108, &gDialogLineNum, 15);
             }
 
             if (pause_menu_confirm_pressed()) {

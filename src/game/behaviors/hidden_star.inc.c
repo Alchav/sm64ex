@@ -58,6 +58,8 @@ void bhv_hidden_star_trigger_loop(void) {
 
 void bhv_bowser_course_red_coin_star_loop(void) {
     if (SM64AP_PermanentCoinCollection()) {
+        s16 collectedRedCoins;
+
         if (o->oTimer == 0) {
             // Reconstruct next frame, after collected red coins suppress themselves.
             o->oHiddenStarTriggerCounter = -1;
@@ -66,6 +68,11 @@ void bhv_bowser_course_red_coin_star_loop(void) {
         }
         if (o->oHiddenStarTriggerCounter == -1) {
             o->oHiddenStarTriggerCounter = count_collected_permanent_red_coins();
+        } else {
+            collectedRedCoins = count_collected_permanent_red_coins();
+            if (o->oHiddenStarTriggerCounter < collectedRedCoins) {
+                o->oHiddenStarTriggerCounter = collectedRedCoins;
+            }
         }
     }
 
