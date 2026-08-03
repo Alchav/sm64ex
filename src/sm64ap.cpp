@@ -1750,7 +1750,10 @@ bool SM64AP_ShouldSpawnLevelObject(s16 level, s16, s16 model, s16 x, s16 y, s16 
     }
 
     int coinObjectSource = SM64AP_CoinObjectSource(behParam, behavior);
-    if (coinObjectSource >= 0 && !SM64AP_HaveCoinSource(coinObjectSource, level)) {
+    // Locked exclamation boxes remain as intangible outlines until their unlock arrives.
+    if (coinObjectSource >= 0
+        && !behavior_is(behavior, bhvExclamationBox)
+        && !SM64AP_HaveCoinSource(coinObjectSource, level)) {
         return false;
     }
 
