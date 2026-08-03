@@ -38,6 +38,7 @@ struct ObjShape *gShapeSilverStar = NULL;  // @ 801A82F8
 static u8 sMarioHeadHatColor[3] = { 255, 0, 0 };
 static u8 sMarioHeadSkinColor[3] = { 254, 193, 121 };
 static u8 sMarioHeadHairColor[3] = { 115, 6, 0 };
+static s32 sMarioHeadCustomPalette = FALSE;
 
 static void sm64ap_set_head_material_color(struct ObjMaterial *material, const u8 color[3]) {
     material->Ka.r = material->Kd.r = color[0] / 255.0f;
@@ -84,10 +85,13 @@ void SM64AP_SetMarioHeadColors(u8 hatR, u8 hatG, u8 hatB, u8 skinR, u8 skinG, u8
     sMarioHeadHairColor[0] = hairR;
     sMarioHeadHairColor[1] = hairG;
     sMarioHeadHairColor[2] = hairB;
+    sMarioHeadCustomPalette = hatR != 255 || hatG != 0 || hatB != 0
+        || skinR != 254 || skinG != 193 || skinB != 121
+        || hairR != 115 || hairG != 6 || hairB != 0;
 }
 
 void SM64AP_ApplyMarioHeadColors(void) {
-    if (gMarioFaceGrp == NULL) {
+    if (!sMarioHeadCustomPalette || gMarioFaceGrp == NULL) {
         return;
     }
 
