@@ -25,7 +25,10 @@ static void bhv_coin_collect_without_contact(void) {
         coinValue = cur_obj_has_model(MODEL_BLUE_COIN) ? 5 : 1;
     }
 
-    if (!SM64AP_CollectPermanentCoin(o, coinValue)) {
+    if (o->apCoinSpent || !SM64AP_CollectPermanentCoin(o, coinValue)) {
+        gMarioState->healCounter += 4 * coinValue;
+        spawn_outstanding_permanent_coin_star();
+        spawn_object(o, MODEL_SPARKLES, bhvGoldenCoinSparkles);
         obj_mark_for_deletion(o);
         return;
     }
@@ -33,9 +36,11 @@ static void bhv_coin_collect_without_contact(void) {
     gMarioState->numCoins += coinValue;
     gMarioState->healCounter += 4 * coinValue;
     SM64AP_CheckCoinCount(gCurrCourseNum, gMarioState->numCoins);
+    spawn_outstanding_permanent_coin_star();
 
     coinStarRequirement = SM64AP_GetCoinStarRequirement(gCurrCourseNum);
     if (COURSE_IS_MAIN_COURSE(gCurrCourseNum)
+        && !SM64AP_PermanentCoinCollection()
         && !SM64AP_CollectedCourseStar(gCurrCourseNum - COURSE_MIN, 6)
         && gMarioState->numCoins - coinValue < coinStarRequirement
         && gMarioState->numCoins >= coinStarRequirement) {
@@ -97,24 +102,27 @@ s32 bhv_coin_sparkles_init(void) {
 void bhv_yellow_coin_init(void) {
     cur_obj_set_behavior(bhvYellowCoin);
     obj_set_hitbox(o, &sYellowCoinHitbox);
-    if (SM64AP_ShouldSuppressPermanentCoin(o, 1)) {
-        obj_mark_for_deletion(o);
-        return;
-    }
     bhv_init_room();
     cur_obj_update_floor_height();
     if (500.0f < absf(o->oPosY - o->oFloorHeight))
         cur_obj_set_model(MODEL_YELLOW_COIN_NO_SHADOW);
+    SM64AP_MarkSpentPermanentCoin(o, 1);
     if (o->oFloorHeight < -10000.0f)
         obj_mark_for_deletion(o);
 }
 
 void bhv_yellow_coin_loop(void) {
+    if (o->apCoinSpent) {
+        cur_obj_set_model(MODEL_SPENT_COIN);
+    }
     bhv_coin_sparkles_init();
     o->oAnimState++;
 }
 
 void bhv_temp_coin_loop(void) {
+    if (o->apCoinSpent || (o->oInteractionSubtype & INT_SUBTYPE_HEAL_WITHOUT_COINS)) {
+        cur_obj_set_model(MODEL_SPENT_COIN);
+    }
     o->oAnimState++;
     if (!SM64AP_NoDespawn() && cur_obj_wait_then_blink(200, 20))
         obj_mark_for_deletion(o);
@@ -139,16 +147,16 @@ void bhv_coin_init(void) {
             return;
         }
     }
-    if (SM64AP_ShouldSuppressPermanentCoin(o, 1)) {
-        obj_mark_for_deletion(o);
-        return;
-    }
+    SM64AP_MarkSpentPermanentCoin(o, 1);
     cur_obj_become_intangible();
 }
 
 void bhv_coin_loop(void) {
     struct Surface *sp1C;
     s16 sp1A;
+    if (o->apCoinSpent) {
+        cur_obj_set_model(MODEL_SPENT_COIN);
+    }
     cur_obj_update_floor_and_walls();
     cur_obj_if_hit_wall_bounce_away();
     cur_obj_move_standard(-62);
@@ -232,6 +240,10 @@ void bhv_coin_formation_spawn_loop(void) {
             o->parentObj->oCoinUnkF4 |= bit_shift_left(o->oBehParams2ndByte);
         o->oAnimState++;
     }
+    SM64AP_MarkSpentPermanentCoin(o, 1);
+    if (o->apCoinSpent) {
+        cur_obj_set_model(MODEL_SPENT_COIN);
+    }
     if (o->parentObj->oAction == 2)
         obj_mark_for_deletion(o);
 }
@@ -282,7 +294,6 @@ void spawn_coin_in_formation(s32 sp50, s32 sp54) {
 
 void bhv_coin_formation_init(void) {
     o->oCoinUnkF4 = (o->oBehParams >> 8) & 0xFF;
-    o->oCoinUnkF4 |= SM64AP_PermanentCoinMask(o, 8, 1);
 }
 
 void bhv_coin_formation_loop(void) {

@@ -210,6 +210,7 @@ struct Object
     u8 apCoinValue;
     u8 apCoinSlotCount;
     u8 apCoinSourceKind;
+    u8 apCoinSpent;
 };
 
 struct ObjectHitbox

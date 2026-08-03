@@ -1659,7 +1659,7 @@ void obj_spawn_loot_yellow_coins(struct Object *obj, s32 numCoins, f32 sp28) {
     obj_spawn_loot_coins(obj, numCoins, sp28, bhvSingleCoinGetsSpawned, 0, MODEL_YELLOW_COIN);
 }
 
-static void obj_collect_coin_value_without_contact(s32 coinValue) {
+static void obj_collect_coin_value_without_contact(UNUSED struct Object *source, s32 coinValue) {
     s32 coinStarRequirement;
 
     if (coinValue <= 0 || gMarioState == NULL) {
@@ -1669,9 +1669,11 @@ static void obj_collect_coin_value_without_contact(s32 coinValue) {
     gMarioState->numCoins += coinValue;
     gMarioState->healCounter += 4 * coinValue;
     SM64AP_CheckCoinCount(gCurrCourseNum, gMarioState->numCoins);
+    spawn_outstanding_permanent_coin_star();
 
     coinStarRequirement = SM64AP_GetCoinStarRequirement(gCurrCourseNum);
     if (COURSE_IS_MAIN_COURSE(gCurrCourseNum)
+        && !SM64AP_PermanentCoinCollection()
         && !SM64AP_CollectedCourseStar(gCurrCourseNum - COURSE_MIN, 6)
         && gMarioState->numCoins - coinValue < coinStarRequirement
         && gMarioState->numCoins >= coinStarRequirement) {
@@ -1708,7 +1710,7 @@ void obj_collect_loot_coins_without_contact(struct Object *obj, s32 numCoins) {
         return;
     }
 
-    obj_collect_coin_value_without_contact(coinValue);
+    obj_collect_coin_value_without_contact(obj, coinValue);
     obj->oNumLootCoins = 0;
 }
 
@@ -2483,6 +2485,25 @@ static struct Object *spawn_star_with_no_lvl_exit(s32 sp20, s32 sp24) {
 // uses behavior parameters not used in the current sparkle code.
 void spawn_base_star_with_no_lvl_exit(void) {
     spawn_star_with_no_lvl_exit(0, 0);
+}
+
+void spawn_outstanding_permanent_coin_star(void) {
+    s32 index;
+    struct Object *star;
+
+    if (!SM64AP_ShouldSpawnOutstandingCoinStar()) {
+        return;
+    }
+    for (index = 0; index < OBJECT_POOL_CAPACITY; index++) {
+        star = &gObjectPool[index];
+        if ((star->activeFlags & ACTIVE_FLAG_ACTIVE)
+            && obj_has_behavior(star, bhvSpawnedStarNoLevelExit)
+            && ((star->oBehParams >> 24) & 0xFF) == 6) {
+            return;
+        }
+    }
+
+    bhv_spawn_star_no_level_exit(6);
 }
 
 s32 bit_shift_left(s32 a0) {

@@ -111,3 +111,39 @@ const GeoLayout red_coin_no_shadow_geo[] = {
    GEO_CLOSE_NODE(),
    GEO_END(),
 };
+
+const GeoLayout spent_coin_geo[] = {
+   GEO_SHADOW(SHADOW_CIRCLE_4_VERTS, 0x70, 50),
+   GEO_OPEN_NODE(),
+      GEO_SWITCH_CASE(8, geo_switch_anim_state),
+      GEO_OPEN_NODE(),
+         GEO_DISPLAY_LIST(LAYER_TRANSPARENT, spent_coin_dl_front),
+         GEO_DISPLAY_LIST(LAYER_TRANSPARENT, spent_coin_dl_front),
+         GEO_DISPLAY_LIST(LAYER_TRANSPARENT, spent_coin_dl_tilt_right),
+         GEO_DISPLAY_LIST(LAYER_TRANSPARENT, spent_coin_dl_tilt_right),
+         GEO_DISPLAY_LIST(LAYER_TRANSPARENT, spent_coin_dl_side),
+         GEO_DISPLAY_LIST(LAYER_TRANSPARENT, spent_coin_dl_side),
+         GEO_DISPLAY_LIST(LAYER_TRANSPARENT, spent_coin_dl_tilt_left),
+         GEO_DISPLAY_LIST(LAYER_TRANSPARENT, spent_coin_dl_tilt_left),
+      GEO_CLOSE_NODE(),
+   GEO_CLOSE_NODE(),
+   GEO_END(),
+};
+
+const GeoLayout spent_blue_coin_geo[] = {
+   GEO_SHADOW(SHADOW_CIRCLE_4_VERTS, 0x70, 80),
+   GEO_OPEN_NODE(),
+      GEO_SWITCH_CASE(8, geo_switch_anim_state),
+      GEO_OPEN_NODE(),
+         GEO_DISPLAY_LIST(LAYER_TRANSPARENT, spent_blue_coin_dl_front),
+         GEO_DISPLAY_LIST(LAYER_TRANSPARENT, spent_blue_coin_dl_front),
+         GEO_DISPLAY_LIST(LAYER_TRANSPARENT, spent_blue_coin_dl_tilt_right),
+         GEO_DISPLAY_LIST(LAYER_TRANSPARENT, spent_blue_coin_dl_tilt_right),
+         GEO_DISPLAY_LIST(LAYER_TRANSPARENT, spent_blue_coin_dl_side),
+         GEO_DISPLAY_LIST(LAYER_TRANSPARENT, spent_blue_coin_dl_side),
+         GEO_DISPLAY_LIST(LAYER_TRANSPARENT, spent_blue_coin_dl_tilt_left),
+         GEO_DISPLAY_LIST(LAYER_TRANSPARENT, spent_blue_coin_dl_tilt_left),
+      GEO_CLOSE_NODE(),
+   GEO_CLOSE_NODE(),
+   GEO_END(),
+};

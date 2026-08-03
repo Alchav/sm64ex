@@ -3883,9 +3883,7 @@ bool SM64AP_AssignPermanentCoinOutput(
     }
 
     for (int slot = 0; slot < slotCount; slot++) {
-        if ((!sm64_permanent_coin_collection
-             || !SM64AP_PermanentCoinSlotCollected(source->apCoinSourceId, slot))
-            && !SM64AP_PermanentCoinSlotActive(source->apCoinSourceId, slot)) {
+        if (!SM64AP_PermanentCoinSlotActive(source->apCoinSourceId, slot)) {
             SM64AP_AssignPermanentCoinSlot(coin, source, slot, value);
             return true;
         }
@@ -3919,12 +3917,17 @@ bool SM64AP_AssignPermanentAggregateCoinOutput(
     return true;
 }
 
-bool SM64AP_ShouldSuppressPermanentCoin(struct Object *coin, int value) {
+bool SM64AP_MarkSpentPermanentCoin(struct Object *coin, int value) {
     if (!sm64_permanent_coin_collection || coin == nullptr || coin->apCoinSourceId == 0) {
         return false;
     }
     coin->apCoinValue = value;
-    return SM64AP_PermanentCoinSlotCollected(coin->apCoinSourceId, coin->apCoinSlot);
+    coin->apCoinSpent = SM64AP_PermanentCoinSlotCollected(coin->apCoinSourceId, coin->apCoinSlot);
+    if (coin->apCoinSpent) {
+        coin->header.gfx.sharedChild = gLoadedGraphNodes[
+            value >= 5 ? MODEL_SPENT_BLUE_COIN : MODEL_SPENT_COIN];
+    }
+    return coin->apCoinSpent;
 }
 
 static std::string SM64AP_PermanentCoinKey(u64 source, u8 slot) {

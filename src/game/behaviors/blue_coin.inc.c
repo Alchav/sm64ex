@@ -12,9 +12,9 @@
 void bhv_hidden_blue_coin_loop(void) {
     struct Object *blueCoinSwitch;
 
-    if (SM64AP_ShouldSuppressPermanentCoin(o, 5)) {
-        obj_mark_for_deletion(o);
-        return;
+    SM64AP_MarkSpentPermanentCoin(o, 5);
+    if (o->apCoinSpent) {
+        cur_obj_set_model(MODEL_SPENT_BLUE_COIN);
     }
 
     switch (o->oAction) {

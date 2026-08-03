@@ -65,7 +65,7 @@ void bhv_bowser_course_red_coin_star_loop(void) {
             return;
         }
         if (o->oHiddenStarTriggerCounter == -1) {
-            o->oHiddenStarTriggerCounter = 8 - count_objects_with_behavior(bhvRedCoin);
+            o->oHiddenStarTriggerCounter = count_collected_permanent_red_coins();
         }
     }
 

@@ -43,9 +43,7 @@ void bhv_red_coin_init(void) {
     }
 
     obj_set_hitbox(o, &sRedCoinHitbox);
-    if (SM64AP_ShouldSuppressPermanentCoin(o, 2)) {
-        o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
-    }
+    SM64AP_MarkSpentPermanentCoin(o, 2);
 }
 
 /**
@@ -53,8 +51,16 @@ void bhv_red_coin_init(void) {
  * the orange number counter.
  */
 void bhv_red_coin_loop(void) {
+    if (o->apCoinSpent) {
+        cur_obj_set_model(MODEL_SPENT_COIN);
+    }
     // If Mario interacted with the object...
     if (o->oInteractStatus & INT_STATUS_INTERACTED) {
+        if (o->apCoinSpent) {
+            coin_collected();
+            o->oInteractStatus = 0;
+            return;
+        }
         // ...and there is a red coin star in the level...
         if (o->parentObj != NULL) {
             // ...increment the star's counter.

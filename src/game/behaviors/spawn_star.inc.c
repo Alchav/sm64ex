@@ -140,6 +140,21 @@ void spawn_no_exit_star(f32 sp20, f32 sp24, f32 sp28) {
     sp1C->oInteractionSubtype |= INT_SUBTYPE_NO_EXIT;
 }
 
+static s16 count_collected_permanent_red_coins(void) {
+    s16 collected = 0;
+    s32 index;
+
+    for (index = 0; index < OBJECT_POOL_CAPACITY; index++) {
+        struct Object *coin = &gObjectPool[index];
+        if ((coin->activeFlags & ACTIVE_FLAG_ACTIVE)
+            && obj_has_behavior(coin, bhvRedCoin)
+            && coin->apCoinSpent) {
+            collected++;
+        }
+    }
+    return collected;
+}
+
 void bhv_hidden_red_coin_star_init(void) {
     s16 sp36;
     struct Object *sp30;
@@ -172,7 +187,7 @@ void bhv_hidden_red_coin_star_loop(void) {
             return;
         }
         if (o->oHiddenStarTriggerCounter == -1) {
-            o->oHiddenStarTriggerCounter = 8 - count_objects_with_behavior(bhvRedCoin);
+            o->oHiddenStarTriggerCounter = count_collected_permanent_red_coins();
         }
     }
 

@@ -24,6 +24,20 @@ static const Vtx coin_seg3_vertex_03005740[] = {
     {{{   -35,     70,      0}, 0, {     0,      0}, {0xff, 0x00, 0x00, 0xff}}},
 };
 
+static const Vtx spent_coin_vertices[] = {
+    {{{ -32,  0, 0}, 0, {   0, 1984}, {0x90, 0x90, 0x90, 0x90}}},
+    {{{  32,  0, 0}, 0, {1984, 1984}, {0x90, 0x90, 0x90, 0x90}}},
+    {{{  32, 64, 0}, 0, {1984,    0}, {0x90, 0x90, 0x90, 0x90}}},
+    {{{ -32, 64, 0}, 0, {   0,    0}, {0x90, 0x90, 0x90, 0x90}}},
+};
+
+static const Vtx spent_blue_coin_vertices[] = {
+    {{{ -50,   0, 0}, 0, {   0, 1984}, {0x90, 0x90, 0x90, 0x90}}},
+    {{{  50,   0, 0}, 0, {1984, 1984}, {0x90, 0x90, 0x90, 0x90}}},
+    {{{  50, 100, 0}, 0, {1984,    0}, {0x90, 0x90, 0x90, 0x90}}},
+    {{{ -50, 100, 0}, 0, {   0,    0}, {0x90, 0x90, 0x90, 0x90}}},
+};
+
 // 0x03005780
 ALIGNED8 static const u8 coin_seg3_texture_03005780[] = {
 #include "actors/coin/coin_front.ia16.inc.c"
@@ -174,3 +188,31 @@ const Gfx coin_seg3_dl_030079B8[] = {
     gsSPVertex(coin_seg3_vertex_03005740, 4, 0),
     gsSPBranchList(coin_seg3_dl_030077D0),
 };
+
+#define SPENT_COIN_DISPLAY_LIST(name, texture) \
+const Gfx name[] = { \
+    gsDPPipeSync(), \
+    gsDPSetTextureImage(G_IM_FMT_IA, G_IM_SIZ_16b, 1, texture), \
+    gsSPDisplayList(coin_seg3_dl_03007780), \
+    gsSPVertex(spent_coin_vertices, 4, 0), \
+    gsSPBranchList(coin_seg3_dl_030077D0), \
+}
+
+SPENT_COIN_DISPLAY_LIST(spent_coin_dl_front, coin_seg3_texture_03005780);
+SPENT_COIN_DISPLAY_LIST(spent_coin_dl_tilt_right, coin_seg3_texture_03005F80);
+SPENT_COIN_DISPLAY_LIST(spent_coin_dl_side, coin_seg3_texture_03006780);
+SPENT_COIN_DISPLAY_LIST(spent_coin_dl_tilt_left, coin_seg3_texture_03006F80);
+
+#define SPENT_BLUE_COIN_DISPLAY_LIST(name, texture) \
+const Gfx name[] = { \
+    gsDPPipeSync(), \
+    gsDPSetTextureImage(G_IM_FMT_IA, G_IM_SIZ_16b, 1, texture), \
+    gsSPDisplayList(coin_seg3_dl_03007780), \
+    gsSPVertex(spent_blue_coin_vertices, 4, 0), \
+    gsSPBranchList(coin_seg3_dl_030077D0), \
+}
+
+SPENT_BLUE_COIN_DISPLAY_LIST(spent_blue_coin_dl_front, coin_seg3_texture_03005780);
+SPENT_BLUE_COIN_DISPLAY_LIST(spent_blue_coin_dl_tilt_right, coin_seg3_texture_03005F80);
+SPENT_BLUE_COIN_DISPLAY_LIST(spent_blue_coin_dl_side, coin_seg3_texture_03006780);
+SPENT_BLUE_COIN_DISPLAY_LIST(spent_blue_coin_dl_tilt_left, coin_seg3_texture_03006F80);

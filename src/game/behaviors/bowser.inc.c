@@ -1382,6 +1382,8 @@ void bowser_flame_despawn(void) {
     if (random_float() < 0.1) {
         coin = spawn_object(o, MODEL_YELLOW_COIN, bhvTemporaryYellowCoin);
         coin->oInteractionSubtype |= INT_SUBTYPE_HEAL_WITHOUT_COINS;
+        coin->apCoinSpent = TRUE;
+        coin->header.gfx.sharedChild = gLoadedGraphNodes[MODEL_SPENT_COIN];
     }
 }
 

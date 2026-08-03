@@ -574,29 +574,6 @@ static void reconcile_level_script_objects(void) {
     }
 }
 
-static void spawn_outstanding_permanent_coin_star(void) {
-    s32 index;
-    struct Object *star;
-
-    if (!SM64AP_ShouldSpawnOutstandingCoinStar() || gMarioObject == NULL) {
-        return;
-    }
-    for (index = 0; index < OBJECT_POOL_CAPACITY; index++) {
-        star = &gObjectPool[index];
-        if ((star->activeFlags & ACTIVE_FLAG_ACTIVE)
-            && obj_has_behavior(star, bhvSpawnedStarNoLevelExit)
-            && ((star->oBehParams >> 24) & 0xFF) == 6) {
-            return;
-        }
-    }
-
-    star = spawn_object(gMarioObject, MODEL_STAR, bhvSpawnedStarNoLevelExit);
-    star->oBehParams = 6 << 24;
-    star->oBehParams2ndByte = 6;
-    star->oInteractionSubtype = INT_SUBTYPE_NO_EXIT;
-    obj_set_angle(star, 0, 0, 0);
-}
-
 static void reconcile_permanent_coin_objects(void) {
     s32 index;
 
@@ -609,9 +586,8 @@ static void reconcile_permanent_coin_objects(void) {
         if (!(object->activeFlags & ACTIVE_FLAG_ACTIVE)) {
             continue;
         }
-        if (object->apCoinValue > 0
-            && SM64AP_ShouldSuppressPermanentCoin(object, object->apCoinValue)) {
-            object->activeFlags = ACTIVE_FLAG_DEACTIVATED;
+        if (object->apCoinValue > 0) {
+            SM64AP_MarkSpentPermanentCoin(object, object->apCoinValue);
         } else if (obj_has_behavior(object, bhvHiddenRedCoinStar)) {
             object->oHiddenStarTriggerCounter = -2;
         } else if (obj_has_behavior(object, bhvBowserCourseRedCoinStar)) {
@@ -657,7 +633,6 @@ void clear_objects(void) {
 
     reconcile_permanent_coin_objects();
     SM64AP_RestorePermanentCoinCount();
-    spawn_outstanding_permanent_coin_star();
     SM64AP_FlushPermanentCoinLedger();
 
     clear_dynamic_surfaces();
@@ -748,7 +723,6 @@ void update_objects(UNUSED s32 unused) {
     SM64AP_UpdatePermanentCoinTrap();
     reconcile_permanent_coin_objects();
     SM64AP_RestorePermanentCoinCount();
-    spawn_outstanding_permanent_coin_star();
     SM64AP_FlushPermanentCoinLedger();
 
     if (SM64AP_ConsumeLiveObjectReconcileRequest()) {

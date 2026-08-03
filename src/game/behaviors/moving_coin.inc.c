@@ -108,7 +108,9 @@ static void moving_coin_collect_without_contact(void) {
         coinValue = cur_obj_has_model(MODEL_BLUE_COIN) ? 5 : 1;
     }
 
-    if (!SM64AP_CollectPermanentCoin(o, coinValue)) {
+    if (o->apCoinSpent || !SM64AP_CollectPermanentCoin(o, coinValue)) {
+        gMarioState->healCounter += 4 * coinValue;
+        spawn_outstanding_permanent_coin_star();
         coin_collected();
         return;
     }
@@ -116,9 +118,11 @@ static void moving_coin_collect_without_contact(void) {
     gMarioState->numCoins += coinValue;
     gMarioState->healCounter += 4 * coinValue;
     SM64AP_CheckCoinCount(gCurrCourseNum, gMarioState->numCoins);
+    spawn_outstanding_permanent_coin_star();
 
     coinStarRequirement = SM64AP_GetCoinStarRequirement(gCurrCourseNum);
     if (COURSE_IS_MAIN_COURSE(gCurrCourseNum)
+        && !SM64AP_PermanentCoinCollection()
         && !SM64AP_CollectedCourseStar(gCurrCourseNum - COURSE_MIN, 6)
         && gMarioState->numCoins - coinValue < coinStarRequirement
         && gMarioState->numCoins >= coinStarRequirement) {
@@ -143,13 +147,14 @@ void bhv_moving_yellow_coin_init(void) {
         o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
         return;
     }
-    if (SM64AP_ShouldSuppressPermanentCoin(o, 1)) {
-        o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
-    }
+    SM64AP_MarkSpentPermanentCoin(o, 1);
 }
 
 void bhv_moving_yellow_coin_loop(void) {
     s16 collisionFlags;
+    if (o->apCoinSpent) {
+        cur_obj_set_model(MODEL_SPENT_COIN);
+    }
     switch (o->oAction) {
         case MOV_YCOIN_ACT_IDLE:
             coin_step(&collisionFlags);
@@ -202,9 +207,7 @@ void bhv_moving_blue_coin_init(void) {
         o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
         return;
     }
-    if (SM64AP_ShouldSuppressPermanentCoin(o, 5)) {
-        o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
-    }
+    SM64AP_MarkSpentPermanentCoin(o, 5);
 }
 
 void bhv_moving_blue_coin_loop(void) {
@@ -213,6 +216,10 @@ void bhv_moving_blue_coin_loop(void) {
 #else
     s16 collisionFlags;
 #endif
+
+    if (o->apCoinSpent) {
+        cur_obj_set_model(MODEL_SPENT_BLUE_COIN);
+    }
 
     switch (o->oAction) {
         case MOV_BCOIN_ACT_STILL:
