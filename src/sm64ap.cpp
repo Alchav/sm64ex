@@ -775,6 +775,18 @@ void SM64AP_RecvItem(int64_t idx, bool notify) {
         case SM64AP_ID_GLOBAL_TREASURE_CHESTS:
             sm64_have_object_items[SM64AP_OBJECT_ITEM_GLOBAL_TREASURE_CHESTS] = true;
             break;
+        case SM64AP_ID_BITDW_WARP_PIPES:
+            sm64_have_object_items[SM64AP_OBJECT_ITEM_BITDW_WARP_PIPES] = true;
+            break;
+        case SM64AP_ID_BITFS_WARP_PIPES:
+            sm64_have_object_items[SM64AP_OBJECT_ITEM_BITFS_WARP_PIPES] = true;
+            break;
+        case SM64AP_ID_BITS_WARP_PIPES:
+            sm64_have_object_items[SM64AP_OBJECT_ITEM_BITS_WARP_PIPES] = true;
+            break;
+        case SM64AP_ID_GLOBAL_WARP_PIPES:
+            sm64_have_object_items[SM64AP_OBJECT_ITEM_GLOBAL_WARP_PIPES] = true;
+            break;
         case SM64AP_ID_WINGCAP:
             sm64_have_wingcap = true;
             break;
@@ -1174,6 +1186,19 @@ static int SM64AP_LevelSpecificObjectItemForLevel(int item, s16 level) {
                     return SM64AP_OBJECT_ITEM_BITS_PURPLE_SWITCHES;
             }
             break;
+
+        case SM64AP_OBJECT_ITEM_THI_WARP_PIPES:
+            switch (level) {
+                case LEVEL_THI:
+                    return SM64AP_OBJECT_ITEM_THI_WARP_PIPES;
+                case LEVEL_BITDW:
+                    return SM64AP_OBJECT_ITEM_BITDW_WARP_PIPES;
+                case LEVEL_BITFS:
+                    return SM64AP_OBJECT_ITEM_BITFS_WARP_PIPES;
+                case LEVEL_BITS:
+                    return SM64AP_OBJECT_ITEM_BITS_WARP_PIPES;
+            }
+            break;
     }
 
     return -1;
@@ -1217,6 +1242,10 @@ static int SM64AP_LevelForCourseIndex(int courseIdx) {
 }
 
 bool SM64AP_HaveObjectItemForLevel(int item, s16 level) {
+    if (item == SM64AP_OBJECT_ITEM_THI_WARP_PIPES
+        && SM64AP_HaveObjectItem(SM64AP_OBJECT_ITEM_GLOBAL_WARP_PIPES)) {
+        return true;
+    }
     return SM64AP_HaveObjectItem(item)
         || SM64AP_HaveObjectItem(SM64AP_LevelSpecificObjectItemForLevel(item, level));
 }
@@ -1767,10 +1796,17 @@ bool SM64AP_ShouldSpawnLevelObject(s16 level, s16, s16 model, s16 x, s16 y, s16 
             return SM64AP_ShouldSpawnSslObject(behParam, behavior);
         case LEVEL_THI:
             if (behavior_is(behavior, bhvWarpPipe)) {
-                return SM64AP_HaveObjectItem(SM64AP_OBJECT_ITEM_THI_WARP_PIPES);
+                return SM64AP_HaveObjectItemForLevel(SM64AP_OBJECT_ITEM_THI_WARP_PIPES, level);
             }
             if (SM64AP_IsKoopaTheQuick(behParam, behavior)) {
                 return SM64AP_HaveFeature(SM64AP_FEATURE_THI_KOOPA_THE_QUICK);
+            }
+            return true;
+        case LEVEL_BITDW:
+        case LEVEL_BITFS:
+        case LEVEL_BITS:
+            if (behavior_is(behavior, bhvWarpPipe)) {
+                return SM64AP_HaveObjectItemForLevel(SM64AP_OBJECT_ITEM_THI_WARP_PIPES, level);
             }
             return true;
         case LEVEL_HMC:
@@ -4594,6 +4630,10 @@ static constexpr const char *SM64AP_CHEAT_OBJECT_ITEM_NAMES[SM64AP_NUM_OBJECT_IT
     "JRB TREASURE CHESTS",
     "DDD TREASURE CHESTS",
     "TREASURE CHESTS",
+    "BITDW WARP PIPES",
+    "BITFS WARP PIPES",
+    "BITS WARP PIPES",
+    "WARP PIPES",
 };
 
 static constexpr const char *SM64AP_CHEAT_ABILITY_NAMES[SM64AP_NUM_ABILITIES] = {
@@ -4704,6 +4744,7 @@ static void SM64AP_InitCheatItems() {
                 || i == SM64AP_OBJECT_ITEM_PURPLE_SWITCHES
                 || i == SM64AP_OBJECT_ITEM_GLOBAL_BOBOMB_BUDDIES
                 || i == SM64AP_OBJECT_ITEM_GLOBAL_TREASURE_CHESTS;
+            globalItem = globalItem || i == SM64AP_OBJECT_ITEM_GLOBAL_WARP_PIPES;
             SM64AP_CheatAdd(
                 SM64AP_CHEAT_ITEM_OBJECT, i,
                 globalItem
