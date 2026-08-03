@@ -130,6 +130,8 @@ void bhv_temp_coin_loop(void) {
 }
 
 void bhv_coin_init(void) {
+    s32 coinValue = o->apCoinValue > 0 ? o->apCoinValue : 1;
+
     o->oVelY = random_float() * 10.0f + 30 + o->oCoinUnk110;
     o->oForwardVel = random_float() * 10.0f;
     o->oMoveAngleYaw = random_u16();
@@ -147,7 +149,7 @@ void bhv_coin_init(void) {
             return;
         }
     }
-    SM64AP_MarkSpentPermanentCoin(o, 1);
+    SM64AP_MarkSpentPermanentCoin(o, coinValue);
     cur_obj_become_intangible();
 }
 
@@ -155,7 +157,7 @@ void bhv_coin_loop(void) {
     struct Surface *sp1C;
     s16 sp1A;
     if (o->apCoinSpent) {
-        cur_obj_set_model(MODEL_SPENT_COIN);
+        cur_obj_set_model(o->apCoinValue == 5 ? MODEL_SPENT_BLUE_COIN : MODEL_SPENT_COIN);
     }
     cur_obj_update_floor_and_walls();
     cur_obj_if_hit_wall_bounce_away();
