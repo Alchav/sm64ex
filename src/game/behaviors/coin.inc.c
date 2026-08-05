@@ -113,7 +113,7 @@ void bhv_yellow_coin_init(void) {
 
 void bhv_yellow_coin_loop(void) {
     if (o->apCoinSpent) {
-        cur_obj_set_model(MODEL_SPENT_COIN);
+        cur_obj_set_model(o->apCoinValue == 5 ? MODEL_SPENT_BLUE_COIN : MODEL_SPENT_COIN);
     }
     bhv_coin_sparkles_init();
     o->oAnimState++;
@@ -358,6 +358,10 @@ void coin_inside_boo_act_0(void) {
     }
     obj_copy_pos(o, parent);
     if (parent->oBooDeathStatus == BOO_DEATH_STATUS_DYING) {
+        if (!SM64AP_AssignPermanentCoinOutput(parent, o, 5, 1)) {
+            SM64AP_AssignPermanentCoinSlot(o, parent, 0, 5);
+        }
+        SM64AP_MarkSpentPermanentCoin(o, 5);
         o->oAction = 1;
         sp26 = gMarioObject->oMoveAngleYaw;
         sp20 = 3.0f;
