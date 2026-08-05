@@ -1263,10 +1263,12 @@ bool SM64AP_HaveObjectItemForCourse(int item, int courseIdx) {
 bool SM64AP_ShouldSpawnBowserStageOneUp(s16 level, s16 param, u32 saveFlags) {
     if (!sm64_bowser_stage_1up_item_behavior) {
         if (param == 1) {
-            return (saveFlags & (SAVE_FLAG_HAVE_KEY_1 | SAVE_FLAG_UNLOCKED_BASEMENT_DOOR)) != 0;
+            return SM64AP_HaveKey1()
+                || (saveFlags & SAVE_FLAG_UNLOCKED_BASEMENT_DOOR) != 0;
         }
         if (param == 2) {
-            return (saveFlags & (SAVE_FLAG_HAVE_KEY_2 | SAVE_FLAG_UNLOCKED_UPSTAIRS_DOOR)) != 0;
+            return SM64AP_HaveKey2()
+                || (saveFlags & SAVE_FLAG_UNLOCKED_UPSTAIRS_DOOR) != 0;
         }
         return true;
     }
@@ -1766,7 +1768,9 @@ bool SM64AP_ShouldSpawnLevelObject(s16 level, s16, s16 model, s16 x, s16 y, s16 
         && (level == LEVEL_CASTLE || level == LEVEL_CASTLE_COURTYARD)) {
         return SM64AP_HaveBBH();
     }
-    if (enemySource >= 0 && !SM64AP_HaveCoinSource(enemySource, level)) {
+    if (enemySource >= 0
+        && !SM64AP_IsKoopaTheQuick(behParam, behavior)
+        && !SM64AP_HaveCoinSource(enemySource, level)) {
         return false;
     }
 
