@@ -625,7 +625,12 @@ void reconcile_area_whirlpools(void) {
         if (area->whirlpools[index] == NULL) {
             area->whirlpools[index] = alloc_only_pool_alloc(sLevelPool, sizeof(struct Whirlpool));
         }
-        vec3s_copy(area->whirlpools[index]->pos, spawnInfo->pos);
+        if (gCurrLevelNum == LEVEL_JRB && spawnInfo->condition == 3
+            && SM64AP_HaveFeature(SM64AP_FEATURE_JRB_SUNKEN_SHIP)) {
+            vec3s_set(area->whirlpools[index]->pos, 5873, -5175, 3787);
+        } else {
+            vec3s_copy(area->whirlpools[index]->pos, spawnInfo->pos);
+        }
         area->whirlpools[index]->strength = spawnInfo->strength;
     }
 }

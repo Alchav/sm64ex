@@ -583,7 +583,11 @@ static void big_boo_act_2(void) {
 }
 
 static void big_boo_spawn_ghost_hunt_star(void) {
-    spawn_default_star(500.0f, 281.0f, 500.0f);
+    if (SM64AP_HaveFeature(SM64AP_FEATURE_BBH_STAIRCASE)) {
+        spawn_default_star(980.0f, 1100.0f, 250.0f);
+    } else {
+        spawn_default_star(500.0f, 281.0f, 500.0f);
+    }
 }
 
 static void big_boo_spawn_balcony_star(void) {

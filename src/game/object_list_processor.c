@@ -453,6 +453,45 @@ void unload_objects_from_area(UNUSED s32 unused, s32 areaIndex) {
 /**
  * Spawn objects given a list of SpawnInfos. Called when loading an area.
  */
+static void adjust_feature_dependent_object_position(struct Object *object) {
+    f32 x;
+    f32 y;
+    f32 z;
+
+    if (gCurrLevelNum == LEVEL_JRB && obj_has_behavior(object, bhvJetStream)) {
+        if (SM64AP_HaveFeature(SM64AP_FEATURE_JRB_SUNKEN_SHIP)) {
+            x = 5873.0f;
+            y = -5175.0f;
+            z = 3787.0f;
+        } else {
+            x = 4988.0f;
+            y = -5221.0f;
+            z = 2473.0f;
+        }
+    } else if (gCurrLevelNum == LEVEL_JRB && obj_has_behavior(object, bhvStar)
+               && ((object->oBehParams >> 24) & 0xFF) == 5) {
+        if (SM64AP_HaveFeature(SM64AP_FEATURE_JRB_SUNKEN_SHIP)) {
+            x = 5873.0f;
+            y = -4754.0f;
+            z = 3787.0f;
+        } else {
+            x = 5000.0f;
+            y = -4800.0f;
+            z = 2500.0f;
+        }
+    } else if (gCurrLevelNum == LEVEL_WF && obj_has_behavior(object, bhvWhompKingBoss)) {
+        x = 0.0f;
+        y = 3584.0f;
+        z = SM64AP_HaveFeature(SM64AP_FEATURE_WF_FORTRESS) ? 1024.0f : 0.0f;
+    } else {
+        return;
+    }
+
+    object->oPosX = object->oHomeX = x;
+    object->oPosY = object->oHomeY = y;
+    object->oPosZ = object->oHomeZ = z;
+}
+
 static struct Object *spawn_object_from_info(struct SpawnInfo *spawnInfo) {
     struct Object *object;
     const BehaviorScript *script = segmented_to_virtual(spawnInfo->behaviorScript);
@@ -499,6 +538,7 @@ static struct Object *spawn_object_from_info(struct SpawnInfo *spawnInfo) {
     object->oMoveAnglePitch = spawnInfo->startAngle[0];
     object->oMoveAngleYaw = spawnInfo->startAngle[1];
     object->oMoveAngleRoll = spawnInfo->startAngle[2];
+    adjust_feature_dependent_object_position(object);
     SM64AP_AssignPermanentCoinSource(
         object, gCurrLevelNum, spawnInfo->areaIndex, spawnInfo->model,
         spawnInfo->startPos[0], spawnInfo->startPos[1], spawnInfo->startPos[2],
@@ -570,6 +610,7 @@ static void reconcile_level_script_objects(void) {
             object->activeFlags = ACTIVE_FLAG_DEACTIVATED;
         } else if (desired && object != NULL) {
             spawnInfo->apSuppressed = FALSE;
+            adjust_feature_dependent_object_position(object);
         }
     }
 }
