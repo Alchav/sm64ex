@@ -756,7 +756,9 @@ void bhv_merry_go_round_boo_manager_loop(void) {
                 if (o->oMerryGoRoundBooManagerNumBoosKilled < 5) {
                     if (o->oMerryGoRoundBooManagerNumBoosSpawned != 5) {
                         if (o->oMerryGoRoundBooManagerNumBoosSpawned - o->oMerryGoRoundBooManagerNumBoosKilled < 2) {
-                            spawn_object(o, MODEL_BOO, bhvMerryGoRoundBoo);
+                            struct Object *boo = spawn_object(o, MODEL_BOO, bhvMerryGoRoundBoo);
+                            SM64AP_DistinguishInheritedPermanentCoinSource(
+                                boo, o->oMerryGoRoundBooManagerNumBoosSpawned);
                             o->oMerryGoRoundBooManagerNumBoosSpawned++;
                         }
                     }

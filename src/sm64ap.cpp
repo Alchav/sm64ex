@@ -3893,6 +3893,18 @@ static void SM64AP_NormalizeInheritedCoinSource(struct Object *source) {
     source->apCoinSourceKind = 1;
 }
 
+void SM64AP_DistinguishInheritedPermanentCoinSource(struct Object *source, int ordinal) {
+    if (source == nullptr || source->apCoinSourceKind != 2) {
+        return;
+    }
+
+    u64 hash = source->apCoinSourceId;
+    hash = SM64AP_PermanentCoinHashValue(hash, 0x4D475242ULL);
+    hash = SM64AP_PermanentCoinHashValue(hash, static_cast<u32>(ordinal));
+    source->apCoinSourceId = hash != 0 ? hash : 1;
+    source->apCoinSourceKind = 1;
+}
+
 void SM64AP_AssignPermanentCoinSlot(struct Object *coin, struct Object *source, int slot, int value) {
     if (coin == nullptr || source == nullptr || source->apCoinSourceId == 0) {
         return;
@@ -3925,6 +3937,15 @@ bool SM64AP_AssignPermanentCoinOutput(
         source->apCoinSlotCount = slotCount;
     }
 
+    // Emit every uncollected output before using collected slots for spent,
+    // restorative coin objects.
+    for (int slot = 0; slot < slotCount; slot++) {
+        if (!SM64AP_PermanentCoinSlotCollected(source->apCoinSourceId, slot)
+            && !SM64AP_PermanentCoinSlotActive(source->apCoinSourceId, slot)) {
+            SM64AP_AssignPermanentCoinSlot(coin, source, slot, value);
+            return true;
+        }
+    }
     for (int slot = 0; slot < slotCount; slot++) {
         if (!SM64AP_PermanentCoinSlotActive(source->apCoinSourceId, slot)) {
             SM64AP_AssignPermanentCoinSlot(coin, source, slot, value);
