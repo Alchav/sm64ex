@@ -51,6 +51,10 @@ extern "C" {
 #include <mutex>
 #include <limits>
 
+// APCpp's public Raw DataStorage API reparses JSON through a shared reader. Sending an already
+// serialized packet avoids racing that reader against incoming network messages.
+extern void APSend(std::string request);
+
 #define WARP_NODE_CREDITS_MIN 0xF8 // level_update.c
 #define NUM_PAINTING_LOCKS SM64AP_NUM_PAINTING_LOCKS
 
@@ -4317,17 +4321,11 @@ void SM64AP_FlushPermanentCoinLedger() {
     }
 
     std::string serialized = SM64AP_SerializePermanentCoinEntries(sm64_permanent_coin_updates);
-    std::string defaultValue = "{}";
-    AP_SetServerDataRequest request;
-    AP_DataStorageOperation update;
-    update.operation = "update";
-    update.value = &serialized;
-    request.key = sm64_permanent_coin_ledger_key;
-    request.operations = { update };
-    request.default_value = &defaultValue;
-    request.type = AP_DataType::Raw;
-    request.want_reply = false;
-    AP_SetServerData(&request);
+    std::ostringstream request;
+    request << "[{\"cmd\":\"Set\",\"key\":\"" << sm64_permanent_coin_ledger_key
+            << "\",\"operations\":[{\"operation\":\"update\",\"value\":" << serialized
+            << "}],\"default\":{},\"want_reply\":false}]";
+    APSend(request.str());
     sm64_permanent_coin_updates.clear();
 }
 
