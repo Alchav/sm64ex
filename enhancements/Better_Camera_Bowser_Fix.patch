@@ -1,5 +1,32 @@
 Subject: [PATCH] Better Camera Bowser Fix
 ---
+Index: src/game/bettercamera.inc.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/game/bettercamera.inc.h b/src/game/bettercamera.inc.h
+--- a/src/game/bettercamera.inc.h
++++ b/src/game/bettercamera.inc.h
+@@ -354,14 +354,14 @@
+                     #endif
+                     if (newcam_stick2[0] > 20) {
+                         if (newcam_modeflags & NC_FLAG_8D)
+-                            newcam_yaw_target = newcam_yaw_target+(ivrt(0)*0x2000);
++                            newcam_yaw_target = newcam_yaw_target-(ivrt(0)*0x2000);
+                         else
+-                            newcam_yaw_target = newcam_yaw_target+(ivrt(0)*0x4000);
++                            newcam_yaw_target = newcam_yaw_target-(ivrt(0)*0x4000);
+                     } else {
+                         if (newcam_modeflags & NC_FLAG_8D)
+-                            newcam_yaw_target = newcam_yaw_target-(ivrt(0)*0x2000);
++                            newcam_yaw_target = newcam_yaw_target+(ivrt(0)*0x2000);
+                         else
+-                            newcam_yaw_target = newcam_yaw_target-(ivrt(0)*0x4000);
++                            newcam_yaw_target = newcam_yaw_target+(ivrt(0)*0x4000);
+                     }
+                 }
+             } else {
 Index: src/game/camera.c
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
@@ -23,7 +50,7 @@ diff --git a/src/game/camera.c b/src/game/camera.c
 +    s16 stickY = gPlayer1Controller->extStickY;
 +    s16 adjustedY;
 +
-+    if (!newcam_active || !newcam_analogue) {
++    if (!newcam_active) {
 +        handle_c_button_movement(c);
 +        return;
 +    }
