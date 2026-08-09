@@ -141,18 +141,7 @@ void spawn_no_exit_star(f32 sp20, f32 sp24, f32 sp28) {
 }
 
 static s16 count_collected_permanent_red_coins(void) {
-    s16 collected = 0;
-    s32 index;
-
-    for (index = 0; index < OBJECT_POOL_CAPACITY; index++) {
-        struct Object *coin = &gObjectPool[index];
-        if ((coin->activeFlags & ACTIVE_FLAG_ACTIVE)
-            && obj_has_behavior(coin, bhvRedCoin)
-            && coin->apCoinSpent) {
-            collected++;
-        }
-    }
-    return collected;
+    return MIN(SM64AP_CollectedPermanentRedCoins(gCurrCourseNum), 8);
 }
 
 void bhv_hidden_red_coin_star_init(void) {
@@ -191,8 +180,7 @@ void bhv_hidden_red_coin_star_loop(void) {
         if (o->oHiddenStarTriggerCounter == -1) {
             o->oHiddenStarTriggerCounter = count_collected_permanent_red_coins();
         } else {
-            // Coin formations can initialize after the star controller. Keep incorporating
-            // restored red coins without lowering red coins collected during this visit.
+            // Keep incorporating permanent red coins without lowering the count from this visit.
             collectedRedCoins = count_collected_permanent_red_coins();
             if (o->oHiddenStarTriggerCounter < collectedRedCoins) {
                 o->oHiddenStarTriggerCounter = collectedRedCoins;
