@@ -1688,6 +1688,8 @@ u32 interact_cap(struct MarioState *m, UNUSED u32 interactType, struct Object *o
                 break;
         }
 
+        capTime = SM64AP_ScaleCapTimer(capFlag, capTime);
+
         if (capTime > m->capTimer) {
             m->capTimer = capTime;
         }

@@ -57,7 +57,7 @@ void bhv_1up_interact(void) {
     if (obj_check_if_collided_with_object(o, gMarioObject) == 1) {
         play_sound(SOUND_GENERAL_COLLECT_1UP, gDefaultSoundArgs);
         if (!SM64AP_CollectOneUp(o->o1UpApLocationId)) {
-            gMarioState->numLives++;
+            gMarioState->healCounter = 32;
         }
         o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
     }
@@ -72,7 +72,7 @@ static void bhv_1up_collect_without_contact(void) {
 
     play_sound(SOUND_GENERAL_COLLECT_1UP, gDefaultSoundArgs);
     if (!SM64AP_CollectOneUp(o->o1UpApLocationId)) {
-        gMarioState->numLives++;
+        gMarioState->healCounter = 32;
     }
     o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
 }

@@ -2,6 +2,7 @@
 #include "Archipelago.h"
 
 extern "C" {
+    #include "sm64.h"
     #include "game/area.h"
     #include "game/game_init.h"
     #include "game/print.h"
@@ -96,6 +97,8 @@ bool sm64_live_object_reconcile_requested = false;
 bool sm64_have_wingcap = false;
 bool sm64_have_metalcap = false;
 bool sm64_have_vanishcap = false;
+int sm64_cap_length_items[3] = { 0, 0, 0 };
+int sm64_cap_length_item_counts[3] = { 0, 0, 0 };
 int sm64_bowser_arena_bombs[3] = { 0, 0, 0 };
 int sm64_bowser_hit_requirements[3] = { 1, 1, 3 };
 int sm64_bowser_in_the_sky_stage_collapse_hits = 2;
@@ -800,12 +803,17 @@ void SM64AP_RecvItem(int64_t idx, bool notify) {
         case SM64AP_ID_VANISHCAP:
             sm64_have_vanishcap = true;
             break;
+        case SM64AP_ID_PROGRESSIVE_WING_CAP_LENGTH:
+            sm64_cap_length_items[0]++;
+            break;
+        case SM64AP_ID_PROGRESSIVE_METAL_CAP_LENGTH:
+            sm64_cap_length_items[1]++;
+            break;
+        case SM64AP_ID_PROGRESSIVE_VANISH_CAP_LENGTH:
+            sm64_cap_length_items[2]++;
+            break;
         case SM64AP_ID_LEVEL_CAP(0) ... SM64AP_ID_LEVEL_CAP(SM64AP_NUM_LEVEL_CAPS - 1):
             sm64_have_level_caps[idx - SM64AP_LEVEL_CAP_OFFSET] = true;
-            break;
-        case SM64AP_ITEMID_1UP:
-            gMarioState->numLives++;
-            AP_EnableQueueItemRecvMsgs(false);
             break;
         case SM64AP_ID_CANNONUNLOCK(0) ... SM64AP_ID_CANNONUNLOCK(15-1):
             sm64_have_cannon[idx-(SM64AP_ID_CANNONUNLOCK(0))] = true;
@@ -2185,6 +2193,35 @@ void SM64AP_SetOneUpChecks(int enabled) {
     sm64_1up_checks_enabled = enabled != 0;
 }
 
+static void SM64AP_SetWingCapLengthItemCount(int count) {
+    sm64_cap_length_item_counts[0] = std::max(0, count);
+}
+
+static void SM64AP_SetMetalCapLengthItemCount(int count) {
+    sm64_cap_length_item_counts[1] = std::max(0, count);
+}
+
+static void SM64AP_SetVanishCapLengthItemCount(int count) {
+    sm64_cap_length_item_counts[2] = std::max(0, count);
+}
+
+u16 SM64AP_ScaleCapTimer(u32 capFlag, u16 baseTimer) {
+    int capIndex;
+    switch (capFlag) {
+        case MARIO_WING_CAP: capIndex = 0; break;
+        case MARIO_METAL_CAP: capIndex = 1; break;
+        case MARIO_VANISH_CAP: capIndex = 2; break;
+        default: return baseTimer;
+    }
+
+    int totalItems = sm64_cap_length_item_counts[capIndex];
+    if (totalItems <= 0) {
+        return baseTimer;
+    }
+    int receivedItems = std::min(sm64_cap_length_items[capIndex], totalItems);
+    return static_cast<u16>(baseTimer + (baseTimer * receivedItems) / totalItems);
+}
+
 void SM64AP_SetBuddyChecks(int enabled) {
     sm64_buddy_checks_enabled = enabled != 0;
 }
@@ -2714,6 +2751,7 @@ void SM64AP_ResetItems() {
     sm64_have_wingcap = false;
     sm64_have_metalcap = false;
     sm64_have_vanishcap = false;
+    std::fill_n(sm64_cap_length_items, 3, 0);
     for (int i = 0; i < 3; i++) {
         sm64_bowser_arena_bombs[i] = 0;
     }
@@ -2863,6 +2901,9 @@ void SM64AP_GenericInit() {
     AP_RegisterSlotDataIntCallback("GlobalCapItems", &SM64AP_SetGlobalCapDisplay);
     AP_RegisterSlotDataIntCallback("ShowGlobalCapDisplay", &SM64AP_SetGlobalCapDisplay);
     AP_RegisterSlotDataIntCallback("OneUpChecks", &SM64AP_SetOneUpChecks);
+    AP_RegisterSlotDataIntCallback("WingCapLengthItemCount", &SM64AP_SetWingCapLengthItemCount);
+    AP_RegisterSlotDataIntCallback("MetalCapLengthItemCount", &SM64AP_SetMetalCapLengthItemCount);
+    AP_RegisterSlotDataIntCallback("VanishCapLengthItemCount", &SM64AP_SetVanishCapLengthItemCount);
     AP_RegisterSlotDataIntCallback("BuddyChecks", &SM64AP_SetBuddyChecks);
     AP_RegisterSlotDataIntCallback("BowserStage1UpBehavior", &SM64AP_SetBowserStageOneUpBehavior);
     AP_RegisterSlotDataIntCallback("EasyButterflies", &SM64AP_SetEasyButterflies);
@@ -4521,6 +4562,7 @@ enum SM64APCheatItemKind {
     SM64AP_CHEAT_ITEM_COIN_UNLOCK,
     SM64AP_CHEAT_ITEM_ONE_UP_UNLOCK,
     SM64AP_CHEAT_ITEM_BOWSER_ARENA_BOMB,
+    SM64AP_CHEAT_ITEM_CAP_LENGTH,
 };
 
 enum SM64APCheatBoolItem {
@@ -4829,6 +4871,17 @@ static void SM64AP_InitCheatItems() {
             SM64AP_CHEAT_ITEM_BOWSER_ARENA_BOMB, 30 + bomb,
             std::string("GLOBAL BOWSER ARENA BOMB ") + std::to_string(bomb));
     }
+
+    static constexpr const char *capLengthNames[] = {
+        "WING CAP LENGTH", "METAL CAP LENGTH", "VANISH CAP LENGTH"
+    };
+    for (int cap = 0; cap < 3; cap++) {
+        for (int item = 1; item <= sm64_cap_length_item_counts[cap]; item++) {
+            SM64AP_CheatAdd(
+                SM64AP_CHEAT_ITEM_CAP_LENGTH, cap * 10000 + item,
+                std::string(capLengthNames[cap]) + " " + std::to_string(item));
+        }
+    }
     static constexpr const char *bowserStageNames[] = { "BITDW", "BITFS", "BITS" };
     static constexpr int bowserStageBombCounts[] = { 4, 4, 5 };
     for (int arena = 0; arena < 3; arena++) {
@@ -5100,6 +5153,11 @@ bool SM64AP_CheatItemEnabled(int index) {
             }
             return arena >= 0 && arena < 3 && sm64_bowser_arena_bombs[arena] >= bomb;
         }
+        case SM64AP_CHEAT_ITEM_CAP_LENGTH: {
+            int cap = item.index / 10000;
+            int count = item.index % 10000;
+            return cap >= 0 && cap < 3 && sm64_cap_length_items[cap] >= count;
+        }
     }
 
     return false;
@@ -5185,6 +5243,18 @@ void SM64AP_CheatSetItemEnabled(int index, bool enabled) {
                     SM64AP_SetMin(sm64_bowser_arena_bombs[arena], value);
                 } else if (sm64_bowser_arena_bombs[arena] >= bomb) {
                     sm64_bowser_arena_bombs[arena] = value;
+                }
+            }
+            break;
+        }
+        case SM64AP_CHEAT_ITEM_CAP_LENGTH: {
+            int cap = item.index / 10000;
+            int count = item.index % 10000;
+            if (cap >= 0 && cap < 3) {
+                if (enabled) {
+                    SM64AP_SetMin(sm64_cap_length_items[cap], count);
+                } else if (sm64_cap_length_items[cap] >= count) {
+                    sm64_cap_length_items[cap] = count - 1;
                 }
             }
             break;
