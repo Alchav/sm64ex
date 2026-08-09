@@ -1418,7 +1418,7 @@ static bool SM64AP_IsKoopaTheQuick(u32 behParam, const void *behavior) {
     }
 }
 
-static bool SM64AP_HaveBobombBuddy(s16 level) {
+bool SM64AP_HaveBobombBuddy(s16 level) {
     if (SM64AP_HaveObjectItem(SM64AP_OBJECT_ITEM_GLOBAL_BOBOMB_BUDDIES)) {
         return true;
     }
@@ -1450,7 +1450,7 @@ static bool SM64AP_HaveBobombBuddy(s16 level) {
     }
 }
 
-static bool SM64AP_HaveTreasureChests(s16 level) {
+bool SM64AP_HaveTreasureChests(s16 level) {
     if (SM64AP_HaveObjectItem(SM64AP_OBJECT_ITEM_GLOBAL_TREASURE_CHESTS)) {
         return true;
     }

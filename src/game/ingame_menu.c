@@ -2446,6 +2446,25 @@ void render_pause_castle_menu_box(s16 x, s16 y) {
 
 }
 
+static void render_pause_level_items_box(s16 x, s16 y) {
+    create_dl_translation_matrix(MENU_MTX_PUSH, x - 176, y + 27, 0);
+    create_dl_scale_matrix(MENU_MTX_NOPUSH, 2.55f, 1.9875f, 1.0f);
+    gDPSetEnvColor(gDisplayListHead++, 0, 0, 0, 105);
+    gSPDisplayList(gDisplayListHead++, dl_draw_text_bg_box);
+    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+
+    create_dl_translation_matrix(MENU_MTX_PUSH, x + 150, y + 27, 0);
+    create_dl_rotation_matrix(MENU_MTX_NOPUSH, DEFAULT_DIALOG_BOX_ANGLE, 0, 0, 1.0f);
+    gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
+    gSPDisplayList(gDisplayListHead++, dl_draw_triangle);
+    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+
+    create_dl_translation_matrix(MENU_MTX_PUSH, x + 134, y - 132, 0);
+    create_dl_rotation_matrix(MENU_MTX_NOPUSH, 270.0f, 0, 0, 1.0f);
+    gSPDisplayList(gDisplayListHead++, dl_draw_triangle);
+    gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
+}
+
 void highlight_last_course_complete_stars(void) {
     u8 courseDone;
 
@@ -2485,6 +2504,8 @@ enum PauseCourseUnlockType {
     PAUSE_COURSE_UNLOCK_LEVEL_CAP,
     PAUSE_COURSE_UNLOCK_CANNON,
     PAUSE_COURSE_UNLOCK_WMOTR_CANNON,
+    PAUSE_COURSE_UNLOCK_BOBOMB_BUDDY,
+    PAUSE_COURSE_UNLOCK_TREASURE_CHESTS,
 };
 
 enum PauseCourseUnlockArea {
@@ -2592,6 +2613,7 @@ static const u8 sUnlockBitfs[] = { TEXT_UNLOCK_BITFS };
 static const u8 sUnlockBuddy[] = { TEXT_UNLOCK_BUDDY };
 static const u8 sUnlockCannon[] = { TEXT_UNLOCK_CANNON };
 static const u8 sUnlockCarpet[] = { TEXT_UNLOCK_CARPET };
+static const u8 sUnlockChests[] = { TEXT_UNLOCK_CHESTS };
 static const u8 sUnlockCastleCannon[] = { TEXT_UNLOCK_CASTLE_CANNON };
 static const u8 sUnlockCheck[] = { TEXT_UNLOCK_CHECK };
 static const u8 sUnlockCoinStar[] = { TEXT_UNLOCK_COIN_STAR };
@@ -2727,11 +2749,13 @@ static const struct PauseCourseUnlock sPauseCourseUnlocks[] = {
     { SM64AP_LEVEL_MOVE_AREA_JRB, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_JRB_UNAGI, sUnlockUnagi },
     { SM64AP_LEVEL_MOVE_AREA_JRB, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_JRB_METAL, sUnlockMetal },
     { SM64AP_LEVEL_MOVE_AREA_JRB, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_PURPLE_SWITCHES, sUnlockPurple },
+    { SM64AP_LEVEL_MOVE_AREA_JRB, PAUSE_COURSE_UNLOCK_TREASURE_CHESTS, 0, sUnlockChests },
 
     { SM64AP_LEVEL_MOVE_AREA_CCM, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_CCM_SNOWMANS_BODY, sUnlockSnow },
     { SM64AP_LEVEL_MOVE_AREA_CCM, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_CCM_BIG_PENGUIN, sUnlockPeng },
     { SM64AP_LEVEL_MOVE_AREA_CCM, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_CCM_BABY_PENGUINS, sUnlockBaby },
     { SM64AP_LEVEL_MOVE_AREA_CCM, PAUSE_COURSE_UNLOCK_CANNON, 0, sUnlockCannon },
+    { SM64AP_LEVEL_MOVE_AREA_CCM, PAUSE_COURSE_UNLOCK_BOBOMB_BUDDY, 0, sUnlockBuddy },
 
     { SM64AP_LEVEL_MOVE_AREA_BBH, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_BBH_STAIRCASE, sUnlockStair },
     { SM64AP_LEVEL_MOVE_AREA_BBH, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_BBH_MERRY_GO_ROUND, sUnlockMerry },
@@ -2751,6 +2775,7 @@ static const struct PauseCourseUnlock sPauseCourseUnlocks[] = {
     { SM64AP_LEVEL_MOVE_AREA_SSL, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_SSL_PYRAMID_ELEVATOR, sUnlockElev },
     { SM64AP_LEVEL_MOVE_AREA_SSL, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_SSL_WING, sUnlockWing },
     { SM64AP_LEVEL_MOVE_AREA_SSL, PAUSE_COURSE_UNLOCK_CANNON, 0, sUnlockCannon },
+    { SM64AP_LEVEL_MOVE_AREA_SSL, PAUSE_COURSE_UNLOCK_BOBOMB_BUDDY, 0, sUnlockBuddy },
 
     { SM64AP_LEVEL_MOVE_AREA_DDD, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_DDD_MANTA_RAY, sUnlockManta },
     { SM64AP_LEVEL_MOVE_AREA_DDD, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_DDD_BOWSERS_SUB, sUnlockSub },
@@ -2758,37 +2783,42 @@ static const struct PauseCourseUnlock sPauseCourseUnlocks[] = {
     { SM64AP_LEVEL_MOVE_AREA_DDD, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_DDD_METAL, sUnlockMetal },
     { SM64AP_LEVEL_MOVE_AREA_DDD, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_DDD_VANISH, sUnlockVanish },
     { SM64AP_LEVEL_MOVE_AREA_DDD, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_PURPLE_SWITCHES, sUnlockPurple },
+    { SM64AP_LEVEL_MOVE_AREA_DDD, PAUSE_COURSE_UNLOCK_TREASURE_CHESTS, 0, sUnlockChests },
 
     { SM64AP_LEVEL_MOVE_AREA_SL, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_SL_PENGUIN, sUnlockPeng },
     { SM64AP_LEVEL_MOVE_AREA_SL, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_SL_VANISH, sUnlockVanish },
     { SM64AP_LEVEL_MOVE_AREA_SL, PAUSE_COURSE_UNLOCK_CANNON, 0, sUnlockCannon },
+    { SM64AP_LEVEL_MOVE_AREA_SL, PAUSE_COURSE_UNLOCK_BOBOMB_BUDDY, 0, sUnlockBuddy },
 
     { SM64AP_LEVEL_MOVE_AREA_WDW, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_PURPLE_SWITCHES, sUnlockPurple },
     { SM64AP_LEVEL_MOVE_AREA_WDW, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_WDW_WATER_LEVEL_DIAMONDS, sUnlockWaterDiamonds },
     { SM64AP_LEVEL_MOVE_AREA_WDW, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_WDW_METAL, sUnlockMetal },
     { SM64AP_LEVEL_MOVE_AREA_WDW, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_WDW_VANISH, sUnlockVanish },
     { SM64AP_LEVEL_MOVE_AREA_WDW, PAUSE_COURSE_UNLOCK_CANNON, 0, sUnlockCannon },
+    { SM64AP_LEVEL_MOVE_AREA_WDW, PAUSE_COURSE_UNLOCK_BOBOMB_BUDDY, 0, sUnlockBuddy },
 
     { SM64AP_LEVEL_MOVE_AREA_TTM, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_TTM_UKIKI, sUnlockUkiki },
     { SM64AP_LEVEL_MOVE_AREA_TTM, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_ROLLING_LOGS, sUnlockLogs },
     { SM64AP_LEVEL_MOVE_AREA_TTM, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_PURPLE_SWITCHES, sUnlockPurple },
     { SM64AP_LEVEL_MOVE_AREA_TTM, PAUSE_COURSE_UNLOCK_CANNON, 0, sUnlockCannon },
+    { SM64AP_LEVEL_MOVE_AREA_TTM, PAUSE_COURSE_UNLOCK_BOBOMB_BUDDY, 0, sUnlockBuddy },
 
     { SM64AP_LEVEL_MOVE_AREA_THI, PAUSE_COURSE_UNLOCK_FEATURE, SM64AP_FEATURE_THI_KOOPA_THE_QUICK, sUnlockKoopa },
     { SM64AP_LEVEL_MOVE_AREA_THI, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_THI_WARP_PIPES, sUnlockPipes },
     { SM64AP_LEVEL_MOVE_AREA_THI, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_PURPLE_SWITCHES, sUnlockPurple },
     { SM64AP_LEVEL_MOVE_AREA_THI, PAUSE_COURSE_UNLOCK_CANNON, 0, sUnlockCannon },
+    { SM64AP_LEVEL_MOVE_AREA_THI, PAUSE_COURSE_UNLOCK_BOBOMB_BUDDY, 0, sUnlockBuddy },
 
     { SM64AP_LEVEL_MOVE_AREA_TTC, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_TTC_SPINNERS, sUnlockSpinners },
 
     { SM64AP_LEVEL_MOVE_AREA_RR, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_RR_CARPETS, sUnlockCarpet },
     { SM64AP_LEVEL_MOVE_AREA_RR, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_PURPLE_SWITCHES, sUnlockPurple },
     { SM64AP_LEVEL_MOVE_AREA_RR, PAUSE_COURSE_UNLOCK_CANNON, 0, sUnlockCannon },
+    { SM64AP_LEVEL_MOVE_AREA_RR, PAUSE_COURSE_UNLOCK_BOBOMB_BUDDY, 0, sUnlockBuddy },
 
     { SM64AP_LEVEL_MOVE_AREA_BITDW, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_BITDW_METAL, sUnlockMetal },
     { SM64AP_LEVEL_MOVE_AREA_BITDW, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_PURPLE_SWITCHES, sUnlockPurple },
     { SM64AP_LEVEL_MOVE_AREA_BITDW, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_THI_WARP_PIPES, sUnlockPipes },
-    { SM64AP_LEVEL_MOVE_AREA_BITFS, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_THI_WARP_PIPES, sUnlockPipes },
     { SM64AP_LEVEL_MOVE_AREA_BITS, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_PURPLE_SWITCHES, sUnlockPurple },
     { SM64AP_LEVEL_MOVE_AREA_BITS, PAUSE_COURSE_UNLOCK_OBJECT_ITEM, SM64AP_OBJECT_ITEM_THI_WARP_PIPES, sUnlockPipes },
     { SM64AP_LEVEL_MOVE_AREA_VCUTM, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_VCUTM_VANISH, sUnlockVanish },
@@ -2797,6 +2827,7 @@ static const struct PauseCourseUnlock sPauseCourseUnlocks[] = {
     { PAUSE_COURSE_UNLOCK_AREA_TOTWC, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_TOTWC_WING, sUnlockWing },
     { PAUSE_COURSE_UNLOCK_AREA_WMOTR, PAUSE_COURSE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_WMOTR_WING, sUnlockWing },
     { PAUSE_COURSE_UNLOCK_AREA_WMOTR, PAUSE_COURSE_UNLOCK_WMOTR_CANNON, 0, sUnlockCannon },
+    { PAUSE_COURSE_UNLOCK_AREA_WMOTR, PAUSE_COURSE_UNLOCK_BOBOMB_BUDDY, 0, sUnlockBuddy },
 };
 
 static const struct PauseCastleUnlock sPauseCastleUnlocks[] = {
@@ -2848,6 +2879,10 @@ static bool pause_course_unlock_collected(const struct PauseCourseUnlock *unlock
             return SM64AP_HaveCannon(view->courseNum);
         case PAUSE_COURSE_UNLOCK_WMOTR_CANNON:
             return SM64AP_HaveWmotrCannon();
+        case PAUSE_COURSE_UNLOCK_BOBOMB_BUDDY:
+            return SM64AP_HaveBobombBuddy(view->levelNum);
+        case PAUSE_COURSE_UNLOCK_TREASURE_CHESTS:
+            return SM64AP_HaveTreasureChests(view->levelNum);
     }
 
     return false;
@@ -3044,7 +3079,7 @@ static void render_pause_area_unlocks(s16 x, s16 y, const struct PauseUnlockView
             continue;
         }
 
-        if (unlockCount >= 10) {
+        if (unlockCount >= 11) {
             break;
         }
 
@@ -3055,11 +3090,11 @@ static void render_pause_area_unlocks(s16 x, s16 y, const struct PauseUnlockView
     }
 
     unlockCount += render_pause_one_up_unlocks(
-        x, y, x + 170, view->levelNum, unlockCount, 10);
+        x, y, x + 170, view->levelNum, unlockCount, 11);
     unlockCount += render_pause_bowser_extra_one_ups(
-        x, y, x + 170, view->levelNum, unlockCount, 10);
+        x, y, x + 170, view->levelNum, unlockCount, 11);
     unlockCount += render_pause_bowser_bomb_count(
-        x, y, x + 170, view->levelNum, unlockCount, 10);
+        x, y, x + 170, view->levelNum, unlockCount, 11);
 
     if (unlockCount == 0 && view->type != PAUSE_UNLOCK_VIEW_COURSE) {
         print_generic_string(x, y, textNoItems);
@@ -3099,14 +3134,15 @@ static void render_pause_unlock_view_page(s16 viewIndex) {
     const struct PauseUnlockView *view = pause_unlock_view_at(viewIndex);
     static const u8 textPageOne[] = { TEXT_PAGE_1 };
     static const u8 textPageTwo[] = { TEXT_PAGE_2 };
+    const s16 contentYOffset = 11;
 
-    create_dl_translation_matrix(MENU_MTX_PUSH, -18, 105, 0);
+    create_dl_translation_matrix(MENU_MTX_PUSH, -16, 105 + contentYOffset, 0);
     create_dl_rotation_matrix(MENU_MTX_NOPUSH, 180.0f, 0, 0, 1.0f);
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
     gSPDisplayList(gDisplayListHead++, dl_draw_triangle);
     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 
-    create_dl_translation_matrix(MENU_MTX_PUSH, 310, 89, 0);
+    create_dl_translation_matrix(MENU_MTX_PUSH, 315, 89 + contentYOffset, 0);
     gSPDisplayList(gDisplayListHead++, dl_draw_triangle);
     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
 
@@ -3114,13 +3150,13 @@ static void render_pause_unlock_view_page(s16 viewIndex) {
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
 
     print_generic_string(
-        -8, 140,
+        -8, 140 + contentYOffset,
         view->type == PAUSE_UNLOCK_VIEW_CASTLE && sPauseUnlockPage == 1
             ? sPauseViewLevels
             : pause_unlock_view_title(view));
-    print_generic_string(266, 140, sPauseUnlockPage == 0 ? textPageOne : textPageTwo);
+    print_generic_string(266, 140 + contentYOffset, sPauseUnlockPage == 0 ? textPageOne : textPageTwo);
     if (sPauseUnlockPage == 0) {
-        render_pause_move_unlocks(-8, 122, view->moveArea);
+        render_pause_move_unlocks(-8, 122 + contentYOffset, view->moveArea);
     }
 
     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
@@ -3128,22 +3164,24 @@ static void render_pause_unlock_view_page(s16 viewIndex) {
     if (sPauseUnlockPage == 1 && view->type == PAUSE_UNLOCK_VIEW_CASTLE) {
         gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
         gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
-        render_pause_level_unlocks(74, 122);
+        render_pause_level_unlocks(74, 122 + contentYOffset);
         gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
     } else if (sPauseUnlockPage == 1) {
         gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
         gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
+        create_dl_translation_matrix(MENU_MTX_PUSH, 0, contentYOffset, 0);
         render_pause_coin_and_enemy_unlocks(view);
+        gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
         gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
     } else if (view->type == PAUSE_UNLOCK_VIEW_CASTLE) {
         gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
         gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
-        render_pause_castle_unlocks(126, 122);
+        render_pause_castle_unlocks(126, 122 + contentYOffset);
         gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
     } else {
         gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
         gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
-        render_pause_area_unlocks(126, 122, view);
+        render_pause_area_unlocks(126, 122 + contentYOffset, view);
         gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
     }
 }
@@ -3311,7 +3349,7 @@ static bool pause_menu_start_pressed(void) {
 static void render_pause_course_unlock_view(void) {
     handle_pause_course_unlock_view_scrolling();
     print_hud_pause_colorful_str();
-    render_pause_castle_menu_box(160, 143);
+    render_pause_level_items_box(160, 143);
     render_pause_unlock_view_page(sPauseUnlockViewIndex);
 }
 
@@ -3407,7 +3445,7 @@ s16 render_pause_courses_and_castle(void) {
         case DIALOG_STATE_HORIZONTAL:
             shade_screen();
             print_hud_pause_colorful_str();
-            render_pause_castle_menu_box(160, 143);
+            render_pause_level_items_box(160, 143);
             render_pause_castle_main_strings(104, 60);
 
             if (pause_menu_confirm_pressed()) {
