@@ -106,6 +106,13 @@ int sm64_bowser_in_the_sky_stage_collapse_hits = 2;
 struct SM64APSignHint {
     std::string text;
     int64_t location;
+    int entrance;
+};
+
+static const int sm64_shuffled_entrance_ids[] = {
+    91, 241, 121, 51, 41, 71, 221, 81, 231, 101,
+    111, 112, 113, 361, 132, 131, 141, 142, 143, 144,
+    151, 271, 201, 171, 291, 281, 181, 191, 311,
 };
 
 static std::map<int, SM64APSignHint> sm64_sign_hints;
@@ -1997,6 +2004,20 @@ static int SM64AP_GetMappedEntrance(int sourceEntrance) {
     return sourceEntrance;
 }
 
+static void SM64AP_DiscoverEntrance(int sourceEntrance) {
+    if (AP_GetConnectionStatus() != AP_ConnectionStatus::Authenticated) {
+        return;
+    }
+
+    for (int bit = 0; bit < static_cast<int>(ARRAY_COUNT(sm64_shuffled_entrance_ids)); bit++) {
+        if (sm64_shuffled_entrance_ids[bit] == sourceEntrance) {
+            std::string key = "SM64SpicyFoundEntrances_" + std::to_string(AP_GetPlayerID());
+            SM64AP_SetServerInt(key, "or", 1 << bit);
+            return;
+        }
+    }
+}
+
 static void SM64AP_SetTTCEntranceVariantSpeed(int variant) {
     switch (variant) {
         case SM64AP_ENTRANCE_TTC_STOPPED:
@@ -2062,6 +2083,7 @@ void SM64AP_RedirectWarp(s16* curLevel, s16* destLevel, s8* curArea, s16* destAr
         if (*curLevel == LEVEL_HMC && *destLevel != LEVEL_COTMC) return; // Safety Check: If in HMC only relevant warp is to COTMC
         int sourceKey = SM64AP_SourceEntranceKey(*destLevel, *destArea, sourceEntrance);
         int destination = SM64AP_GetMappedEntrance(sourceKey);
+        SM64AP_DiscoverEntrance(sourceKey);
         if (*curLevel != LEVEL_HMC) { // HMC -> COTMC transition should not set new return point
             sm64_exit_return_to = *curLevel * 10 + *curArea;
             sm64_exit_orig_entrancelvl = sourceKey / 10;
@@ -2511,17 +2533,23 @@ static void SM64AP_SetSignHintData(std::string rawHints) {
 
         int key = 0;
         int location = 0;
+        int entrance = 0;
         std::string hint;
         if (!SM64AP_ParseJsonQuotedIntKey(rawHints, pos, key)
             || !SM64AP_ConsumeJsonChar(rawHints, pos, ':')
             || !SM64AP_ConsumeJsonChar(rawHints, pos, '[')
             || !SM64AP_ParseJsonString(rawHints, pos, hint)
             || !SM64AP_ConsumeJsonChar(rawHints, pos, ',')
-            || !SM64AP_ParseJsonInt(rawHints, pos, location)
-            || !SM64AP_ConsumeJsonChar(rawHints, pos, ']')) {
+            || !SM64AP_ParseJsonInt(rawHints, pos, location)) {
             return;
         }
-        parsed[key] = SM64APSignHint{ std::move(hint), location };
+        SM64AP_SkipJsonWhitespace(rawHints, pos);
+        if (pos < rawHints.size() && rawHints[pos] == ',') {
+            pos++;
+            if (!SM64AP_ParseJsonInt(rawHints, pos, entrance)) return;
+        }
+        if (!SM64AP_ConsumeJsonChar(rawHints, pos, ']')) return;
+        parsed[key] = SM64APSignHint{ std::move(hint), location, entrance };
 
         SM64AP_SkipJsonWhitespace(rawHints, pos);
         if (pos < rawHints.size() && rawHints[pos] == ',') {
@@ -2642,6 +2670,9 @@ void SM64AP_ReadSign(s16 level, s16 dialog) {
     sm64_active_sign_dialog = dialog;
     if (hint.location > 0 && AP_GetConnectionStatus() == AP_ConnectionStatus::Authenticated) {
         AP_SendLocationScouts({ hint.location }, 2);
+    }
+    if (hint.entrance > 0) {
+        SM64AP_DiscoverEntrance(hint.entrance);
     }
 }
 
