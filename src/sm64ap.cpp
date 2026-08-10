@@ -2676,6 +2676,10 @@ void SM64AP_ReadSign(s16 level, s16 dialog) {
     }
 }
 
+static void SM64AP_IgnoreLocationInfo(std::vector<AP_NetworkItem>) {
+    // Sign hints only need LocationScouts to create the server hint.
+}
+
 struct DialogEntry *SM64AP_GetSignDialogEntry(s16 dialog, struct DialogEntry *vanilla) {
     return gMarioState != nullptr
         && gMarioState->action == ACT_READING_SIGN
@@ -3122,6 +3126,7 @@ void SM64AP_GenericInit() {
     AP_SetItemClearCallback(&SM64AP_ResetItems);
     AP_SetLocationCheckedCallback(&SM64AP_CheckLocation);
     AP_SetItemRecvCallback(&SM64AP_RecvItem);
+    AP_SetLocationInfoCallback(&SM64AP_IgnoreLocationInfo);
     AP_RegisterSetReplyCallback(&SM64AP_SetReplyHandler);
     AP_RegisterSlotDataIntCallback("FirstBowserDoorCost", &SM64AP_SetFirstBowserDoorCost);
     AP_RegisterSlotDataIntCallback("BasementDoorCost", &SM64AP_SetBasementDoorCost);
