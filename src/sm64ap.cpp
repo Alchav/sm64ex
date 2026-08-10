@@ -2576,7 +2576,11 @@ static int SM64AP_EncodeSignCharacter(char c) {
 #if !defined(VERSION_JP) && !defined(VERSION_SH)
         case '\'': return 0x3E;
 #endif
+#if defined(VERSION_JP) || defined(VERSION_SH)
         case '.': return DIALOG_CHAR_PERIOD;
+#else
+        case '.': return 0x3F;
+#endif
         case ',': return DIALOG_CHAR_COMMA;
         case '-': return 0x9F;
         case '(': return 0xE1;
