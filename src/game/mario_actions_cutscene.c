@@ -525,6 +525,7 @@ s32 act_reading_sign(struct MarioState *m) {
             m->pos[2] += marioObj->oMarioReadingSignDPosZ / 11.0f;
             // create the text box
             if (m->actionTimer++ == 10) {
+                SM64AP_ReadSign(gCurrLevelNum, m->usedObj->oBehParams2ndByte);
                 create_dialog_inverted_box(m->usedObj->oBehParams2ndByte);
                 m->actionState = 2;
             }

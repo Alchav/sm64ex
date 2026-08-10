@@ -2295,3 +2295,8 @@ Cette caverne est très\n\
 dangereuse!!!\n\
 Alors... DE-HORS!\n\
 / -- Le capitaine --"))
+
+DEFINE_DIALOG(DIALOG_170, 1, 3, 30, 200, _("\
+Attention!\n\
+Ravin froid et profond\n\
+ci-dessous!"))

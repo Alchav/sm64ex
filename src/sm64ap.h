@@ -3,6 +3,8 @@
 
 #include <stdbool.h>
 
+struct DialogEntry;
+
 #ifdef __cplusplus
 #define AP_EXTERN_C extern "C"
 #else
@@ -546,6 +548,8 @@ AP_EXTERN_C int SM64AP_BoxLocationId(int);
 AP_EXTERN_C void SM64AP_SendByBoxID(int);
 AP_EXTERN_C void SM64AP_SendItem(int);
 AP_EXTERN_C int SM64AP_LastLocationCheckId();
+AP_EXTERN_C void SM64AP_ReadSign(s16, s16);
+AP_EXTERN_C struct DialogEntry *SM64AP_GetSignDialogEntry(s16, struct DialogEntry *);
 
 // Print Next Message to Screen
 AP_EXTERN_C void SM64AP_PrintNext();

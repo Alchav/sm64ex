@@ -1722,6 +1722,7 @@ void render_dialog_entries(void) {
     dialogTable = segmented_to_virtual(seg2_dialog_table);
 #endif
     dialog = segmented_to_virtual(dialogTable[gDialogID]);
+    dialog = SM64AP_GetSignDialogEntry(gDialogID, dialog);
 
     // if the dialog entry is invalid, set the ID to -1.
     if (segmented_to_virtual(NULL) == dialog) {

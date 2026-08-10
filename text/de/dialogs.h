@@ -2056,3 +2056,8 @@ Wer sich hier ohne meine\n\
 Erlaubnis Zutritt\n\
 verschafft, handelt sich\n\
 eine Menge Ärger ein!!!"))
+
+DEFINE_DIALOG(DIALOG_170, 1, 3, 30, 200, _("\
+Warnung!\n\
+Kalte, kalte Schlucht\n\
+darunter!"))

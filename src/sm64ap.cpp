@@ -103,6 +103,17 @@ int sm64_bowser_arena_bombs[3] = { 0, 0, 0 };
 int sm64_bowser_hit_requirements[3] = { 1, 1, 3 };
 int sm64_bowser_in_the_sky_stage_collapse_hits = 2;
 
+struct SM64APSignHint {
+    std::string text;
+    int64_t location;
+};
+
+static std::map<int, SM64APSignHint> sm64_sign_hints;
+static std::mutex sm64_sign_hint_mutex;
+static std::vector<u8> sm64_sign_dialog_text = { DIALOG_CHAR_TERMINATOR };
+static struct DialogEntry sm64_sign_dialog_entry = { 1, 4, 30, 200, sm64_sign_dialog_text.data() };
+static s16 sm64_active_sign_dialog = -1;
+
 struct SM64APPermanentCoinRecord {
     u8 course;
     u8 value;
@@ -2455,6 +2466,192 @@ static void SM64AP_SetCoinStarRequirements(std::string rawRequirements) {
     }
 }
 
+static bool SM64AP_ParseJsonString(
+    const std::string &text, std::string::size_type &pos, std::string &value) {
+    SM64AP_SkipJsonWhitespace(text, pos);
+    if (pos >= text.size() || text[pos++] != '"') return false;
+    value.clear();
+    while (pos < text.size()) {
+        char c = text[pos++];
+        if (c == '"') return true;
+        if (c != '\\') {
+            value += c;
+            continue;
+        }
+        if (pos >= text.size()) return false;
+        c = text[pos++];
+        switch (c) {
+            case '"': case '\\': case '/': value += c; break;
+            case 'b': value += '\b'; break;
+            case 'f': value += '\f'; break;
+            case 'n': value += '\n'; break;
+            case 'r': value += '\r'; break;
+            case 't': value += '\t'; break;
+            case 'u':
+                if (pos + 4 > text.size()) return false;
+                pos += 4;
+                value += ' ';
+                break;
+            default: return false;
+        }
+    }
+    return false;
+}
+
+static void SM64AP_SetSignHintData(std::string rawHints) {
+    std::map<int, SM64APSignHint> parsed;
+    std::string::size_type pos = 0;
+    if (!SM64AP_ConsumeJsonChar(rawHints, pos, '{')) return;
+    while (true) {
+        SM64AP_SkipJsonWhitespace(rawHints, pos);
+        if (pos < rawHints.size() && rawHints[pos] == '}') {
+            pos++;
+            break;
+        }
+
+        int key = 0;
+        int location = 0;
+        std::string hint;
+        if (!SM64AP_ParseJsonQuotedIntKey(rawHints, pos, key)
+            || !SM64AP_ConsumeJsonChar(rawHints, pos, ':')
+            || !SM64AP_ConsumeJsonChar(rawHints, pos, '[')
+            || !SM64AP_ParseJsonString(rawHints, pos, hint)
+            || !SM64AP_ConsumeJsonChar(rawHints, pos, ',')
+            || !SM64AP_ParseJsonInt(rawHints, pos, location)
+            || !SM64AP_ConsumeJsonChar(rawHints, pos, ']')) {
+            return;
+        }
+        parsed[key] = SM64APSignHint{ std::move(hint), location };
+
+        SM64AP_SkipJsonWhitespace(rawHints, pos);
+        if (pos < rawHints.size() && rawHints[pos] == ',') {
+            pos++;
+        } else if (pos >= rawHints.size() || rawHints[pos] != '}') {
+            return;
+        }
+    }
+    SM64AP_SkipJsonWhitespace(rawHints, pos);
+    if (pos != rawHints.size()) return;
+
+    std::lock_guard<std::mutex> lock(sm64_sign_hint_mutex);
+    sm64_sign_hints = std::move(parsed);
+}
+
+static int SM64AP_EncodeSignCharacter(char c) {
+#if defined(VERSION_JP) || defined(VERSION_SH)
+    if (c >= 'a' && c <= 'z') c -= 'a' - 'A';
+#endif
+    if (c >= '0' && c <= '9') return c - '0';
+    if (c >= 'A' && c <= 'Z') return c - 'A' + 0x0A;
+    if (c >= 'a' && c <= 'z') return c - 'a' + 0x24;
+    switch (c) {
+#if !defined(VERSION_JP) && !defined(VERSION_SH)
+        case '\'': return 0x3E;
+#endif
+        case '.': return DIALOG_CHAR_PERIOD;
+        case ',': return DIALOG_CHAR_COMMA;
+        case '-': return 0x9F;
+        case '(': return 0xE1;
+        case ')': return 0xE3;
+        case '&': return 0xE5;
+        case '!': return 0xF2;
+        case '%': return 0xF3;
+        case '?': return 0xF4;
+#if !defined(VERSION_JP) && !defined(VERSION_SH)
+        case '/': return DIALOG_CHAR_SLASH;
+#else
+        case ':': return 0xE6;
+#endif
+        default: return -1;
+    }
+}
+
+static void SM64AP_EncodeSignHint(const std::string &text) {
+#if defined(VERSION_JP) || defined(VERSION_SH)
+    constexpr size_t lineWidth = 12;
+#else
+    constexpr size_t lineWidth = 24;
+#endif
+    size_t lineLength = 0;
+    size_t input = 0;
+    bool openingQuote = true;
+    sm64_sign_dialog_text.clear();
+    sm64_sign_dialog_text.reserve(text.size() + text.size() / lineWidth + 2);
+
+    while (input < text.size()) {
+        while (input < text.size() && std::isspace(static_cast<unsigned char>(text[input]))) {
+            if (text[input] == '\r' || text[input] == '\n') {
+                if (text[input] == '\r' && input + 1 < text.size() && text[input + 1] == '\n') {
+                    input++;
+                }
+                sm64_sign_dialog_text.push_back(DIALOG_CHAR_NEWLINE);
+                lineLength = 0;
+            }
+            input++;
+        }
+        if (input >= text.size()) break;
+
+        size_t wordEnd = input;
+        while (wordEnd < text.size() && !std::isspace(static_cast<unsigned char>(text[wordEnd]))) {
+            wordEnd++;
+        }
+        size_t wordLength = wordEnd - input;
+        if (lineLength != 0 && lineLength + 1 + wordLength > lineWidth) {
+            sm64_sign_dialog_text.push_back(DIALOG_CHAR_NEWLINE);
+            lineLength = 0;
+        } else if (lineLength != 0) {
+            sm64_sign_dialog_text.push_back(DIALOG_CHAR_SPACE);
+            lineLength++;
+        }
+
+        while (input < wordEnd) {
+            char character = text[input++];
+            int encoded;
+            if (character == '"') {
+                encoded = openingQuote ? 0xF5 : 0xF6;
+                openingQuote = !openingQuote;
+            } else {
+                encoded = SM64AP_EncodeSignCharacter(character);
+            }
+            if (encoded < 0) continue;
+            if (lineLength == lineWidth) {
+                sm64_sign_dialog_text.push_back(DIALOG_CHAR_NEWLINE);
+                lineLength = 0;
+            }
+            sm64_sign_dialog_text.push_back(static_cast<u8>(encoded));
+            lineLength++;
+        }
+    }
+    sm64_sign_dialog_text.push_back(DIALOG_CHAR_TERMINATOR);
+    sm64_sign_dialog_entry.str = sm64_sign_dialog_text.data();
+}
+
+void SM64AP_ReadSign(s16 level, s16 dialog) {
+    SM64APSignHint hint;
+    {
+        std::lock_guard<std::mutex> lock(sm64_sign_hint_mutex);
+        auto entry = sm64_sign_hints.find(level * 256 + dialog);
+        if (entry == sm64_sign_hints.end()) {
+            sm64_active_sign_dialog = -1;
+            return;
+        }
+        hint = entry->second;
+    }
+
+    SM64AP_EncodeSignHint(hint.text);
+    sm64_active_sign_dialog = dialog;
+    if (hint.location > 0 && AP_GetConnectionStatus() == AP_ConnectionStatus::Authenticated) {
+        AP_SendLocationScouts({ hint.location }, 2);
+    }
+}
+
+struct DialogEntry *SM64AP_GetSignDialogEntry(s16 dialog, struct DialogEntry *vanilla) {
+    return gMarioState != nullptr
+        && gMarioState->action == ACT_READING_SIGN
+        && dialog == sm64_active_sign_dialog
+        ? &sm64_sign_dialog_entry : vanilla;
+}
+
 static bool SM64AP_ParseJsonIntMap(const std::string &rawMap, std::map<int,int> &parsedMap) {
     parsedMap.clear();
 
@@ -2859,6 +3056,11 @@ void SM64AP_SetReplyHandler(AP_SetReply reply) {
 }
 
 void SM64AP_GenericInit() {
+    {
+        std::lock_guard<std::mutex> lock(sm64_sign_hint_mutex);
+        sm64_sign_hints.clear();
+    }
+    sm64_active_sign_dialog = -1;
     sm64_permanent_coins.clear();
     sm64_permanent_coin_updates.clear();
     sm64_pending_permanent_coins.clear();
@@ -2923,6 +3125,7 @@ void SM64AP_GenericInit() {
     AP_RegisterSlotDataRawCallback("SkyboxMap", static_cast<void (*)(std::string)>(&SM64AP_SetSkyboxMap));
     AP_RegisterSlotDataRawCallback("MarioColors", &SM64AP_SetMarioColors);
     AP_RegisterSlotDataRawCallback("CoinStarRequirements", &SM64AP_SetCoinStarRequirements);
+    AP_RegisterSlotDataRawCallback("SignHintData", &SM64AP_SetSignHintData);
 
     course_dest_supported = {
         LEVEL_BOB, LEVEL_WF, LEVEL_JRB, LEVEL_CCM, LEVEL_BBH, LEVEL_HMC, LEVEL_LLL, LEVEL_SSL, LEVEL_DDD, LEVEL_SL,
