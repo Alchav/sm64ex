@@ -20,19 +20,31 @@ static s32 eyerok_check_mario_relative_z(s32 arg0) {
     }
 }
 
-static void eyerok_spawn_hand(s16 side, s32 model, const BehaviorScript *behavior) {
+static struct Object *eyerok_spawn_hand(s16 side, s32 model, const BehaviorScript *behavior) {
     struct Object *hand;
 
     hand = spawn_object_relative_with_scale(side, -500 * side, 0, 300, 1.5f, o, model, behavior);
     if (hand != NULL) {
         hand->oFaceAngleYaw -= 0x4000 * side;
     }
+    return hand;
 }
 
 static void eyerok_boss_act_sleep(void) {
     if (o->oTimer == 0) {
-        eyerok_spawn_hand(-1, MODEL_EYEROK_LEFT_HAND, bhvEyerokHand);
-        eyerok_spawn_hand(1, MODEL_EYEROK_RIGHT_HAND, bhvEyerokHand);
+        struct Object *leftHand = eyerok_spawn_hand(-1, MODEL_EYEROK_LEFT_HAND, bhvEyerokHand);
+        struct Object *rightHand = eyerok_spawn_hand(1, MODEL_EYEROK_RIGHT_HAND, bhvEyerokHand);
+
+        // The fight cannot initialize with only one hand. Retry once object-pool space is available.
+        if (leftHand == NULL || rightHand == NULL) {
+            if (leftHand != NULL) {
+                obj_mark_for_deletion(leftHand);
+            }
+            if (rightHand != NULL) {
+                obj_mark_for_deletion(rightHand);
+            }
+            o->oTimer = -1;
+        }
     } else if (o->oDistanceToMario < 500.0f) {
         cur_obj_play_sound_2(SOUND_OBJ_EYEROK_EXPLODE);
         o->oAction = EYEROK_BOSS_ACT_WAKE_UP;
