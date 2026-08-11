@@ -3065,6 +3065,16 @@ static void render_pause_move_unlocks(s16 x, s16 y, s16 moveArea) {
     }
 }
 
+static void render_pause_sign_unlock(s16 x, s16 y, s16 statusX, s16 levelNum) {
+    static const u8 label[] = {
+        ASCII_TO_DIALOG('S'), ASCII_TO_DIALOG('I'), ASCII_TO_DIALOG('G'), ASCII_TO_DIALOG('N'),
+        ASCII_TO_DIALOG('S'), DIALOG_CHAR_TERMINATOR
+    };
+    if (SM64AP_LevelHasSignUnlock(levelNum)) {
+        render_pause_unlock_status(x, y, statusX, label, SM64AP_HaveSigns(levelNum));
+    }
+}
+
 static void render_pause_area_unlocks(s16 x, s16 y, const struct PauseUnlockView *view) {
     static const u8 textNoItems[] = { TEXT_UNLOCK_NO_ITEMS };
     s16 unlockCount = 0;
@@ -3158,6 +3168,7 @@ static void render_pause_unlock_view_page(s16 viewIndex) {
     print_generic_string(266, 140 + contentYOffset, sPauseUnlockPage == 0 ? textPageOne : textPageTwo);
     if (sPauseUnlockPage == 0) {
         render_pause_move_unlocks(-8, 122 + contentYOffset, view->moveArea);
+        render_pause_sign_unlock(-8, 1 + contentYOffset, 112, view->levelNum);
     }
 
     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);

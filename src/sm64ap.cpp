@@ -183,6 +183,33 @@ std::bitset<SM64AP_NUM_LEVEL_CAPS> sm64_have_level_caps;
 std::bitset<SM64AP_NUM_OBJECT_ITEMS> sm64_have_object_items;
 std::bitset<SM64AP_NUM_ONE_UP_CATEGORIES> sm64_have_one_up_global_items;
 std::bitset<SM64AP_NUM_ONE_UP_LEVEL_ITEMS> sm64_have_one_up_level_items;
+static bool sm64_have_global_signs = false;
+static std::bitset<SM64AP_NUM_SIGN_LEVEL_ITEMS> sm64_have_level_signs;
+
+struct SM64APSignLevelItem {
+    s16 level;
+    const char *name;
+};
+
+static constexpr SM64APSignLevelItem SM64AP_SIGN_LEVEL_ITEMS[SM64AP_NUM_SIGN_LEVEL_ITEMS] = {
+    { LEVEL_CASTLE, "CASTLE SIGNS" },
+    { LEVEL_BOB, "BOB SIGNS" },
+    { LEVEL_WF, "WF SIGNS" },
+    { LEVEL_JRB, "JRB SIGNS" },
+    { LEVEL_CCM, "CCM SIGNS" },
+    { LEVEL_BBH, "BBH SIGNS" },
+    { LEVEL_HMC, "HMC SIGNS" },
+    { LEVEL_LLL, "LLL SIGNS" },
+    { LEVEL_SSL, "SSL SIGNS" },
+    { LEVEL_DDD, "DDD SIGNS" },
+    { LEVEL_SL, "SL SIGNS" },
+    { LEVEL_WDW, "WDW SIGNS" },
+    { LEVEL_TTM, "TTM SIGNS" },
+    { LEVEL_THI, "THI SIGNS" },
+    { LEVEL_PSS, "PSS SIGNS" },
+    { LEVEL_COTMC, "COTMC SIGNS" },
+    { LEVEL_BITDW, "BITDW SIGNS" },
+};
 
 struct SM64APCoinGlobalItem {
     int source;
@@ -619,6 +646,18 @@ static int SM64AP_CoinCheckOffsetFromLocationId(int locId);
 
 void SM64AP_RecvItem(int64_t idx, bool notify) {
     AP_EnableQueueItemRecvMsgs(true);
+
+    if (idx == SM64AP_ID_GLOBAL_SIGNS) {
+        sm64_have_global_signs = true;
+        SM64AP_RequestLiveObjectReconcile();
+        return;
+    }
+
+    if (idx >= SM64AP_SIGN_LEVEL_ITEM_OFFSET && idx <= SM64AP_SIGN_LEVEL_ITEM_END) {
+        sm64_have_level_signs[idx - SM64AP_SIGN_LEVEL_ITEM_OFFSET] = true;
+        SM64AP_RequestLiveObjectReconcile();
+        return;
+    }
 
     if (idx >= SM64AP_ONE_UP_GLOBAL_ITEM_OFFSET && idx < SM64AP_ONE_UP_LEVEL_ITEM_OFFSET) {
         int category = idx - SM64AP_ONE_UP_GLOBAL_ITEM_OFFSET;
@@ -1280,6 +1319,36 @@ bool SM64AP_HaveObjectItemForLevel(int item, s16 level) {
         || SM64AP_HaveObjectItem(SM64AP_LevelSpecificObjectItemForLevel(item, level));
 }
 
+static s16 SM64AP_NormalizeSignLevel(s16 level) {
+    if (level == LEVEL_CASTLE_GROUNDS || level == LEVEL_CASTLE_COURTYARD) {
+        return LEVEL_CASTLE;
+    }
+    return level;
+}
+
+bool SM64AP_HaveSigns(s16 level) {
+    if (sm64_have_global_signs) {
+        return true;
+    }
+    level = SM64AP_NormalizeSignLevel(level);
+    for (int i = 0; i < SM64AP_NUM_SIGN_LEVEL_ITEMS; i++) {
+        if (SM64AP_SIGN_LEVEL_ITEMS[i].level == level) {
+            return sm64_have_level_signs[i];
+        }
+    }
+    return true;
+}
+
+bool SM64AP_LevelHasSignUnlock(s16 level) {
+    level = SM64AP_NormalizeSignLevel(level);
+    for (int i = 0; i < SM64AP_NUM_SIGN_LEVEL_ITEMS; i++) {
+        if (SM64AP_SIGN_LEVEL_ITEMS[i].level == level) {
+            return true;
+        }
+    }
+    return false;
+}
+
 bool SM64AP_HaveObjectItemForCourse(int item, int courseIdx) {
     int level = SM64AP_LevelForCourseIndex(courseIdx);
 
@@ -1722,6 +1791,10 @@ static int SM64AP_OneUpPlacementSourceType(const void *behavior) {
 }
 
 bool SM64AP_ShouldSpawnLevelObject(s16 level, s16, s16 model, s16 x, s16 y, s16 z, u32 behParam, const void *behavior) {
+    if ((behavior_is(behavior, bhvMessagePanel) || behavior_is(behavior, bhvSignOnWall))
+        && !SM64AP_HaveSigns(level)) {
+        return false;
+    }
     if (behavior_is(behavior, bhvToadMessage)) {
         return SM64AP_HaveToads();
     }
@@ -2956,6 +3029,8 @@ void SM64AP_ResetItems() {
     sm64_have_coin_level_items.reset();
     sm64_have_one_up_global_items.reset();
     sm64_have_one_up_level_items.reset();
+    sm64_have_global_signs = false;
+    sm64_have_level_signs.reset();
     sm64_sent_coin_checks.reset();
     sm64_sent_1up_checks.reset();
     sm64_sent_blocksanity_checks.reset();
@@ -4806,6 +4881,7 @@ enum SM64APCheatItemKind {
     SM64AP_CHEAT_ITEM_ONE_UP_UNLOCK,
     SM64AP_CHEAT_ITEM_BOWSER_ARENA_BOMB,
     SM64AP_CHEAT_ITEM_CAP_LENGTH,
+    SM64AP_CHEAT_ITEM_SIGN_UNLOCK,
 };
 
 enum SM64APCheatBoolItem {
@@ -5108,6 +5184,12 @@ static void SM64AP_InitCheatItems() {
             SM64AP_CHEAT_ITEM_ONE_UP_UNLOCK, SM64AP_ONE_UP_LEVEL_ITEM_OFFSET + i,
             SM64AP_ONE_UP_LEVEL_ITEMS[i].name);
     }
+    SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_SIGN_UNLOCK, SM64AP_ID_GLOBAL_SIGNS, "GLOBAL SIGNS");
+    for (int i = 0; i < SM64AP_NUM_SIGN_LEVEL_ITEMS; i++) {
+        SM64AP_CheatAdd(
+            SM64AP_CHEAT_ITEM_SIGN_UNLOCK, SM64AP_SIGN_LEVEL_ITEM_OFFSET + i,
+            SM64AP_SIGN_LEVEL_ITEMS[i].name);
+    }
 
     for (int bomb = 1; bomb <= 4; bomb++) {
         SM64AP_CheatAdd(
@@ -5401,6 +5483,13 @@ bool SM64AP_CheatItemEnabled(int index) {
             int count = item.index % 10000;
             return cap >= 0 && cap < 3 && sm64_cap_length_items[cap] >= count;
         }
+        case SM64AP_CHEAT_ITEM_SIGN_UNLOCK:
+            if (item.index == SM64AP_ID_GLOBAL_SIGNS) {
+                return sm64_have_global_signs;
+            }
+            return item.index >= SM64AP_SIGN_LEVEL_ITEM_OFFSET
+                && item.index <= SM64AP_SIGN_LEVEL_ITEM_END
+                && sm64_have_level_signs[item.index - SM64AP_SIGN_LEVEL_ITEM_OFFSET];
     }
 
     return false;
@@ -5502,6 +5591,15 @@ void SM64AP_CheatSetItemEnabled(int index, bool enabled) {
             }
             break;
         }
+        case SM64AP_CHEAT_ITEM_SIGN_UNLOCK:
+            if (item.index == SM64AP_ID_GLOBAL_SIGNS) {
+                sm64_have_global_signs = enabled;
+            } else if (item.index >= SM64AP_SIGN_LEVEL_ITEM_OFFSET
+                       && item.index <= SM64AP_SIGN_LEVEL_ITEM_END) {
+                sm64_have_level_signs[item.index - SM64AP_SIGN_LEVEL_ITEM_OFFSET] = enabled;
+            }
+            SM64AP_RequestLiveObjectReconcile();
+            break;
     }
     SM64AP_RequestLiveObjectReconcile();
 }
