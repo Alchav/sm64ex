@@ -650,6 +650,16 @@ static void obj_die_if_health_non_positive(void) {
                     coin->activeFlags = ACTIVE_FLAG_DEACTIVATED;
                 }
             }
+        } else if (SM64AP_PermanentCoinCollection()
+                   && obj_has_behavior(o, bhvGoomba)
+                   && o->oGoombaSize == GOOMBA_SIZE_HUGE
+                   && o->oNumLootCoins == 1) {
+            struct Object *coin = spawn_object(o, MODEL_YELLOW_COIN, bhvSingleCoinGetsSpawned);
+            // A weak Huge Goomba kill always represents its first output. It
+            // must not consume another one of the five Ground Pound outputs on
+            // each course entry.
+            SM64AP_AssignPermanentCoinSlot(coin, o, 0, 1);
+            o->oNumLootCoins = 0;
         } else {
             obj_spawn_loot_yellow_coins(o, o->oNumLootCoins, 20.0f);
         }

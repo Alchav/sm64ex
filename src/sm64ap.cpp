@@ -43,6 +43,7 @@ extern "C" {
 #include <cstdio>
 #include <bitset>
 #include <set>
+#include <climits>
 #include <queue>
 #include <cctype>
 #include <utility>
@@ -91,7 +92,6 @@ bool sm64_hat_restore_with_animation_pending = false;
 bool sm64_hat_restore_without_animation_pending = false;
 bool sm64_easy_butterflies = false;
 bool sm64_no_despawn = false;
-bool sm64_permanent_coin_collection = false;
 bool sm64_mips_skip_enabled = false;
 bool sm64_live_object_reconcile_requested = false;
 bool sm64_have_wingcap = false;
@@ -126,6 +126,36 @@ struct SM64APPermanentCoinRecord {
     u8 value;
 };
 
+struct SM64APCoinOutputCatalogEntry {
+    u64 physicalSource;
+    u8 physicalSlot;
+    int locationId;
+};
+
+struct SM64APCoinCompletionCatalogEntry {
+    u64 physicalSource;
+    u8 requiredOutputCount;
+    int locationId;
+};
+
+static const SM64APCoinOutputCatalogEntry sm64_coin_output_catalog[] = {
+    { 0, 0, 0 },
+#define COIN_OUTPUT(source, slot, location) { source, slot, location },
+#define COIN_COMPLETION(source, count, location)
+#include "sm64ap_coin_check_catalog.inc"
+#undef COIN_COMPLETION
+#undef COIN_OUTPUT
+};
+
+static const SM64APCoinCompletionCatalogEntry sm64_coin_completion_catalog[] = {
+    { 0, 0, 0 },
+#define COIN_OUTPUT(source, slot, location)
+#define COIN_COMPLETION(source, count, location) { source, count, location },
+#include "sm64ap_coin_check_catalog.inc"
+#undef COIN_COMPLETION
+#undef COIN_OUTPUT
+};
+
 static std::map<std::pair<u64, u8>, SM64APPermanentCoinRecord> sm64_permanent_coins;
 static std::map<std::pair<u64, u8>, SM64APPermanentCoinRecord> sm64_permanent_coin_updates;
 static std::map<std::pair<u64, u8>, SM64APPermanentCoinRecord> sm64_pending_permanent_coins;
@@ -135,6 +165,9 @@ static bool sm64_pending_permanent_coin_snapshot = false;
 static bool sm64_permanent_coin_storage_initialized = false;
 static bool sm64_permanent_coin_reconcile_requested = false;
 static std::string sm64_permanent_coin_ledger_key;
+static std::set<int> sm64_checked_coin_output_locations;
+static std::set<std::pair<u64, u8>> sm64_pending_coin_output_checks;
+static std::set<u64> sm64_pending_coin_completion_checks;
 static bool sm64_finished_bowser_storage_received = false;
 static bool sm64_moat_storage_received = false;
 static bool sm64_permanent_coin_storage_received = false;
@@ -146,6 +179,8 @@ static u32 sm64_server_cannon_flags = 0;
 static int sm64_server_coin_high_scores[COURSE_STAGES_COUNT] = {};
 static int sm64_title_connection_wait_frames = 0;
 static void SM64AP_LoadPermanentCoins(const std::string &rawLedger);
+static void SM64AP_SendCoinOutputCheck(const std::pair<u64, u8> &physicalKey);
+static void SM64AP_SendCoinCompletionCheck(u64 physicalSource);
 
 struct SM64APUncollectTrapState {
     int ordinal;
@@ -899,7 +934,7 @@ void SM64AP_RecvItem(int64_t idx, bool notify) {
             break;
         case SM64AP_ID_UNCOLLECT_COIN_TRAP:
             sm64_received_uncollect_coin_traps++;
-            if (notify && sm64_permanent_coin_collection) {
+            if (notify) {
                 std::lock_guard<std::mutex> lock(sm64_permanent_coin_mutex);
                 sm64_pending_uncollect_coin_traps.push(sm64_received_uncollect_coin_traps);
             }
@@ -912,6 +947,11 @@ void SM64AP_RecvItem(int64_t idx, bool notify) {
 }
 
 void SM64AP_CheckLocation(int64_t loc_id) {
+    if (loc_id >= 4000000 && loc_id <= INT_MAX) {
+        int coinLocation = static_cast<int>(loc_id);
+        sm64_checked_coin_output_locations.insert(coinLocation);
+    }
+
     if (loc_id < SM64AP_ID_OFFSET || loc_id >= SM64AP_ID_OFFSET + SM64AP_NUM_LOCS) {
         return;
     }
@@ -2344,14 +2384,6 @@ void SM64AP_SetNoDespawn(int enabled) {
     sm64_no_despawn = enabled != 0;
 }
 
-static void SM64AP_SetPermanentCoinCollection(int enabled) {
-    sm64_permanent_coin_collection = enabled != 0;
-    if (sm64_permanent_coin_collection && sm64_permanent_coin_ledger_key.empty()) {
-        sm64_permanent_coin_storage_initialized = false;
-    }
-    SM64AP_RestorePermanentCoinCount();
-}
-
 static void SM64AP_SetMipsSkipEnabled(int enabled) {
     sm64_mips_skip_enabled = enabled != 0;
     SM64AP_RequestLiveObjectReconcile();
@@ -3183,6 +3215,9 @@ void SM64AP_GenericInit() {
     sm64_permanent_coin_storage_initialized = false;
     sm64_permanent_coin_reconcile_requested = false;
     sm64_permanent_coin_ledger_key.clear();
+    sm64_checked_coin_output_locations.clear();
+    sm64_pending_coin_output_checks.clear();
+    sm64_pending_coin_completion_checks.clear();
     sm64_finished_bowser_storage_received = false;
     sm64_moat_storage_received = false;
     sm64_permanent_coin_storage_received = false;
@@ -3225,7 +3260,6 @@ void SM64AP_GenericInit() {
     AP_RegisterSlotDataIntCallback("BowserStage1UpBehavior", &SM64AP_SetBowserStageOneUpBehavior);
     AP_RegisterSlotDataIntCallback("EasyButterflies", &SM64AP_SetEasyButterflies);
     AP_RegisterSlotDataIntCallback("NoDespawn", &SM64AP_SetNoDespawn);
-    AP_RegisterSlotDataIntCallback("PermanentCoinCollection", &SM64AP_SetPermanentCoinCollection);
     AP_RegisterSlotDataIntCallback("MipsSkipEnabled", &SM64AP_SetMipsSkipEnabled);
     AP_RegisterSlotDataIntCallback("BowserInTheDarkWorldHits", &SM64AP_SetBowserInTheDarkWorldHits);
     AP_RegisterSlotDataIntCallback("BowserInTheFireSeaHits", &SM64AP_SetBowserInTheFireSeaHits);
@@ -4178,7 +4212,7 @@ bool SM64AP_NoDespawn() {
 }
 
 bool SM64AP_PermanentCoinCollection() {
-    return sm64_permanent_coin_collection;
+    return true;
 }
 
 static u64 SM64AP_PermanentCoinHashValue(u64 hash, u64 value) {
@@ -4325,9 +4359,6 @@ bool SM64AP_AssignPermanentAggregateCoinOutput(
     }
 
     SM64AP_NormalizeInheritedCoinSource(source);
-    if (!sm64_permanent_coin_collection) {
-        return true;
-    }
     if (slotCount < 1 || slotCount > 64) {
         return false;
     }
@@ -4345,7 +4376,7 @@ bool SM64AP_AssignPermanentAggregateCoinOutput(
 }
 
 bool SM64AP_MarkSpentPermanentCoin(struct Object *coin, int value) {
-    if (!sm64_permanent_coin_collection || coin == nullptr || coin->apCoinSourceId == 0) {
+    if (coin == nullptr || coin->apCoinSourceId == 0) {
         return false;
     }
     coin->apCoinValue = value;
@@ -4407,6 +4438,59 @@ static bool SM64AP_ParsePermanentCoinKey(
         return false;
     }
     return true;
+}
+
+static void SM64AP_SendCoinOutputCheck(const std::pair<u64, u8> &physicalKey) {
+    bool retry = false;
+    for (const auto &entry : sm64_coin_output_catalog) {
+        if (entry.physicalSource != physicalKey.first || entry.physicalSlot != physicalKey.second) {
+            continue;
+        }
+        if (sm64_checked_coin_output_locations.count(entry.locationId) != 0) {
+            continue;
+        }
+        if (!SM64AP_CanReportProgress()) {
+            retry = true;
+            continue;
+        }
+        sm64_checked_coin_output_locations.insert(entry.locationId);
+        SM64AP_SendItem(entry.locationId);
+    }
+    if (retry) {
+        sm64_pending_coin_output_checks.insert(physicalKey);
+    } else {
+        sm64_pending_coin_output_checks.erase(physicalKey);
+    }
+}
+
+static void SM64AP_SendCoinCompletionCheck(u64 physicalSource) {
+    bool retry = false;
+    for (const auto &entry : sm64_coin_completion_catalog) {
+        if (entry.physicalSource != physicalSource) {
+            continue;
+        }
+        bool complete = true;
+        for (int slot = 0; slot < entry.requiredOutputCount; slot++) {
+            if (!SM64AP_PermanentCoinSlotCollected(physicalSource, static_cast<u8>(slot))) {
+                complete = false;
+                break;
+            }
+        }
+        if (!complete || sm64_checked_coin_output_locations.count(entry.locationId) != 0) {
+            continue;
+        }
+        if (!SM64AP_CanReportProgress()) {
+            retry = true;
+            continue;
+        }
+        sm64_checked_coin_output_locations.insert(entry.locationId);
+        SM64AP_SendItem(entry.locationId);
+    }
+    if (retry) {
+        sm64_pending_coin_completion_checks.insert(physicalSource);
+    } else {
+        sm64_pending_coin_completion_checks.erase(physicalSource);
+    }
 }
 
 static void SM64AP_LoadPermanentCoins(const std::string &rawLedger) {
@@ -4483,10 +4567,8 @@ static void SM64AP_InitializeServerStorage() {
         SM64AP_SetServerInt(entry.first, "default", 0);
     }
 
-    if (sm64_permanent_coin_collection) {
-        sm64_permanent_coin_ledger_key = prefix + "PermanentCoins";
-        AP_SetNotify(sm64_permanent_coin_ledger_key, AP_DataType::Raw, true);
-    }
+    sm64_permanent_coin_ledger_key = prefix + "PermanentCoins";
+    AP_SetNotify(sm64_permanent_coin_ledger_key, AP_DataType::Raw, true);
     sm64_permanent_coin_storage_initialized = true;
 }
 
@@ -4499,7 +4581,7 @@ bool SM64AP_ReadyToStart() {
         && sm64_save_flags_storage_received
         && sm64_cannon_flags_storage_received
         && sm64_coin_scores_storage_received == COURSE_STAGES_COUNT
-        && (!sm64_permanent_coin_collection || sm64_permanent_coin_storage_received);
+        && sm64_permanent_coin_storage_received;
     if (ready) {
         sm64_title_connection_wait_frames = 0;
     }
@@ -4541,6 +4623,8 @@ bool SM64AP_ConsumePermanentCoinReconcileRequest() {
         if (sm64_uncollected_coin_tombstones.count(entry.first) == 0
             && sm64_permanent_coins.count(entry.first) == 0) {
             sm64_permanent_coins[entry.first] = entry.second;
+            SM64AP_SendCoinOutputCheck(entry.first);
+            SM64AP_SendCoinCompletionCheck(entry.first.first);
             sm64_permanent_coin_reconcile_requested = true;
         }
     }
@@ -4556,10 +4640,12 @@ static void SM64AP_RecordPermanentCoin(
     sm64_permanent_coins[key] = record;
     sm64_permanent_coin_updates[key] = record;
     sm64_uncollected_coin_tombstones.erase(key);
+    SM64AP_SendCoinOutputCheck(key);
+    SM64AP_SendCoinCompletionCheck(key.first);
 }
 
 bool SM64AP_CollectPermanentCoin(struct Object *coin, int value) {
-    if (!sm64_permanent_coin_collection || coin == nullptr || coin->apCoinSourceId == 0) {
+    if (coin == nullptr || coin->apCoinSourceId == 0) {
         return true;
     }
 
@@ -4593,7 +4679,7 @@ bool SM64AP_CollectPermanentCoin(struct Object *coin, int value) {
 
 int SM64AP_CollectPermanentCoinOutputs(
     struct Object *source, int value, int slotCount, int requestedSlots) {
-    if (!sm64_permanent_coin_collection || source == nullptr || source->apCoinSourceId == 0) {
+    if (source == nullptr || source->apCoinSourceId == 0) {
         return value * requestedSlots;
     }
 
@@ -4616,7 +4702,7 @@ int SM64AP_CollectPermanentCoinOutputs(
 
 u64 SM64AP_PermanentCoinMask(struct Object *source, int slotCount, int value) {
     u64 mask = 0;
-    if (!sm64_permanent_coin_collection || source == nullptr || source->apCoinSourceId == 0) {
+    if (source == nullptr || source->apCoinSourceId == 0) {
         return 0;
     }
     SM64AP_NormalizeInheritedCoinSource(source);
@@ -4634,9 +4720,6 @@ u64 SM64AP_PermanentCoinMask(struct Object *source, int slotCount, int value) {
 int SM64AP_CollectedPermanentRedCoins(int course) {
     int collected = 0;
 
-    if (!sm64_permanent_coin_collection) {
-        return 0;
-    }
 
     for (const auto &entry : sm64_permanent_coins) {
         if (entry.second.course == course && entry.second.value == 2) {
@@ -4647,7 +4730,7 @@ int SM64AP_CollectedPermanentRedCoins(int course) {
 }
 
 void SM64AP_RestorePermanentCoinCount() {
-    if (!sm64_permanent_coin_collection || gMarioState == nullptr
+    if (gMarioState == nullptr
         || gCurrCourseNum <= COURSE_NONE || gCurrCourseNum > COURSE_MAX) {
         return;
     }
@@ -4666,7 +4749,7 @@ void SM64AP_RestorePermanentCoinCount() {
 }
 
 bool SM64AP_ShouldSpawnOutstandingCoinStar() {
-    if (!sm64_permanent_coin_collection || !COURSE_IS_MAIN_COURSE(gCurrCourseNum)
+    if (!COURSE_IS_MAIN_COURSE(gCurrCourseNum)
         || gMarioState == nullptr
         || SM64AP_CollectedCourseStar(gCurrCourseNum - COURSE_MIN, 6)) {
         return false;
@@ -4675,6 +4758,22 @@ bool SM64AP_ShouldSpawnOutstandingCoinStar() {
 }
 
 void SM64AP_FlushPermanentCoinLedger() {
+    if (!sm64_pending_coin_output_checks.empty()) {
+        std::vector<std::pair<u64, u8>> pending(
+            sm64_pending_coin_output_checks.begin(), sm64_pending_coin_output_checks.end());
+        for (const auto &physicalKey : pending) {
+            SM64AP_SendCoinOutputCheck(physicalKey);
+        }
+    }
+    if (!sm64_pending_coin_completion_checks.empty()) {
+        std::vector<u64> pending(
+            sm64_pending_coin_completion_checks.begin(),
+            sm64_pending_coin_completion_checks.end());
+        for (u64 physicalSource : pending) {
+            SM64AP_SendCoinCompletionCheck(physicalSource);
+        }
+    }
+
     if (sm64_permanent_coin_updates.empty() || sm64_permanent_coin_ledger_key.empty()) {
         return;
     }
