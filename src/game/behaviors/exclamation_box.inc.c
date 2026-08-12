@@ -171,6 +171,9 @@ void exclamation_box_spawn_contents(struct Struct802C0DF0 *a0, u8 a1) {
             }
 
             sp1C = spawn_object(o, a0->model, a0->behavior);
+            if (a0->behavior == bhvThreeCoinsSpawn || a0->behavior == bhvTenCoinsSpawn) {
+                SM64AP_PreserveInheritedPermanentCoinSource(sp1C);
+            }
             if (a0->model == MODEL_1UP) {
                 sp1C->o1UpApLocationId = oneUpLocId;
             }

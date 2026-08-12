@@ -4290,6 +4290,12 @@ static void SM64AP_NormalizeInheritedCoinSource(struct Object *source) {
     source->apCoinSourceKind = 1;
 }
 
+void SM64AP_PreserveInheritedPermanentCoinSource(struct Object *source) {
+    if (source != nullptr && source->apCoinSourceKind == 2) {
+        source->apCoinSourceKind = 1;
+    }
+}
+
 void SM64AP_DistinguishInheritedPermanentCoinSource(struct Object *source, int ordinal) {
     if (source == nullptr || source->apCoinSourceKind != 2) {
         return;

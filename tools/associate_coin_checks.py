@@ -124,8 +124,9 @@ def source_kind(source) -> str:
     if source.source_id == "red_coin":
         return "red"
     layout_kind = source.outputs[0].kind.value
-    if any(output.coin_value == 5 for output in source.outputs) and len(source.outputs) % 2 == 0 \
-            and all("Giant Goomba" in output.location_name for output in source.outputs):
+    if "giant_goomba" in source.source_id \
+            and any(output.coin_value == 5 for output in source.outputs) \
+            and len(source.outputs) % 2 == 0:
         return "giant"
     return layout_kind
 

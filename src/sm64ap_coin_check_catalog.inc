@@ -1246,141 +1246,142 @@ COIN_OUTPUT(UINT64_C(12880330779759868149), 4, 4011113) // Tall, Tall Mountain -
 COIN_OUTPUT(UINT64_C(6526162838064779917), 2, 4011114) // Tall, Tall Mountain - Middle Coins by the Purple Switch near the Mountain Top, Coin 1
 COIN_OUTPUT(UINT64_C(6526162838064779917), 3, 4011115) // Tall, Tall Mountain - Middle Coins by the Purple Switch near the Mountain Top, Coin 2
 COIN_OUTPUT(UINT64_C(6526162838064779917), 4, 4011116) // Tall, Tall Mountain - Highest Coin by the Purple Switch near the Mountain Top, Coin
-COIN_OUTPUT(UINT64_C(10202654908820183727), 0, 4012000) // Tiny-Huge Island - Red Coins Area Red Coin 1
-COIN_OUTPUT(UINT64_C(9710974624471983942), 0, 4012001) // Tiny-Huge Island - Red Coins Area Red Coin 2
-COIN_OUTPUT(UINT64_C(8179938353875088547), 0, 4012002) // Tiny-Huge Island - Red Coins Area Red Coin 3
-COIN_OUTPUT(UINT64_C(13479329729677099994), 0, 4012003) // Tiny-Huge Island - Red Coins Area Red Coin 4
-COIN_OUTPUT(UINT64_C(3548102759729292009), 0, 4012004) // Tiny-Huge Island - Red Coins Area Red Coin 5
-COIN_OUTPUT(UINT64_C(14682321012676738147), 0, 4012005) // Tiny-Huge Island - Red Coins Area Red Coin 6
-COIN_OUTPUT(UINT64_C(9867811889095465718), 0, 4012006) // Tiny-Huge Island - Red Coins Area Red Coin 7
-COIN_OUTPUT(UINT64_C(14378446307111318702), 0, 4012007) // Tiny-Huge Island - Wall Kick Red Coin
-COIN_OUTPUT(UINT64_C(2700820942839853903), 0, 4012008) // Tiny-Huge Island - Tiny Starting Area Goomba, Coin
-COIN_OUTPUT(UINT64_C(10889177379661433945), 0, 4012009) // Tiny-Huge Island - Tiny Piranha Area Piranha Plant, Coin
-COIN_OUTPUT(UINT64_C(13956391848818311815), 0, 4012010) // Tiny-Huge Island - Coin in Tiny Main 1
-COIN_OUTPUT(UINT64_C(6051637410962117489), 0, 4012011) // Tiny-Huge Island - Coin in Tiny Main 2
-COIN_OUTPUT(UINT64_C(13701133656343387576), 0, 4012012) // Tiny-Huge Island - Coin in Tiny Main 3
-COIN_OUTPUT(UINT64_C(11174310727649509656), 0, 4012013) // Tiny-Huge Island - Coin in Tiny Main 4
-COIN_OUTPUT(UINT64_C(8955207870316803302), 0, 4012014) // Tiny-Huge Island - Coin in Tiny Main 5
-COIN_OUTPUT(UINT64_C(16789390812569011085), 0, 4012015) // Tiny-Huge Island - Coin in Tiny Main 6
-COIN_OUTPUT(UINT64_C(6431988198371629300), 0, 4012016) // Tiny-Huge Island - Coin in Tiny Main 7
-COIN_OUTPUT(UINT64_C(13927792931160734731), 0, 4012017) // Tiny-Huge Island - Coin in Tiny Main 8
-COIN_OUTPUT(UINT64_C(6312225850558046860), 0, 4012018) // Tiny-Huge Island - Coin Line on the Tiny Main Wooden Plank, Coin 1
-COIN_OUTPUT(UINT64_C(6312225850558046860), 1, 4012019) // Tiny-Huge Island - Coin Line on the Tiny Main Wooden Plank, Coin 2
-COIN_OUTPUT(UINT64_C(6312225850558046860), 2, 4012020) // Tiny-Huge Island - Coin Line on the Tiny Main Wooden Plank, Coin 3
-COIN_OUTPUT(UINT64_C(6312225850558046860), 3, 4012021) // Tiny-Huge Island - Coin Line on the Tiny Main Wooden Plank, Coin 4
-COIN_OUTPUT(UINT64_C(6312225850558046860), 4, 4012022) // Tiny-Huge Island - Coin Line on the Tiny Main Wooden Plank, Coin 5
-COIN_OUTPUT(UINT64_C(14016581098780592782), 0, 4012023) // Tiny-Huge Island - 3-Coin Block in Tiny Main, Coin 1
-COIN_OUTPUT(UINT64_C(14016581098780592782), 1, 4012024) // Tiny-Huge Island - 3-Coin Block in Tiny Main, Coin 2
-COIN_OUTPUT(UINT64_C(14016581098780592782), 2, 4012025) // Tiny-Huge Island - 3-Coin Block in Tiny Main, Coin 3
-COIN_OUTPUT(UINT64_C(16147022409446462571), 0, 4012026) // Tiny-Huge Island - Tiny Main Area Goomba 1, Coin
-COIN_OUTPUT(UINT64_C(12829428470790758821), 0, 4012027) // Tiny-Huge Island - Tiny Main Area Goomba 2, Coin
-COIN_OUTPUT(UINT64_C(11812737010296186465), 0, 4012028) // Tiny-Huge Island - Tiny Main Area Goomba 3, Coin
-COIN_OUTPUT(UINT64_C(2942126670204226928), 0, 4012029) // Tiny-Huge Island - Tiny Main Area Goomba 4, Coin
-COIN_OUTPUT(UINT64_C(8205561338486215774), 0, 4012030) // Tiny-Huge Island - Tiny Main Area Goomba 5, Coin
-COIN_OUTPUT(UINT64_C(7273045542988121135), 0, 4012031) // Tiny-Huge Island - Tiny Main Area Goomba 6, Coin
-COIN_OUTPUT(UINT64_C(18007270184792959867), 0, 4012032) // Tiny-Huge Island - Tiny Main Area Goomba 7, Coin
-COIN_OUTPUT(UINT64_C(5837159805459639483), 0, 4012033) // Tiny-Huge Island - Tiny Main Area Goomba 8, Coin
-COIN_OUTPUT(UINT64_C(4407021037319269413), 0, 4012034) // Tiny-Huge Island - Tiny Main Area Goomba 9, Coin
-COIN_OUTPUT(UINT64_C(2495232528457931136), 0, 4012035) // Tiny-Huge Island - Tiny Main Area Koopa Troopa, Blue Coin
-COIN_OUTPUT(UINT64_C(330147300833736101), 0, 4012036) // Tiny-Huge Island - Impossible Coin
-COIN_OUTPUT(UINT64_C(11771152675370971988), 0, 4012037) // Tiny-Huge Island - Separated Coin on Tiny Island
-COIN_OUTPUT(UINT64_C(10653829006633911174), 0, 4012038) // Tiny-Huge Island - Lower Huge Island Giant Goomba 1, Coin
-COIN_COMPLETION(UINT64_C(10653829006633911174), 5, 4012039) // Tiny-Huge Island - Blue Coin from Lower Huge Island Giant Goomba 1
-COIN_OUTPUT(UINT64_C(12172305225150352991), 0, 4012040) // Tiny-Huge Island - Lower Huge Island Giant Goomba 2, Coin
-COIN_COMPLETION(UINT64_C(12172305225150352991), 5, 4012041) // Tiny-Huge Island - Blue Coin from Lower Huge Island Giant Goomba 2
-COIN_OUTPUT(UINT64_C(10354420996233859609), 0, 4012042) // Tiny-Huge Island - Lower Huge Island Giant Goomba 3, Coin
-COIN_COMPLETION(UINT64_C(10354420996233859609), 5, 4012043) // Tiny-Huge Island - Blue Coin from Lower Huge Island Giant Goomba 3
-COIN_OUTPUT(UINT64_C(738810450971243599), 0, 4012044) // Tiny-Huge Island - Lower Huge Island Giant Goomba 4, Coin
-COIN_COMPLETION(UINT64_C(738810450971243599), 5, 4012045) // Tiny-Huge Island - Blue Coin from Lower Huge Island Giant Goomba 4
+COIN_OUTPUT(UINT64_C(10202654908820183727), 0, 4012000) // Tiny-Huge Island - Red Coin 1
+COIN_OUTPUT(UINT64_C(9710974624471983942), 0, 4012001) // Tiny-Huge Island - Red Coin 2
+COIN_OUTPUT(UINT64_C(8179938353875088547), 0, 4012002) // Tiny-Huge Island - Red Coin 3
+COIN_OUTPUT(UINT64_C(13479329729677099994), 0, 4012003) // Tiny-Huge Island - Red Coin 4
+COIN_OUTPUT(UINT64_C(3548102759729292009), 0, 4012004) // Tiny-Huge Island - Red Coin 5
+COIN_OUTPUT(UINT64_C(14682321012676738147), 0, 4012005) // Tiny-Huge Island - Red Coin 6
+COIN_OUTPUT(UINT64_C(9867811889095465718), 0, 4012006) // Tiny-Huge Island - Red Coin 7
+COIN_OUTPUT(UINT64_C(14378446307111318702), 0, 4012007) // Tiny-Huge Island - Red Coin 8
+COIN_OUTPUT(UINT64_C(4407021037319269413), 0, 4012008) // Tiny-Huge Island - Tiny Start Goomba, Coin
+COIN_OUTPUT(UINT64_C(1285501214641423692), 0, 4012009) // Tiny-Huge Island - Tiny Island Fire Piranha Plant, Coin
+COIN_OUTPUT(UINT64_C(13956391848818311815), 0, 4012010) // Tiny-Huge Island - Tiny Island Coin 1
+COIN_OUTPUT(UINT64_C(6051637410962117489), 0, 4012011) // Tiny-Huge Island - Tiny Island Coin 2
+COIN_OUTPUT(UINT64_C(13701133656343387576), 0, 4012012) // Tiny-Huge Island - Tiny Island Coin 3
+COIN_OUTPUT(UINT64_C(11174310727649509656), 0, 4012013) // Tiny-Huge Island - Tiny Island Coin 4
+COIN_OUTPUT(UINT64_C(8955207870316803302), 0, 4012014) // Tiny-Huge Island - Tiny Island Coin 5
+COIN_OUTPUT(UINT64_C(16789390812569011085), 0, 4012015) // Tiny-Huge Island - Tiny Island Coin 6
+COIN_OUTPUT(UINT64_C(6431988198371629300), 0, 4012016) // Tiny-Huge Island - Tiny Island Coin 7
+COIN_OUTPUT(UINT64_C(13927792931160734731), 0, 4012017) // Tiny-Huge Island - Tiny Island Coin 8
+COIN_OUTPUT(UINT64_C(330147300833736101), 0, 4012018) // Tiny-Huge Island - Tiny Island Coin 9
+COIN_OUTPUT(UINT64_C(6312225850558046860), 0, 4012019) // Tiny-Huge Island - Coin Line on the Tiny Island Wooden Plank, Coin 1
+COIN_OUTPUT(UINT64_C(6312225850558046860), 1, 4012020) // Tiny-Huge Island - Coin Line on the Tiny Island Wooden Plank, Coin 2
+COIN_OUTPUT(UINT64_C(6312225850558046860), 2, 4012021) // Tiny-Huge Island - Coin Line on the Tiny Island Wooden Plank, Coin 3
+COIN_OUTPUT(UINT64_C(6312225850558046860), 3, 4012022) // Tiny-Huge Island - Coin Line on the Tiny Island Wooden Plank, Coin 4
+COIN_OUTPUT(UINT64_C(6312225850558046860), 4, 4012023) // Tiny-Huge Island - Coin Line on the Tiny Island Wooden Plank, Coin 5
+COIN_OUTPUT(UINT64_C(14016581098780592782), 0, 4012024) // Tiny-Huge Island - 3-Coin Block on Tiny Island, Coin 1
+COIN_OUTPUT(UINT64_C(14016581098780592782), 1, 4012025) // Tiny-Huge Island - 3-Coin Block on Tiny Island, Coin 2
+COIN_OUTPUT(UINT64_C(14016581098780592782), 2, 4012026) // Tiny-Huge Island - 3-Coin Block on Tiny Island, Coin 3
+COIN_OUTPUT(UINT64_C(16147022409446462571), 0, 4012027) // Tiny-Huge Island - Tiny Island Goomba 1, Coin
+COIN_OUTPUT(UINT64_C(12829428470790758821), 0, 4012028) // Tiny-Huge Island - Tiny Island Goomba 2, Coin
+COIN_OUTPUT(UINT64_C(11812737010296186465), 0, 4012029) // Tiny-Huge Island - Tiny Island Goomba 3, Coin
+COIN_OUTPUT(UINT64_C(2942126670204226928), 0, 4012030) // Tiny-Huge Island - Tiny Island Goomba 4, Coin
+COIN_OUTPUT(UINT64_C(8205561338486215774), 0, 4012031) // Tiny-Huge Island - Tiny Island Goomba 5, Coin
+COIN_OUTPUT(UINT64_C(7273045542988121135), 0, 4012032) // Tiny-Huge Island - Tiny Island Goomba 6, Coin
+COIN_OUTPUT(UINT64_C(18007270184792959867), 0, 4012033) // Tiny-Huge Island - Tiny Island Goomba 7, Coin
+COIN_OUTPUT(UINT64_C(5837159805459639483), 0, 4012034) // Tiny-Huge Island - Tiny Island Goomba 8, Coin
+COIN_OUTPUT(UINT64_C(2700820942839853903), 0, 4012035) // Tiny-Huge Island - Tiny Island Goomba 9, Coin
+COIN_OUTPUT(UINT64_C(2495232528457931136), 0, 4012036) // Tiny-Huge Island - Tiny Main Area Koopa Troopa, Blue Coin
+COIN_OUTPUT(UINT64_C(11771152675370971988), 0, 4012037) // Tiny-Huge Island - Five Itty Bitty Secrets Island Coin
+COIN_OUTPUT(UINT64_C(10653829006633911174), 0, 4012038) // Tiny-Huge Island - Huge Starting Area Goomba 1, Coin
+COIN_COMPLETION(UINT64_C(10653829006633911174), 5, 4012039) // Tiny-Huge Island - Huge Starting Area Goomba 1, Blue Coin
+COIN_OUTPUT(UINT64_C(12172305225150352991), 0, 4012040) // Tiny-Huge Island - Huge Starting Area Goomba 2, Coin
+COIN_COMPLETION(UINT64_C(12172305225150352991), 5, 4012041) // Tiny-Huge Island - Huge Starting Area Goomba 2, Blue Coin
+COIN_OUTPUT(UINT64_C(10354420996233859609), 0, 4012042) // Tiny-Huge Island - Huge Starting Area Goomba 3, Coin
+COIN_COMPLETION(UINT64_C(10354420996233859609), 5, 4012043) // Tiny-Huge Island - Huge Starting Area Goomba 3, Blue Coin
+COIN_OUTPUT(UINT64_C(738810450971243599), 0, 4012044) // Tiny-Huge Island - Near Cannon Goomba, Coin
+COIN_COMPLETION(UINT64_C(738810450971243599), 5, 4012045) // Tiny-Huge Island - Near Cannon Goomba, Blue Coin
 COIN_OUTPUT(UINT64_C(15618273331566943078), 0, 4012046) // Tiny-Huge Island - Wooden Post at Huge Island Start, Coin 1
 COIN_OUTPUT(UINT64_C(15618273331566943078), 1, 4012047) // Tiny-Huge Island - Wooden Post at Huge Island Start, Coin 2
 COIN_OUTPUT(UINT64_C(15618273331566943078), 2, 4012048) // Tiny-Huge Island - Wooden Post at Huge Island Start, Coin 3
 COIN_OUTPUT(UINT64_C(15618273331566943078), 3, 4012049) // Tiny-Huge Island - Wooden Post at Huge Island Start, Coin 4
 COIN_OUTPUT(UINT64_C(15618273331566943078), 4, 4012050) // Tiny-Huge Island - Wooden Post at Huge Island Start, Coin 5
-COIN_OUTPUT(UINT64_C(17226556929669120386), 0, 4012051) // Tiny-Huge Island - Coin above the Huge Island beach 1
-COIN_OUTPUT(UINT64_C(4890384532949891104), 0, 4012052) // Tiny-Huge Island - Coin above the Huge Island beach 2
-COIN_OUTPUT(UINT64_C(12517528427812876007), 0, 4012053) // Tiny-Huge Island - Lower Huge Island Fly Guy 1, Coin 1
-COIN_OUTPUT(UINT64_C(12517528427812876007), 1, 4012054) // Tiny-Huge Island - Lower Huge Island Fly Guy 1, Coin 2
-COIN_OUTPUT(UINT64_C(4782093583873434475), 0, 4012055) // Tiny-Huge Island - Lower Huge Island Fly Guy 2, Coin 1
-COIN_OUTPUT(UINT64_C(4782093583873434475), 1, 4012056) // Tiny-Huge Island - Lower Huge Island Fly Guy 2, Coin 2
+COIN_OUTPUT(UINT64_C(17226556929669120386), 0, 4012051) // Tiny-Huge Island - Huge Island Beach Coin 1
+COIN_OUTPUT(UINT64_C(4890384532949891104), 0, 4012052) // Tiny-Huge Island - Huge Island Beach Coin 2
+COIN_OUTPUT(UINT64_C(14809919854973892311), 0, 4012053) // Tiny-Huge Island - Beach Fly Guy, Coin 1
+COIN_OUTPUT(UINT64_C(14809919854973892311), 1, 4012054) // Tiny-Huge Island - Beach Fly Guy, Coin 2
+COIN_OUTPUT(UINT64_C(4782093583873434475), 0, 4012055) // Tiny-Huge Island - Near Cannon Fly Guy, Coin 1
+COIN_OUTPUT(UINT64_C(4782093583873434475), 1, 4012056) // Tiny-Huge Island - Near Cannon Fly Guy, Coin 2
 COIN_OUTPUT(UINT64_C(5847723274718491684), 0, 4012057) // Tiny-Huge Island - Huge Island Lakitu, Coin 1
 COIN_OUTPUT(UINT64_C(5847723274718491684), 1, 4012058) // Tiny-Huge Island - Huge Island Lakitu, Coin 2
 COIN_OUTPUT(UINT64_C(5847723274718491684), 2, 4012059) // Tiny-Huge Island - Huge Island Lakitu, Coin 3
 COIN_OUTPUT(UINT64_C(5847723274718491684), 3, 4012060) // Tiny-Huge Island - Huge Island Lakitu, Coin 4
 COIN_OUTPUT(UINT64_C(5847723274718491684), 4, 4012061) // Tiny-Huge Island - Huge Island Lakitu, Coin 5
 COIN_OUTPUT(UINT64_C(13296956193758623431), 0, 4012062) // Tiny-Huge Island - Huge Island Koopa Troopa, Blue Coin
-COIN_OUTPUT(UINT64_C(524042051120170091), 0, 4012063) // Tiny-Huge Island - Wooden Post on Lakitu'S Island, Coin 1
-COIN_OUTPUT(UINT64_C(524042051120170091), 1, 4012064) // Tiny-Huge Island - Wooden Post on Lakitu'S Island, Coin 2
-COIN_OUTPUT(UINT64_C(524042051120170091), 2, 4012065) // Tiny-Huge Island - Wooden Post on Lakitu'S Island, Coin 3
-COIN_OUTPUT(UINT64_C(524042051120170091), 3, 4012066) // Tiny-Huge Island - Wooden Post on Lakitu'S Island, Coin 4
-COIN_OUTPUT(UINT64_C(524042051120170091), 4, 4012067) // Tiny-Huge Island - Wooden Post on Lakitu'S Island, Coin 5
-COIN_OUTPUT(UINT64_C(2178321176785096444), 0, 4012068) // Tiny-Huge Island - Coin Line in Windswept Valley, Coin 1
-COIN_OUTPUT(UINT64_C(2178321176785096444), 1, 4012069) // Tiny-Huge Island - Coin Line in Windswept Valley, Coin 2
-COIN_OUTPUT(UINT64_C(2178321176785096444), 2, 4012070) // Tiny-Huge Island - Coin Line in Windswept Valley, Coin 3
-COIN_OUTPUT(UINT64_C(2178321176785096444), 3, 4012071) // Tiny-Huge Island - Coin Line in Windswept Valley, Coin 4
-COIN_OUTPUT(UINT64_C(2178321176785096444), 4, 4012072) // Tiny-Huge Island - Coin Line in Windswept Valley, Coin 5
+COIN_OUTPUT(UINT64_C(524042051120170091), 0, 4012063) // Tiny-Huge Island - Wooden Post on Lakitu's Island, Coin 1
+COIN_OUTPUT(UINT64_C(524042051120170091), 1, 4012064) // Tiny-Huge Island - Wooden Post on Lakitu's Island, Coin 2
+COIN_OUTPUT(UINT64_C(524042051120170091), 2, 4012065) // Tiny-Huge Island - Wooden Post on Lakitu's Island, Coin 3
+COIN_OUTPUT(UINT64_C(524042051120170091), 3, 4012066) // Tiny-Huge Island - Wooden Post on Lakitu's Island, Coin 4
+COIN_OUTPUT(UINT64_C(524042051120170091), 4, 4012067) // Tiny-Huge Island - Wooden Post on Lakitu's Island, Coin 5
+COIN_OUTPUT(UINT64_C(14123866331665689055), 0, 4012068) // Tiny-Huge Island - Coin Line in Windswept Valley, Coin 1
+COIN_OUTPUT(UINT64_C(14123866331665689055), 1, 4012069) // Tiny-Huge Island - Coin Line in Windswept Valley, Coin 2
+COIN_OUTPUT(UINT64_C(14123866331665689055), 2, 4012070) // Tiny-Huge Island - Coin Line in Windswept Valley, Coin 3
+COIN_OUTPUT(UINT64_C(14123866331665689055), 3, 4012071) // Tiny-Huge Island - Coin Line in Windswept Valley, Coin 4
+COIN_OUTPUT(UINT64_C(14123866331665689055), 4, 4012072) // Tiny-Huge Island - Coin Line in Windswept Valley, Coin 5
 COIN_OUTPUT(UINT64_C(14642347508053775187), 0, 4012073) // Tiny-Huge Island - Windswept Valley Giant Goomba 1, Coin
-COIN_COMPLETION(UINT64_C(14642347508053775187), 5, 4012074) // Tiny-Huge Island - Blue Coin from Windswept Valley Giant Goomba 1
+COIN_COMPLETION(UINT64_C(14642347508053775187), 5, 4012074) // Tiny-Huge Island - Windswept Valley Giant Goomba 1, Blue Coin
 COIN_OUTPUT(UINT64_C(10481175717731684895), 0, 4012075) // Tiny-Huge Island - Windswept Valley Giant Goomba 2, Coin
-COIN_COMPLETION(UINT64_C(10481175717731684895), 5, 4012076) // Tiny-Huge Island - Blue Coin from Windswept Valley Giant Goomba 2
+COIN_COMPLETION(UINT64_C(10481175717731684895), 5, 4012076) // Tiny-Huge Island - Windswept Valley Giant Goomba 2, Blue Coin
 COIN_OUTPUT(UINT64_C(13336294819555760281), 0, 4012077) // Tiny-Huge Island - Coin Line in the Cannonball Area, Coin 1
 COIN_OUTPUT(UINT64_C(13336294819555760281), 1, 4012078) // Tiny-Huge Island - Coin Line in the Cannonball Area, Coin 2
 COIN_OUTPUT(UINT64_C(13336294819555760281), 2, 4012079) // Tiny-Huge Island - Coin Line in the Cannonball Area, Coin 3
 COIN_OUTPUT(UINT64_C(13336294819555760281), 3, 4012080) // Tiny-Huge Island - Coin Line in the Cannonball Area, Coin 4
 COIN_OUTPUT(UINT64_C(13336294819555760281), 4, 4012081) // Tiny-Huge Island - Coin Line in the Cannonball Area, Coin 5
-COIN_OUTPUT(UINT64_C(14809919854973892311), 0, 4012082) // Tiny-Huge Island - Cannonball Area Fly Guy, Coin 1
-COIN_OUTPUT(UINT64_C(14809919854973892311), 1, 4012083) // Tiny-Huge Island - Cannonball Area Fly Guy, Coin 2
-COIN_OUTPUT(UINT64_C(14123866331665689055), 0, 4012084) // Tiny-Huge Island - Slanted Coin Line in Koopa the Quick's Area, Coin 1
-COIN_OUTPUT(UINT64_C(14123866331665689055), 1, 4012085) // Tiny-Huge Island - Slanted Coin Line in Koopa the Quick's Area, Coin 2
-COIN_OUTPUT(UINT64_C(14123866331665689055), 2, 4012086) // Tiny-Huge Island - Slanted Coin Line in Koopa the Quick's Area, Coin 3
-COIN_OUTPUT(UINT64_C(14123866331665689055), 3, 4012087) // Tiny-Huge Island - Slanted Coin Line in Koopa the Quick's Area, Coin 4
-COIN_OUTPUT(UINT64_C(17278396207542582781), 0, 4012088) // Tiny-Huge Island - Koopa the Quick Area Giant Goomba 1, Coin
-COIN_COMPLETION(UINT64_C(17278396207542582781), 5, 4012089) // Tiny-Huge Island - Blue Coin from Koopa the Quick Area Giant Goomba 1
-COIN_OUTPUT(UINT64_C(11831926590563716713), 0, 4012090) // Tiny-Huge Island - Koopa the Quick Area Giant Goomba 2, Coin
-COIN_COMPLETION(UINT64_C(11831926590563716713), 5, 4012091) // Tiny-Huge Island - Blue Coin from Koopa the Quick Area Giant Goomba 2
-COIN_OUTPUT(UINT64_C(4378669561579736067), 0, 4012092) // Tiny-Huge Island - Koopa the Quick Area Giant Goomba 3, Coin
-COIN_COMPLETION(UINT64_C(4378669561579736067), 5, 4012093) // Tiny-Huge Island - Blue Coin from Koopa the Quick Area Giant Goomba 3
-COIN_OUTPUT(UINT64_C(14123866331665689055), 4, 4012094) // Tiny-Huge Island - Coin Line on the Mountaintop Wooden Plank, Coin 1
-COIN_OUTPUT(UINT64_C(17226100584261914885), 0, 4012095) // Tiny-Huge Island - Coin Line on the Mountaintop Wooden Plank, Coin 2
-COIN_OUTPUT(UINT64_C(17226100584261914885), 1, 4012096) // Tiny-Huge Island - Coin Line on the Mountaintop Wooden Plank, Coin 3
-COIN_OUTPUT(UINT64_C(17226100584261914885), 2, 4012097) // Tiny-Huge Island - Coin Line on the Mountaintop Wooden Plank, Coin 4
-COIN_OUTPUT(UINT64_C(17226100584261914885), 3, 4012098) // Tiny-Huge Island - Coin Line on the Mountaintop Wooden Plank, Coin 5
-COIN_OUTPUT(UINT64_C(17226100584261914885), 4, 4012099) // Tiny-Huge Island - Coin Line on the Curved Wiggler's Cave Plank, Coin 1
-COIN_OUTPUT(UINT64_C(159633975866903282), 0, 4012100) // Tiny-Huge Island - Coin Line on the Curved Wiggler's Cave Plank, Coin 2
-COIN_OUTPUT(UINT64_C(159633975866903282), 1, 4012101) // Tiny-Huge Island - Coin Line on the Curved Wiggler's Cave Plank, Coin 3
-COIN_OUTPUT(UINT64_C(159633975866903282), 2, 4012102) // Tiny-Huge Island - Coin Line on the Curved Wiggler's Cave Plank, Coin 4
-COIN_OUTPUT(UINT64_C(159633975866903282), 3, 4012103) // Tiny-Huge Island - Coin Line on the Curved Wiggler's Cave Plank, Coin 5
-COIN_OUTPUT(UINT64_C(1415404927322545752), 0, 4012104) // Tiny-Huge Island - Huge Top Chuckya, Coin 1
-COIN_OUTPUT(UINT64_C(1415404927322545752), 1, 4012105) // Tiny-Huge Island - Huge Top Chuckya, Coin 2
-COIN_OUTPUT(UINT64_C(1415404927322545752), 2, 4012106) // Tiny-Huge Island - Huge Top Chuckya, Coin 3
-COIN_OUTPUT(UINT64_C(1415404927322545752), 3, 4012107) // Tiny-Huge Island - Huge Top Chuckya, Coin 4
-COIN_OUTPUT(UINT64_C(1415404927322545752), 4, 4012108) // Tiny-Huge Island - Huge Top Chuckya, Coin 5
-COIN_OUTPUT(UINT64_C(10779409491687041312), 0, 4012109) // Tiny-Huge Island - Red Coins Area Giant Goomba 1, Coin
-COIN_COMPLETION(UINT64_C(10779409491687041312), 5, 4012110) // Tiny-Huge Island - Blue Coin from Red Coins Area Giant Goomba 1
-COIN_OUTPUT(UINT64_C(7321864814474270611), 0, 4012111) // Tiny-Huge Island - Red Coins Area Giant Goomba 2, Coin
-COIN_COMPLETION(UINT64_C(7321864814474270611), 5, 4012112) // Tiny-Huge Island - Blue Coin from Red Coins Area Giant Goomba 2
-COIN_OUTPUT(UINT64_C(11749794034299371499), 0, 4012113) // Tiny-Huge Island - Blue Coins in the Red Coins Area, Blue Coin 1
-COIN_OUTPUT(UINT64_C(5739630523745857919), 0, 4012114) // Tiny-Huge Island - Blue Coins in the Red Coins Area, Blue Coin 2
-COIN_OUTPUT(UINT64_C(159633975866903282), 4, 4012115) // Tiny-Huge Island - Coin Line in Wiggler's Cave 1, Coin 1
-COIN_OUTPUT(UINT64_C(2785294232910074344), 0, 4012116) // Tiny-Huge Island - Coin Line in Wiggler's Cave 1, Coin 2
-COIN_OUTPUT(UINT64_C(2785294232910074344), 1, 4012117) // Tiny-Huge Island - Coin Line in Wiggler's Cave 1, Coin 3
-COIN_OUTPUT(UINT64_C(2785294232910074344), 2, 4012118) // Tiny-Huge Island - Coin Line in Wiggler's Cave 1, Coin 4
-COIN_OUTPUT(UINT64_C(2785294232910074344), 3, 4012119) // Tiny-Huge Island - Coin Line in Wiggler's Cave 1, Coin 5
-COIN_OUTPUT(UINT64_C(2785294232910074344), 4, 4012120) // Tiny-Huge Island - Coin Line in Wiggler's Cave 2, Coin 1
-COIN_OUTPUT(UINT64_C(1491906353646736920), 0, 4012121) // Tiny-Huge Island - Coin Line in Wiggler's Cave 2, Coin 2
-COIN_OUTPUT(UINT64_C(1491906353646736920), 1, 4012122) // Tiny-Huge Island - Coin Line in Wiggler's Cave 2, Coin 3
-COIN_OUTPUT(UINT64_C(1491906353646736920), 2, 4012123) // Tiny-Huge Island - Coin Line in Wiggler's Cave 2, Coin 4
-COIN_OUTPUT(UINT64_C(1491906353646736920), 3, 4012124) // Tiny-Huge Island - Coin Line in Wiggler's Cave 2, Coin 5
-COIN_OUTPUT(UINT64_C(10889177379661433945), 1, 4012125) // Tiny-Huge Island - Huge Piranha Area Fire Piranha Plant 1, Coin 1
-COIN_OUTPUT(UINT64_C(6010648411893436020), 0, 4012126) // Tiny-Huge Island - Huge Piranha Area Fire Piranha Plant 1, Coin 2
-COIN_OUTPUT(UINT64_C(6010648411893436020), 1, 4012127) // Tiny-Huge Island - Huge Piranha Area Fire Piranha Plant 1, Coin 3
-COIN_OUTPUT(UINT64_C(3248376465730705204), 0, 4012128) // Tiny-Huge Island - Huge Piranha Area Fire Piranha Plant 2, Coin 1
-COIN_OUTPUT(UINT64_C(3248376465730705204), 1, 4012129) // Tiny-Huge Island - Huge Piranha Area Fire Piranha Plant 2, Coin 2
-COIN_OUTPUT(UINT64_C(15067271541434961793), 0, 4012130) // Tiny-Huge Island - Huge Piranha Area Fire Piranha Plant 2, Coin 3
-COIN_OUTPUT(UINT64_C(15067271541434961793), 1, 4012131) // Tiny-Huge Island - Huge Piranha Area Fire Piranha Plant 3, Coin
-COIN_OUTPUT(UINT64_C(9962233631032857617), 0, 4012132) // Tiny-Huge Island - Huge Piranha Area Fire Piranha Plant 4, Coin
-COIN_OUTPUT(UINT64_C(9962233631032857617), 1, 4012133) // Tiny-Huge Island - Huge Piranha Area Fire Piranha Plant 5, Coin
-COIN_OUTPUT(UINT64_C(1285501214641423692), 0, 4012134) // Tiny-Huge Island - Huge Piranha Area Fire Piranha Plant 6, Coin
+COIN_OUTPUT(UINT64_C(12517528427812876007), 0, 4012082) // Tiny-Huge Island - Cannonball Area Fly Guy, Coin 1
+COIN_OUTPUT(UINT64_C(12517528427812876007), 1, 4012083) // Tiny-Huge Island - Cannonball Area Fly Guy, Coin 2
+COIN_OUTPUT(UINT64_C(17226100584261914885), 1, 4012084) // Tiny-Huge Island - Coin Line in Koopa the Quick's Area, Coin 1
+COIN_OUTPUT(UINT64_C(17226100584261914885), 2, 4012085) // Tiny-Huge Island - Coin Line in Koopa the Quick's Area, Coin 2
+COIN_OUTPUT(UINT64_C(17226100584261914885), 3, 4012086) // Tiny-Huge Island - Coin Line in Koopa the Quick's Area, Coin 3
+COIN_OUTPUT(UINT64_C(17226100584261914885), 4, 4012087) // Tiny-Huge Island - Coin Line in Koopa the Quick's Area, Coin 4
+COIN_OUTPUT(UINT64_C(17226100584261914885), 0, 4012088) // Tiny-Huge Island - Impossible Coin
+COIN_OUTPUT(UINT64_C(4378669561579736067), 0, 4012089) // Tiny-Huge Island - Koopa the Quick Area Giant Goomba 1, Coin
+COIN_COMPLETION(UINT64_C(4378669561579736067), 5, 4012090) // Tiny-Huge Island - Koopa the Quick Area Giant Goomba 1, Blue Coin
+COIN_OUTPUT(UINT64_C(10779409491687041312), 0, 4012091) // Tiny-Huge Island - Koopa the Quick Area Giant Goomba 2, Coin
+COIN_COMPLETION(UINT64_C(10779409491687041312), 5, 4012092) // Tiny-Huge Island - Koopa the Quick Area Giant Goomba 2, Blue Coin
+COIN_OUTPUT(UINT64_C(7321864814474270611), 0, 4012093) // Tiny-Huge Island - Koopa the Quick Area Giant Goomba 3, Coin
+COIN_COMPLETION(UINT64_C(7321864814474270611), 5, 4012094) // Tiny-Huge Island - Koopa the Quick Area Giant Goomba 3, Blue Coin
+COIN_OUTPUT(UINT64_C(159633975866903282), 0, 4012095) // Tiny-Huge Island - Coin Line on the Huge Island Top Plank, Coin 1
+COIN_OUTPUT(UINT64_C(159633975866903282), 1, 4012096) // Tiny-Huge Island - Coin Line on the Huge Island Top Plank, Coin 2
+COIN_OUTPUT(UINT64_C(159633975866903282), 2, 4012097) // Tiny-Huge Island - Coin Line on the Huge Island Top Plank, Coin 3
+COIN_OUTPUT(UINT64_C(159633975866903282), 3, 4012098) // Tiny-Huge Island - Coin Line on the Huge Island Top Plank, Coin 4
+COIN_OUTPUT(UINT64_C(159633975866903282), 4, 4012099) // Tiny-Huge Island - Coin Line on the Huge Island Top Plank, Coin 5
+COIN_OUTPUT(UINT64_C(1415404927322545752), 0, 4012100) // Tiny-Huge Island - Chuckya, Coin 1
+COIN_OUTPUT(UINT64_C(1415404927322545752), 1, 4012101) // Tiny-Huge Island - Chuckya, Coin 2
+COIN_OUTPUT(UINT64_C(1415404927322545752), 2, 4012102) // Tiny-Huge Island - Chuckya, Coin 3
+COIN_OUTPUT(UINT64_C(1415404927322545752), 3, 4012103) // Tiny-Huge Island - Chuckya, Coin 4
+COIN_OUTPUT(UINT64_C(1415404927322545752), 4, 4012104) // Tiny-Huge Island - Chuckya, Coin 5
+COIN_OUTPUT(UINT64_C(17278396207542582781), 0, 4012105) // Tiny-Huge Island - Red Coins Area Giant Goomba 1, Coin
+COIN_COMPLETION(UINT64_C(17278396207542582781), 5, 4012106) // Tiny-Huge Island - Red Coins Area Giant Goomba 1, Blue Coin
+COIN_OUTPUT(UINT64_C(11831926590563716713), 0, 4012107) // Tiny-Huge Island - Red Coins Area Giant Goomba 2, Coin
+COIN_COMPLETION(UINT64_C(11831926590563716713), 5, 4012108) // Tiny-Huge Island - Red Coins Area Giant Goomba 2, Blue Coin
+COIN_OUTPUT(UINT64_C(5739630523745857919), 0, 4012109) // Tiny-Huge Island - Blue Coins in the Red Coins Area, Blue Coin 1
+COIN_OUTPUT(UINT64_C(11749794034299371499), 0, 4012110) // Tiny-Huge Island - Blue Coins in the Red Coins Area, Blue Coin 2
+COIN_OUTPUT(UINT64_C(2178321176785096444), 0, 4012111) // Tiny-Huge Island - Coin Line on the Red Coins Area Plank, Coin 1
+COIN_OUTPUT(UINT64_C(2178321176785096444), 1, 4012112) // Tiny-Huge Island - Coin Line on the Red Coins Area Plank, Coin 2
+COIN_OUTPUT(UINT64_C(2178321176785096444), 2, 4012113) // Tiny-Huge Island - Coin Line on the Red Coins Area Plank, Coin 3
+COIN_OUTPUT(UINT64_C(2178321176785096444), 3, 4012114) // Tiny-Huge Island - Coin Line on the Red Coins Area Plank, Coin 4
+COIN_OUTPUT(UINT64_C(2178321176785096444), 4, 4012115) // Tiny-Huge Island - Coin Line on the Red Coins Area Plank, Coin 5
+COIN_OUTPUT(UINT64_C(2785294232910074344), 0, 4012116) // Tiny-Huge Island - Coin Line in Wiggler's Cave 1, Coin 1
+COIN_OUTPUT(UINT64_C(2785294232910074344), 1, 4012117) // Tiny-Huge Island - Coin Line in Wiggler's Cave 1, Coin 2
+COIN_OUTPUT(UINT64_C(2785294232910074344), 2, 4012118) // Tiny-Huge Island - Coin Line in Wiggler's Cave 1, Coin 3
+COIN_OUTPUT(UINT64_C(2785294232910074344), 3, 4012119) // Tiny-Huge Island - Coin Line in Wiggler's Cave 1, Coin 4
+COIN_OUTPUT(UINT64_C(2785294232910074344), 4, 4012120) // Tiny-Huge Island - Coin Line in Wiggler's Cave 1, Coin 5
+COIN_OUTPUT(UINT64_C(1491906353646736920), 0, 4012121) // Tiny-Huge Island - Coin Line in Wiggler's Cave 2, Coin 1
+COIN_OUTPUT(UINT64_C(1491906353646736920), 1, 4012122) // Tiny-Huge Island - Coin Line in Wiggler's Cave 2, Coin 2
+COIN_OUTPUT(UINT64_C(1491906353646736920), 2, 4012123) // Tiny-Huge Island - Coin Line in Wiggler's Cave 2, Coin 3
+COIN_OUTPUT(UINT64_C(1491906353646736920), 3, 4012124) // Tiny-Huge Island - Coin Line in Wiggler's Cave 2, Coin 4
+COIN_OUTPUT(UINT64_C(1491906353646736920), 4, 4012125) // Tiny-Huge Island - Coin Line in Wiggler's Cave 2, Coin 5
+COIN_OUTPUT(UINT64_C(10889177379661433945), 0, 4012126) // Tiny-Huge Island - Huge Island Fire Piranha Plant 1, Coin 1
+COIN_OUTPUT(UINT64_C(10889177379661433945), 1, 4012127) // Tiny-Huge Island - Huge Island Fire Piranha Plant 1, Coin 2
+COIN_OUTPUT(UINT64_C(6010648411893436020), 0, 4012128) // Tiny-Huge Island - Huge Island Fire Piranha Plant 2, Coin 1
+COIN_OUTPUT(UINT64_C(6010648411893436020), 1, 4012129) // Tiny-Huge Island - Huge Island Fire Piranha Plant 2, Coin 2
+COIN_OUTPUT(UINT64_C(3248376465730705204), 0, 4012130) // Tiny-Huge Island - Huge Island Fire Piranha Plant 3, Coin 1
+COIN_OUTPUT(UINT64_C(3248376465730705204), 1, 4012131) // Tiny-Huge Island - Huge Island Fire Piranha Plant 3, Coin 2
+COIN_OUTPUT(UINT64_C(15067271541434961793), 0, 4012132) // Tiny-Huge Island - Huge Island Fire Piranha Plant 4, Coin 1
+COIN_OUTPUT(UINT64_C(15067271541434961793), 1, 4012133) // Tiny-Huge Island - Huge Island Fire Piranha Plant 4, Coin 2
+COIN_OUTPUT(UINT64_C(9962233631032857617), 0, 4012134) // Tiny-Huge Island - Huge Island Fire Piranha Plant 5, Coin 1
+COIN_OUTPUT(UINT64_C(9962233631032857617), 1, 4012135) // Tiny-Huge Island - Huge Island Fire Piranha Plant 5, Coin 2
 COIN_OUTPUT(UINT64_C(16591688841606484575), 0, 4013000) // Tick Tock Clock - First Clock Hand Area Red Coin 1
 COIN_OUTPUT(UINT64_C(5464335099115908650), 0, 4013001) // Tick Tock Clock - First Clock Hand Area Red Coin 2
 COIN_OUTPUT(UINT64_C(16373221193941480749), 0, 4013002) // Tick Tock Clock - First Clock Hand Area Red Coin 3

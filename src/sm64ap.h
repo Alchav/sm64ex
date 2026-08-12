@@ -510,6 +510,7 @@ AP_EXTERN_C bool SM64AP_NoDespawn();
 AP_EXTERN_C bool SM64AP_PermanentCoinCollection();
 AP_EXTERN_C void SM64AP_AssignPermanentCoinSource(
     struct Object *, s16, s16, s16, s16, s16, s16, u32, const void *);
+AP_EXTERN_C void SM64AP_PreserveInheritedPermanentCoinSource(struct Object *);
 AP_EXTERN_C void SM64AP_DistinguishInheritedPermanentCoinSource(struct Object *, int);
 AP_EXTERN_C bool SM64AP_AssignPermanentCoinOutput(struct Object *, struct Object *, int, int);
 AP_EXTERN_C bool SM64AP_AssignPermanentAggregateCoinOutput(struct Object *, struct Object *, int);

@@ -18873,16 +18873,16 @@
       "label": "Small Goomba in the starting Tiny region",
       "physical_outputs": [
         {
-          "physical_source_hash": "2700820942839853903",
+          "physical_source_hash": "4407021037319269413",
           "slot": 0,
           "value": 1,
           "area": 2,
           "behavior": "bhvGoomba",
           "source_category": "goomba",
           "position": [
-            1881,
-            -778,
-            1614
+            -2020,
+            -890,
+            1720
           ],
           "origin": "levels/thi/areas/2/macro.inc.c"
         }
@@ -18891,28 +18891,28 @@
     {
       "course": "Tiny-Huge Island",
       "source_id": "tiny_piranha_area_plant",
-      "label": "Piranha Plant beyond the Warp Pipe in the Tiny Piranha Area",
+      "label": "Tiny Island Fire Piranha Plant",
       "physical_outputs": [
         {
-          "physical_source_hash": "10889177379661433945",
+          "physical_source_hash": "1285501214641423692",
           "slot": 0,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvFirePiranhaPlant",
           "source_category": "fire_piranha_plant",
           "position": [
-            -6336,
-            -2047,
-            -3861
+            -1837,
+            -613,
+            -1214
           ],
-          "origin": "levels/thi/script.c:script_func_local_4"
+          "origin": "levels/thi/areas/2/macro.inc.c"
         }
       ]
     },
     {
       "course": "Tiny-Huge Island",
       "source_id": "tiny_main_individual_coins",
-      "label": "Individual coins in Tiny Main",
+      "label": "Tiny Island Coins",
       "physical_outputs": [
         {
           "physical_source_hash": "13956391848818311815",
@@ -19025,13 +19025,27 @@
             370
           ],
           "origin": "levels/thi/areas/2/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "330147300833736101",
+          "slot": 0,
+          "value": 1,
+          "area": 2,
+          "behavior": "bhvOneCoin",
+          "source_category": "yellow_coin",
+          "position": [
+            -1171,
+            -153,
+            1023
+          ],
+          "origin": "levels/thi/areas/2/macro.inc.c"
         }
       ]
     },
     {
       "course": "Tiny-Huge Island",
       "source_id": "tiny_main_coin_line",
-      "label": "Coin line on the Tiny Main wooden plank",
+      "label": "Coin line on the Tiny Island wooden plank",
       "physical_outputs": [
         {
           "physical_source_hash": "6312225850558046860",
@@ -19108,7 +19122,7 @@
     {
       "course": "Tiny-Huge Island",
       "source_id": "tiny_main_three_coin_block",
-      "label": "3-Coin Block in Tiny Main",
+      "label": "3-Coin Block on Tiny Island",
       "physical_outputs": [
         {
           "physical_source_hash": "14016581098780592782",
@@ -19157,7 +19171,7 @@
     {
       "course": "Tiny-Huge Island",
       "source_id": "tiny_main_goombas",
-      "label": "Nine Small Goombas in Tiny Main",
+      "label": "Nine Tiny Island Goombas",
       "physical_outputs": [
         {
           "physical_source_hash": "16147022409446462571",
@@ -19272,16 +19286,16 @@
           "origin": "levels/thi/areas/2/macro.inc.c"
         },
         {
-          "physical_source_hash": "4407021037319269413",
+          "physical_source_hash": "2700820942839853903",
           "slot": 0,
           "value": 1,
           "area": 2,
           "behavior": "bhvGoomba",
           "source_category": "goomba",
           "position": [
-            -2020,
-            -890,
-            1720
+            1881,
+            -778,
+            1614
           ],
           "origin": "levels/thi/areas/2/macro.inc.c"
         }
@@ -19290,7 +19304,7 @@
     {
       "course": "Tiny-Huge Island",
       "source_id": "tiny_main_koopa",
-      "label": "Small Koopa in Tiny Main",
+      "label": "Tiny Island Koopa Troopa",
       "physical_outputs": [
         {
           "physical_source_hash": "2495232528457931136",
@@ -19310,29 +19324,8 @@
     },
     {
       "course": "Tiny-Huge Island",
-      "source_id": "tiny_impossible_coin",
-      "label": "Impossible underground coin on Tiny Island",
-      "physical_outputs": [
-        {
-          "physical_source_hash": "330147300833736101",
-          "slot": 0,
-          "value": 1,
-          "area": 2,
-          "behavior": "bhvOneCoin",
-          "source_category": "yellow_coin",
-          "position": [
-            -1171,
-            -153,
-            1023
-          ],
-          "origin": "levels/thi/areas/2/macro.inc.c"
-        }
-      ]
-    },
-    {
-      "course": "Tiny-Huge Island",
       "source_id": "tiny_purple_switch_coin",
-      "label": "Separated Tiny Island coin",
+      "label": "Five Itty Bitty Secrets Island Coin",
       "physical_outputs": [
         {
           "physical_source_hash": "11771152675370971988",
@@ -19352,8 +19345,8 @@
     },
     {
       "course": "Tiny-Huge Island",
-      "source_id": "huge_lower_giant_goombas",
-      "label": "Four Giant Goombas on lower Huge Island",
+      "source_id": "huge_start_giant_goombas",
+      "label": "Three Huge Starting Area Goombas",
       "physical_roots": [
         {
           "physical_source_hash": "10653829006633911174",
@@ -19456,7 +19449,14 @@
               "value": 1
             }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "course": "Tiny-Huge Island",
+      "source_id": "near_cannon_giant_goomba",
+      "label": "Near Cannon Goomba",
+      "physical_roots": [
         {
           "physical_source_hash": "738810450971243599",
           "area": 1,
@@ -19573,7 +19573,7 @@
     {
       "course": "Tiny-Huge Island",
       "source_id": "huge_beach_coins",
-      "label": "Two coins above the Huge Island beach",
+      "label": "Huge Island Beach Coins",
       "physical_outputs": [
         {
           "physical_source_hash": "17226556929669120386",
@@ -19607,37 +19607,44 @@
     },
     {
       "course": "Tiny-Huge Island",
-      "source_id": "huge_lower_fly_guys",
-      "label": "Two Fly Guys on lower Huge Island",
+      "source_id": "huge_beach_fly_guy",
+      "label": "Beach Fly Guy",
       "physical_outputs": [
         {
-          "physical_source_hash": "12517528427812876007",
+          "physical_source_hash": "14809919854973892311",
           "slot": 0,
           "value": 1,
           "area": 1,
           "behavior": "bhvFlyGuy",
           "source_category": "fly_guy",
           "position": [
-            -1911,
-            0,
-            -5822
+            -300,
+            -2340,
+            3940
           ],
           "origin": "levels/thi/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "12517528427812876007",
+          "physical_source_hash": "14809919854973892311",
           "slot": 1,
           "value": 1,
           "area": 1,
           "behavior": "bhvFlyGuy",
           "source_category": "fly_guy",
           "position": [
-            -1911,
-            0,
-            -5822
+            -300,
+            -2340,
+            3940
           ],
           "origin": "levels/thi/areas/1/macro.inc.c"
-        },
+        }
+      ]
+    },
+    {
+      "course": "Tiny-Huge Island",
+      "source_id": "huge_near_cannon_fly_guy",
+      "label": "Near Cannon Fly Guy",
+      "physical_outputs": [
         {
           "physical_source_hash": "4782093583873434475",
           "slot": 0,
@@ -19849,72 +19856,72 @@
       "label": "Coin line in Windswept Valley",
       "physical_outputs": [
         {
-          "physical_source_hash": "2178321176785096444",
+          "physical_source_hash": "14123866331665689055",
           "slot": 0,
           "value": 1,
           "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            870,
-            -502,
-            2828
+            5711,
+            -1677,
+            -2944
           ],
           "origin": "levels/thi/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "2178321176785096444",
+          "physical_source_hash": "14123866331665689055",
           "slot": 1,
           "value": 1,
           "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            870,
-            -502,
-            2828
+            5711,
+            -1677,
+            -2944
           ],
           "origin": "levels/thi/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "2178321176785096444",
+          "physical_source_hash": "14123866331665689055",
           "slot": 2,
           "value": 1,
           "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            870,
-            -502,
-            2828
+            5711,
+            -1677,
+            -2944
           ],
           "origin": "levels/thi/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "2178321176785096444",
+          "physical_source_hash": "14123866331665689055",
           "slot": 3,
           "value": 1,
           "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            870,
-            -502,
-            2828
+            5711,
+            -1677,
+            -2944
           ],
           "origin": "levels/thi/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "2178321176785096444",
+          "physical_source_hash": "14123866331665689055",
           "slot": 4,
           "value": 1,
           "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            870,
-            -502,
-            2828
+            5711,
+            -1677,
+            -2944
           ],
           "origin": "levels/thi/areas/1/macro.inc.c"
         }
@@ -20078,30 +20085,30 @@
       "label": "Fly Guy in the Cannonball area",
       "physical_outputs": [
         {
-          "physical_source_hash": "14809919854973892311",
+          "physical_source_hash": "12517528427812876007",
           "slot": 0,
           "value": 1,
           "area": 1,
           "behavior": "bhvFlyGuy",
           "source_category": "fly_guy",
           "position": [
-            -300,
-            -2340,
-            3940
+            -1911,
+            0,
+            -5822
           ],
           "origin": "levels/thi/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "14809919854973892311",
+          "physical_source_hash": "12517528427812876007",
           "slot": 1,
           "value": 1,
           "area": 1,
           "behavior": "bhvFlyGuy",
           "source_category": "fly_guy",
           "position": [
-            -300,
-            -2340,
-            3940
+            -1911,
+            0,
+            -5822
           ],
           "origin": "levels/thi/areas/1/macro.inc.c"
         }
@@ -20110,61 +20117,82 @@
     {
       "course": "Tiny-Huge Island",
       "source_id": "huge_koopa_region_line",
-      "label": "Slanted coin line in Koopa the Quick's area",
+      "label": "Coin line in Koopa the Quick's area",
       "physical_outputs": [
         {
-          "physical_source_hash": "14123866331665689055",
-          "slot": 0,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvCoinFormation",
-          "source_category": "horizontal_line",
-          "position": [
-            5711,
-            -1677,
-            -2944
-          ],
-          "origin": "levels/thi/areas/1/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "14123866331665689055",
+          "physical_source_hash": "17226100584261914885",
           "slot": 1,
           "value": 1,
           "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            5711,
-            -1677,
-            -2944
+            -4911,
+            -395,
+            -1433
           ],
           "origin": "levels/thi/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "14123866331665689055",
+          "physical_source_hash": "17226100584261914885",
           "slot": 2,
           "value": 1,
           "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            5711,
-            -1677,
-            -2944
+            -4911,
+            -395,
+            -1433
           ],
           "origin": "levels/thi/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "14123866331665689055",
+          "physical_source_hash": "17226100584261914885",
           "slot": 3,
           "value": 1,
           "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            5711,
-            -1677,
-            -2944
+            -4911,
+            -395,
+            -1433
+          ],
+          "origin": "levels/thi/areas/1/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "17226100584261914885",
+          "slot": 4,
+          "value": 1,
+          "area": 1,
+          "behavior": "bhvCoinFormation",
+          "source_category": "horizontal_line",
+          "position": [
+            -4911,
+            -395,
+            -1433
+          ],
+          "origin": "levels/thi/areas/1/macro.inc.c"
+        }
+      ]
+    },
+    {
+      "course": "Tiny-Huge Island",
+      "source_id": "tiny_impossible_coin",
+      "label": "Impossible Coin",
+      "physical_outputs": [
+        {
+          "physical_source_hash": "17226100584261914885",
+          "slot": 0,
+          "value": 1,
+          "area": 1,
+          "behavior": "bhvCoinFormation",
+          "source_category": "horizontal_line",
+          "position": [
+            -4911,
+            -395,
+            -1433
           ],
           "origin": "levels/thi/areas/1/macro.inc.c"
         }
@@ -20175,74 +20203,6 @@
       "source_id": "huge_koopa_region_giant_goombas",
       "label": "Three Giant Goombas in Koopa the Quick's area",
       "physical_roots": [
-        {
-          "physical_source_hash": "17278396207542582781",
-          "area": 1,
-          "behavior": "bhvGoomba",
-          "source_category": "goomba",
-          "position": [
-            4600,
-            -1544,
-            3455
-          ],
-          "origin": "levels/thi/areas/1/macro.inc.c",
-          "outputs": [
-            {
-              "slot": 0,
-              "value": 1
-            },
-            {
-              "slot": 1,
-              "value": 1
-            },
-            {
-              "slot": 2,
-              "value": 1
-            },
-            {
-              "slot": 3,
-              "value": 1
-            },
-            {
-              "slot": 4,
-              "value": 1
-            }
-          ]
-        },
-        {
-          "physical_source_hash": "11831926590563716713",
-          "area": 1,
-          "behavior": "bhvGoomba",
-          "source_category": "goomba",
-          "position": [
-            3444,
-            -522,
-            3011
-          ],
-          "origin": "levels/thi/areas/1/macro.inc.c",
-          "outputs": [
-            {
-              "slot": 0,
-              "value": 1
-            },
-            {
-              "slot": 1,
-              "value": 1
-            },
-            {
-              "slot": 2,
-              "value": 1
-            },
-            {
-              "slot": 3,
-              "value": 1
-            },
-            {
-              "slot": 4,
-              "value": 1
-            }
-          ]
-        },
         {
           "physical_source_hash": "4378669561579736067",
           "area": 1,
@@ -20276,105 +20236,82 @@
               "value": 1
             }
           ]
+        },
+        {
+          "physical_source_hash": "10779409491687041312",
+          "area": 1,
+          "behavior": "bhvGoomba",
+          "source_category": "goomba",
+          "position": [
+            -3177,
+            1255,
+            -2366
+          ],
+          "origin": "levels/thi/areas/1/macro.inc.c",
+          "outputs": [
+            {
+              "slot": 0,
+              "value": 1
+            },
+            {
+              "slot": 1,
+              "value": 1
+            },
+            {
+              "slot": 2,
+              "value": 1
+            },
+            {
+              "slot": 3,
+              "value": 1
+            },
+            {
+              "slot": 4,
+              "value": 1
+            }
+          ]
+        },
+        {
+          "physical_source_hash": "7321864814474270611",
+          "area": 1,
+          "behavior": "bhvGoomba",
+          "source_category": "goomba",
+          "position": [
+            -3180,
+            -511,
+            2080
+          ],
+          "origin": "levels/thi/areas/1/macro.inc.c",
+          "outputs": [
+            {
+              "slot": 0,
+              "value": 1
+            },
+            {
+              "slot": 1,
+              "value": 1
+            },
+            {
+              "slot": 2,
+              "value": 1
+            },
+            {
+              "slot": 3,
+              "value": 1
+            },
+            {
+              "slot": 4,
+              "value": 1
+            }
+          ]
         }
       ]
     },
     {
       "course": "Tiny-Huge Island",
       "source_id": "huge_top_wooden_plank_line",
-      "label": "Coin line on the mountaintop wooden plank",
+      "label": "Coin line on the Huge Island top plank",
       "physical_outputs": [
-        {
-          "physical_source_hash": "14123866331665689055",
-          "slot": 4,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvCoinFormation",
-          "source_category": "horizontal_line",
-          "position": [
-            5711,
-            -1677,
-            -2944
-          ],
-          "origin": "levels/thi/areas/1/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "17226100584261914885",
-          "slot": 0,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvCoinFormation",
-          "source_category": "horizontal_line",
-          "position": [
-            -4911,
-            -395,
-            -1433
-          ],
-          "origin": "levels/thi/areas/1/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "17226100584261914885",
-          "slot": 1,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvCoinFormation",
-          "source_category": "horizontal_line",
-          "position": [
-            -4911,
-            -395,
-            -1433
-          ],
-          "origin": "levels/thi/areas/1/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "17226100584261914885",
-          "slot": 2,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvCoinFormation",
-          "source_category": "horizontal_line",
-          "position": [
-            -4911,
-            -395,
-            -1433
-          ],
-          "origin": "levels/thi/areas/1/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "17226100584261914885",
-          "slot": 3,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvCoinFormation",
-          "source_category": "horizontal_line",
-          "position": [
-            -4911,
-            -395,
-            -1433
-          ],
-          "origin": "levels/thi/areas/1/macro.inc.c"
-        }
-      ]
-    },
-    {
-      "course": "Tiny-Huge Island",
-      "source_id": "huge_top_curved_plank_line",
-      "label": "Coin line on the curved Wiggler's Cave plank",
-      "physical_outputs": [
-        {
-          "physical_source_hash": "17226100584261914885",
-          "slot": 4,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvCoinFormation",
-          "source_category": "horizontal_line",
-          "position": [
-            -4911,
-            -395,
-            -1433
-          ],
-          "origin": "levels/thi/areas/1/macro.inc.c"
-        },
         {
           "physical_source_hash": "159633975866903282",
           "slot": 0,
@@ -20420,6 +20357,20 @@
         {
           "physical_source_hash": "159633975866903282",
           "slot": 3,
+          "value": 1,
+          "area": 1,
+          "behavior": "bhvCoinFormation",
+          "source_category": "horizontal_line",
+          "position": [
+            199,
+            2233,
+            433
+          ],
+          "origin": "levels/thi/areas/1/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "159633975866903282",
+          "slot": 4,
           "value": 1,
           "area": 1,
           "behavior": "bhvCoinFormation",
@@ -20436,7 +20387,7 @@
     {
       "course": "Tiny-Huge Island",
       "source_id": "huge_top_chuckya",
-      "label": "Chuckya at the Huge Island top",
+      "label": "Chuckya",
       "physical_outputs": [
         {
           "physical_source_hash": "1415404927322545752",
@@ -20516,14 +20467,14 @@
       "label": "Two Giant Goombas in the Red Coins Area",
       "physical_roots": [
         {
-          "physical_source_hash": "10779409491687041312",
+          "physical_source_hash": "17278396207542582781",
           "area": 1,
           "behavior": "bhvGoomba",
           "source_category": "goomba",
           "position": [
-            -3177,
-            1255,
-            -2366
+            4600,
+            -1544,
+            3455
           ],
           "origin": "levels/thi/areas/1/macro.inc.c",
           "outputs": [
@@ -20550,14 +20501,14 @@
           ]
         },
         {
-          "physical_source_hash": "7321864814474270611",
+          "physical_source_hash": "11831926590563716713",
           "area": 1,
           "behavior": "bhvGoomba",
           "source_category": "goomba",
           "position": [
-            -3180,
-            -511,
-            2080
+            3444,
+            -522,
+            3011
           ],
           "origin": "levels/thi/areas/1/macro.inc.c",
           "outputs": [
@@ -20591,20 +20542,6 @@
       "label": "Blue coins in the Red Coins Area",
       "physical_outputs": [
         {
-          "physical_source_hash": "11749794034299371499",
-          "slot": 0,
-          "value": 5,
-          "area": 3,
-          "behavior": "bhvHiddenBlueCoin",
-          "source_category": "blue_coin_switch",
-          "position": [
-            -540,
-            1500,
-            1240
-          ],
-          "origin": "levels/thi/areas/3/macro.inc.c"
-        },
-        {
           "physical_source_hash": "5739630523745857919",
           "slot": 0,
           "value": 5,
@@ -20617,6 +20554,97 @@
             1440
           ],
           "origin": "levels/thi/areas/3/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "11749794034299371499",
+          "slot": 0,
+          "value": 5,
+          "area": 3,
+          "behavior": "bhvHiddenBlueCoin",
+          "source_category": "blue_coin_switch",
+          "position": [
+            -540,
+            1500,
+            1240
+          ],
+          "origin": "levels/thi/areas/3/macro.inc.c"
+        }
+      ]
+    },
+    {
+      "course": "Tiny-Huge Island",
+      "source_id": "red_area_plank_line",
+      "label": "Coin line on the Red Coins Area plank",
+      "physical_outputs": [
+        {
+          "physical_source_hash": "2178321176785096444",
+          "slot": 0,
+          "value": 1,
+          "area": 1,
+          "behavior": "bhvCoinFormation",
+          "source_category": "horizontal_line",
+          "position": [
+            870,
+            -502,
+            2828
+          ],
+          "origin": "levels/thi/areas/1/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "2178321176785096444",
+          "slot": 1,
+          "value": 1,
+          "area": 1,
+          "behavior": "bhvCoinFormation",
+          "source_category": "horizontal_line",
+          "position": [
+            870,
+            -502,
+            2828
+          ],
+          "origin": "levels/thi/areas/1/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "2178321176785096444",
+          "slot": 2,
+          "value": 1,
+          "area": 1,
+          "behavior": "bhvCoinFormation",
+          "source_category": "horizontal_line",
+          "position": [
+            870,
+            -502,
+            2828
+          ],
+          "origin": "levels/thi/areas/1/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "2178321176785096444",
+          "slot": 3,
+          "value": 1,
+          "area": 1,
+          "behavior": "bhvCoinFormation",
+          "source_category": "horizontal_line",
+          "position": [
+            870,
+            -502,
+            2828
+          ],
+          "origin": "levels/thi/areas/1/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "2178321176785096444",
+          "slot": 4,
+          "value": 1,
+          "area": 1,
+          "behavior": "bhvCoinFormation",
+          "source_category": "horizontal_line",
+          "position": [
+            870,
+            -502,
+            2828
+          ],
+          "origin": "levels/thi/areas/1/macro.inc.c"
         }
       ]
     },
@@ -20626,20 +20654,6 @@
       "label": "Coin lines in Wiggler's Cave",
       "physical_outputs": [
         {
-          "physical_source_hash": "159633975866903282",
-          "slot": 4,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvCoinFormation",
-          "source_category": "horizontal_line",
-          "position": [
-            199,
-            2233,
-            433
-          ],
-          "origin": "levels/thi/areas/1/macro.inc.c"
-        },
-        {
           "physical_source_hash": "2785294232910074344",
           "slot": 0,
           "value": 1,
@@ -20754,6 +20768,20 @@
         {
           "physical_source_hash": "1491906353646736920",
           "slot": 3,
+          "value": 1,
+          "area": 3,
+          "behavior": "bhvCoinFormation",
+          "source_category": "horizontal_line",
+          "position": [
+            1200,
+            2200,
+            1200
+          ],
+          "origin": "levels/thi/areas/3/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "1491906353646736920",
+          "slot": 4,
           "value": 1,
           "area": 3,
           "behavior": "bhvCoinFormation",
@@ -20772,6 +20800,20 @@
       "source_id": "huge_piranha_area_plants",
       "label": "Fire Piranha Plants in the Huge Piranha Area",
       "physical_outputs": [
+        {
+          "physical_source_hash": "10889177379661433945",
+          "slot": 0,
+          "value": 1,
+          "area": 1,
+          "behavior": "bhvFirePiranhaPlant",
+          "source_category": "fire_piranha_plant",
+          "position": [
+            -6336,
+            -2047,
+            -3861
+          ],
+          "origin": "levels/thi/script.c:script_func_local_4"
+        },
         {
           "physical_source_hash": "10889177379661433945",
           "slot": 1,
@@ -20897,20 +20939,6 @@
             -4568
           ],
           "origin": "levels/thi/script.c:script_func_local_4"
-        },
-        {
-          "physical_source_hash": "1285501214641423692",
-          "slot": 0,
-          "value": 1,
-          "area": 2,
-          "behavior": "bhvFirePiranhaPlant",
-          "source_category": "fire_piranha_plant",
-          "position": [
-            -1837,
-            -613,
-            -1214
-          ],
-          "origin": "levels/thi/areas/2/macro.inc.c"
         }
       ]
     },
