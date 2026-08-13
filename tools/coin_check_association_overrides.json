@@ -2849,72 +2849,72 @@
           "origin": "levels/wf/script.c:script_func_local_3"
         },
         {
-          "physical_source_hash": "9303063478567050134",
-          "slot": 5,
+          "physical_source_hash": "2663990575629967044",
+          "slot": 0,
           "value": 1,
           "area": 1,
           "behavior": "bhvSmallWhomp",
           "source_category": "whomp",
           "position": [
-            -1545,
+            189,
             2560,
-            -286
+            -1857
           ],
           "origin": "levels/wf/script.c:script_func_local_3"
         },
         {
-          "physical_source_hash": "9303063478567050134",
-          "slot": 6,
+          "physical_source_hash": "2663990575629967044",
+          "slot": 1,
           "value": 1,
           "area": 1,
           "behavior": "bhvSmallWhomp",
           "source_category": "whomp",
           "position": [
-            -1545,
+            189,
             2560,
-            -286
+            -1857
           ],
           "origin": "levels/wf/script.c:script_func_local_3"
         },
         {
-          "physical_source_hash": "9303063478567050134",
-          "slot": 7,
+          "physical_source_hash": "2663990575629967044",
+          "slot": 2,
           "value": 1,
           "area": 1,
           "behavior": "bhvSmallWhomp",
           "source_category": "whomp",
           "position": [
-            -1545,
+            189,
             2560,
-            -286
+            -1857
           ],
           "origin": "levels/wf/script.c:script_func_local_3"
         },
         {
-          "physical_source_hash": "9303063478567050134",
-          "slot": 8,
+          "physical_source_hash": "2663990575629967044",
+          "slot": 3,
           "value": 1,
           "area": 1,
           "behavior": "bhvSmallWhomp",
           "source_category": "whomp",
           "position": [
-            -1545,
+            189,
             2560,
-            -286
+            -1857
           ],
           "origin": "levels/wf/script.c:script_func_local_3"
         },
         {
-          "physical_source_hash": "9303063478567050134",
-          "slot": 9,
+          "physical_source_hash": "2663990575629967044",
+          "slot": 4,
           "value": 1,
           "area": 1,
           "behavior": "bhvSmallWhomp",
           "source_category": "whomp",
           "position": [
-            -1545,
+            189,
             2560,
-            -286
+            -1857
           ],
           "origin": "levels/wf/script.c:script_func_local_3"
         }
@@ -3094,72 +3094,72 @@
       "label": "Ground Pound bonus from two Whomps",
       "physical_outputs": [
         {
-          "physical_source_hash": "2663990575629967044",
-          "slot": 0,
+          "physical_source_hash": "9303063478567050134",
+          "slot": 5,
           "value": 1,
           "area": 1,
           "behavior": "bhvSmallWhomp",
           "source_category": "whomp",
           "position": [
-            189,
+            -1545,
             2560,
-            -1857
+            -286
           ],
           "origin": "levels/wf/script.c:script_func_local_3"
         },
         {
-          "physical_source_hash": "2663990575629967044",
-          "slot": 1,
+          "physical_source_hash": "9303063478567050134",
+          "slot": 6,
           "value": 1,
           "area": 1,
           "behavior": "bhvSmallWhomp",
           "source_category": "whomp",
           "position": [
-            189,
+            -1545,
             2560,
-            -1857
+            -286
           ],
           "origin": "levels/wf/script.c:script_func_local_3"
         },
         {
-          "physical_source_hash": "2663990575629967044",
-          "slot": 2,
+          "physical_source_hash": "9303063478567050134",
+          "slot": 7,
           "value": 1,
           "area": 1,
           "behavior": "bhvSmallWhomp",
           "source_category": "whomp",
           "position": [
-            189,
+            -1545,
             2560,
-            -1857
+            -286
           ],
           "origin": "levels/wf/script.c:script_func_local_3"
         },
         {
-          "physical_source_hash": "2663990575629967044",
-          "slot": 3,
+          "physical_source_hash": "9303063478567050134",
+          "slot": 8,
           "value": 1,
           "area": 1,
           "behavior": "bhvSmallWhomp",
           "source_category": "whomp",
           "position": [
-            189,
+            -1545,
             2560,
-            -1857
+            -286
           ],
           "origin": "levels/wf/script.c:script_func_local_3"
         },
         {
-          "physical_source_hash": "2663990575629967044",
-          "slot": 4,
+          "physical_source_hash": "9303063478567050134",
+          "slot": 9,
           "value": 1,
           "area": 1,
           "behavior": "bhvSmallWhomp",
           "source_category": "whomp",
           "position": [
-            189,
+            -1545,
             2560,
-            -1857
+            -286
           ],
           "origin": "levels/wf/script.c:script_func_local_3"
         },
@@ -7259,16 +7259,16 @@
       "label": "Flying Bookend on the first floor",
       "physical_outputs": [
         {
-          "physical_source_hash": "601415989120819118",
+          "physical_source_hash": "312056985772532339",
           "slot": 0,
           "value": 5,
           "area": 1,
           "behavior": "bhvFlyingBookend",
           "source_category": "flying_bookend",
           "position": [
-            -1330,
-            890,
-            200
+            -1411,
+            218,
+            922
           ],
           "origin": "levels/bbh/script.c:script_func_local_3"
         }
@@ -7280,30 +7280,30 @@
       "label": "Two Flying Bookends on the second floor",
       "physical_outputs": [
         {
-          "physical_source_hash": "9016944388464182284",
+          "physical_source_hash": "13762801075027478223",
           "slot": 0,
           "value": 5,
           "area": 1,
           "behavior": "bhvFlyingBookend",
           "source_category": "flying_bookend",
           "position": [
-            -818,
-            890,
-            -200
+            2680,
+            1045,
+            876
           ],
           "origin": "levels/bbh/script.c:script_func_local_3"
         },
         {
-          "physical_source_hash": "11428700798013323924",
+          "physical_source_hash": "3584102075370214457",
           "slot": 0,
           "value": 5,
           "area": 1,
           "behavior": "bhvFlyingBookend",
           "source_category": "flying_bookend",
           "position": [
-            -1330,
-            890,
-            -622
+            3075,
+            1045,
+            995
           ],
           "origin": "levels/bbh/script.c:script_func_local_3"
         }
@@ -7988,44 +7988,44 @@
           "origin": "levels/hmc/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "14006981013454340998",
+          "physical_source_hash": "5411102015334708667",
           "slot": 0,
           "value": 1,
           "area": 1,
           "behavior": "bhvScuttlebug",
           "source_category": "scuttlebug",
           "position": [
-            -5455,
-            1536,
-            521
+            -3420,
+            1800,
+            5960
           ],
           "origin": "levels/hmc/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "14006981013454340998",
+          "physical_source_hash": "5411102015334708667",
           "slot": 1,
           "value": 1,
           "area": 1,
           "behavior": "bhvScuttlebug",
           "source_category": "scuttlebug",
           "position": [
-            -5455,
-            1536,
-            521
+            -3420,
+            1800,
+            5960
           ],
           "origin": "levels/hmc/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "14006981013454340998",
+          "physical_source_hash": "5411102015334708667",
           "slot": 2,
           "value": 1,
           "area": 1,
           "behavior": "bhvScuttlebug",
           "source_category": "scuttlebug",
           "position": [
-            -5455,
-            1536,
-            521
+            -3420,
+            1800,
+            5960
           ],
           "origin": "levels/hmc/areas/1/macro.inc.c"
         }
@@ -8037,44 +8037,44 @@
       "label": "Scuttlebug in the pit room",
       "physical_outputs": [
         {
-          "physical_source_hash": "17191618975387700076",
+          "physical_source_hash": "14006981013454340998",
           "slot": 0,
           "value": 1,
           "area": 1,
           "behavior": "bhvScuttlebug",
           "source_category": "scuttlebug",
           "position": [
-            4160,
-            28,
-            6308
+            -5455,
+            1536,
+            521
           ],
           "origin": "levels/hmc/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "17191618975387700076",
+          "physical_source_hash": "14006981013454340998",
           "slot": 1,
           "value": 1,
           "area": 1,
           "behavior": "bhvScuttlebug",
           "source_category": "scuttlebug",
           "position": [
-            4160,
-            28,
-            6308
+            -5455,
+            1536,
+            521
           ],
           "origin": "levels/hmc/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "17191618975387700076",
+          "physical_source_hash": "14006981013454340998",
           "slot": 2,
           "value": 1,
           "area": 1,
           "behavior": "bhvScuttlebug",
           "source_category": "scuttlebug",
           "position": [
-            4160,
-            28,
-            6308
+            -5455,
+            1536,
+            521
           ],
           "origin": "levels/hmc/areas/1/macro.inc.c"
         }
@@ -8149,44 +8149,44 @@
           "origin": "levels/hmc/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "3701604344526161899",
+          "physical_source_hash": "17191618975387700076",
           "slot": 0,
           "value": 1,
           "area": 1,
           "behavior": "bhvScuttlebug",
           "source_category": "scuttlebug",
           "position": [
-            3240,
-            -4720,
-            2360
+            4160,
+            28,
+            6308
           ],
           "origin": "levels/hmc/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "3701604344526161899",
+          "physical_source_hash": "17191618975387700076",
           "slot": 1,
           "value": 1,
           "area": 1,
           "behavior": "bhvScuttlebug",
           "source_category": "scuttlebug",
           "position": [
-            3240,
-            -4720,
-            2360
+            4160,
+            28,
+            6308
           ],
           "origin": "levels/hmc/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "3701604344526161899",
+          "physical_source_hash": "17191618975387700076",
           "slot": 2,
           "value": 1,
           "area": 1,
           "behavior": "bhvScuttlebug",
           "source_category": "scuttlebug",
           "position": [
-            3240,
-            -4720,
-            2360
+            4160,
+            28,
+            6308
           ],
           "origin": "levels/hmc/areas/1/macro.inc.c"
         }
@@ -8317,58 +8317,58 @@
       "label": "Four Swoops in the toxic maze",
       "physical_outputs": [
         {
-          "physical_source_hash": "14267028476984649626",
+          "physical_source_hash": "1606901760381041644",
           "slot": 0,
           "value": 1,
           "area": 1,
           "behavior": "bhvSwoop",
           "source_category": "swoop",
           "position": [
-            80,
-            140,
+            5632,
+            -563,
+            -4454
+          ],
+          "origin": "levels/hmc/areas/1/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "4354963022658249401",
+          "slot": 0,
+          "value": 1,
+          "area": 1,
+          "behavior": "bhvSwoop",
+          "source_category": "swoop",
+          "position": [
+            4915,
+            -665,
+            -5274
+          ],
+          "origin": "levels/hmc/areas/1/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "6195010085932854814",
+          "slot": 0,
+          "value": 1,
+          "area": 1,
+          "behavior": "bhvSwoop",
+          "source_category": "swoop",
+          "position": [
+            5120,
+            -665,
             -4660
           ],
           "origin": "levels/hmc/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "284490229854893294",
+          "physical_source_hash": "10117788736568032419",
           "slot": 0,
           "value": 1,
           "area": 1,
           "behavior": "bhvSwoop",
           "source_category": "swoop",
           "position": [
-            800,
-            60,
-            -7500
-          ],
-          "origin": "levels/hmc/areas/1/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "17433425974179279803",
-          "slot": 0,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvSwoop",
-          "source_category": "swoop",
-          "position": [
-            1880,
-            100,
-            -7620
-          ],
-          "origin": "levels/hmc/areas/1/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "9418592179191967743",
-          "slot": 0,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvSwoop",
-          "source_category": "swoop",
-          "position": [
-            6080,
-            3060,
-            4660
+            5427,
+            -665,
+            -5070
           ],
           "origin": "levels/hmc/areas/1/macro.inc.c"
         }
@@ -8415,20 +8415,6 @@
       "label": "Two Swoops in the Pit Island elevator room",
       "physical_outputs": [
         {
-          "physical_source_hash": "4453269395222672818",
-          "slot": 0,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvSwoop",
-          "source_category": "swoop",
-          "position": [
-            5480,
-            3000,
-            7120
-          ],
-          "origin": "levels/hmc/areas/1/macro.inc.c"
-        },
-        {
           "physical_source_hash": "6075404279226552842",
           "slot": 0,
           "value": 1,
@@ -8441,6 +8427,20 @@
             -320
           ],
           "origin": "levels/hmc/areas/1/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "14267028476984649626",
+          "slot": 0,
+          "value": 1,
+          "area": 1,
+          "behavior": "bhvSwoop",
+          "source_category": "swoop",
+          "position": [
+            80,
+            140,
+            -4660
+          ],
+          "origin": "levels/hmc/areas/1/macro.inc.c"
         }
       ]
     },
@@ -8450,30 +8450,30 @@
       "label": "Two Swoops in the upper Red Coin area",
       "physical_outputs": [
         {
-          "physical_source_hash": "1606901760381041644",
+          "physical_source_hash": "9418592179191967743",
           "slot": 0,
           "value": 1,
           "area": 1,
           "behavior": "bhvSwoop",
           "source_category": "swoop",
           "position": [
-            5632,
-            -563,
-            -4454
+            6080,
+            3060,
+            4660
           ],
           "origin": "levels/hmc/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "4354963022658249401",
+          "physical_source_hash": "4453269395222672818",
           "slot": 0,
           "value": 1,
           "area": 1,
           "behavior": "bhvSwoop",
           "source_category": "swoop",
           "position": [
-            4915,
-            -665,
-            -5274
+            5480,
+            3000,
+            7120
           ],
           "origin": "levels/hmc/areas/1/macro.inc.c"
         }
@@ -8758,30 +8758,30 @@
       "label": "Two additional Swoops on the toxic maze route",
       "physical_outputs": [
         {
-          "physical_source_hash": "6195010085932854814",
+          "physical_source_hash": "284490229854893294",
           "slot": 0,
           "value": 1,
           "area": 1,
           "behavior": "bhvSwoop",
           "source_category": "swoop",
           "position": [
-            5120,
-            -665,
-            -4660
+            800,
+            60,
+            -7500
           ],
           "origin": "levels/hmc/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "10117788736568032419",
+          "physical_source_hash": "17433425974179279803",
           "slot": 0,
           "value": 1,
           "area": 1,
           "behavior": "bhvSwoop",
           "source_category": "swoop",
           "position": [
-            5427,
-            -665,
-            -5070
+            1880,
+            100,
+            -7620
           ],
           "origin": "levels/hmc/areas/1/macro.inc.c"
         }
@@ -8793,44 +8793,44 @@
       "label": "Scuttlebug on the Metal-Head Mario Can Move route",
       "physical_outputs": [
         {
-          "physical_source_hash": "5411102015334708667",
+          "physical_source_hash": "3701604344526161899",
           "slot": 0,
           "value": 1,
           "area": 1,
           "behavior": "bhvScuttlebug",
           "source_category": "scuttlebug",
           "position": [
-            -3420,
-            1800,
-            5960
+            3240,
+            -4720,
+            2360
           ],
           "origin": "levels/hmc/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "5411102015334708667",
+          "physical_source_hash": "3701604344526161899",
           "slot": 1,
           "value": 1,
           "area": 1,
           "behavior": "bhvScuttlebug",
           "source_category": "scuttlebug",
           "position": [
-            -3420,
-            1800,
-            5960
+            3240,
+            -4720,
+            2360
           ],
           "origin": "levels/hmc/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "5411102015334708667",
+          "physical_source_hash": "3701604344526161899",
           "slot": 2,
           "value": 1,
           "area": 1,
           "behavior": "bhvScuttlebug",
           "source_category": "scuttlebug",
           "position": [
-            -3420,
-            1800,
-            5960
+            3240,
+            -4720,
+            2360
           ],
           "origin": "levels/hmc/areas/1/macro.inc.c"
         }
@@ -9066,74 +9066,74 @@
       "label": "Coin line on the tilting platform past the first Mr. I",
       "physical_outputs": [
         {
-          "physical_source_hash": "10124527321023754652",
+          "physical_source_hash": "7365427911583391904",
           "slot": 0,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            182,
-            2623,
-            -2529
+            -1960,
+            38,
+            3693
           ],
-          "origin": "levels/lll/areas/2/macro.inc.c"
+          "origin": "levels/lll/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "10124527321023754652",
+          "physical_source_hash": "7365427911583391904",
           "slot": 1,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            182,
-            2623,
-            -2529
+            -1960,
+            38,
+            3693
           ],
-          "origin": "levels/lll/areas/2/macro.inc.c"
+          "origin": "levels/lll/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "10124527321023754652",
+          "physical_source_hash": "7365427911583391904",
           "slot": 2,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            182,
-            2623,
-            -2529
+            -1960,
+            38,
+            3693
           ],
-          "origin": "levels/lll/areas/2/macro.inc.c"
+          "origin": "levels/lll/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "10124527321023754652",
+          "physical_source_hash": "7365427911583391904",
           "slot": 3,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            182,
-            2623,
-            -2529
+            -1960,
+            38,
+            3693
           ],
-          "origin": "levels/lll/areas/2/macro.inc.c"
+          "origin": "levels/lll/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "10124527321023754652",
+          "physical_source_hash": "7365427911583391904",
           "slot": 4,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            182,
-            2623,
-            -2529
+            -1960,
+            38,
+            3693
           ],
-          "origin": "levels/lll/areas/2/macro.inc.c"
+          "origin": "levels/lll/areas/1/macro.inc.c"
         }
       ]
     },
@@ -9143,46 +9143,46 @@
       "label": "Coins on the grey ramp near the tilting platform",
       "physical_outputs": [
         {
-          "physical_source_hash": "15827073291300106623",
+          "physical_source_hash": "12853856975646563641",
           "slot": 0,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvOneCoin",
           "source_category": "yellow_coin",
           "position": [
-            -20,
-            82,
-            -1400
+            -6966,
+            41,
+            3906
           ],
-          "origin": "levels/lll/areas/2/macro.inc.c"
+          "origin": "levels/lll/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "16829643711767022640",
+          "physical_source_hash": "6758408911274164039",
           "slot": 0,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvOneCoin",
           "source_category": "yellow_coin",
           "position": [
-            600,
-            82,
-            -1480
+            -6806,
+            188,
+            4653
           ],
-          "origin": "levels/lll/areas/2/macro.inc.c"
+          "origin": "levels/lll/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "8249543559515624239",
+          "physical_source_hash": "10291518538364945692",
           "slot": 0,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvOneCoin",
           "source_category": "yellow_coin",
           "position": [
-            1080,
-            82,
-            -1680
+            -6033,
+            70,
+            4973
           ],
-          "origin": "levels/lll/areas/2/macro.inc.c"
+          "origin": "levels/lll/areas/1/macro.inc.c"
         }
       ]
     },
@@ -9542,60 +9542,60 @@
       "label": "Coins on the sinking platforms near the Crazy Box",
       "physical_outputs": [
         {
-          "physical_source_hash": "6278963474447093671",
+          "physical_source_hash": "7027135386089446776",
           "slot": 0,
           "value": 1,
-          "area": 2,
-          "behavior": "bhvOneCoin",
+          "area": 1,
+          "behavior": "bhvYellowCoin",
           "source_category": "yellow_coin",
           "position": [
-            2180,
-            173,
-            -1860
+            3300,
+            50,
+            -2692
           ],
-          "origin": "levels/lll/areas/2/macro.inc.c"
+          "origin": "levels/lll/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "5486290469229364450",
+          "physical_source_hash": "16951231373794836013",
           "slot": 0,
           "value": 1,
-          "area": 2,
-          "behavior": "bhvOneCoin",
+          "area": 1,
+          "behavior": "bhvYellowCoin",
           "source_category": "yellow_coin",
           "position": [
-            2520,
-            174,
-            -1220
+            3330,
+            50,
+            -3700
           ],
-          "origin": "levels/lll/areas/2/macro.inc.c"
+          "origin": "levels/lll/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "14675751832903098624",
+          "physical_source_hash": "2067889972322930480",
           "slot": 0,
           "value": 1,
-          "area": 2,
-          "behavior": "bhvOneCoin",
+          "area": 1,
+          "behavior": "bhvYellowCoin",
           "source_category": "yellow_coin",
           "position": [
-            2840,
-            249,
-            -460
+            4340,
+            50,
+            -3700
           ],
-          "origin": "levels/lll/areas/2/macro.inc.c"
+          "origin": "levels/lll/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "9816707947596141169",
+          "physical_source_hash": "3175190160016883788",
           "slot": 0,
           "value": 1,
-          "area": 2,
-          "behavior": "bhvOneCoin",
+          "area": 1,
+          "behavior": "bhvYellowCoin",
           "source_category": "yellow_coin",
           "position": [
-            2800,
-            449,
-            460
+            4340,
+            50,
+            -2692
           ],
-          "origin": "levels/lll/areas/2/macro.inc.c"
+          "origin": "levels/lll/areas/1/macro.inc.c"
         }
       ]
     },
@@ -9801,46 +9801,46 @@
       "label": "Coins on the spinning platform around the volcano",
       "physical_outputs": [
         {
-          "physical_source_hash": "3202542088495976594",
+          "physical_source_hash": "11802112346899043749",
           "slot": 0,
           "value": 1,
-          "area": 2,
-          "behavior": "bhvOneCoin",
+          "area": 1,
+          "behavior": "bhvYellowCoin",
           "source_category": "yellow_coin",
           "position": [
-            2180,
-            775,
-            1720
+            0,
+            200,
+            1200
           ],
-          "origin": "levels/lll/areas/2/macro.inc.c"
+          "origin": "levels/lll/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "16385066547906058377",
+          "physical_source_hash": "16062448946145851285",
           "slot": 0,
           "value": 1,
-          "area": 2,
-          "behavior": "bhvOneCoin",
+          "area": 1,
+          "behavior": "bhvYellowCoin",
           "source_category": "yellow_coin",
           "position": [
-            1700,
-            1029,
-            2100
+            1200,
+            200,
+            0
           ],
-          "origin": "levels/lll/areas/2/macro.inc.c"
+          "origin": "levels/lll/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "15928814600252398193",
+          "physical_source_hash": "2877955190841146688",
           "slot": 0,
           "value": 1,
-          "area": 2,
-          "behavior": "bhvOneCoin",
+          "area": 1,
+          "behavior": "bhvYellowCoin",
           "source_category": "yellow_coin",
           "position": [
-            940,
-            1029,
-            2540
+            -1200,
+            200,
+            0
           ],
-          "origin": "levels/lll/areas/2/macro.inc.c"
+          "origin": "levels/lll/areas/1/macro.inc.c"
         }
       ]
     },
@@ -9850,60 +9850,60 @@
       "label": "Coins on the southeast grey ramp",
       "physical_outputs": [
         {
-          "physical_source_hash": "798033715083691492",
+          "physical_source_hash": "4511575194145503501",
           "slot": 0,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvOneCoin",
           "source_category": "yellow_coin",
           "position": [
-            -1380,
-            102,
-            1640
+            -3320,
+            161,
+            -1860
           ],
-          "origin": "levels/lll/areas/2/macro.inc.c"
+          "origin": "levels/lll/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "10707864592431151964",
+          "physical_source_hash": "2111001853781635443",
           "slot": 0,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvOneCoin",
           "source_category": "yellow_coin",
           "position": [
-            -2043,
-            1678,
-            1500
+            -3346,
+            70,
+            -1486
           ],
-          "origin": "levels/lll/areas/2/macro.inc.c"
+          "origin": "levels/lll/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "13478813421640434365",
+          "physical_source_hash": "14242453736253713222",
           "slot": 0,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvOneCoin",
           "source_category": "yellow_coin",
           "position": [
-            -2283,
-            1863,
-            800
+            -2760,
+            113,
+            -2260
           ],
-          "origin": "levels/lll/areas/2/macro.inc.c"
+          "origin": "levels/lll/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "7877280279321964951",
+          "physical_source_hash": "11893040506946525807",
           "slot": 0,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvOneCoin",
           "source_category": "yellow_coin",
           "position": [
-            -2420,
-            1981,
-            280
+            -2440,
+            67,
+            -2286
           ],
-          "origin": "levels/lll/areas/2/macro.inc.c"
+          "origin": "levels/lll/areas/1/macro.inc.c"
         }
       ]
     },
@@ -10340,6 +10340,209 @@
       "label": "Volcano S-shaped island coins",
       "physical_outputs": [
         {
+          "physical_source_hash": "15827073291300106623",
+          "slot": 0,
+          "value": 1,
+          "area": 2,
+          "behavior": "bhvOneCoin",
+          "source_category": "yellow_coin",
+          "position": [
+            -20,
+            82,
+            -1400
+          ],
+          "origin": "levels/lll/areas/2/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "16829643711767022640",
+          "slot": 0,
+          "value": 1,
+          "area": 2,
+          "behavior": "bhvOneCoin",
+          "source_category": "yellow_coin",
+          "position": [
+            600,
+            82,
+            -1480
+          ],
+          "origin": "levels/lll/areas/2/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "8249543559515624239",
+          "slot": 0,
+          "value": 1,
+          "area": 2,
+          "behavior": "bhvOneCoin",
+          "source_category": "yellow_coin",
+          "position": [
+            1080,
+            82,
+            -1680
+          ],
+          "origin": "levels/lll/areas/2/macro.inc.c"
+        }
+      ]
+    },
+    {
+      "course": "Lethal Lava Land",
+      "source_id": "lll_volcano_first_ridge_coin_line",
+      "label": "Volcano first ridge coin line",
+      "physical_outputs": [
+        {
+          "physical_source_hash": "6278963474447093671",
+          "slot": 0,
+          "value": 1,
+          "area": 2,
+          "behavior": "bhvOneCoin",
+          "source_category": "yellow_coin",
+          "position": [
+            2180,
+            173,
+            -1860
+          ],
+          "origin": "levels/lll/areas/2/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "5486290469229364450",
+          "slot": 0,
+          "value": 1,
+          "area": 2,
+          "behavior": "bhvOneCoin",
+          "source_category": "yellow_coin",
+          "position": [
+            2520,
+            174,
+            -1220
+          ],
+          "origin": "levels/lll/areas/2/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "14675751832903098624",
+          "slot": 0,
+          "value": 1,
+          "area": 2,
+          "behavior": "bhvOneCoin",
+          "source_category": "yellow_coin",
+          "position": [
+            2840,
+            249,
+            -460
+          ],
+          "origin": "levels/lll/areas/2/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "9816707947596141169",
+          "slot": 0,
+          "value": 1,
+          "area": 2,
+          "behavior": "bhvOneCoin",
+          "source_category": "yellow_coin",
+          "position": [
+            2800,
+            449,
+            460
+          ],
+          "origin": "levels/lll/areas/2/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "3202542088495976594",
+          "slot": 0,
+          "value": 1,
+          "area": 2,
+          "behavior": "bhvOneCoin",
+          "source_category": "yellow_coin",
+          "position": [
+            2180,
+            775,
+            1720
+          ],
+          "origin": "levels/lll/areas/2/macro.inc.c"
+        }
+      ]
+    },
+    {
+      "course": "Lethal Lava Land",
+      "source_id": "lll_volcano_second_ridge_coins",
+      "label": "Volcano second ridge coins",
+      "physical_outputs": [
+        {
+          "physical_source_hash": "16385066547906058377",
+          "slot": 0,
+          "value": 1,
+          "area": 2,
+          "behavior": "bhvOneCoin",
+          "source_category": "yellow_coin",
+          "position": [
+            1700,
+            1029,
+            2100
+          ],
+          "origin": "levels/lll/areas/2/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "15928814600252398193",
+          "slot": 0,
+          "value": 1,
+          "area": 2,
+          "behavior": "bhvOneCoin",
+          "source_category": "yellow_coin",
+          "position": [
+            940,
+            1029,
+            2540
+          ],
+          "origin": "levels/lll/areas/2/macro.inc.c"
+        }
+      ]
+    },
+    {
+      "course": "Lethal Lava Land",
+      "source_id": "lll_volcano_floating_platform_coins",
+      "label": "Volcano floating platform coins",
+      "physical_outputs": [
+        {
+          "physical_source_hash": "10707864592431151964",
+          "slot": 0,
+          "value": 1,
+          "area": 2,
+          "behavior": "bhvOneCoin",
+          "source_category": "yellow_coin",
+          "position": [
+            -2043,
+            1678,
+            1500
+          ],
+          "origin": "levels/lll/areas/2/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "13478813421640434365",
+          "slot": 0,
+          "value": 1,
+          "area": 2,
+          "behavior": "bhvOneCoin",
+          "source_category": "yellow_coin",
+          "position": [
+            -2283,
+            1863,
+            800
+          ],
+          "origin": "levels/lll/areas/2/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "7877280279321964951",
+          "slot": 0,
+          "value": 1,
+          "area": 2,
+          "behavior": "bhvOneCoin",
+          "source_category": "yellow_coin",
+          "position": [
+            -2420,
+            1981,
+            280
+          ],
+          "origin": "levels/lll/areas/2/macro.inc.c"
+        },
+        {
           "physical_source_hash": "10894641193244241238",
           "slot": 0,
           "value": 1,
@@ -10352,7 +10555,14 @@
             -280
           ],
           "origin": "levels/lll/areas/2/macro.inc.c"
-        },
+        }
+      ]
+    },
+    {
+      "course": "Lethal Lava Land",
+      "source_id": "lll_volcano_post_platform_coin",
+      "label": "Volcano coin after the floating platforms",
+      "physical_outputs": [
         {
           "physical_source_hash": "14291348223681795240",
           "slot": 0,
@@ -10366,216 +10576,6 @@
             -940
           ],
           "origin": "levels/lll/areas/2/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "4373150680789659948",
-          "slot": 0,
-          "value": 1,
-          "area": 2,
-          "behavior": "bhvOneCoin",
-          "source_category": "yellow_coin",
-          "position": [
-            1330,
-            3201,
-            1313
-          ],
-          "origin": "levels/lll/areas/2/macro.inc.c"
-        }
-      ]
-    },
-    {
-      "course": "Lethal Lava Land",
-      "source_id": "lll_volcano_first_ridge_coin_line",
-      "label": "Volcano first ridge coin line",
-      "physical_outputs": [
-        {
-          "physical_source_hash": "4906233388512984418",
-          "slot": 0,
-          "value": 1,
-          "area": 2,
-          "behavior": "bhvOneCoin",
-          "source_category": "yellow_coin",
-          "position": [
-            1069,
-            3130,
-            1243
-          ],
-          "origin": "levels/lll/areas/2/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "4284622965933490953",
-          "slot": 0,
-          "value": 1,
-          "area": 2,
-          "behavior": "bhvOneCoin",
-          "source_category": "yellow_coin",
-          "position": [
-            704,
-            3028,
-            1156
-          ],
-          "origin": "levels/lll/areas/2/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "7027135386089446776",
-          "slot": 0,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvYellowCoin",
-          "source_category": "yellow_coin",
-          "position": [
-            3300,
-            50,
-            -2692
-          ],
-          "origin": "levels/lll/areas/1/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "16951231373794836013",
-          "slot": 0,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvYellowCoin",
-          "source_category": "yellow_coin",
-          "position": [
-            3330,
-            50,
-            -3700
-          ],
-          "origin": "levels/lll/areas/1/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "2067889972322930480",
-          "slot": 0,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvYellowCoin",
-          "source_category": "yellow_coin",
-          "position": [
-            4340,
-            50,
-            -3700
-          ],
-          "origin": "levels/lll/areas/1/macro.inc.c"
-        }
-      ]
-    },
-    {
-      "course": "Lethal Lava Land",
-      "source_id": "lll_volcano_second_ridge_coins",
-      "label": "Volcano second ridge coins",
-      "physical_outputs": [
-        {
-          "physical_source_hash": "3175190160016883788",
-          "slot": 0,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvYellowCoin",
-          "source_category": "yellow_coin",
-          "position": [
-            4340,
-            50,
-            -2692
-          ],
-          "origin": "levels/lll/areas/1/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "11802112346899043749",
-          "slot": 0,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvYellowCoin",
-          "source_category": "yellow_coin",
-          "position": [
-            0,
-            200,
-            1200
-          ],
-          "origin": "levels/lll/areas/1/macro.inc.c"
-        }
-      ]
-    },
-    {
-      "course": "Lethal Lava Land",
-      "source_id": "lll_volcano_floating_platform_coins",
-      "label": "Volcano floating platform coins",
-      "physical_outputs": [
-        {
-          "physical_source_hash": "16062448946145851285",
-          "slot": 0,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvYellowCoin",
-          "source_category": "yellow_coin",
-          "position": [
-            1200,
-            200,
-            0
-          ],
-          "origin": "levels/lll/areas/1/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "2877955190841146688",
-          "slot": 0,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvYellowCoin",
-          "source_category": "yellow_coin",
-          "position": [
-            -1200,
-            200,
-            0
-          ],
-          "origin": "levels/lll/areas/1/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "4511575194145503501",
-          "slot": 0,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvOneCoin",
-          "source_category": "yellow_coin",
-          "position": [
-            -3320,
-            161,
-            -1860
-          ],
-          "origin": "levels/lll/areas/1/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "2111001853781635443",
-          "slot": 0,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvOneCoin",
-          "source_category": "yellow_coin",
-          "position": [
-            -3346,
-            70,
-            -1486
-          ],
-          "origin": "levels/lll/areas/1/macro.inc.c"
-        }
-      ]
-    },
-    {
-      "course": "Lethal Lava Land",
-      "source_id": "lll_volcano_post_platform_coin",
-      "label": "Volcano coin after the floating platforms",
-      "physical_outputs": [
-        {
-          "physical_source_hash": "14242453736253713222",
-          "slot": 0,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvOneCoin",
-          "source_category": "yellow_coin",
-          "position": [
-            -2760,
-            113,
-            -2260
-          ],
-          "origin": "levels/lll/areas/1/macro.inc.c"
         }
       ]
     },
@@ -10585,74 +10585,74 @@
       "label": "Volcano second Bully coin line",
       "physical_outputs": [
         {
-          "physical_source_hash": "7365427911583391904",
+          "physical_source_hash": "10124527321023754652",
           "slot": 0,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            -1960,
-            38,
-            3693
+            182,
+            2623,
+            -2529
           ],
-          "origin": "levels/lll/areas/1/macro.inc.c"
+          "origin": "levels/lll/areas/2/macro.inc.c"
         },
         {
-          "physical_source_hash": "7365427911583391904",
+          "physical_source_hash": "10124527321023754652",
           "slot": 1,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            -1960,
-            38,
-            3693
+            182,
+            2623,
+            -2529
           ],
-          "origin": "levels/lll/areas/1/macro.inc.c"
+          "origin": "levels/lll/areas/2/macro.inc.c"
         },
         {
-          "physical_source_hash": "7365427911583391904",
+          "physical_source_hash": "10124527321023754652",
           "slot": 2,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            -1960,
-            38,
-            3693
+            182,
+            2623,
+            -2529
           ],
-          "origin": "levels/lll/areas/1/macro.inc.c"
+          "origin": "levels/lll/areas/2/macro.inc.c"
         },
         {
-          "physical_source_hash": "7365427911583391904",
+          "physical_source_hash": "10124527321023754652",
           "slot": 3,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            -1960,
-            38,
-            3693
+            182,
+            2623,
+            -2529
           ],
-          "origin": "levels/lll/areas/1/macro.inc.c"
+          "origin": "levels/lll/areas/2/macro.inc.c"
         },
         {
-          "physical_source_hash": "7365427911583391904",
+          "physical_source_hash": "10124527321023754652",
           "slot": 4,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            -1960,
-            38,
-            3693
+            182,
+            2623,
+            -2529
           ],
-          "origin": "levels/lll/areas/1/macro.inc.c"
+          "origin": "levels/lll/areas/2/macro.inc.c"
         }
       ]
     },
@@ -10662,18 +10662,18 @@
       "label": "Volcano coin by the checkerboard lift",
       "physical_outputs": [
         {
-          "physical_source_hash": "11893040506946525807",
+          "physical_source_hash": "798033715083691492",
           "slot": 0,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvOneCoin",
           "source_category": "yellow_coin",
           "position": [
-            -2440,
-            67,
-            -2286
+            -1380,
+            102,
+            1640
           ],
-          "origin": "levels/lll/areas/1/macro.inc.c"
+          "origin": "levels/lll/areas/2/macro.inc.c"
         }
       ]
     },
@@ -10718,46 +10718,46 @@
       "label": "Tiny platforms by Elevator Tour in the Volcano",
       "physical_outputs": [
         {
-          "physical_source_hash": "12853856975646563641",
+          "physical_source_hash": "4373150680789659948",
           "slot": 0,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvOneCoin",
           "source_category": "yellow_coin",
           "position": [
-            -6966,
-            41,
-            3906
+            1330,
+            3201,
+            1313
           ],
-          "origin": "levels/lll/areas/1/macro.inc.c"
+          "origin": "levels/lll/areas/2/macro.inc.c"
         },
         {
-          "physical_source_hash": "6758408911274164039",
+          "physical_source_hash": "4906233388512984418",
           "slot": 0,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvOneCoin",
           "source_category": "yellow_coin",
           "position": [
-            -6806,
-            188,
-            4653
+            1069,
+            3130,
+            1243
           ],
-          "origin": "levels/lll/areas/1/macro.inc.c"
+          "origin": "levels/lll/areas/2/macro.inc.c"
         },
         {
-          "physical_source_hash": "10291518538364945692",
+          "physical_source_hash": "4284622965933490953",
           "slot": 0,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvOneCoin",
           "source_category": "yellow_coin",
           "position": [
-            -6033,
-            70,
-            4973
+            704,
+            3028,
+            1156
           ],
-          "origin": "levels/lll/areas/1/macro.inc.c"
+          "origin": "levels/lll/areas/2/macro.inc.c"
         }
       ]
     },
@@ -10963,60 +10963,60 @@
           "origin": "levels/ssl/areas/2/macro.inc.c"
         },
         {
-          "physical_source_hash": "8165131779597419255",
+          "physical_source_hash": "4382313649259893480",
           "slot": 0,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvYellowCoin",
           "source_category": "yellow_coin",
           "position": [
-            736,
-            2652,
-            -2250
+            -5869,
+            1200,
+            -2535
           ],
-          "origin": "levels/ssl/areas/2/macro.inc.c"
+          "origin": "levels/ssl/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "14766489452796015096",
+          "physical_source_hash": "2422503382776658443",
           "slot": 0,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvYellowCoin",
           "source_category": "yellow_coin",
           "position": [
-            736,
-            2546,
-            -2250
+            -5896,
+            1200,
+            773
           ],
-          "origin": "levels/ssl/areas/2/macro.inc.c"
+          "origin": "levels/ssl/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "11883279709474666479",
+          "physical_source_hash": "13018914917284060455",
           "slot": 0,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvYellowCoin",
           "source_category": "yellow_coin",
           "position": [
-            1368,
-            3263,
-            -2250
+            1800,
+            1200,
+            800
           ],
-          "origin": "levels/ssl/areas/2/macro.inc.c"
+          "origin": "levels/ssl/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "1406342023246589295",
+          "physical_source_hash": "17649701953798994105",
           "slot": 0,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvYellowCoin",
           "source_category": "yellow_coin",
           "position": [
-            1368,
-            3135,
-            -2250
+            1805,
+            1200,
+            -2536
           ],
-          "origin": "levels/ssl/areas/2/macro.inc.c"
+          "origin": "levels/ssl/areas/1/macro.inc.c"
         }
       ]
     },
@@ -11026,74 +11026,74 @@
       "label": "Line of coins between the two pillars behind the pyramid",
       "physical_outputs": [
         {
-          "physical_source_hash": "14518569664435607715",
+          "physical_source_hash": "12030265062968786643",
           "slot": 0,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            -2,
-            1774,
-            2794
+            -5920,
+            200,
+            -920
           ],
-          "origin": "levels/ssl/areas/2/macro.inc.c"
+          "origin": "levels/ssl/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "14518569664435607715",
+          "physical_source_hash": "12030265062968786643",
           "slot": 1,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            -2,
-            1774,
-            2794
+            -5920,
+            200,
+            -920
           ],
-          "origin": "levels/ssl/areas/2/macro.inc.c"
+          "origin": "levels/ssl/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "14518569664435607715",
+          "physical_source_hash": "12030265062968786643",
           "slot": 2,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            -2,
-            1774,
-            2794
+            -5920,
+            200,
+            -920
           ],
-          "origin": "levels/ssl/areas/2/macro.inc.c"
+          "origin": "levels/ssl/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "14518569664435607715",
+          "physical_source_hash": "12030265062968786643",
           "slot": 3,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            -2,
-            1774,
-            2794
+            -5920,
+            200,
+            -920
           ],
-          "origin": "levels/ssl/areas/2/macro.inc.c"
+          "origin": "levels/ssl/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "14518569664435607715",
+          "physical_source_hash": "12030265062968786643",
           "slot": 4,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            -2,
-            1774,
-            2794
+            -5920,
+            200,
+            -920
           ],
-          "origin": "levels/ssl/areas/2/macro.inc.c"
+          "origin": "levels/ssl/areas/1/macro.inc.c"
         }
       ]
     },
@@ -11103,74 +11103,74 @@
       "label": "Line of coins on the pyramid",
       "physical_outputs": [
         {
-          "physical_source_hash": "8155439645930585855",
+          "physical_source_hash": "4004316342643800839",
           "slot": 0,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            -210,
-            4521,
-            -994
+            -2290,
+            787,
+            -2180
           ],
-          "origin": "levels/ssl/areas/2/macro.inc.c"
+          "origin": "levels/ssl/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "8155439645930585855",
+          "physical_source_hash": "4004316342643800839",
           "slot": 1,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            -210,
-            4521,
-            -994
+            -2290,
+            787,
+            -2180
           ],
-          "origin": "levels/ssl/areas/2/macro.inc.c"
+          "origin": "levels/ssl/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "8155439645930585855",
+          "physical_source_hash": "4004316342643800839",
           "slot": 2,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            -210,
-            4521,
-            -994
+            -2290,
+            787,
+            -2180
           ],
-          "origin": "levels/ssl/areas/2/macro.inc.c"
+          "origin": "levels/ssl/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "8155439645930585855",
+          "physical_source_hash": "4004316342643800839",
           "slot": 3,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            -210,
-            4521,
-            -994
+            -2290,
+            787,
+            -2180
           ],
-          "origin": "levels/ssl/areas/2/macro.inc.c"
+          "origin": "levels/ssl/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "8155439645930585855",
+          "physical_source_hash": "4004316342643800839",
           "slot": 4,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            -210,
-            4521,
-            -994
+            -2290,
+            787,
+            -2180
           ],
-          "origin": "levels/ssl/areas/2/macro.inc.c"
+          "origin": "levels/ssl/areas/1/macro.inc.c"
         }
       ]
     },
@@ -11810,74 +11810,74 @@
       "label": "Line of coins under the second wire grid",
       "physical_outputs": [
         {
-          "physical_source_hash": "12030265062968786643",
+          "physical_source_hash": "14518569664435607715",
           "slot": 0,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            -5920,
-            200,
-            -920
+            -2,
+            1774,
+            2794
           ],
-          "origin": "levels/ssl/areas/1/macro.inc.c"
+          "origin": "levels/ssl/areas/2/macro.inc.c"
         },
         {
-          "physical_source_hash": "12030265062968786643",
+          "physical_source_hash": "14518569664435607715",
           "slot": 1,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            -5920,
-            200,
-            -920
+            -2,
+            1774,
+            2794
           ],
-          "origin": "levels/ssl/areas/1/macro.inc.c"
+          "origin": "levels/ssl/areas/2/macro.inc.c"
         },
         {
-          "physical_source_hash": "12030265062968786643",
+          "physical_source_hash": "14518569664435607715",
           "slot": 2,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            -5920,
-            200,
-            -920
+            -2,
+            1774,
+            2794
           ],
-          "origin": "levels/ssl/areas/1/macro.inc.c"
+          "origin": "levels/ssl/areas/2/macro.inc.c"
         },
         {
-          "physical_source_hash": "12030265062968786643",
+          "physical_source_hash": "14518569664435607715",
           "slot": 3,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            -5920,
-            200,
-            -920
+            -2,
+            1774,
+            2794
           ],
-          "origin": "levels/ssl/areas/1/macro.inc.c"
+          "origin": "levels/ssl/areas/2/macro.inc.c"
         },
         {
-          "physical_source_hash": "12030265062968786643",
+          "physical_source_hash": "14518569664435607715",
           "slot": 4,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            -5920,
-            200,
-            -920
+            -2,
+            1774,
+            2794
           ],
-          "origin": "levels/ssl/areas/1/macro.inc.c"
+          "origin": "levels/ssl/areas/2/macro.inc.c"
         }
       ]
     },
@@ -11887,74 +11887,74 @@
       "label": "Horizontal coin line at the top of the pyramid",
       "physical_outputs": [
         {
-          "physical_source_hash": "4004316342643800839",
+          "physical_source_hash": "8155439645930585855",
           "slot": 0,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            -2290,
-            787,
-            -2180
+            -210,
+            4521,
+            -994
           ],
-          "origin": "levels/ssl/areas/1/macro.inc.c"
+          "origin": "levels/ssl/areas/2/macro.inc.c"
         },
         {
-          "physical_source_hash": "4004316342643800839",
+          "physical_source_hash": "8155439645930585855",
           "slot": 1,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            -2290,
-            787,
-            -2180
+            -210,
+            4521,
+            -994
           ],
-          "origin": "levels/ssl/areas/1/macro.inc.c"
+          "origin": "levels/ssl/areas/2/macro.inc.c"
         },
         {
-          "physical_source_hash": "4004316342643800839",
+          "physical_source_hash": "8155439645930585855",
           "slot": 2,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            -2290,
-            787,
-            -2180
+            -210,
+            4521,
+            -994
           ],
-          "origin": "levels/ssl/areas/1/macro.inc.c"
+          "origin": "levels/ssl/areas/2/macro.inc.c"
         },
         {
-          "physical_source_hash": "4004316342643800839",
+          "physical_source_hash": "8155439645930585855",
           "slot": 3,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            -2290,
-            787,
-            -2180
+            -210,
+            4521,
+            -994
           ],
-          "origin": "levels/ssl/areas/1/macro.inc.c"
+          "origin": "levels/ssl/areas/2/macro.inc.c"
         },
         {
-          "physical_source_hash": "4004316342643800839",
+          "physical_source_hash": "8155439645930585855",
           "slot": 4,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            -2290,
-            787,
-            -2180
+            -210,
+            4521,
+            -994
           ],
-          "origin": "levels/ssl/areas/1/macro.inc.c"
+          "origin": "levels/ssl/areas/2/macro.inc.c"
         }
       ]
     },
@@ -12167,60 +12167,60 @@
           "origin": "levels/ssl/areas/2/macro.inc.c"
         },
         {
-          "physical_source_hash": "4382313649259893480",
+          "physical_source_hash": "8165131779597419255",
           "slot": 0,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvYellowCoin",
           "source_category": "yellow_coin",
           "position": [
-            -5869,
-            1200,
-            -2535
+            736,
+            2652,
+            -2250
           ],
-          "origin": "levels/ssl/areas/1/macro.inc.c"
+          "origin": "levels/ssl/areas/2/macro.inc.c"
         },
         {
-          "physical_source_hash": "2422503382776658443",
+          "physical_source_hash": "14766489452796015096",
           "slot": 0,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvYellowCoin",
           "source_category": "yellow_coin",
           "position": [
-            -5896,
-            1200,
-            773
+            736,
+            2546,
+            -2250
           ],
-          "origin": "levels/ssl/areas/1/macro.inc.c"
+          "origin": "levels/ssl/areas/2/macro.inc.c"
         },
         {
-          "physical_source_hash": "13018914917284060455",
+          "physical_source_hash": "11883279709474666479",
           "slot": 0,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvYellowCoin",
           "source_category": "yellow_coin",
           "position": [
-            1800,
-            1200,
-            800
+            1368,
+            3263,
+            -2250
           ],
-          "origin": "levels/ssl/areas/1/macro.inc.c"
+          "origin": "levels/ssl/areas/2/macro.inc.c"
         },
         {
-          "physical_source_hash": "17649701953798994105",
+          "physical_source_hash": "1406342023246589295",
           "slot": 0,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvYellowCoin",
           "source_category": "yellow_coin",
           "position": [
-            1805,
-            1200,
-            -2536
+            1368,
+            3135,
+            -2250
           ],
-          "origin": "levels/ssl/areas/1/macro.inc.c"
+          "origin": "levels/ssl/areas/2/macro.inc.c"
         }
       ]
     },
@@ -12398,74 +12398,74 @@
       "label": "Sloped underwater coin line near the start",
       "physical_outputs": [
         {
-          "physical_source_hash": "10230244405460854563",
+          "physical_source_hash": "3546215089401017384",
           "slot": 0,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            3923,
-            110,
-            5953
+            -4840,
+            -1137,
+            1860
           ],
-          "origin": "levels/ddd/areas/2/macro.inc.c"
+          "origin": "levels/ddd/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "10230244405460854563",
+          "physical_source_hash": "3546215089401017384",
           "slot": 1,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            3923,
-            110,
-            5953
+            -4840,
+            -1137,
+            1860
           ],
-          "origin": "levels/ddd/areas/2/macro.inc.c"
+          "origin": "levels/ddd/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "10230244405460854563",
+          "physical_source_hash": "3546215089401017384",
           "slot": 2,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            3923,
-            110,
-            5953
+            -4840,
+            -1137,
+            1860
           ],
-          "origin": "levels/ddd/areas/2/macro.inc.c"
+          "origin": "levels/ddd/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "10230244405460854563",
+          "physical_source_hash": "3546215089401017384",
           "slot": 3,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            3923,
-            110,
-            5953
+            -4840,
+            -1137,
+            1860
           ],
-          "origin": "levels/ddd/areas/2/macro.inc.c"
+          "origin": "levels/ddd/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "10230244405460854563",
+          "physical_source_hash": "3546215089401017384",
           "slot": 4,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            3923,
-            110,
-            5953
+            -4840,
+            -1137,
+            1860
           ],
-          "origin": "levels/ddd/areas/2/macro.inc.c"
+          "origin": "levels/ddd/areas/1/macro.inc.c"
         }
       ]
     },
@@ -12475,76 +12475,6 @@
       "label": "Vertical coin lines by the chests and first current",
       "physical_outputs": [
         {
-          "physical_source_hash": "6653844087100020241",
-          "slot": 0,
-          "value": 1,
-          "area": 2,
-          "behavior": "bhvCoinFormation",
-          "source_category": "vertical_line",
-          "position": [
-            3892,
-            -4030,
-            -3830
-          ],
-          "origin": "levels/ddd/areas/2/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "6653844087100020241",
-          "slot": 1,
-          "value": 1,
-          "area": 2,
-          "behavior": "bhvCoinFormation",
-          "source_category": "vertical_line",
-          "position": [
-            3892,
-            -4030,
-            -3830
-          ],
-          "origin": "levels/ddd/areas/2/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "6653844087100020241",
-          "slot": 2,
-          "value": 1,
-          "area": 2,
-          "behavior": "bhvCoinFormation",
-          "source_category": "vertical_line",
-          "position": [
-            3892,
-            -4030,
-            -3830
-          ],
-          "origin": "levels/ddd/areas/2/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "6653844087100020241",
-          "slot": 3,
-          "value": 1,
-          "area": 2,
-          "behavior": "bhvCoinFormation",
-          "source_category": "vertical_line",
-          "position": [
-            3892,
-            -4030,
-            -3830
-          ],
-          "origin": "levels/ddd/areas/2/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "6653844087100020241",
-          "slot": 4,
-          "value": 1,
-          "area": 2,
-          "behavior": "bhvCoinFormation",
-          "source_category": "vertical_line",
-          "position": [
-            3892,
-            -4030,
-            -3830
-          ],
-          "origin": "levels/ddd/areas/2/macro.inc.c"
-        },
-        {
           "physical_source_hash": "17794176197671576187",
           "slot": 0,
           "value": 1,
@@ -12611,6 +12541,76 @@
             -3760,
             -4560,
             660
+          ],
+          "origin": "levels/ddd/areas/1/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "2352510633111137788",
+          "slot": 0,
+          "value": 1,
+          "area": 1,
+          "behavior": "bhvCoinFormation",
+          "source_category": "vertical_line",
+          "position": [
+            -4240,
+            -4786,
+            1180
+          ],
+          "origin": "levels/ddd/areas/1/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "2352510633111137788",
+          "slot": 1,
+          "value": 1,
+          "area": 1,
+          "behavior": "bhvCoinFormation",
+          "source_category": "vertical_line",
+          "position": [
+            -4240,
+            -4786,
+            1180
+          ],
+          "origin": "levels/ddd/areas/1/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "2352510633111137788",
+          "slot": 2,
+          "value": 1,
+          "area": 1,
+          "behavior": "bhvCoinFormation",
+          "source_category": "vertical_line",
+          "position": [
+            -4240,
+            -4786,
+            1180
+          ],
+          "origin": "levels/ddd/areas/1/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "2352510633111137788",
+          "slot": 3,
+          "value": 1,
+          "area": 1,
+          "behavior": "bhvCoinFormation",
+          "source_category": "vertical_line",
+          "position": [
+            -4240,
+            -4786,
+            1180
+          ],
+          "origin": "levels/ddd/areas/1/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "2352510633111137788",
+          "slot": 4,
+          "value": 1,
+          "area": 1,
+          "behavior": "bhvCoinFormation",
+          "source_category": "vertical_line",
+          "position": [
+            -4240,
+            -4786,
+            1180
           ],
           "origin": "levels/ddd/areas/1/macro.inc.c"
         }
@@ -13133,74 +13133,74 @@
       "label": "Vertical coin line by the moat exit",
       "physical_outputs": [
         {
-          "physical_source_hash": "2352510633111137788",
+          "physical_source_hash": "6653844087100020241",
           "slot": 0,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvCoinFormation",
           "source_category": "vertical_line",
           "position": [
-            -4240,
-            -4786,
-            1180
+            3892,
+            -4030,
+            -3830
           ],
-          "origin": "levels/ddd/areas/1/macro.inc.c"
+          "origin": "levels/ddd/areas/2/macro.inc.c"
         },
         {
-          "physical_source_hash": "2352510633111137788",
+          "physical_source_hash": "6653844087100020241",
           "slot": 1,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvCoinFormation",
           "source_category": "vertical_line",
           "position": [
-            -4240,
-            -4786,
-            1180
+            3892,
+            -4030,
+            -3830
           ],
-          "origin": "levels/ddd/areas/1/macro.inc.c"
+          "origin": "levels/ddd/areas/2/macro.inc.c"
         },
         {
-          "physical_source_hash": "2352510633111137788",
+          "physical_source_hash": "6653844087100020241",
           "slot": 2,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvCoinFormation",
           "source_category": "vertical_line",
           "position": [
-            -4240,
-            -4786,
-            1180
+            3892,
+            -4030,
+            -3830
           ],
-          "origin": "levels/ddd/areas/1/macro.inc.c"
+          "origin": "levels/ddd/areas/2/macro.inc.c"
         },
         {
-          "physical_source_hash": "2352510633111137788",
+          "physical_source_hash": "6653844087100020241",
           "slot": 3,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvCoinFormation",
           "source_category": "vertical_line",
           "position": [
-            -4240,
-            -4786,
-            1180
+            3892,
+            -4030,
+            -3830
           ],
-          "origin": "levels/ddd/areas/1/macro.inc.c"
+          "origin": "levels/ddd/areas/2/macro.inc.c"
         },
         {
-          "physical_source_hash": "2352510633111137788",
+          "physical_source_hash": "6653844087100020241",
           "slot": 4,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvCoinFormation",
           "source_category": "vertical_line",
           "position": [
-            -4240,
-            -4786,
-            1180
+            3892,
+            -4030,
+            -3830
           ],
-          "origin": "levels/ddd/areas/1/macro.inc.c"
+          "origin": "levels/ddd/areas/2/macro.inc.c"
         }
       ]
     },
@@ -13210,74 +13210,74 @@
       "label": "Coin line on the Bowser's Sub area dock",
       "physical_outputs": [
         {
-          "physical_source_hash": "3546215089401017384",
+          "physical_source_hash": "10230244405460854563",
           "slot": 0,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            -4840,
-            -1137,
-            1860
+            3923,
+            110,
+            5953
           ],
-          "origin": "levels/ddd/areas/1/macro.inc.c"
+          "origin": "levels/ddd/areas/2/macro.inc.c"
         },
         {
-          "physical_source_hash": "3546215089401017384",
+          "physical_source_hash": "10230244405460854563",
           "slot": 1,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            -4840,
-            -1137,
-            1860
+            3923,
+            110,
+            5953
           ],
-          "origin": "levels/ddd/areas/1/macro.inc.c"
+          "origin": "levels/ddd/areas/2/macro.inc.c"
         },
         {
-          "physical_source_hash": "3546215089401017384",
+          "physical_source_hash": "10230244405460854563",
           "slot": 2,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            -4840,
-            -1137,
-            1860
+            3923,
+            110,
+            5953
           ],
-          "origin": "levels/ddd/areas/1/macro.inc.c"
+          "origin": "levels/ddd/areas/2/macro.inc.c"
         },
         {
-          "physical_source_hash": "3546215089401017384",
+          "physical_source_hash": "10230244405460854563",
           "slot": 3,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            -4840,
-            -1137,
-            1860
+            3923,
+            110,
+            5953
           ],
-          "origin": "levels/ddd/areas/1/macro.inc.c"
+          "origin": "levels/ddd/areas/2/macro.inc.c"
         },
         {
-          "physical_source_hash": "3546215089401017384",
+          "physical_source_hash": "10230244405460854563",
           "slot": 4,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            -4840,
-            -1137,
-            1860
+            3923,
+            110,
+            5953
           ],
-          "origin": "levels/ddd/areas/1/macro.inc.c"
+          "origin": "levels/ddd/areas/2/macro.inc.c"
         }
       ]
     },
@@ -13497,32 +13497,32 @@
       "label": "Coins to the left of the start",
       "physical_outputs": [
         {
-          "physical_source_hash": "7492938643573794693",
+          "physical_source_hash": "8265089627245004165",
           "slot": 0,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvOneCoin",
           "source_category": "yellow_coin",
           "position": [
-            1740,
-            0,
-            900
+            3418,
+            1024,
+            3554
           ],
-          "origin": "levels/sl/areas/2/macro.inc.c"
+          "origin": "levels/sl/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "14852852717242393360",
+          "physical_source_hash": "15782127493981436176",
           "slot": 0,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvOneCoin",
           "source_category": "yellow_coin",
           "position": [
-            1440,
-            0,
-            900
+            2909,
+            1024,
+            4245
           ],
-          "origin": "levels/sl/areas/2/macro.inc.c"
+          "origin": "levels/sl/areas/1/macro.inc.c"
         }
       ]
     },
@@ -13531,132 +13531,6 @@
       "source_id": "sl_spindrifts",
       "label": "Eleven Spindrifts",
       "physical_outputs": [
-        {
-          "physical_source_hash": "16088409167933281710",
-          "slot": 0,
-          "value": 1,
-          "area": 2,
-          "behavior": "bhvSpindrift",
-          "source_category": "spindrift",
-          "position": [
-            1600,
-            80,
-            -800
-          ],
-          "origin": "levels/sl/areas/2/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "16088409167933281710",
-          "slot": 1,
-          "value": 1,
-          "area": 2,
-          "behavior": "bhvSpindrift",
-          "source_category": "spindrift",
-          "position": [
-            1600,
-            80,
-            -800
-          ],
-          "origin": "levels/sl/areas/2/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "16088409167933281710",
-          "slot": 2,
-          "value": 1,
-          "area": 2,
-          "behavior": "bhvSpindrift",
-          "source_category": "spindrift",
-          "position": [
-            1600,
-            80,
-            -800
-          ],
-          "origin": "levels/sl/areas/2/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "10160985286321796349",
-          "slot": 0,
-          "value": 1,
-          "area": 2,
-          "behavior": "bhvSpindrift",
-          "source_category": "spindrift",
-          "position": [
-            -860,
-            40,
-            2040
-          ],
-          "origin": "levels/sl/areas/2/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "10160985286321796349",
-          "slot": 1,
-          "value": 1,
-          "area": 2,
-          "behavior": "bhvSpindrift",
-          "source_category": "spindrift",
-          "position": [
-            -860,
-            40,
-            2040
-          ],
-          "origin": "levels/sl/areas/2/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "10160985286321796349",
-          "slot": 2,
-          "value": 1,
-          "area": 2,
-          "behavior": "bhvSpindrift",
-          "source_category": "spindrift",
-          "position": [
-            -860,
-            40,
-            2040
-          ],
-          "origin": "levels/sl/areas/2/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "7725852762849613280",
-          "slot": 0,
-          "value": 1,
-          "area": 2,
-          "behavior": "bhvSpindrift",
-          "source_category": "spindrift",
-          "position": [
-            800,
-            60,
-            2000
-          ],
-          "origin": "levels/sl/areas/2/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "7725852762849613280",
-          "slot": 1,
-          "value": 1,
-          "area": 2,
-          "behavior": "bhvSpindrift",
-          "source_category": "spindrift",
-          "position": [
-            800,
-            60,
-            2000
-          ],
-          "origin": "levels/sl/areas/2/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "7725852762849613280",
-          "slot": 2,
-          "value": 1,
-          "area": 2,
-          "behavior": "bhvSpindrift",
-          "source_category": "spindrift",
-          "position": [
-            800,
-            60,
-            2000
-          ],
-          "origin": "levels/sl/areas/2/macro.inc.c"
-        },
         {
           "physical_source_hash": "11191748824926356512",
           "slot": 0,
@@ -14365,74 +14239,74 @@
       "label": "Coin line on the slope toward the Igloo",
       "physical_outputs": [
         {
-          "physical_source_hash": "7043976321488496346",
+          "physical_source_hash": "17033079345410080605",
           "slot": 0,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            1500,
-            0,
-            500
+            -660,
+            2120,
+            1340
           ],
-          "origin": "levels/sl/areas/2/macro.inc.c"
+          "origin": "levels/sl/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "7043976321488496346",
+          "physical_source_hash": "17033079345410080605",
           "slot": 1,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            1500,
-            0,
-            500
+            -660,
+            2120,
+            1340
           ],
-          "origin": "levels/sl/areas/2/macro.inc.c"
+          "origin": "levels/sl/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "7043976321488496346",
+          "physical_source_hash": "17033079345410080605",
           "slot": 2,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            1500,
-            0,
-            500
+            -660,
+            2120,
+            1340
           ],
-          "origin": "levels/sl/areas/2/macro.inc.c"
+          "origin": "levels/sl/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "7043976321488496346",
+          "physical_source_hash": "17033079345410080605",
           "slot": 3,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            1500,
-            0,
-            500
+            -660,
+            2120,
+            1340
           ],
-          "origin": "levels/sl/areas/2/macro.inc.c"
+          "origin": "levels/sl/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "7043976321488496346",
+          "physical_source_hash": "17033079345410080605",
           "slot": 4,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            1500,
-            0,
-            500
+            -660,
+            2120,
+            1340
           ],
-          "origin": "levels/sl/areas/2/macro.inc.c"
+          "origin": "levels/sl/areas/1/macro.inc.c"
         }
       ]
     },
@@ -14442,19 +14316,54 @@
       "label": "Single coins on the slope toward the Igloo",
       "physical_outputs": [
         {
-          "physical_source_hash": "12059202497748338399",
+          "physical_source_hash": "3338395758496780874",
           "slot": 0,
           "value": 1,
-          "area": 2,
-          "behavior": "bhvOneCoin",
+          "area": 1,
+          "behavior": "bhvYellowCoin",
           "source_category": "yellow_coin",
           "position": [
-            1140,
-            0,
-            900
+            -1520,
+            1040,
+            940
           ],
-          "origin": "levels/sl/areas/2/macro.inc.c"
+          "origin": "levels/sl/areas/1/macro.inc.c"
         },
+        {
+          "physical_source_hash": "18018974196416356833",
+          "slot": 0,
+          "value": 1,
+          "area": 1,
+          "behavior": "bhvYellowCoin",
+          "source_category": "yellow_coin",
+          "position": [
+            -1340,
+            1280,
+            1020
+          ],
+          "origin": "levels/sl/areas/1/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "15616086837633518731",
+          "slot": 0,
+          "value": 1,
+          "area": 1,
+          "behavior": "bhvYellowCoin",
+          "source_category": "yellow_coin",
+          "position": [
+            -1180,
+            1520,
+            1120
+          ],
+          "origin": "levels/sl/areas/1/macro.inc.c"
+        }
+      ]
+    },
+    {
+      "course": "Snowman's Land",
+      "source_id": "sl_penguin_and_face_coins",
+      "label": "Coins by the penguin and snowman's face",
+      "physical_outputs": [
         {
           "physical_source_hash": "13807215121659027055",
           "slot": 0,
@@ -14482,27 +14391,6 @@
             -671
           ],
           "origin": "levels/sl/areas/1/macro.inc.c"
-        }
-      ]
-    },
-    {
-      "course": "Snowman's Land",
-      "source_id": "sl_penguin_and_face_coins",
-      "label": "Coins by the penguin and snowman's face",
-      "physical_outputs": [
-        {
-          "physical_source_hash": "16000374341636346187",
-          "slot": 0,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvOneCoin",
-          "source_category": "yellow_coin",
-          "position": [
-            1371,
-            2188,
-            -500
-          ],
-          "origin": "levels/sl/areas/1/macro.inc.c"
         },
         {
           "physical_source_hash": "1935755855598764578",
@@ -14515,20 +14403,6 @@
             1814,
             3174,
             114
-          ],
-          "origin": "levels/sl/areas/1/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "9274632352889607366",
-          "slot": 0,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvOneCoin",
-          "source_category": "yellow_coin",
-          "position": [
-            28,
-            3328,
-            1885
           ],
           "origin": "levels/sl/areas/1/macro.inc.c"
         }
@@ -14669,8 +14543,8 @@
     },
     {
       "course": "Snowman's Land",
-      "source_id": "sl_upper_goombas",
-      "label": "Three Goombas in the Upper area",
+      "source_id": "sl_igloo_goombas",
+      "label": "Three Goombas inside the Igloo",
       "physical_outputs": [
         {
           "physical_source_hash": "14949877359224318930",
@@ -14722,6 +14596,20 @@
       "label": "Coins on the wooden plank near the top of the snowman",
       "physical_outputs": [
         {
+          "physical_source_hash": "9274632352889607366",
+          "slot": 0,
+          "value": 1,
+          "area": 1,
+          "behavior": "bhvOneCoin",
+          "source_category": "yellow_coin",
+          "position": [
+            28,
+            3328,
+            1885
+          ],
+          "origin": "levels/sl/areas/1/macro.inc.c"
+        },
+        {
           "physical_source_hash": "3236195636679362149",
           "slot": 0,
           "value": 1,
@@ -14734,20 +14622,6 @@
             1742
           ],
           "origin": "levels/sl/areas/1/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "3338395758496780874",
-          "slot": 0,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvYellowCoin",
-          "source_category": "yellow_coin",
-          "position": [
-            -1520,
-            1040,
-            940
-          ],
-          "origin": "levels/sl/areas/1/macro.inc.c"
         }
       ]
     },
@@ -14757,6 +14631,76 @@
       "label": "Frozen coin lines inside the Igloo",
       "physical_outputs": [
         {
+          "physical_source_hash": "7043976321488496346",
+          "slot": 0,
+          "value": 1,
+          "area": 2,
+          "behavior": "bhvCoinFormation",
+          "source_category": "horizontal_line",
+          "position": [
+            1500,
+            0,
+            500
+          ],
+          "origin": "levels/sl/areas/2/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "7043976321488496346",
+          "slot": 1,
+          "value": 1,
+          "area": 2,
+          "behavior": "bhvCoinFormation",
+          "source_category": "horizontal_line",
+          "position": [
+            1500,
+            0,
+            500
+          ],
+          "origin": "levels/sl/areas/2/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "7043976321488496346",
+          "slot": 2,
+          "value": 1,
+          "area": 2,
+          "behavior": "bhvCoinFormation",
+          "source_category": "horizontal_line",
+          "position": [
+            1500,
+            0,
+            500
+          ],
+          "origin": "levels/sl/areas/2/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "7043976321488496346",
+          "slot": 3,
+          "value": 1,
+          "area": 2,
+          "behavior": "bhvCoinFormation",
+          "source_category": "horizontal_line",
+          "position": [
+            1500,
+            0,
+            500
+          ],
+          "origin": "levels/sl/areas/2/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "7043976321488496346",
+          "slot": 4,
+          "value": 1,
+          "area": 2,
+          "behavior": "bhvCoinFormation",
+          "source_category": "horizontal_line",
+          "position": [
+            1500,
+            0,
+            500
+          ],
+          "origin": "levels/sl/areas/2/macro.inc.c"
+        },
+        {
           "physical_source_hash": "10104491440344065670",
           "slot": 0,
           "value": 1,
@@ -14965,76 +14909,6 @@
             500
           ],
           "origin": "levels/sl/areas/2/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "17033079345410080605",
-          "slot": 0,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvCoinFormation",
-          "source_category": "horizontal_line",
-          "position": [
-            -660,
-            2120,
-            1340
-          ],
-          "origin": "levels/sl/areas/1/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "17033079345410080605",
-          "slot": 1,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvCoinFormation",
-          "source_category": "horizontal_line",
-          "position": [
-            -660,
-            2120,
-            1340
-          ],
-          "origin": "levels/sl/areas/1/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "17033079345410080605",
-          "slot": 2,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvCoinFormation",
-          "source_category": "horizontal_line",
-          "position": [
-            -660,
-            2120,
-            1340
-          ],
-          "origin": "levels/sl/areas/1/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "17033079345410080605",
-          "slot": 3,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvCoinFormation",
-          "source_category": "horizontal_line",
-          "position": [
-            -660,
-            2120,
-            1340
-          ],
-          "origin": "levels/sl/areas/1/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "17033079345410080605",
-          "slot": 4,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvCoinFormation",
-          "source_category": "horizontal_line",
-          "position": [
-            -660,
-            2120,
-            1340
-          ],
-          "origin": "levels/sl/areas/1/macro.inc.c"
         }
       ]
     },
@@ -15044,46 +14918,46 @@
       "label": "Single coins inside the Igloo",
       "physical_outputs": [
         {
-          "physical_source_hash": "18018974196416356833",
+          "physical_source_hash": "7492938643573794693",
           "slot": 0,
           "value": 1,
-          "area": 1,
-          "behavior": "bhvYellowCoin",
-          "source_category": "yellow_coin",
-          "position": [
-            -1340,
-            1280,
-            1020
-          ],
-          "origin": "levels/sl/areas/1/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "15616086837633518731",
-          "slot": 0,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvYellowCoin",
-          "source_category": "yellow_coin",
-          "position": [
-            -1180,
-            1520,
-            1120
-          ],
-          "origin": "levels/sl/areas/1/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "15782127493981436176",
-          "slot": 0,
-          "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvOneCoin",
           "source_category": "yellow_coin",
           "position": [
-            2909,
-            1024,
-            4245
+            1740,
+            0,
+            900
           ],
-          "origin": "levels/sl/areas/1/macro.inc.c"
+          "origin": "levels/sl/areas/2/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "14852852717242393360",
+          "slot": 0,
+          "value": 1,
+          "area": 2,
+          "behavior": "bhvOneCoin",
+          "source_category": "yellow_coin",
+          "position": [
+            1440,
+            0,
+            900
+          ],
+          "origin": "levels/sl/areas/2/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "12059202497748338399",
+          "slot": 0,
+          "value": 1,
+          "area": 2,
+          "behavior": "bhvOneCoin",
+          "source_category": "yellow_coin",
+          "position": [
+            1140,
+            0,
+            900
+          ],
+          "origin": "levels/sl/areas/2/macro.inc.c"
         }
       ]
     },
@@ -15138,20 +15012,153 @@
     },
     {
       "course": "Snowman's Land",
+      "source_id": "sl_igloo_spindrifts",
+      "label": "Three Spindrifts inside the Igloo",
+      "physical_outputs": [
+        {
+          "physical_source_hash": "16088409167933281710",
+          "slot": 0,
+          "value": 1,
+          "area": 2,
+          "behavior": "bhvSpindrift",
+          "source_category": "spindrift",
+          "position": [
+            1600,
+            80,
+            -800
+          ],
+          "origin": "levels/sl/areas/2/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "16088409167933281710",
+          "slot": 1,
+          "value": 1,
+          "area": 2,
+          "behavior": "bhvSpindrift",
+          "source_category": "spindrift",
+          "position": [
+            1600,
+            80,
+            -800
+          ],
+          "origin": "levels/sl/areas/2/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "16088409167933281710",
+          "slot": 2,
+          "value": 1,
+          "area": 2,
+          "behavior": "bhvSpindrift",
+          "source_category": "spindrift",
+          "position": [
+            1600,
+            80,
+            -800
+          ],
+          "origin": "levels/sl/areas/2/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "10160985286321796349",
+          "slot": 0,
+          "value": 1,
+          "area": 2,
+          "behavior": "bhvSpindrift",
+          "source_category": "spindrift",
+          "position": [
+            -860,
+            40,
+            2040
+          ],
+          "origin": "levels/sl/areas/2/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "10160985286321796349",
+          "slot": 1,
+          "value": 1,
+          "area": 2,
+          "behavior": "bhvSpindrift",
+          "source_category": "spindrift",
+          "position": [
+            -860,
+            40,
+            2040
+          ],
+          "origin": "levels/sl/areas/2/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "10160985286321796349",
+          "slot": 2,
+          "value": 1,
+          "area": 2,
+          "behavior": "bhvSpindrift",
+          "source_category": "spindrift",
+          "position": [
+            -860,
+            40,
+            2040
+          ],
+          "origin": "levels/sl/areas/2/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "7725852762849613280",
+          "slot": 0,
+          "value": 1,
+          "area": 2,
+          "behavior": "bhvSpindrift",
+          "source_category": "spindrift",
+          "position": [
+            800,
+            60,
+            2000
+          ],
+          "origin": "levels/sl/areas/2/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "7725852762849613280",
+          "slot": 1,
+          "value": 1,
+          "area": 2,
+          "behavior": "bhvSpindrift",
+          "source_category": "spindrift",
+          "position": [
+            800,
+            60,
+            2000
+          ],
+          "origin": "levels/sl/areas/2/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "7725852762849613280",
+          "slot": 2,
+          "value": 1,
+          "area": 2,
+          "behavior": "bhvSpindrift",
+          "source_category": "spindrift",
+          "position": [
+            800,
+            60,
+            2000
+          ],
+          "origin": "levels/sl/areas/2/macro.inc.c"
+        }
+      ]
+    },
+    {
+      "course": "Snowman's Land",
       "source_id": "sl_impossible_coin",
       "label": "Impossible Coin trick",
       "physical_outputs": [
         {
-          "physical_source_hash": "8265089627245004165",
+          "physical_source_hash": "16000374341636346187",
           "slot": 0,
           "value": 1,
           "area": 1,
           "behavior": "bhvOneCoin",
           "source_category": "yellow_coin",
           "position": [
-            3418,
-            1024,
-            3554
+            1371,
+            2188,
+            -500
           ],
           "origin": "levels/sl/areas/1/macro.inc.c"
         }
@@ -15373,116 +15380,116 @@
       "label": "Coin ring around the Amp pillar",
       "physical_outputs": [
         {
-          "physical_source_hash": "17695138920237964141",
+          "physical_source_hash": "11616754949966696967",
           "slot": 0,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_ring",
           "position": [
-            -772,
-            -2320,
-            772
+            -2057,
+            2800,
+            -500
           ],
-          "origin": "levels/wdw/areas/2/macro.inc.c"
+          "origin": "levels/wdw/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "17695138920237964141",
+          "physical_source_hash": "11616754949966696967",
           "slot": 1,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_ring",
           "position": [
-            -772,
-            -2320,
-            772
+            -2057,
+            2800,
+            -500
           ],
-          "origin": "levels/wdw/areas/2/macro.inc.c"
+          "origin": "levels/wdw/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "17695138920237964141",
+          "physical_source_hash": "11616754949966696967",
           "slot": 2,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_ring",
           "position": [
-            -772,
-            -2320,
-            772
+            -2057,
+            2800,
+            -500
           ],
-          "origin": "levels/wdw/areas/2/macro.inc.c"
+          "origin": "levels/wdw/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "17695138920237964141",
+          "physical_source_hash": "11616754949966696967",
           "slot": 3,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_ring",
           "position": [
-            -772,
-            -2320,
-            772
+            -2057,
+            2800,
+            -500
           ],
-          "origin": "levels/wdw/areas/2/macro.inc.c"
+          "origin": "levels/wdw/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "17695138920237964141",
+          "physical_source_hash": "11616754949966696967",
           "slot": 4,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_ring",
           "position": [
-            -772,
-            -2320,
-            772
+            -2057,
+            2800,
+            -500
           ],
-          "origin": "levels/wdw/areas/2/macro.inc.c"
+          "origin": "levels/wdw/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "17695138920237964141",
+          "physical_source_hash": "11616754949966696967",
           "slot": 5,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_ring",
           "position": [
-            -772,
-            -2320,
-            772
+            -2057,
+            2800,
+            -500
           ],
-          "origin": "levels/wdw/areas/2/macro.inc.c"
+          "origin": "levels/wdw/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "17695138920237964141",
+          "physical_source_hash": "11616754949966696967",
           "slot": 6,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_ring",
           "position": [
-            -772,
-            -2320,
-            772
+            -2057,
+            2800,
+            -500
           ],
-          "origin": "levels/wdw/areas/2/macro.inc.c"
+          "origin": "levels/wdw/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "17695138920237964141",
+          "physical_source_hash": "11616754949966696967",
           "slot": 7,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_ring",
           "position": [
-            -772,
-            -2320,
-            772
+            -2057,
+            2800,
+            -500
           ],
-          "origin": "levels/wdw/areas/2/macro.inc.c"
+          "origin": "levels/wdw/areas/1/macro.inc.c"
         }
       ]
     },
@@ -16150,74 +16157,74 @@
       "label": "Coin line by the fourth water-level diamond",
       "physical_outputs": [
         {
-          "physical_source_hash": "17911946472201193947",
+          "physical_source_hash": "12000009830638745519",
           "slot": 0,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            1089,
-            -1279,
-            968
+            1500,
+            1741,
+            2191
           ],
-          "origin": "levels/wdw/areas/2/macro.inc.c"
+          "origin": "levels/wdw/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "17911946472201193947",
+          "physical_source_hash": "12000009830638745519",
           "slot": 1,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            1089,
-            -1279,
-            968
+            1500,
+            1741,
+            2191
           ],
-          "origin": "levels/wdw/areas/2/macro.inc.c"
+          "origin": "levels/wdw/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "17911946472201193947",
+          "physical_source_hash": "12000009830638745519",
           "slot": 2,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            1089,
-            -1279,
-            968
+            1500,
+            1741,
+            2191
           ],
-          "origin": "levels/wdw/areas/2/macro.inc.c"
+          "origin": "levels/wdw/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "17911946472201193947",
+          "physical_source_hash": "12000009830638745519",
           "slot": 3,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            1089,
-            -1279,
-            968
+            1500,
+            1741,
+            2191
           ],
-          "origin": "levels/wdw/areas/2/macro.inc.c"
+          "origin": "levels/wdw/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "17911946472201193947",
+          "physical_source_hash": "12000009830638745519",
           "slot": 4,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            1089,
-            -1279,
-            968
+            1500,
+            1741,
+            2191
           ],
-          "origin": "levels/wdw/areas/2/macro.inc.c"
+          "origin": "levels/wdw/areas/1/macro.inc.c"
         }
       ]
     },
@@ -16227,74 +16234,74 @@
       "label": "Coin line at the highest water-level diamond",
       "physical_outputs": [
         {
-          "physical_source_hash": "15221395641428046396",
+          "physical_source_hash": "786269259037731204",
           "slot": 0,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            100,
-            -1791,
-            -2100
+            740,
+            3072,
+            -3560
           ],
-          "origin": "levels/wdw/areas/2/macro.inc.c"
+          "origin": "levels/wdw/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "15221395641428046396",
+          "physical_source_hash": "786269259037731204",
           "slot": 1,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            100,
-            -1791,
-            -2100
+            740,
+            3072,
+            -3560
           ],
-          "origin": "levels/wdw/areas/2/macro.inc.c"
+          "origin": "levels/wdw/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "15221395641428046396",
+          "physical_source_hash": "786269259037731204",
           "slot": 2,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            100,
-            -1791,
-            -2100
+            740,
+            3072,
+            -3560
           ],
-          "origin": "levels/wdw/areas/2/macro.inc.c"
+          "origin": "levels/wdw/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "15221395641428046396",
+          "physical_source_hash": "786269259037731204",
           "slot": 3,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            100,
-            -1791,
-            -2100
+            740,
+            3072,
+            -3560
           ],
-          "origin": "levels/wdw/areas/2/macro.inc.c"
+          "origin": "levels/wdw/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "15221395641428046396",
+          "physical_source_hash": "786269259037731204",
           "slot": 4,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            100,
-            -1791,
-            -2100
+            740,
+            3072,
+            -3560
           ],
-          "origin": "levels/wdw/areas/2/macro.inc.c"
+          "origin": "levels/wdw/areas/1/macro.inc.c"
         }
       ]
     },
@@ -16528,116 +16535,116 @@
       "label": "Downtown statue coin ring",
       "physical_outputs": [
         {
-          "physical_source_hash": "11616754949966696967",
+          "physical_source_hash": "17695138920237964141",
           "slot": 0,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_ring",
           "position": [
-            -2057,
-            2800,
-            -500
+            -772,
+            -2320,
+            772
           ],
-          "origin": "levels/wdw/areas/1/macro.inc.c"
+          "origin": "levels/wdw/areas/2/macro.inc.c"
         },
         {
-          "physical_source_hash": "11616754949966696967",
+          "physical_source_hash": "17695138920237964141",
           "slot": 1,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_ring",
           "position": [
-            -2057,
-            2800,
-            -500
+            -772,
+            -2320,
+            772
           ],
-          "origin": "levels/wdw/areas/1/macro.inc.c"
+          "origin": "levels/wdw/areas/2/macro.inc.c"
         },
         {
-          "physical_source_hash": "11616754949966696967",
+          "physical_source_hash": "17695138920237964141",
           "slot": 2,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_ring",
           "position": [
-            -2057,
-            2800,
-            -500
+            -772,
+            -2320,
+            772
           ],
-          "origin": "levels/wdw/areas/1/macro.inc.c"
+          "origin": "levels/wdw/areas/2/macro.inc.c"
         },
         {
-          "physical_source_hash": "11616754949966696967",
+          "physical_source_hash": "17695138920237964141",
           "slot": 3,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_ring",
           "position": [
-            -2057,
-            2800,
-            -500
+            -772,
+            -2320,
+            772
           ],
-          "origin": "levels/wdw/areas/1/macro.inc.c"
+          "origin": "levels/wdw/areas/2/macro.inc.c"
         },
         {
-          "physical_source_hash": "11616754949966696967",
+          "physical_source_hash": "17695138920237964141",
           "slot": 4,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_ring",
           "position": [
-            -2057,
-            2800,
-            -500
+            -772,
+            -2320,
+            772
           ],
-          "origin": "levels/wdw/areas/1/macro.inc.c"
+          "origin": "levels/wdw/areas/2/macro.inc.c"
         },
         {
-          "physical_source_hash": "11616754949966696967",
+          "physical_source_hash": "17695138920237964141",
           "slot": 5,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_ring",
           "position": [
-            -2057,
-            2800,
-            -500
+            -772,
+            -2320,
+            772
           ],
-          "origin": "levels/wdw/areas/1/macro.inc.c"
+          "origin": "levels/wdw/areas/2/macro.inc.c"
         },
         {
-          "physical_source_hash": "11616754949966696967",
+          "physical_source_hash": "17695138920237964141",
           "slot": 6,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_ring",
           "position": [
-            -2057,
-            2800,
-            -500
+            -772,
+            -2320,
+            772
           ],
-          "origin": "levels/wdw/areas/1/macro.inc.c"
+          "origin": "levels/wdw/areas/2/macro.inc.c"
         },
         {
-          "physical_source_hash": "11616754949966696967",
+          "physical_source_hash": "17695138920237964141",
           "slot": 7,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_ring",
           "position": [
-            -2057,
-            2800,
-            -500
+            -772,
+            -2320,
+            772
           ],
-          "origin": "levels/wdw/areas/1/macro.inc.c"
+          "origin": "levels/wdw/areas/2/macro.inc.c"
         }
       ]
     },
@@ -16724,74 +16731,74 @@
       "label": "Downtown first-building coin line",
       "physical_outputs": [
         {
-          "physical_source_hash": "12000009830638745519",
+          "physical_source_hash": "17911946472201193947",
           "slot": 0,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            1500,
-            1741,
-            2191
+            1089,
+            -1279,
+            968
           ],
-          "origin": "levels/wdw/areas/1/macro.inc.c"
+          "origin": "levels/wdw/areas/2/macro.inc.c"
         },
         {
-          "physical_source_hash": "12000009830638745519",
+          "physical_source_hash": "17911946472201193947",
           "slot": 1,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            1500,
-            1741,
-            2191
+            1089,
+            -1279,
+            968
           ],
-          "origin": "levels/wdw/areas/1/macro.inc.c"
+          "origin": "levels/wdw/areas/2/macro.inc.c"
         },
         {
-          "physical_source_hash": "12000009830638745519",
+          "physical_source_hash": "17911946472201193947",
           "slot": 2,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            1500,
-            1741,
-            2191
+            1089,
+            -1279,
+            968
           ],
-          "origin": "levels/wdw/areas/1/macro.inc.c"
+          "origin": "levels/wdw/areas/2/macro.inc.c"
         },
         {
-          "physical_source_hash": "12000009830638745519",
+          "physical_source_hash": "17911946472201193947",
           "slot": 3,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            1500,
-            1741,
-            2191
+            1089,
+            -1279,
+            968
           ],
-          "origin": "levels/wdw/areas/1/macro.inc.c"
+          "origin": "levels/wdw/areas/2/macro.inc.c"
         },
         {
-          "physical_source_hash": "12000009830638745519",
+          "physical_source_hash": "17911946472201193947",
           "slot": 4,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            1500,
-            1741,
-            2191
+            1089,
+            -1279,
+            968
           ],
-          "origin": "levels/wdw/areas/1/macro.inc.c"
+          "origin": "levels/wdw/areas/2/macro.inc.c"
         }
       ]
     },
@@ -16801,74 +16808,74 @@
       "label": "Downtown second-building coin line",
       "physical_outputs": [
         {
-          "physical_source_hash": "786269259037731204",
+          "physical_source_hash": "15221395641428046396",
           "slot": 0,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            740,
-            3072,
-            -3560
+            100,
+            -1791,
+            -2100
           ],
-          "origin": "levels/wdw/areas/1/macro.inc.c"
+          "origin": "levels/wdw/areas/2/macro.inc.c"
         },
         {
-          "physical_source_hash": "786269259037731204",
+          "physical_source_hash": "15221395641428046396",
           "slot": 1,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            740,
-            3072,
-            -3560
+            100,
+            -1791,
+            -2100
           ],
-          "origin": "levels/wdw/areas/1/macro.inc.c"
+          "origin": "levels/wdw/areas/2/macro.inc.c"
         },
         {
-          "physical_source_hash": "786269259037731204",
+          "physical_source_hash": "15221395641428046396",
           "slot": 2,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            740,
-            3072,
-            -3560
+            100,
+            -1791,
+            -2100
           ],
-          "origin": "levels/wdw/areas/1/macro.inc.c"
+          "origin": "levels/wdw/areas/2/macro.inc.c"
         },
         {
-          "physical_source_hash": "786269259037731204",
+          "physical_source_hash": "15221395641428046396",
           "slot": 3,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            740,
-            3072,
-            -3560
+            100,
+            -1791,
+            -2100
           ],
-          "origin": "levels/wdw/areas/1/macro.inc.c"
+          "origin": "levels/wdw/areas/2/macro.inc.c"
         },
         {
-          "physical_source_hash": "786269259037731204",
+          "physical_source_hash": "15221395641428046396",
           "slot": 4,
           "value": 1,
-          "area": 1,
+          "area": 2,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            740,
-            3072,
-            -3560
+            100,
+            -1791,
+            -2100
           ],
-          "origin": "levels/wdw/areas/1/macro.inc.c"
+          "origin": "levels/wdw/areas/2/macro.inc.c"
         }
       ]
     },
@@ -17459,74 +17466,74 @@
       "label": "Coin line on the bridge from Chuckya to the Bob-omb Buddy",
       "physical_outputs": [
         {
-          "physical_source_hash": "2833901662442743239",
+          "physical_source_hash": "11454665129307681385",
           "slot": 0,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            2972,
-            3963,
-            2690
+            -521,
+            -2047,
+            3568
           ],
-          "origin": "levels/ttm/areas/2/macro.inc.c"
+          "origin": "levels/ttm/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "2833901662442743239",
+          "physical_source_hash": "11454665129307681385",
           "slot": 1,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            2972,
-            3963,
-            2690
+            -521,
+            -2047,
+            3568
           ],
-          "origin": "levels/ttm/areas/2/macro.inc.c"
+          "origin": "levels/ttm/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "2833901662442743239",
+          "physical_source_hash": "11454665129307681385",
           "slot": 2,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            2972,
-            3963,
-            2690
+            -521,
+            -2047,
+            3568
           ],
-          "origin": "levels/ttm/areas/2/macro.inc.c"
+          "origin": "levels/ttm/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "2833901662442743239",
+          "physical_source_hash": "11454665129307681385",
           "slot": 3,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            2972,
-            3963,
-            2690
+            -521,
+            -2047,
+            3568
           ],
-          "origin": "levels/ttm/areas/2/macro.inc.c"
+          "origin": "levels/ttm/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "2833901662442743239",
+          "physical_source_hash": "11454665129307681385",
           "slot": 4,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            2972,
-            3963,
-            2690
+            -521,
+            -2047,
+            3568
           ],
-          "origin": "levels/ttm/areas/2/macro.inc.c"
+          "origin": "levels/ttm/areas/1/macro.inc.c"
         }
       ]
     },
@@ -17655,74 +17662,74 @@
       "label": "Coin line by the Upper Monty Moles",
       "physical_outputs": [
         {
-          "physical_source_hash": "3039610285052741582",
+          "physical_source_hash": "17472154721167752906",
           "slot": 0,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            27,
-            2145,
-            -290
+            -1907,
+            -861,
+            -3138
           ],
-          "origin": "levels/ttm/areas/2/macro.inc.c"
+          "origin": "levels/ttm/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "3039610285052741582",
+          "physical_source_hash": "17472154721167752906",
           "slot": 1,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            27,
-            2145,
-            -290
+            -1907,
+            -861,
+            -3138
           ],
-          "origin": "levels/ttm/areas/2/macro.inc.c"
+          "origin": "levels/ttm/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "3039610285052741582",
+          "physical_source_hash": "17472154721167752906",
           "slot": 2,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            27,
-            2145,
-            -290
+            -1907,
+            -861,
+            -3138
           ],
-          "origin": "levels/ttm/areas/2/macro.inc.c"
+          "origin": "levels/ttm/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "3039610285052741582",
+          "physical_source_hash": "17472154721167752906",
           "slot": 3,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            27,
-            2145,
-            -290
+            -1907,
+            -861,
+            -3138
           ],
-          "origin": "levels/ttm/areas/2/macro.inc.c"
+          "origin": "levels/ttm/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "3039610285052741582",
+          "physical_source_hash": "17472154721167752906",
           "slot": 4,
           "value": 1,
-          "area": 2,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            27,
-            2145,
-            -290
+            -1907,
+            -861,
+            -3138
           ],
-          "origin": "levels/ttm/areas/2/macro.inc.c"
+          "origin": "levels/ttm/areas/1/macro.inc.c"
         }
       ]
     },
@@ -18173,6 +18180,216 @@
       "label": "Four coin lines on the slide",
       "physical_outputs": [
         {
+          "physical_source_hash": "2833901662442743239",
+          "slot": 0,
+          "value": 1,
+          "area": 2,
+          "behavior": "bhvCoinFormation",
+          "source_category": "horizontal_line",
+          "position": [
+            2972,
+            3963,
+            2690
+          ],
+          "origin": "levels/ttm/areas/2/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "2833901662442743239",
+          "slot": 1,
+          "value": 1,
+          "area": 2,
+          "behavior": "bhvCoinFormation",
+          "source_category": "horizontal_line",
+          "position": [
+            2972,
+            3963,
+            2690
+          ],
+          "origin": "levels/ttm/areas/2/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "2833901662442743239",
+          "slot": 2,
+          "value": 1,
+          "area": 2,
+          "behavior": "bhvCoinFormation",
+          "source_category": "horizontal_line",
+          "position": [
+            2972,
+            3963,
+            2690
+          ],
+          "origin": "levels/ttm/areas/2/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "2833901662442743239",
+          "slot": 3,
+          "value": 1,
+          "area": 2,
+          "behavior": "bhvCoinFormation",
+          "source_category": "horizontal_line",
+          "position": [
+            2972,
+            3963,
+            2690
+          ],
+          "origin": "levels/ttm/areas/2/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "2833901662442743239",
+          "slot": 4,
+          "value": 1,
+          "area": 2,
+          "behavior": "bhvCoinFormation",
+          "source_category": "horizontal_line",
+          "position": [
+            2972,
+            3963,
+            2690
+          ],
+          "origin": "levels/ttm/areas/2/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "3039610285052741582",
+          "slot": 0,
+          "value": 1,
+          "area": 2,
+          "behavior": "bhvCoinFormation",
+          "source_category": "horizontal_line",
+          "position": [
+            27,
+            2145,
+            -290
+          ],
+          "origin": "levels/ttm/areas/2/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "3039610285052741582",
+          "slot": 1,
+          "value": 1,
+          "area": 2,
+          "behavior": "bhvCoinFormation",
+          "source_category": "horizontal_line",
+          "position": [
+            27,
+            2145,
+            -290
+          ],
+          "origin": "levels/ttm/areas/2/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "3039610285052741582",
+          "slot": 2,
+          "value": 1,
+          "area": 2,
+          "behavior": "bhvCoinFormation",
+          "source_category": "horizontal_line",
+          "position": [
+            27,
+            2145,
+            -290
+          ],
+          "origin": "levels/ttm/areas/2/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "3039610285052741582",
+          "slot": 3,
+          "value": 1,
+          "area": 2,
+          "behavior": "bhvCoinFormation",
+          "source_category": "horizontal_line",
+          "position": [
+            27,
+            2145,
+            -290
+          ],
+          "origin": "levels/ttm/areas/2/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "3039610285052741582",
+          "slot": 4,
+          "value": 1,
+          "area": 2,
+          "behavior": "bhvCoinFormation",
+          "source_category": "horizontal_line",
+          "position": [
+            27,
+            2145,
+            -290
+          ],
+          "origin": "levels/ttm/areas/2/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "12880330779759868149",
+          "slot": 0,
+          "value": 1,
+          "area": 3,
+          "behavior": "bhvCoinFormation",
+          "source_category": "horizontal_line",
+          "position": [
+            -1471,
+            -3646,
+            1198
+          ],
+          "origin": "levels/ttm/areas/3/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "12880330779759868149",
+          "slot": 1,
+          "value": 1,
+          "area": 3,
+          "behavior": "bhvCoinFormation",
+          "source_category": "horizontal_line",
+          "position": [
+            -1471,
+            -3646,
+            1198
+          ],
+          "origin": "levels/ttm/areas/3/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "12880330779759868149",
+          "slot": 2,
+          "value": 1,
+          "area": 3,
+          "behavior": "bhvCoinFormation",
+          "source_category": "horizontal_line",
+          "position": [
+            -1471,
+            -3646,
+            1198
+          ],
+          "origin": "levels/ttm/areas/3/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "12880330779759868149",
+          "slot": 3,
+          "value": 1,
+          "area": 3,
+          "behavior": "bhvCoinFormation",
+          "source_category": "horizontal_line",
+          "position": [
+            -1471,
+            -3646,
+            1198
+          ],
+          "origin": "levels/ttm/areas/3/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "12880330779759868149",
+          "slot": 4,
+          "value": 1,
+          "area": 3,
+          "behavior": "bhvCoinFormation",
+          "source_category": "horizontal_line",
+          "position": [
+            -1471,
+            -3646,
+            1198
+          ],
+          "origin": "levels/ttm/areas/3/macro.inc.c"
+        },
+        {
           "physical_source_hash": "5013633397701404384",
           "slot": 0,
           "value": 1,
@@ -18241,216 +18458,6 @@
             -4800
           ],
           "origin": "levels/ttm/areas/4/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "11454665129307681385",
-          "slot": 0,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvCoinFormation",
-          "source_category": "horizontal_line",
-          "position": [
-            -521,
-            -2047,
-            3568
-          ],
-          "origin": "levels/ttm/areas/1/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "11454665129307681385",
-          "slot": 1,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvCoinFormation",
-          "source_category": "horizontal_line",
-          "position": [
-            -521,
-            -2047,
-            3568
-          ],
-          "origin": "levels/ttm/areas/1/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "11454665129307681385",
-          "slot": 2,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvCoinFormation",
-          "source_category": "horizontal_line",
-          "position": [
-            -521,
-            -2047,
-            3568
-          ],
-          "origin": "levels/ttm/areas/1/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "11454665129307681385",
-          "slot": 3,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvCoinFormation",
-          "source_category": "horizontal_line",
-          "position": [
-            -521,
-            -2047,
-            3568
-          ],
-          "origin": "levels/ttm/areas/1/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "11454665129307681385",
-          "slot": 4,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvCoinFormation",
-          "source_category": "horizontal_line",
-          "position": [
-            -521,
-            -2047,
-            3568
-          ],
-          "origin": "levels/ttm/areas/1/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "4746061238642040830",
-          "slot": 0,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvCoinFormation",
-          "source_category": "horizontal_line",
-          "position": [
-            3476,
-            708,
-            -896
-          ],
-          "origin": "levels/ttm/areas/1/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "4746061238642040830",
-          "slot": 1,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvCoinFormation",
-          "source_category": "horizontal_line",
-          "position": [
-            3476,
-            708,
-            -896
-          ],
-          "origin": "levels/ttm/areas/1/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "4746061238642040830",
-          "slot": 2,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvCoinFormation",
-          "source_category": "horizontal_line",
-          "position": [
-            3476,
-            708,
-            -896
-          ],
-          "origin": "levels/ttm/areas/1/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "4746061238642040830",
-          "slot": 3,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvCoinFormation",
-          "source_category": "horizontal_line",
-          "position": [
-            3476,
-            708,
-            -896
-          ],
-          "origin": "levels/ttm/areas/1/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "4746061238642040830",
-          "slot": 4,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvCoinFormation",
-          "source_category": "horizontal_line",
-          "position": [
-            3476,
-            708,
-            -896
-          ],
-          "origin": "levels/ttm/areas/1/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "14620917698446547538",
-          "slot": 0,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvCoinFormation",
-          "source_category": "horizontal_line",
-          "position": [
-            2461,
-            1461,
-            1960
-          ],
-          "origin": "levels/ttm/areas/1/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "14620917698446547538",
-          "slot": 1,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvCoinFormation",
-          "source_category": "horizontal_line",
-          "position": [
-            2461,
-            1461,
-            1960
-          ],
-          "origin": "levels/ttm/areas/1/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "14620917698446547538",
-          "slot": 2,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvCoinFormation",
-          "source_category": "horizontal_line",
-          "position": [
-            2461,
-            1461,
-            1960
-          ],
-          "origin": "levels/ttm/areas/1/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "14620917698446547538",
-          "slot": 3,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvCoinFormation",
-          "source_category": "horizontal_line",
-          "position": [
-            2461,
-            1461,
-            1960
-          ],
-          "origin": "levels/ttm/areas/1/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "14620917698446547538",
-          "slot": 4,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvCoinFormation",
-          "source_category": "horizontal_line",
-          "position": [
-            2461,
-            1461,
-            1960
-          ],
-          "origin": "levels/ttm/areas/1/macro.inc.c"
         }
       ]
     },
@@ -18509,72 +18516,72 @@
       "label": "Coin line by the slide entrance",
       "physical_outputs": [
         {
-          "physical_source_hash": "17472154721167752906",
+          "physical_source_hash": "4746061238642040830",
           "slot": 0,
           "value": 1,
           "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            -1907,
-            -861,
-            -3138
+            3476,
+            708,
+            -896
           ],
           "origin": "levels/ttm/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "17472154721167752906",
+          "physical_source_hash": "4746061238642040830",
           "slot": 1,
           "value": 1,
           "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            -1907,
-            -861,
-            -3138
+            3476,
+            708,
+            -896
           ],
           "origin": "levels/ttm/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "17472154721167752906",
+          "physical_source_hash": "4746061238642040830",
           "slot": 2,
           "value": 1,
           "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            -1907,
-            -861,
-            -3138
+            3476,
+            708,
+            -896
           ],
           "origin": "levels/ttm/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "17472154721167752906",
+          "physical_source_hash": "4746061238642040830",
           "slot": 3,
           "value": 1,
           "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            -1907,
-            -861,
-            -3138
+            3476,
+            708,
+            -896
           ],
           "origin": "levels/ttm/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "17472154721167752906",
+          "physical_source_hash": "4746061238642040830",
           "slot": 4,
           "value": 1,
           "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            -1907,
-            -861,
-            -3138
+            3476,
+            708,
+            -896
           ],
           "origin": "levels/ttm/areas/1/macro.inc.c"
         }
@@ -18621,74 +18628,74 @@
       "label": "Coin line on the rock bridge beside the waterfall",
       "physical_outputs": [
         {
-          "physical_source_hash": "12880330779759868149",
+          "physical_source_hash": "14620917698446547538",
           "slot": 0,
           "value": 1,
-          "area": 3,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            -1471,
-            -3646,
-            1198
+            2461,
+            1461,
+            1960
           ],
-          "origin": "levels/ttm/areas/3/macro.inc.c"
+          "origin": "levels/ttm/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "12880330779759868149",
+          "physical_source_hash": "14620917698446547538",
           "slot": 1,
           "value": 1,
-          "area": 3,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            -1471,
-            -3646,
-            1198
+            2461,
+            1461,
+            1960
           ],
-          "origin": "levels/ttm/areas/3/macro.inc.c"
+          "origin": "levels/ttm/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "12880330779759868149",
+          "physical_source_hash": "14620917698446547538",
           "slot": 2,
           "value": 1,
-          "area": 3,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            -1471,
-            -3646,
-            1198
+            2461,
+            1461,
+            1960
           ],
-          "origin": "levels/ttm/areas/3/macro.inc.c"
+          "origin": "levels/ttm/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "12880330779759868149",
+          "physical_source_hash": "14620917698446547538",
           "slot": 3,
           "value": 1,
-          "area": 3,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            -1471,
-            -3646,
-            1198
+            2461,
+            1461,
+            1960
           ],
-          "origin": "levels/ttm/areas/3/macro.inc.c"
+          "origin": "levels/ttm/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "12880330779759868149",
+          "physical_source_hash": "14620917698446547538",
           "slot": 4,
           "value": 1,
-          "area": 3,
+          "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            -1471,
-            -3646,
-            1198
+            2461,
+            1461,
+            1960
           ],
-          "origin": "levels/ttm/areas/3/macro.inc.c"
+          "origin": "levels/ttm/areas/1/macro.inc.c"
         }
       ]
     },
@@ -21067,142 +21074,142 @@
       "label": "10-Coin Block behind the start",
       "physical_outputs": [
         {
-          "physical_source_hash": "9529143994740379348",
+          "physical_source_hash": "5518623956952914474",
           "slot": 0,
           "value": 1,
           "area": 1,
           "behavior": "bhvExclamationBox",
           "source_category": "ten_coin_block",
           "position": [
-            2350,
-            5600,
-            2350
+            280,
+            -4920,
+            1660
           ],
           "origin": "levels/ttc/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "9529143994740379348",
+          "physical_source_hash": "5518623956952914474",
           "slot": 1,
           "value": 1,
           "area": 1,
           "behavior": "bhvExclamationBox",
           "source_category": "ten_coin_block",
           "position": [
-            2350,
-            5600,
-            2350
+            280,
+            -4920,
+            1660
           ],
           "origin": "levels/ttc/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "9529143994740379348",
+          "physical_source_hash": "5518623956952914474",
           "slot": 2,
           "value": 1,
           "area": 1,
           "behavior": "bhvExclamationBox",
           "source_category": "ten_coin_block",
           "position": [
-            2350,
-            5600,
-            2350
+            280,
+            -4920,
+            1660
           ],
           "origin": "levels/ttc/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "9529143994740379348",
+          "physical_source_hash": "5518623956952914474",
           "slot": 3,
           "value": 1,
           "area": 1,
           "behavior": "bhvExclamationBox",
           "source_category": "ten_coin_block",
           "position": [
-            2350,
-            5600,
-            2350
+            280,
+            -4920,
+            1660
           ],
           "origin": "levels/ttc/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "9529143994740379348",
+          "physical_source_hash": "5518623956952914474",
           "slot": 4,
           "value": 1,
           "area": 1,
           "behavior": "bhvExclamationBox",
           "source_category": "ten_coin_block",
           "position": [
-            2350,
-            5600,
-            2350
+            280,
+            -4920,
+            1660
           ],
           "origin": "levels/ttc/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "9529143994740379348",
+          "physical_source_hash": "5518623956952914474",
           "slot": 5,
           "value": 1,
           "area": 1,
           "behavior": "bhvExclamationBox",
           "source_category": "ten_coin_block",
           "position": [
-            2350,
-            5600,
-            2350
+            280,
+            -4920,
+            1660
           ],
           "origin": "levels/ttc/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "9529143994740379348",
+          "physical_source_hash": "5518623956952914474",
           "slot": 6,
           "value": 1,
           "area": 1,
           "behavior": "bhvExclamationBox",
           "source_category": "ten_coin_block",
           "position": [
-            2350,
-            5600,
-            2350
+            280,
+            -4920,
+            1660
           ],
           "origin": "levels/ttc/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "9529143994740379348",
+          "physical_source_hash": "5518623956952914474",
           "slot": 7,
           "value": 1,
           "area": 1,
           "behavior": "bhvExclamationBox",
           "source_category": "ten_coin_block",
           "position": [
-            2350,
-            5600,
-            2350
+            280,
+            -4920,
+            1660
           ],
           "origin": "levels/ttc/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "9529143994740379348",
+          "physical_source_hash": "5518623956952914474",
           "slot": 8,
           "value": 1,
           "area": 1,
           "behavior": "bhvExclamationBox",
           "source_category": "ten_coin_block",
           "position": [
-            2350,
-            5600,
-            2350
+            280,
+            -4920,
+            1660
           ],
           "origin": "levels/ttc/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "9529143994740379348",
+          "physical_source_hash": "5518623956952914474",
           "slot": 9,
           "value": 1,
           "area": 1,
           "behavior": "bhvExclamationBox",
           "source_category": "ten_coin_block",
           "position": [
-            2350,
-            5600,
-            2350
+            280,
+            -4920,
+            1660
           ],
           "origin": "levels/ttc/areas/1/macro.inc.c"
         }
@@ -21900,142 +21907,142 @@
       "label": "10-Coin Block beneath the Thwomp",
       "physical_outputs": [
         {
-          "physical_source_hash": "5518623956952914474",
+          "physical_source_hash": "9529143994740379348",
           "slot": 0,
           "value": 1,
           "area": 1,
           "behavior": "bhvExclamationBox",
           "source_category": "ten_coin_block",
           "position": [
-            280,
-            -4920,
-            1660
+            2350,
+            5600,
+            2350
           ],
           "origin": "levels/ttc/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "5518623956952914474",
+          "physical_source_hash": "9529143994740379348",
           "slot": 1,
           "value": 1,
           "area": 1,
           "behavior": "bhvExclamationBox",
           "source_category": "ten_coin_block",
           "position": [
-            280,
-            -4920,
-            1660
+            2350,
+            5600,
+            2350
           ],
           "origin": "levels/ttc/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "5518623956952914474",
+          "physical_source_hash": "9529143994740379348",
           "slot": 2,
           "value": 1,
           "area": 1,
           "behavior": "bhvExclamationBox",
           "source_category": "ten_coin_block",
           "position": [
-            280,
-            -4920,
-            1660
+            2350,
+            5600,
+            2350
           ],
           "origin": "levels/ttc/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "5518623956952914474",
+          "physical_source_hash": "9529143994740379348",
           "slot": 3,
           "value": 1,
           "area": 1,
           "behavior": "bhvExclamationBox",
           "source_category": "ten_coin_block",
           "position": [
-            280,
-            -4920,
-            1660
+            2350,
+            5600,
+            2350
           ],
           "origin": "levels/ttc/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "5518623956952914474",
+          "physical_source_hash": "9529143994740379348",
           "slot": 4,
           "value": 1,
           "area": 1,
           "behavior": "bhvExclamationBox",
           "source_category": "ten_coin_block",
           "position": [
-            280,
-            -4920,
-            1660
+            2350,
+            5600,
+            2350
           ],
           "origin": "levels/ttc/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "5518623956952914474",
+          "physical_source_hash": "9529143994740379348",
           "slot": 5,
           "value": 1,
           "area": 1,
           "behavior": "bhvExclamationBox",
           "source_category": "ten_coin_block",
           "position": [
-            280,
-            -4920,
-            1660
+            2350,
+            5600,
+            2350
           ],
           "origin": "levels/ttc/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "5518623956952914474",
+          "physical_source_hash": "9529143994740379348",
           "slot": 6,
           "value": 1,
           "area": 1,
           "behavior": "bhvExclamationBox",
           "source_category": "ten_coin_block",
           "position": [
-            280,
-            -4920,
-            1660
+            2350,
+            5600,
+            2350
           ],
           "origin": "levels/ttc/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "5518623956952914474",
+          "physical_source_hash": "9529143994740379348",
           "slot": 7,
           "value": 1,
           "area": 1,
           "behavior": "bhvExclamationBox",
           "source_category": "ten_coin_block",
           "position": [
-            280,
-            -4920,
-            1660
+            2350,
+            5600,
+            2350
           ],
           "origin": "levels/ttc/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "5518623956952914474",
+          "physical_source_hash": "9529143994740379348",
           "slot": 8,
           "value": 1,
           "area": 1,
           "behavior": "bhvExclamationBox",
           "source_category": "ten_coin_block",
           "position": [
-            280,
-            -4920,
-            1660
+            2350,
+            5600,
+            2350
           ],
           "origin": "levels/ttc/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "5518623956952914474",
+          "physical_source_hash": "9529143994740379348",
           "slot": 9,
           "value": 1,
           "area": 1,
           "behavior": "bhvExclamationBox",
           "source_category": "ten_coin_block",
           "position": [
-            280,
-            -4920,
-            1660
+            2350,
+            5600,
+            2350
           ],
           "origin": "levels/ttc/areas/1/macro.inc.c"
         }
@@ -22768,34 +22775,6 @@
       "label": "Coins on the first Donut Lifts",
       "physical_outputs": [
         {
-          "physical_source_hash": "12231870656769351872",
-          "slot": 0,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvOneCoin",
-          "source_category": "yellow_coin",
-          "position": [
-            3960,
-            -41,
-            -3640
-          ],
-          "origin": "levels/rr/areas/1/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "9638960172615935238",
-          "slot": 0,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvYellowCoin",
-          "source_category": "yellow_coin",
-          "position": [
-            5680,
-            600,
-            -2400
-          ],
-          "origin": "levels/rr/areas/1/macro.inc.c"
-        },
-        {
           "physical_source_hash": "3278976059445547044",
           "slot": 0,
           "value": 1,
@@ -22819,6 +22798,34 @@
           "position": [
             -7338,
             -2260,
+            6350
+          ],
+          "origin": "levels/rr/areas/1/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "2807519796863961272",
+          "slot": 0,
+          "value": 1,
+          "area": 1,
+          "behavior": "bhvYellowCoin",
+          "source_category": "yellow_coin",
+          "position": [
+            -6715,
+            -1900,
+            6700
+          ],
+          "origin": "levels/rr/areas/1/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "816702927119551548",
+          "slot": 0,
+          "value": 1,
+          "area": 1,
+          "behavior": "bhvYellowCoin",
+          "source_category": "yellow_coin",
+          "position": [
+            -6715,
+            -1900,
             6350
           ],
           "origin": "levels/rr/areas/1/macro.inc.c"
@@ -23349,6 +23356,27 @@
       "label": "First Blue Coin from the Maze block",
       "physical_outputs": [
         {
+          "physical_source_hash": "8373868312637973357",
+          "slot": 0,
+          "value": 5,
+          "area": 1,
+          "behavior": "bhvHiddenBlueCoin",
+          "source_category": "blue_coin_switch",
+          "position": [
+            -6750,
+            -1495,
+            0
+          ],
+          "origin": "levels/rr/areas/1/macro.inc.c"
+        }
+      ]
+    },
+    {
+      "course": "Rainbow Ride",
+      "source_id": "rr_maze_wall_kick_blue_coins",
+      "label": "Remaining Maze Blue Coins with Wall Kick",
+      "physical_outputs": [
+        {
           "physical_source_hash": "12764360259665205783",
           "slot": 0,
           "value": 5,
@@ -23361,14 +23389,7 @@
             0
           ],
           "origin": "levels/rr/areas/1/macro.inc.c"
-        }
-      ]
-    },
-    {
-      "course": "Rainbow Ride",
-      "source_id": "rr_maze_wall_kick_blue_coins",
-      "label": "Remaining Maze Blue Coins with Wall Kick",
-      "physical_outputs": [
+        },
         {
           "physical_source_hash": "685557988193389440",
           "slot": 0,
@@ -23407,20 +23428,6 @@
           "position": [
             -5600,
             1700,
-            0
-          ],
-          "origin": "levels/rr/areas/1/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "8373868312637973357",
-          "slot": 0,
-          "value": 5,
-          "area": 1,
-          "behavior": "bhvHiddenBlueCoin",
-          "source_category": "blue_coin_switch",
-          "position": [
-            -6750,
-            -1495,
             0
           ],
           "origin": "levels/rr/areas/1/macro.inc.c"
@@ -23524,16 +23531,16 @@
       "label": "Coin on the second carpet's grey platform",
       "physical_outputs": [
         {
-          "physical_source_hash": "2807519796863961272",
+          "physical_source_hash": "12231870656769351872",
           "slot": 0,
           "value": 1,
           "area": 1,
-          "behavior": "bhvYellowCoin",
+          "behavior": "bhvOneCoin",
           "source_category": "yellow_coin",
           "position": [
-            -6715,
-            -1900,
-            6700
+            3960,
+            -41,
+            -3640
           ],
           "origin": "levels/rr/areas/1/macro.inc.c"
         }
@@ -23545,16 +23552,16 @@
       "label": "Coin in the air along the second carpet",
       "physical_outputs": [
         {
-          "physical_source_hash": "816702927119551548",
+          "physical_source_hash": "9638960172615935238",
           "slot": 0,
           "value": 1,
           "area": 1,
           "behavior": "bhvYellowCoin",
           "source_category": "yellow_coin",
           "position": [
-            -6715,
-            -1900,
-            6350
+            5680,
+            600,
+            -2400
           ],
           "origin": "levels/rr/areas/1/macro.inc.c"
         }
@@ -28802,30 +28809,30 @@
           "origin": "levels/bitdw/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "2386272961115352555",
+          "physical_source_hash": "11287661594960764664",
           "slot": 0,
           "value": 1,
           "area": 1,
           "behavior": "bhvYellowCoin",
           "source_category": "yellow_coin",
           "position": [
-            -2357,
-            1200,
-            -2454
+            -170,
+            1070,
+            500
           ],
           "origin": "levels/bitdw/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "12949919814256795088",
+          "physical_source_hash": "13731882239458841883",
           "slot": 0,
           "value": 1,
           "area": 1,
           "behavior": "bhvYellowCoin",
           "source_category": "yellow_coin",
           "position": [
-            -2357,
-            1300,
-            -2454
+            1450,
+            1400,
+            500
           ],
           "origin": "levels/bitdw/areas/1/macro.inc.c"
         }
@@ -28977,6 +28984,34 @@
       "label": "Three coins on the slope",
       "physical_outputs": [
         {
+          "physical_source_hash": "2386272961115352555",
+          "slot": 0,
+          "value": 1,
+          "area": 1,
+          "behavior": "bhvYellowCoin",
+          "source_category": "yellow_coin",
+          "position": [
+            -2357,
+            1200,
+            -2454
+          ],
+          "origin": "levels/bitdw/areas/1/macro.inc.c"
+        },
+        {
+          "physical_source_hash": "12949919814256795088",
+          "slot": 0,
+          "value": 1,
+          "area": 1,
+          "behavior": "bhvYellowCoin",
+          "source_category": "yellow_coin",
+          "position": [
+            -2357,
+            1300,
+            -2454
+          ],
+          "origin": "levels/bitdw/areas/1/macro.inc.c"
+        },
+        {
           "physical_source_hash": "3044938082056275524",
           "slot": 0,
           "value": 1,
@@ -28987,34 +29022,6 @@
             -2357,
             1400,
             -2454
-          ],
-          "origin": "levels/bitdw/areas/1/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "11287661594960764664",
-          "slot": 0,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvYellowCoin",
-          "source_category": "yellow_coin",
-          "position": [
-            -170,
-            1070,
-            500
-          ],
-          "origin": "levels/bitdw/areas/1/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "13731882239458841883",
-          "slot": 0,
-          "value": 1,
-          "area": 1,
-          "behavior": "bhvYellowCoin",
-          "source_category": "yellow_coin",
-          "position": [
-            1450,
-            1400,
-            500
           ],
           "origin": "levels/bitdw/areas/1/macro.inc.c"
         }
@@ -30433,72 +30440,72 @@
           "origin": "levels/bits/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "14173834641707679399",
+          "physical_source_hash": "1585274839001224111",
           "slot": 0,
           "value": 1,
           "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            1879,
-            4639,
-            -1559
+            -302,
+            -2457,
+            -800
           ],
           "origin": "levels/bits/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "14173834641707679399",
+          "physical_source_hash": "1585274839001224111",
           "slot": 1,
           "value": 1,
           "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            1879,
-            4639,
-            -1559
+            -302,
+            -2457,
+            -800
           ],
           "origin": "levels/bits/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "14173834641707679399",
+          "physical_source_hash": "1585274839001224111",
           "slot": 2,
           "value": 1,
           "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            1879,
-            4639,
-            -1559
+            -302,
+            -2457,
+            -800
           ],
           "origin": "levels/bits/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "14173834641707679399",
+          "physical_source_hash": "1585274839001224111",
           "slot": 3,
           "value": 1,
           "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            1879,
-            4639,
-            -1559
+            -302,
+            -2457,
+            -800
           ],
           "origin": "levels/bits/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "14173834641707679399",
+          "physical_source_hash": "1585274839001224111",
           "slot": 4,
           "value": 1,
           "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            1879,
-            4639,
-            -1559
+            -302,
+            -2457,
+            -800
           ],
           "origin": "levels/bits/areas/1/macro.inc.c"
         }
@@ -30853,72 +30860,72 @@
       "label": "Coin line on the suction-cup platform",
       "physical_outputs": [
         {
-          "physical_source_hash": "1585274839001224111",
+          "physical_source_hash": "14173834641707679399",
           "slot": 0,
           "value": 1,
           "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            -302,
-            -2457,
-            -800
+            1879,
+            4639,
+            -1559
           ],
           "origin": "levels/bits/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "1585274839001224111",
+          "physical_source_hash": "14173834641707679399",
           "slot": 1,
           "value": 1,
           "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            -302,
-            -2457,
-            -800
+            1879,
+            4639,
+            -1559
           ],
           "origin": "levels/bits/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "1585274839001224111",
+          "physical_source_hash": "14173834641707679399",
           "slot": 2,
           "value": 1,
           "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            -302,
-            -2457,
-            -800
+            1879,
+            4639,
+            -1559
           ],
           "origin": "levels/bits/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "1585274839001224111",
+          "physical_source_hash": "14173834641707679399",
           "slot": 3,
           "value": 1,
           "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            -302,
-            -2457,
-            -800
+            1879,
+            4639,
+            -1559
           ],
           "origin": "levels/bits/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "1585274839001224111",
+          "physical_source_hash": "14173834641707679399",
           "slot": 4,
           "value": 1,
           "area": 1,
           "behavior": "bhvCoinFormation",
           "source_category": "horizontal_line",
           "position": [
-            -302,
-            -2457,
-            -800
+            1879,
+            4639,
+            -1559
           ],
           "origin": "levels/bits/areas/1/macro.inc.c"
         }

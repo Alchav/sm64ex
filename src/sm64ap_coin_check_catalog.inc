@@ -193,11 +193,11 @@ COIN_OUTPUT(UINT64_C(9303063478567050134), 1, 4001055) // Whomp's Fortress - Who
 COIN_OUTPUT(UINT64_C(9303063478567050134), 2, 4001056) // Whomp's Fortress - Whomp (Jump) 1, Coin 3
 COIN_OUTPUT(UINT64_C(9303063478567050134), 3, 4001057) // Whomp's Fortress - Whomp (Jump) 1, Coin 4
 COIN_OUTPUT(UINT64_C(9303063478567050134), 4, 4001058) // Whomp's Fortress - Whomp (Jump) 1, Coin 5
-COIN_OUTPUT(UINT64_C(9303063478567050134), 5, 4001059) // Whomp's Fortress - Whomp (Jump) 2, Coin 1
-COIN_OUTPUT(UINT64_C(9303063478567050134), 6, 4001060) // Whomp's Fortress - Whomp (Jump) 2, Coin 2
-COIN_OUTPUT(UINT64_C(9303063478567050134), 7, 4001061) // Whomp's Fortress - Whomp (Jump) 2, Coin 3
-COIN_OUTPUT(UINT64_C(9303063478567050134), 8, 4001062) // Whomp's Fortress - Whomp (Jump) 2, Coin 4
-COIN_OUTPUT(UINT64_C(9303063478567050134), 9, 4001063) // Whomp's Fortress - Whomp (Jump) 2, Coin 5
+COIN_OUTPUT(UINT64_C(2663990575629967044), 0, 4001059) // Whomp's Fortress - Whomp (Jump) 2, Coin 1
+COIN_OUTPUT(UINT64_C(2663990575629967044), 1, 4001060) // Whomp's Fortress - Whomp (Jump) 2, Coin 2
+COIN_OUTPUT(UINT64_C(2663990575629967044), 2, 4001061) // Whomp's Fortress - Whomp (Jump) 2, Coin 3
+COIN_OUTPUT(UINT64_C(2663990575629967044), 3, 4001062) // Whomp's Fortress - Whomp (Jump) 2, Coin 4
+COIN_OUTPUT(UINT64_C(2663990575629967044), 4, 4001063) // Whomp's Fortress - Whomp (Jump) 2, Coin 5
 COIN_OUTPUT(UINT64_C(17128574806354668731), 0, 4001064) // Whomp's Fortress - Coins Piranha Plant 1, Blue Coin
 COIN_OUTPUT(UINT64_C(11974113256670723532), 0, 4001065) // Whomp's Fortress - Coins Piranha Plant 2, Blue Coin
 COIN_OUTPUT(UINT64_C(9563385526591027141), 0, 4001066) // Whomp's Fortress - Coins Piranha Plant 3, Blue Coin
@@ -209,11 +209,11 @@ COIN_OUTPUT(UINT64_C(10208543338099510659), 4, 4001071) // Whomp's Fortress - Co
 COIN_OUTPUT(UINT64_C(10208543338099510659), 5, 4001072) // Whomp's Fortress - Coin Ring above Shoot into the Wild Blue, Coin 6
 COIN_OUTPUT(UINT64_C(10208543338099510659), 6, 4001073) // Whomp's Fortress - Coin Ring above Shoot into the Wild Blue, Coin 7
 COIN_OUTPUT(UINT64_C(10208543338099510659), 7, 4001074) // Whomp's Fortress - Coin Ring above Shoot into the Wild Blue, Coin 8
-COIN_OUTPUT(UINT64_C(2663990575629967044), 0, 4001075) // Whomp's Fortress - Whomp (Ground Pound) 1, Coin 1
-COIN_OUTPUT(UINT64_C(2663990575629967044), 1, 4001076) // Whomp's Fortress - Whomp (Ground Pound) 1, Coin 2
-COIN_OUTPUT(UINT64_C(2663990575629967044), 2, 4001077) // Whomp's Fortress - Whomp (Ground Pound) 1, Coin 3
-COIN_OUTPUT(UINT64_C(2663990575629967044), 3, 4001078) // Whomp's Fortress - Whomp (Ground Pound) 1, Coin 4
-COIN_OUTPUT(UINT64_C(2663990575629967044), 4, 4001079) // Whomp's Fortress - Whomp (Ground Pound) 1, Coin 5
+COIN_OUTPUT(UINT64_C(9303063478567050134), 5, 4001075) // Whomp's Fortress - Whomp (Ground Pound) 1, Coin 1
+COIN_OUTPUT(UINT64_C(9303063478567050134), 6, 4001076) // Whomp's Fortress - Whomp (Ground Pound) 1, Coin 2
+COIN_OUTPUT(UINT64_C(9303063478567050134), 7, 4001077) // Whomp's Fortress - Whomp (Ground Pound) 1, Coin 3
+COIN_OUTPUT(UINT64_C(9303063478567050134), 8, 4001078) // Whomp's Fortress - Whomp (Ground Pound) 1, Coin 4
+COIN_OUTPUT(UINT64_C(9303063478567050134), 9, 4001079) // Whomp's Fortress - Whomp (Ground Pound) 1, Coin 5
 COIN_OUTPUT(UINT64_C(2663990575629967044), 5, 4001080) // Whomp's Fortress - Whomp (Ground Pound) 2, Coin 1
 COIN_OUTPUT(UINT64_C(2663990575629967044), 6, 4001081) // Whomp's Fortress - Whomp (Ground Pound) 2, Coin 2
 COIN_OUTPUT(UINT64_C(2663990575629967044), 7, 4001082) // Whomp's Fortress - Whomp (Ground Pound) 2, Coin 3
@@ -490,9 +490,9 @@ COIN_OUTPUT(UINT64_C(2690613380741444010), 0, 4004041) // Big Boo's Haunt - Main
 COIN_OUTPUT(UINT64_C(9363642293810203261), 0, 4004042) // Big Boo's Haunt - Main Area Boo 5, Blue Coin
 COIN_OUTPUT(UINT64_C(2831382066749317216), 0, 4004043) // Big Boo's Haunt - Main Area Mr. I 1, Blue Coin
 COIN_OUTPUT(UINT64_C(2900673708684481129), 0, 4004044) // Big Boo's Haunt - Main Area Mr. I 2, Blue Coin
-COIN_OUTPUT(UINT64_C(601415989120819118), 0, 4004045) // Big Boo's Haunt - Main Area Flying Bookend, Blue Coin
-COIN_OUTPUT(UINT64_C(9016944388464182284), 0, 4004046) // Big Boo's Haunt - Second Floor Flying Bookend 1, Blue Coin
-COIN_OUTPUT(UINT64_C(11428700798013323924), 0, 4004047) // Big Boo's Haunt - Second Floor Flying Bookend 2, Blue Coin
+COIN_OUTPUT(UINT64_C(312056985772532339), 0, 4004045) // Big Boo's Haunt - Main Area Flying Bookend, Blue Coin
+COIN_OUTPUT(UINT64_C(13762801075027478223), 0, 4004046) // Big Boo's Haunt - Second Floor Flying Bookend 1, Blue Coin
+COIN_OUTPUT(UINT64_C(3584102075370214457), 0, 4004047) // Big Boo's Haunt - Second Floor Flying Bookend 2, Blue Coin
 COIN_OUTPUT(UINT64_C(13948300913832475066), 0, 4004048) // Big Boo's Haunt - Second Floor Mr. I, Blue Coin
 COIN_OUTPUT(UINT64_C(15006065071256724925), 0, 4004049) // Big Boo's Haunt - Third Floor Boo, Blue Coin
 COIN_OUTPUT(UINT64_C(1417484581569004874), 0, 4004050) // Big Boo's Haunt - Blue Coin Block in the Attic, Blue Coin 1
@@ -538,19 +538,19 @@ COIN_OUTPUT(UINT64_C(16463185913915276049), 7, 4005030) // Hazy Maze Cave - Coin
 COIN_OUTPUT(UINT64_C(3958470562592694863), 0, 4005031) // Hazy Maze Cave - First Room Scuttlebug 1, Coin 1
 COIN_OUTPUT(UINT64_C(3958470562592694863), 1, 4005032) // Hazy Maze Cave - First Room Scuttlebug 1, Coin 2
 COIN_OUTPUT(UINT64_C(3958470562592694863), 2, 4005033) // Hazy Maze Cave - First Room Scuttlebug 1, Coin 3
-COIN_OUTPUT(UINT64_C(14006981013454340998), 0, 4005034) // Hazy Maze Cave - First Room Scuttlebug 2, Coin 1
-COIN_OUTPUT(UINT64_C(14006981013454340998), 1, 4005035) // Hazy Maze Cave - First Room Scuttlebug 2, Coin 2
-COIN_OUTPUT(UINT64_C(14006981013454340998), 2, 4005036) // Hazy Maze Cave - First Room Scuttlebug 2, Coin 3
-COIN_OUTPUT(UINT64_C(17191618975387700076), 0, 4005037) // Hazy Maze Cave - Pit Room Scuttlebug, Coin 1
-COIN_OUTPUT(UINT64_C(17191618975387700076), 1, 4005038) // Hazy Maze Cave - Pit Room Scuttlebug, Coin 2
-COIN_OUTPUT(UINT64_C(17191618975387700076), 2, 4005039) // Hazy Maze Cave - Pit Room Scuttlebug, Coin 3
+COIN_OUTPUT(UINT64_C(5411102015334708667), 0, 4005034) // Hazy Maze Cave - First Room Scuttlebug 2, Coin 1
+COIN_OUTPUT(UINT64_C(5411102015334708667), 1, 4005035) // Hazy Maze Cave - First Room Scuttlebug 2, Coin 2
+COIN_OUTPUT(UINT64_C(5411102015334708667), 2, 4005036) // Hazy Maze Cave - First Room Scuttlebug 2, Coin 3
+COIN_OUTPUT(UINT64_C(14006981013454340998), 0, 4005037) // Hazy Maze Cave - Pit Room Scuttlebug, Coin 1
+COIN_OUTPUT(UINT64_C(14006981013454340998), 1, 4005038) // Hazy Maze Cave - Pit Room Scuttlebug, Coin 2
+COIN_OUTPUT(UINT64_C(14006981013454340998), 2, 4005039) // Hazy Maze Cave - Pit Room Scuttlebug, Coin 3
 COIN_OUTPUT(UINT64_C(10974102297585737841), 0, 4005040) // Hazy Maze Cave - Pit Room Swoop, Coin
 COIN_OUTPUT(UINT64_C(3797858055731320166), 0, 4005041) // Hazy Maze Cave - Red Coin Room Scuttlebug 1, Coin 1
 COIN_OUTPUT(UINT64_C(3797858055731320166), 1, 4005042) // Hazy Maze Cave - Red Coin Room Scuttlebug 1, Coin 2
 COIN_OUTPUT(UINT64_C(3797858055731320166), 2, 4005043) // Hazy Maze Cave - Red Coin Room Scuttlebug 1, Coin 3
-COIN_OUTPUT(UINT64_C(3701604344526161899), 0, 4005044) // Hazy Maze Cave - Red Coin Room Scuttlebug 2, Coin 1
-COIN_OUTPUT(UINT64_C(3701604344526161899), 1, 4005045) // Hazy Maze Cave - Red Coin Room Scuttlebug 2, Coin 2
-COIN_OUTPUT(UINT64_C(3701604344526161899), 2, 4005046) // Hazy Maze Cave - Red Coin Room Scuttlebug 2, Coin 3
+COIN_OUTPUT(UINT64_C(17191618975387700076), 0, 4005044) // Hazy Maze Cave - Red Coin Room Scuttlebug 2, Coin 1
+COIN_OUTPUT(UINT64_C(17191618975387700076), 1, 4005045) // Hazy Maze Cave - Red Coin Room Scuttlebug 2, Coin 2
+COIN_OUTPUT(UINT64_C(17191618975387700076), 2, 4005046) // Hazy Maze Cave - Red Coin Room Scuttlebug 2, Coin 3
 COIN_OUTPUT(UINT64_C(5903358787380473884), 0, 4005047) // Hazy Maze Cave - Toxic Maze Snufit 1, Coin 1
 COIN_OUTPUT(UINT64_C(5903358787380473884), 1, 4005048) // Hazy Maze Cave - Toxic Maze Snufit 1, Coin 2
 COIN_OUTPUT(UINT64_C(14903618546760849126), 0, 4005049) // Hazy Maze Cave - Toxic Maze Snufit 2, Coin 1
@@ -559,16 +559,16 @@ COIN_OUTPUT(UINT64_C(14164167138764216022), 0, 4005051) // Hazy Maze Cave - Toxi
 COIN_OUTPUT(UINT64_C(14164167138764216022), 1, 4005052) // Hazy Maze Cave - Toxic Maze Snufit 3, Coin 2
 COIN_OUTPUT(UINT64_C(1417126445539083715), 0, 4005053) // Hazy Maze Cave - Toxic Maze Snufit 4, Coin 1
 COIN_OUTPUT(UINT64_C(1417126445539083715), 1, 4005054) // Hazy Maze Cave - Toxic Maze Snufit 4, Coin 2
-COIN_OUTPUT(UINT64_C(14267028476984649626), 0, 4005055) // Hazy Maze Cave - Toxic Maze Swoop 1, Coin
-COIN_OUTPUT(UINT64_C(284490229854893294), 0, 4005056) // Hazy Maze Cave - Toxic Maze Swoop 2, Coin
-COIN_OUTPUT(UINT64_C(17433425974179279803), 0, 4005057) // Hazy Maze Cave - Toxic Maze Swoop 3, Coin
-COIN_OUTPUT(UINT64_C(9418592179191967743), 0, 4005058) // Hazy Maze Cave - Toxic Maze Swoop 4, Coin
+COIN_OUTPUT(UINT64_C(1606901760381041644), 0, 4005055) // Hazy Maze Cave - Toxic Maze Swoop 1, Coin
+COIN_OUTPUT(UINT64_C(4354963022658249401), 0, 4005056) // Hazy Maze Cave - Toxic Maze Swoop 2, Coin
+COIN_OUTPUT(UINT64_C(6195010085932854814), 0, 4005057) // Hazy Maze Cave - Toxic Maze Swoop 3, Coin
+COIN_OUTPUT(UINT64_C(10117788736568032419), 0, 4005058) // Hazy Maze Cave - Toxic Maze Swoop 4, Coin
 COIN_OUTPUT(UINT64_C(8456356101461922118), 0, 4005059) // Hazy Maze Cave - Red Coin Room Mr. I 1, Blue Coin
 COIN_OUTPUT(UINT64_C(7610637012824268907), 0, 4005060) // Hazy Maze Cave - Red Coin Room Mr. I 2, Blue Coin
-COIN_OUTPUT(UINT64_C(4453269395222672818), 0, 4005061) // Hazy Maze Cave - Pit Island Room Swoop 1, Coin
-COIN_OUTPUT(UINT64_C(6075404279226552842), 0, 4005062) // Hazy Maze Cave - Pit Island Room Swoop 2, Coin
-COIN_OUTPUT(UINT64_C(1606901760381041644), 0, 4005063) // Hazy Maze Cave - Upper Red Coin Swoop 1, Coin
-COIN_OUTPUT(UINT64_C(4354963022658249401), 0, 4005064) // Hazy Maze Cave - Upper Red Coin Swoop 2, Coin
+COIN_OUTPUT(UINT64_C(6075404279226552842), 0, 4005061) // Hazy Maze Cave - Pit Island Room Swoop 1, Coin
+COIN_OUTPUT(UINT64_C(14267028476984649626), 0, 4005062) // Hazy Maze Cave - Pit Island Room Swoop 2, Coin
+COIN_OUTPUT(UINT64_C(9418592179191967743), 0, 4005063) // Hazy Maze Cave - Upper Red Coin Swoop 1, Coin
+COIN_OUTPUT(UINT64_C(4453269395222672818), 0, 4005064) // Hazy Maze Cave - Upper Red Coin Swoop 2, Coin
 COIN_OUTPUT(UINT64_C(5277586270159220559), 0, 4005065) // Hazy Maze Cave - Coin Line on the Hangable Ceiling above Pit Islands, Coin 1
 COIN_OUTPUT(UINT64_C(5277586270159220559), 1, 4005066) // Hazy Maze Cave - Coin Line on the Hangable Ceiling above Pit Islands, Coin 2
 COIN_OUTPUT(UINT64_C(5277586270159220559), 2, 4005067) // Hazy Maze Cave - Coin Line on the Hangable Ceiling above Pit Islands, Coin 3
@@ -587,11 +587,11 @@ COIN_OUTPUT(UINT64_C(13299662139821820781), 1, 4005079) // Hazy Maze Cave - Coin
 COIN_OUTPUT(UINT64_C(13299662139821820781), 2, 4005080) // Hazy Maze Cave - Coin Line Leading to the Toxic Maze Star, Coin 3
 COIN_OUTPUT(UINT64_C(13299662139821820781), 3, 4005081) // Hazy Maze Cave - Coin Line Leading to the Toxic Maze Star, Coin 4
 COIN_OUTPUT(UINT64_C(13299662139821820781), 4, 4005082) // Hazy Maze Cave - Coin Line Leading to the Toxic Maze Star, Coin 5
-COIN_OUTPUT(UINT64_C(6195010085932854814), 0, 4005083) // Hazy Maze Cave - Toxic Maze Exit Swoop 1, Coin
-COIN_OUTPUT(UINT64_C(10117788736568032419), 0, 4005084) // Hazy Maze Cave - Toxic Maze Exit Swoop 2, Coin
-COIN_OUTPUT(UINT64_C(5411102015334708667), 0, 4005085) // Hazy Maze Cave - Metal Head Scuttlebug, Coin 1
-COIN_OUTPUT(UINT64_C(5411102015334708667), 1, 4005086) // Hazy Maze Cave - Metal Head Scuttlebug, Coin 2
-COIN_OUTPUT(UINT64_C(5411102015334708667), 2, 4005087) // Hazy Maze Cave - Metal Head Scuttlebug, Coin 3
+COIN_OUTPUT(UINT64_C(284490229854893294), 0, 4005083) // Hazy Maze Cave - Toxic Maze Exit Swoop 1, Coin
+COIN_OUTPUT(UINT64_C(17433425974179279803), 0, 4005084) // Hazy Maze Cave - Toxic Maze Exit Swoop 2, Coin
+COIN_OUTPUT(UINT64_C(3701604344526161899), 0, 4005085) // Hazy Maze Cave - Metal Head Scuttlebug, Coin 1
+COIN_OUTPUT(UINT64_C(3701604344526161899), 1, 4005086) // Hazy Maze Cave - Metal Head Scuttlebug, Coin 2
+COIN_OUTPUT(UINT64_C(3701604344526161899), 2, 4005087) // Hazy Maze Cave - Metal Head Scuttlebug, Coin 3
 COIN_OUTPUT(UINT64_C(8390515890583520236), 0, 4005088) // Hazy Maze Cave - Blue Coin Block in the Toxic Maze, Blue Coin 1
 COIN_OUTPUT(UINT64_C(11786314273927039507), 0, 4005089) // Hazy Maze Cave - Blue Coin Block in the Toxic Maze, Blue Coin 2
 COIN_OUTPUT(UINT64_C(970475350316332063), 0, 4005090) // Hazy Maze Cave - Blue Coin Block in the Toxic Maze, Blue Coin 3
@@ -607,14 +607,14 @@ COIN_OUTPUT(UINT64_C(9647155731457561555), 0, 4006004) // Lethal Lava Land - Bow
 COIN_OUTPUT(UINT64_C(17804129329055743325), 0, 4006005) // Lethal Lava Land - Bowser Puzzle Red Coin 6
 COIN_OUTPUT(UINT64_C(1404393121619048630), 0, 4006006) // Lethal Lava Land - Bowser Puzzle Red Coin 7
 COIN_OUTPUT(UINT64_C(3428483919344631383), 0, 4006007) // Lethal Lava Land - Bowser Puzzle Red Coin 8
-COIN_OUTPUT(UINT64_C(10124527321023754652), 0, 4006008) // Lethal Lava Land - Coin Line on the Tilting Platform past the First Mr. I, Coin 1
-COIN_OUTPUT(UINT64_C(10124527321023754652), 1, 4006009) // Lethal Lava Land - Coin Line on the Tilting Platform past the First Mr. I, Coin 2
-COIN_OUTPUT(UINT64_C(10124527321023754652), 2, 4006010) // Lethal Lava Land - Coin Line on the Tilting Platform past the First Mr. I, Coin 3
-COIN_OUTPUT(UINT64_C(10124527321023754652), 3, 4006011) // Lethal Lava Land - Coin Line on the Tilting Platform past the First Mr. I, Coin 4
-COIN_OUTPUT(UINT64_C(10124527321023754652), 4, 4006012) // Lethal Lava Land - Coin Line on the Tilting Platform past the First Mr. I, Coin 5
-COIN_OUTPUT(UINT64_C(15827073291300106623), 0, 4006013) // Lethal Lava Land - Coin on the grey ramp near the tilting platform 1
-COIN_OUTPUT(UINT64_C(16829643711767022640), 0, 4006014) // Lethal Lava Land - Coin on the grey ramp near the tilting platform 2
-COIN_OUTPUT(UINT64_C(8249543559515624239), 0, 4006015) // Lethal Lava Land - Coin on the grey ramp near the tilting platform 3
+COIN_OUTPUT(UINT64_C(7365427911583391904), 0, 4006008) // Lethal Lava Land - Coin Line on the Tilting Platform past the First Mr. I, Coin 1
+COIN_OUTPUT(UINT64_C(7365427911583391904), 1, 4006009) // Lethal Lava Land - Coin Line on the Tilting Platform past the First Mr. I, Coin 2
+COIN_OUTPUT(UINT64_C(7365427911583391904), 2, 4006010) // Lethal Lava Land - Coin Line on the Tilting Platform past the First Mr. I, Coin 3
+COIN_OUTPUT(UINT64_C(7365427911583391904), 3, 4006011) // Lethal Lava Land - Coin Line on the Tilting Platform past the First Mr. I, Coin 4
+COIN_OUTPUT(UINT64_C(7365427911583391904), 4, 4006012) // Lethal Lava Land - Coin Line on the Tilting Platform past the First Mr. I, Coin 5
+COIN_OUTPUT(UINT64_C(12853856975646563641), 0, 4006013) // Lethal Lava Land - Coin on the grey ramp near the tilting platform 1
+COIN_OUTPUT(UINT64_C(6758408911274164039), 0, 4006014) // Lethal Lava Land - Coin on the grey ramp near the tilting platform 2
+COIN_OUTPUT(UINT64_C(10291518538364945692), 0, 4006015) // Lethal Lava Land - Coin on the grey ramp near the tilting platform 3
 COIN_OUTPUT(UINT64_C(7546943580671499706), 0, 4006016) // Lethal Lava Land - Bowser Puzzle Reward, Coin 1
 COIN_OUTPUT(UINT64_C(7546943580671499706), 1, 4006017) // Lethal Lava Land - Bowser Puzzle Reward, Coin 2
 COIN_OUTPUT(UINT64_C(7546943580671499706), 2, 4006018) // Lethal Lava Land - Bowser Puzzle Reward, Coin 3
@@ -638,10 +638,10 @@ COIN_OUTPUT(UINT64_C(7605504598113665090), 1, 4006035) // Lethal Lava Land - Coi
 COIN_OUTPUT(UINT64_C(7605504598113665090), 2, 4006036) // Lethal Lava Land - Coin Line on the Northwest Brown Ramp, Coin 3
 COIN_OUTPUT(UINT64_C(7605504598113665090), 3, 4006037) // Lethal Lava Land - Coin Line on the Northwest Brown Ramp, Coin 4
 COIN_OUTPUT(UINT64_C(7605504598113665090), 4, 4006038) // Lethal Lava Land - Coin Line on the Northwest Brown Ramp, Coin 5
-COIN_OUTPUT(UINT64_C(6278963474447093671), 0, 4006039) // Lethal Lava Land - Coin on the sinking platforms near the Crazy Box 1
-COIN_OUTPUT(UINT64_C(5486290469229364450), 0, 4006040) // Lethal Lava Land - Coin on the sinking platforms near the Crazy Box 2
-COIN_OUTPUT(UINT64_C(14675751832903098624), 0, 4006041) // Lethal Lava Land - Coin on the sinking platforms near the Crazy Box 3
-COIN_OUTPUT(UINT64_C(9816707947596141169), 0, 4006042) // Lethal Lava Land - Coin on the sinking platforms near the Crazy Box 4
+COIN_OUTPUT(UINT64_C(7027135386089446776), 0, 4006039) // Lethal Lava Land - Coin on the sinking platforms near the Crazy Box 1
+COIN_OUTPUT(UINT64_C(16951231373794836013), 0, 4006040) // Lethal Lava Land - Coin on the sinking platforms near the Crazy Box 2
+COIN_OUTPUT(UINT64_C(2067889972322930480), 0, 4006041) // Lethal Lava Land - Coin on the sinking platforms near the Crazy Box 3
+COIN_OUTPUT(UINT64_C(3175190160016883788), 0, 4006042) // Lethal Lava Land - Coin on the sinking platforms near the Crazy Box 4
 COIN_OUTPUT(UINT64_C(5341303494558048788), 0, 4006043) // Lethal Lava Land - Coin Line North of the Volcano, Coin 1
 COIN_OUTPUT(UINT64_C(5341303494558048788), 1, 4006044) // Lethal Lava Land - Coin Line North of the Volcano, Coin 2
 COIN_OUTPUT(UINT64_C(5341303494558048788), 2, 4006045) // Lethal Lava Land - Coin Line North of the Volcano, Coin 3
@@ -655,13 +655,13 @@ COIN_OUTPUT(UINT64_C(2718019460061057803), 4, 4006052) // Lethal Lava Land - Coi
 COIN_OUTPUT(UINT64_C(2718019460061057803), 5, 4006053) // Lethal Lava Land - Coin Ring on the Platform with Two Bullies, Coin 6
 COIN_OUTPUT(UINT64_C(2718019460061057803), 6, 4006054) // Lethal Lava Land - Coin Ring on the Platform with Two Bullies, Coin 7
 COIN_OUTPUT(UINT64_C(2718019460061057803), 7, 4006055) // Lethal Lava Land - Coin Ring on the Platform with Two Bullies, Coin 8
-COIN_OUTPUT(UINT64_C(3202542088495976594), 0, 4006056) // Lethal Lava Land - Coin on the spinning platform around the volcano 1
-COIN_OUTPUT(UINT64_C(16385066547906058377), 0, 4006057) // Lethal Lava Land - Coin on the spinning platform around the volcano 2
-COIN_OUTPUT(UINT64_C(15928814600252398193), 0, 4006058) // Lethal Lava Land - Coin on the spinning platform around the volcano 3
-COIN_OUTPUT(UINT64_C(798033715083691492), 0, 4006059) // Lethal Lava Land - Coin on the southeast grey ramp 1
-COIN_OUTPUT(UINT64_C(10707864592431151964), 0, 4006060) // Lethal Lava Land - Coin on the southeast grey ramp 2
-COIN_OUTPUT(UINT64_C(13478813421640434365), 0, 4006061) // Lethal Lava Land - Coin on the southeast grey ramp 3
-COIN_OUTPUT(UINT64_C(7877280279321964951), 0, 4006062) // Lethal Lava Land - Coin on the southeast grey ramp 4
+COIN_OUTPUT(UINT64_C(11802112346899043749), 0, 4006056) // Lethal Lava Land - Coin on the spinning platform around the volcano 1
+COIN_OUTPUT(UINT64_C(16062448946145851285), 0, 4006057) // Lethal Lava Land - Coin on the spinning platform around the volcano 2
+COIN_OUTPUT(UINT64_C(2877955190841146688), 0, 4006058) // Lethal Lava Land - Coin on the spinning platform around the volcano 3
+COIN_OUTPUT(UINT64_C(4511575194145503501), 0, 4006059) // Lethal Lava Land - Coin on the southeast grey ramp 1
+COIN_OUTPUT(UINT64_C(2111001853781635443), 0, 4006060) // Lethal Lava Land - Coin on the southeast grey ramp 2
+COIN_OUTPUT(UINT64_C(14242453736253713222), 0, 4006061) // Lethal Lava Land - Coin on the southeast grey ramp 3
+COIN_OUTPUT(UINT64_C(11893040506946525807), 0, 4006062) // Lethal Lava Land - Coin on the southeast grey ramp 4
 COIN_OUTPUT(UINT64_C(2241243812308017401), 0, 4006063) // Lethal Lava Land - Coin Ring by the Second Mr. I, Coin 1
 COIN_OUTPUT(UINT64_C(2241243812308017401), 1, 4006064) // Lethal Lava Land - Coin Ring by the Second Mr. I, Coin 2
 COIN_OUTPUT(UINT64_C(2241243812308017401), 2, 4006065) // Lethal Lava Land - Coin Ring by the Second Mr. I, Coin 3
@@ -690,32 +690,32 @@ COIN_OUTPUT(UINT64_C(16789917666581882054), 1, 4006087) // Lethal Lava Land - Co
 COIN_OUTPUT(UINT64_C(16789917666581882054), 2, 4006088) // Lethal Lava Land - Coin Line under the Bridge, Coin 3
 COIN_OUTPUT(UINT64_C(16789917666581882054), 3, 4006089) // Lethal Lava Land - Coin Line under the Bridge, Coin 4
 COIN_OUTPUT(UINT64_C(16789917666581882054), 4, 4006090) // Lethal Lava Land - Coin Line under the Bridge, Coin 5
-COIN_OUTPUT(UINT64_C(10894641193244241238), 0, 4006091) // Lethal Lava Land - Coin on the Volcano S-Shaped Island 1
-COIN_OUTPUT(UINT64_C(14291348223681795240), 0, 4006092) // Lethal Lava Land - Coin on the Volcano S-Shaped Island 2
-COIN_OUTPUT(UINT64_C(4373150680789659948), 0, 4006093) // Lethal Lava Land - Coin on the Volcano S-Shaped Island 3
-COIN_OUTPUT(UINT64_C(4906233388512984418), 0, 4006094) // Lethal Lava Land - Coin on the Volcano First Ridge 1
-COIN_OUTPUT(UINT64_C(4284622965933490953), 0, 4006095) // Lethal Lava Land - Coin on the Volcano First Ridge 2
-COIN_OUTPUT(UINT64_C(7027135386089446776), 0, 4006096) // Lethal Lava Land - Coin on the Volcano First Ridge 3
-COIN_OUTPUT(UINT64_C(16951231373794836013), 0, 4006097) // Lethal Lava Land - Coin on the Volcano First Ridge 4
-COIN_OUTPUT(UINT64_C(2067889972322930480), 0, 4006098) // Lethal Lava Land - Coin on the Volcano First Ridge 5
-COIN_OUTPUT(UINT64_C(3175190160016883788), 0, 4006099) // Lethal Lava Land - Coin on the Volcano Second Ridge 1
-COIN_OUTPUT(UINT64_C(11802112346899043749), 0, 4006100) // Lethal Lava Land - Coin on the Volcano Second Ridge 2
-COIN_OUTPUT(UINT64_C(16062448946145851285), 0, 4006101) // Lethal Lava Land - Coin on a Volcano Floating Platform 1
-COIN_OUTPUT(UINT64_C(2877955190841146688), 0, 4006102) // Lethal Lava Land - Coin on a Volcano Floating Platform 2
-COIN_OUTPUT(UINT64_C(4511575194145503501), 0, 4006103) // Lethal Lava Land - Coin on a Volcano Floating Platform 3
-COIN_OUTPUT(UINT64_C(2111001853781635443), 0, 4006104) // Lethal Lava Land - Coin on a Volcano Floating Platform 4
-COIN_OUTPUT(UINT64_C(14242453736253713222), 0, 4006105) // Lethal Lava Land - Coin After the Volcano Floating Platforms
-COIN_OUTPUT(UINT64_C(7365427911583391904), 0, 4006106) // Lethal Lava Land - Volcano Second Bully Coin Line, Coin 1
-COIN_OUTPUT(UINT64_C(7365427911583391904), 1, 4006107) // Lethal Lava Land - Volcano Second Bully Coin Line, Coin 2
-COIN_OUTPUT(UINT64_C(7365427911583391904), 2, 4006108) // Lethal Lava Land - Volcano Second Bully Coin Line, Coin 3
-COIN_OUTPUT(UINT64_C(7365427911583391904), 3, 4006109) // Lethal Lava Land - Volcano Second Bully Coin Line, Coin 4
-COIN_OUTPUT(UINT64_C(7365427911583391904), 4, 4006110) // Lethal Lava Land - Volcano Second Bully Coin Line, Coin 5
-COIN_OUTPUT(UINT64_C(11893040506946525807), 0, 4006111) // Lethal Lava Land - Coin by the Volcano Checkerboard Lift
+COIN_OUTPUT(UINT64_C(15827073291300106623), 0, 4006091) // Lethal Lava Land - Coin on the Volcano S-Shaped Island 1
+COIN_OUTPUT(UINT64_C(16829643711767022640), 0, 4006092) // Lethal Lava Land - Coin on the Volcano S-Shaped Island 2
+COIN_OUTPUT(UINT64_C(8249543559515624239), 0, 4006093) // Lethal Lava Land - Coin on the Volcano S-Shaped Island 3
+COIN_OUTPUT(UINT64_C(6278963474447093671), 0, 4006094) // Lethal Lava Land - Coin on the Volcano First Ridge 1
+COIN_OUTPUT(UINT64_C(5486290469229364450), 0, 4006095) // Lethal Lava Land - Coin on the Volcano First Ridge 2
+COIN_OUTPUT(UINT64_C(14675751832903098624), 0, 4006096) // Lethal Lava Land - Coin on the Volcano First Ridge 3
+COIN_OUTPUT(UINT64_C(9816707947596141169), 0, 4006097) // Lethal Lava Land - Coin on the Volcano First Ridge 4
+COIN_OUTPUT(UINT64_C(3202542088495976594), 0, 4006098) // Lethal Lava Land - Coin on the Volcano First Ridge 5
+COIN_OUTPUT(UINT64_C(16385066547906058377), 0, 4006099) // Lethal Lava Land - Coin on the Volcano Second Ridge 1
+COIN_OUTPUT(UINT64_C(15928814600252398193), 0, 4006100) // Lethal Lava Land - Coin on the Volcano Second Ridge 2
+COIN_OUTPUT(UINT64_C(10707864592431151964), 0, 4006101) // Lethal Lava Land - Coin on a Volcano Floating Platform 1
+COIN_OUTPUT(UINT64_C(13478813421640434365), 0, 4006102) // Lethal Lava Land - Coin on a Volcano Floating Platform 2
+COIN_OUTPUT(UINT64_C(7877280279321964951), 0, 4006103) // Lethal Lava Land - Coin on a Volcano Floating Platform 3
+COIN_OUTPUT(UINT64_C(10894641193244241238), 0, 4006104) // Lethal Lava Land - Coin on a Volcano Floating Platform 4
+COIN_OUTPUT(UINT64_C(14291348223681795240), 0, 4006105) // Lethal Lava Land - Coin After the Volcano Floating Platforms
+COIN_OUTPUT(UINT64_C(10124527321023754652), 0, 4006106) // Lethal Lava Land - Volcano Second Bully Coin Line, Coin 1
+COIN_OUTPUT(UINT64_C(10124527321023754652), 1, 4006107) // Lethal Lava Land - Volcano Second Bully Coin Line, Coin 2
+COIN_OUTPUT(UINT64_C(10124527321023754652), 2, 4006108) // Lethal Lava Land - Volcano Second Bully Coin Line, Coin 3
+COIN_OUTPUT(UINT64_C(10124527321023754652), 3, 4006109) // Lethal Lava Land - Volcano Second Bully Coin Line, Coin 4
+COIN_OUTPUT(UINT64_C(10124527321023754652), 4, 4006110) // Lethal Lava Land - Volcano Second Bully Coin Line, Coin 5
+COIN_OUTPUT(UINT64_C(798033715083691492), 0, 4006111) // Lethal Lava Land - Coin by the Volcano Checkerboard Lift
 COIN_OUTPUT(UINT64_C(16720538951576477415), 0, 4006112) // Lethal Lava Land - Bullies Inside the Volcano, Coin 1
 COIN_OUTPUT(UINT64_C(17676223163915027477), 0, 4006113) // Lethal Lava Land - Bullies Inside the Volcano, Coin 2
-COIN_OUTPUT(UINT64_C(12853856975646563641), 0, 4006114) // Lethal Lava Land - Coin on a Tiny Elevator Tour Platform 1
-COIN_OUTPUT(UINT64_C(6758408911274164039), 0, 4006115) // Lethal Lava Land - Coin on a Tiny Elevator Tour Platform 2
-COIN_OUTPUT(UINT64_C(10291518538364945692), 0, 4006116) // Lethal Lava Land - Coin on a Tiny Elevator Tour Platform 3
+COIN_OUTPUT(UINT64_C(4373150680789659948), 0, 4006114) // Lethal Lava Land - Coin on a Tiny Elevator Tour Platform 1
+COIN_OUTPUT(UINT64_C(4906233388512984418), 0, 4006115) // Lethal Lava Land - Coin on a Tiny Elevator Tour Platform 2
+COIN_OUTPUT(UINT64_C(4284622965933490953), 0, 4006116) // Lethal Lava Land - Coin on a Tiny Elevator Tour Platform 3
 COIN_OUTPUT(UINT64_C(14293553691176029742), 0, 4007000) // Shifting Sand Land - Low Red Coin 1
 COIN_OUTPUT(UINT64_C(9414584811979787400), 0, 4007001) // Shifting Sand Land - Low Red Coin 2
 COIN_OUTPUT(UINT64_C(12943639299368728442), 0, 4007002) // Shifting Sand Land - Low Red Coin 3
@@ -729,20 +729,20 @@ COIN_OUTPUT(UINT64_C(4081893308177414178), 1, 4007009) // Shifting Sand Land - T
 COIN_OUTPUT(UINT64_C(4081893308177414178), 2, 4007010) // Shifting Sand Land - Throwable Cork Box under the Stone Structure, Coin 3
 COIN_OUTPUT(UINT64_C(15602545707476315043), 0, 4007011) // Shifting Sand Land - Coin on the pillars and inside the pyramid 1
 COIN_OUTPUT(UINT64_C(12422882845904271731), 0, 4007012) // Shifting Sand Land - Coin on the pillars and inside the pyramid 2
-COIN_OUTPUT(UINT64_C(8165131779597419255), 0, 4007013) // Shifting Sand Land - Coin on the pillars and inside the pyramid 3
-COIN_OUTPUT(UINT64_C(14766489452796015096), 0, 4007014) // Shifting Sand Land - Coin on the pillars and inside the pyramid 4
-COIN_OUTPUT(UINT64_C(11883279709474666479), 0, 4007015) // Shifting Sand Land - Coin on the pillars and inside the pyramid 5
-COIN_OUTPUT(UINT64_C(1406342023246589295), 0, 4007016) // Shifting Sand Land - Coin on the pillars and inside the pyramid 6
-COIN_OUTPUT(UINT64_C(14518569664435607715), 0, 4007017) // Shifting Sand Land - Line of Coins Between the Two Pillars behind the Pyramid, Coin 1
-COIN_OUTPUT(UINT64_C(14518569664435607715), 1, 4007018) // Shifting Sand Land - Line of Coins Between the Two Pillars behind the Pyramid, Coin 2
-COIN_OUTPUT(UINT64_C(14518569664435607715), 2, 4007019) // Shifting Sand Land - Line of Coins Between the Two Pillars behind the Pyramid, Coin 3
-COIN_OUTPUT(UINT64_C(14518569664435607715), 3, 4007020) // Shifting Sand Land - Line of Coins Between the Two Pillars behind the Pyramid, Coin 4
-COIN_OUTPUT(UINT64_C(14518569664435607715), 4, 4007021) // Shifting Sand Land - Line of Coins Between the Two Pillars behind the Pyramid, Coin 5
-COIN_OUTPUT(UINT64_C(8155439645930585855), 0, 4007022) // Shifting Sand Land - Line of Coins on the Pyramid, Coin 1
-COIN_OUTPUT(UINT64_C(8155439645930585855), 1, 4007023) // Shifting Sand Land - Line of Coins on the Pyramid, Coin 2
-COIN_OUTPUT(UINT64_C(8155439645930585855), 2, 4007024) // Shifting Sand Land - Line of Coins on the Pyramid, Coin 3
-COIN_OUTPUT(UINT64_C(8155439645930585855), 3, 4007025) // Shifting Sand Land - Line of Coins on the Pyramid, Coin 4
-COIN_OUTPUT(UINT64_C(8155439645930585855), 4, 4007026) // Shifting Sand Land - Line of Coins on the Pyramid, Coin 5
+COIN_OUTPUT(UINT64_C(4382313649259893480), 0, 4007013) // Shifting Sand Land - Coin on the pillars and inside the pyramid 3
+COIN_OUTPUT(UINT64_C(2422503382776658443), 0, 4007014) // Shifting Sand Land - Coin on the pillars and inside the pyramid 4
+COIN_OUTPUT(UINT64_C(13018914917284060455), 0, 4007015) // Shifting Sand Land - Coin on the pillars and inside the pyramid 5
+COIN_OUTPUT(UINT64_C(17649701953798994105), 0, 4007016) // Shifting Sand Land - Coin on the pillars and inside the pyramid 6
+COIN_OUTPUT(UINT64_C(12030265062968786643), 0, 4007017) // Shifting Sand Land - Line of Coins Between the Two Pillars behind the Pyramid, Coin 1
+COIN_OUTPUT(UINT64_C(12030265062968786643), 1, 4007018) // Shifting Sand Land - Line of Coins Between the Two Pillars behind the Pyramid, Coin 2
+COIN_OUTPUT(UINT64_C(12030265062968786643), 2, 4007019) // Shifting Sand Land - Line of Coins Between the Two Pillars behind the Pyramid, Coin 3
+COIN_OUTPUT(UINT64_C(12030265062968786643), 3, 4007020) // Shifting Sand Land - Line of Coins Between the Two Pillars behind the Pyramid, Coin 4
+COIN_OUTPUT(UINT64_C(12030265062968786643), 4, 4007021) // Shifting Sand Land - Line of Coins Between the Two Pillars behind the Pyramid, Coin 5
+COIN_OUTPUT(UINT64_C(4004316342643800839), 0, 4007022) // Shifting Sand Land - Line of Coins on the Pyramid, Coin 1
+COIN_OUTPUT(UINT64_C(4004316342643800839), 1, 4007023) // Shifting Sand Land - Line of Coins on the Pyramid, Coin 2
+COIN_OUTPUT(UINT64_C(4004316342643800839), 2, 4007024) // Shifting Sand Land - Line of Coins on the Pyramid, Coin 3
+COIN_OUTPUT(UINT64_C(4004316342643800839), 3, 4007025) // Shifting Sand Land - Line of Coins on the Pyramid, Coin 4
+COIN_OUTPUT(UINT64_C(4004316342643800839), 4, 4007026) // Shifting Sand Land - Line of Coins on the Pyramid, Coin 5
 COIN_OUTPUT(UINT64_C(9925213029159076418), 0, 4007027) // Shifting Sand Land - Fly Guy 1, Coin 1
 COIN_OUTPUT(UINT64_C(9925213029159076418), 1, 4007028) // Shifting Sand Land - Fly Guy 1, Coin 2
 COIN_OUTPUT(UINT64_C(17300255347736836908), 0, 4007029) // Shifting Sand Land - Fly Guy 2, Coin 1
@@ -785,16 +785,16 @@ COIN_OUTPUT(UINT64_C(17968119346047888145), 4, 4007065) // Shifting Sand Land - 
 COIN_OUTPUT(UINT64_C(17968119346047888145), 5, 4007066) // Shifting Sand Land - Coin Ring under the First Pyramid Wire Grid, Coin 6
 COIN_OUTPUT(UINT64_C(17968119346047888145), 6, 4007067) // Shifting Sand Land - Coin Ring under the First Pyramid Wire Grid, Coin 7
 COIN_OUTPUT(UINT64_C(17968119346047888145), 7, 4007068) // Shifting Sand Land - Coin Ring under the First Pyramid Wire Grid, Coin 8
-COIN_OUTPUT(UINT64_C(12030265062968786643), 0, 4007069) // Shifting Sand Land - Line of Coins under the Second Wire Grid, Coin 1
-COIN_OUTPUT(UINT64_C(12030265062968786643), 1, 4007070) // Shifting Sand Land - Line of Coins under the Second Wire Grid, Coin 2
-COIN_OUTPUT(UINT64_C(12030265062968786643), 2, 4007071) // Shifting Sand Land - Line of Coins under the Second Wire Grid, Coin 3
-COIN_OUTPUT(UINT64_C(12030265062968786643), 3, 4007072) // Shifting Sand Land - Line of Coins under the Second Wire Grid, Coin 4
-COIN_OUTPUT(UINT64_C(12030265062968786643), 4, 4007073) // Shifting Sand Land - Line of Coins under the Second Wire Grid, Coin 5
-COIN_OUTPUT(UINT64_C(4004316342643800839), 0, 4007074) // Shifting Sand Land - Horizontal Coin Line at the Top of the Pyramid, Coin 1
-COIN_OUTPUT(UINT64_C(4004316342643800839), 1, 4007075) // Shifting Sand Land - Horizontal Coin Line at the Top of the Pyramid, Coin 2
-COIN_OUTPUT(UINT64_C(4004316342643800839), 2, 4007076) // Shifting Sand Land - Horizontal Coin Line at the Top of the Pyramid, Coin 3
-COIN_OUTPUT(UINT64_C(4004316342643800839), 3, 4007077) // Shifting Sand Land - Horizontal Coin Line at the Top of the Pyramid, Coin 4
-COIN_OUTPUT(UINT64_C(4004316342643800839), 4, 4007078) // Shifting Sand Land - Horizontal Coin Line at the Top of the Pyramid, Coin 5
+COIN_OUTPUT(UINT64_C(14518569664435607715), 0, 4007069) // Shifting Sand Land - Line of Coins under the Second Wire Grid, Coin 1
+COIN_OUTPUT(UINT64_C(14518569664435607715), 1, 4007070) // Shifting Sand Land - Line of Coins under the Second Wire Grid, Coin 2
+COIN_OUTPUT(UINT64_C(14518569664435607715), 2, 4007071) // Shifting Sand Land - Line of Coins under the Second Wire Grid, Coin 3
+COIN_OUTPUT(UINT64_C(14518569664435607715), 3, 4007072) // Shifting Sand Land - Line of Coins under the Second Wire Grid, Coin 4
+COIN_OUTPUT(UINT64_C(14518569664435607715), 4, 4007073) // Shifting Sand Land - Line of Coins under the Second Wire Grid, Coin 5
+COIN_OUTPUT(UINT64_C(8155439645930585855), 0, 4007074) // Shifting Sand Land - Horizontal Coin Line at the Top of the Pyramid, Coin 1
+COIN_OUTPUT(UINT64_C(8155439645930585855), 1, 4007075) // Shifting Sand Land - Horizontal Coin Line at the Top of the Pyramid, Coin 2
+COIN_OUTPUT(UINT64_C(8155439645930585855), 2, 4007076) // Shifting Sand Land - Horizontal Coin Line at the Top of the Pyramid, Coin 3
+COIN_OUTPUT(UINT64_C(8155439645930585855), 3, 4007077) // Shifting Sand Land - Horizontal Coin Line at the Top of the Pyramid, Coin 4
+COIN_OUTPUT(UINT64_C(8155439645930585855), 4, 4007078) // Shifting Sand Land - Horizontal Coin Line at the Top of the Pyramid, Coin 5
 COIN_OUTPUT(UINT64_C(10112853954038345477), 0, 4007079) // Shifting Sand Land - Vertical Coin Line at the Top of the Pyramid, Coin 1
 COIN_OUTPUT(UINT64_C(10112853954038345477), 1, 4007080) // Shifting Sand Land - Vertical Coin Line at the Top of the Pyramid, Coin 2
 COIN_OUTPUT(UINT64_C(10112853954038345477), 2, 4007081) // Shifting Sand Land - Vertical Coin Line at the Top of the Pyramid, Coin 3
@@ -809,10 +809,10 @@ COIN_OUTPUT(UINT64_C(11177270143234397491), 0, 4007089) // Shifting Sand Land - 
 COIN_OUTPUT(UINT64_C(2606391377694497260), 0, 4007090) // Shifting Sand Land - Moving-step and Pyramid Puzzle secret Coin 7
 COIN_OUTPUT(UINT64_C(16697551111082988386), 0, 4007091) // Shifting Sand Land - Moving-step and Pyramid Puzzle secret Coin 8
 COIN_OUTPUT(UINT64_C(10554966551832466604), 0, 4007092) // Shifting Sand Land - Moving-step and Pyramid Puzzle secret Coin 9
-COIN_OUTPUT(UINT64_C(4382313649259893480), 0, 4007093) // Shifting Sand Land - Moving-step and Pyramid Puzzle secret Coin 10
-COIN_OUTPUT(UINT64_C(2422503382776658443), 0, 4007094) // Shifting Sand Land - Moving-step and Pyramid Puzzle secret Coin 11
-COIN_OUTPUT(UINT64_C(13018914917284060455), 0, 4007095) // Shifting Sand Land - Moving-step and Pyramid Puzzle secret Coin 12
-COIN_OUTPUT(UINT64_C(17649701953798994105), 0, 4007096) // Shifting Sand Land - Moving-step and Pyramid Puzzle secret Coin 13
+COIN_OUTPUT(UINT64_C(8165131779597419255), 0, 4007093) // Shifting Sand Land - Moving-step and Pyramid Puzzle secret Coin 10
+COIN_OUTPUT(UINT64_C(14766489452796015096), 0, 4007094) // Shifting Sand Land - Moving-step and Pyramid Puzzle secret Coin 11
+COIN_OUTPUT(UINT64_C(11883279709474666479), 0, 4007095) // Shifting Sand Land - Moving-step and Pyramid Puzzle secret Coin 12
+COIN_OUTPUT(UINT64_C(1406342023246589295), 0, 4007096) // Shifting Sand Land - Moving-step and Pyramid Puzzle secret Coin 13
 COIN_OUTPUT(UINT64_C(13335229797899606345), 0, 4007097) // Shifting Sand Land - Blue Coin Block, Blue Coin 1
 COIN_OUTPUT(UINT64_C(6529566274664097061), 0, 4007098) // Shifting Sand Land - Blue Coin Block, Blue Coin 2
 COIN_OUTPUT(UINT64_C(3062805927971163873), 0, 4007099) // Shifting Sand Land - Blue Coin Block, Blue Coin 3
@@ -824,21 +824,21 @@ COIN_OUTPUT(UINT64_C(15200169914060085996), 0, 4008004) // Dire, Dire Docks - Po
 COIN_OUTPUT(UINT64_C(1452300432222811096), 0, 4008005) // Dire, Dire Docks - Pole Red Coin 5
 COIN_OUTPUT(UINT64_C(6893940019990163828), 0, 4008006) // Dire, Dire Docks - Pole Red Coin 6
 COIN_OUTPUT(UINT64_C(17237321833514307885), 0, 4008007) // Dire, Dire Docks - Pole Red Coin 7
-COIN_OUTPUT(UINT64_C(10230244405460854563), 0, 4008008) // Dire, Dire Docks - Sloped Underwater Coin Line near the Start, Coin 1
-COIN_OUTPUT(UINT64_C(10230244405460854563), 1, 4008009) // Dire, Dire Docks - Sloped Underwater Coin Line near the Start, Coin 2
-COIN_OUTPUT(UINT64_C(10230244405460854563), 2, 4008010) // Dire, Dire Docks - Sloped Underwater Coin Line near the Start, Coin 3
-COIN_OUTPUT(UINT64_C(10230244405460854563), 3, 4008011) // Dire, Dire Docks - Sloped Underwater Coin Line near the Start, Coin 4
-COIN_OUTPUT(UINT64_C(10230244405460854563), 4, 4008012) // Dire, Dire Docks - Sloped Underwater Coin Line near the Start, Coin 5
-COIN_OUTPUT(UINT64_C(6653844087100020241), 0, 4008013) // Dire, Dire Docks - Vertical Coin Line by the Chests and First Current 1, Coin 1
-COIN_OUTPUT(UINT64_C(6653844087100020241), 1, 4008014) // Dire, Dire Docks - Vertical Coin Line by the Chests and First Current 1, Coin 2
-COIN_OUTPUT(UINT64_C(6653844087100020241), 2, 4008015) // Dire, Dire Docks - Vertical Coin Line by the Chests and First Current 1, Coin 3
-COIN_OUTPUT(UINT64_C(6653844087100020241), 3, 4008016) // Dire, Dire Docks - Vertical Coin Line by the Chests and First Current 1, Coin 4
-COIN_OUTPUT(UINT64_C(6653844087100020241), 4, 4008017) // Dire, Dire Docks - Vertical Coin Line by the Chests and First Current 1, Coin 5
-COIN_OUTPUT(UINT64_C(17794176197671576187), 0, 4008018) // Dire, Dire Docks - Vertical Coin Line by the Chests and First Current 2, Coin 1
-COIN_OUTPUT(UINT64_C(17794176197671576187), 1, 4008019) // Dire, Dire Docks - Vertical Coin Line by the Chests and First Current 2, Coin 2
-COIN_OUTPUT(UINT64_C(17794176197671576187), 2, 4008020) // Dire, Dire Docks - Vertical Coin Line by the Chests and First Current 2, Coin 3
-COIN_OUTPUT(UINT64_C(17794176197671576187), 3, 4008021) // Dire, Dire Docks - Vertical Coin Line by the Chests and First Current 2, Coin 4
-COIN_OUTPUT(UINT64_C(17794176197671576187), 4, 4008022) // Dire, Dire Docks - Vertical Coin Line by the Chests and First Current 2, Coin 5
+COIN_OUTPUT(UINT64_C(3546215089401017384), 0, 4008008) // Dire, Dire Docks - Sloped Underwater Coin Line near the Start, Coin 1
+COIN_OUTPUT(UINT64_C(3546215089401017384), 1, 4008009) // Dire, Dire Docks - Sloped Underwater Coin Line near the Start, Coin 2
+COIN_OUTPUT(UINT64_C(3546215089401017384), 2, 4008010) // Dire, Dire Docks - Sloped Underwater Coin Line near the Start, Coin 3
+COIN_OUTPUT(UINT64_C(3546215089401017384), 3, 4008011) // Dire, Dire Docks - Sloped Underwater Coin Line near the Start, Coin 4
+COIN_OUTPUT(UINT64_C(3546215089401017384), 4, 4008012) // Dire, Dire Docks - Sloped Underwater Coin Line near the Start, Coin 5
+COIN_OUTPUT(UINT64_C(17794176197671576187), 0, 4008013) // Dire, Dire Docks - Vertical Coin Line by the Chests and First Current 1, Coin 1
+COIN_OUTPUT(UINT64_C(17794176197671576187), 1, 4008014) // Dire, Dire Docks - Vertical Coin Line by the Chests and First Current 1, Coin 2
+COIN_OUTPUT(UINT64_C(17794176197671576187), 2, 4008015) // Dire, Dire Docks - Vertical Coin Line by the Chests and First Current 1, Coin 3
+COIN_OUTPUT(UINT64_C(17794176197671576187), 3, 4008016) // Dire, Dire Docks - Vertical Coin Line by the Chests and First Current 1, Coin 4
+COIN_OUTPUT(UINT64_C(17794176197671576187), 4, 4008017) // Dire, Dire Docks - Vertical Coin Line by the Chests and First Current 1, Coin 5
+COIN_OUTPUT(UINT64_C(2352510633111137788), 0, 4008018) // Dire, Dire Docks - Vertical Coin Line by the Chests and First Current 2, Coin 1
+COIN_OUTPUT(UINT64_C(2352510633111137788), 1, 4008019) // Dire, Dire Docks - Vertical Coin Line by the Chests and First Current 2, Coin 2
+COIN_OUTPUT(UINT64_C(2352510633111137788), 2, 4008020) // Dire, Dire Docks - Vertical Coin Line by the Chests and First Current 2, Coin 3
+COIN_OUTPUT(UINT64_C(2352510633111137788), 3, 4008021) // Dire, Dire Docks - Vertical Coin Line by the Chests and First Current 2, Coin 4
+COIN_OUTPUT(UINT64_C(2352510633111137788), 4, 4008022) // Dire, Dire Docks - Vertical Coin Line by the Chests and First Current 2, Coin 5
 COIN_OUTPUT(UINT64_C(8616316060339225750), 0, 4008023) // Dire, Dire Docks - Coin surrounding the sea-floor chest 1
 COIN_OUTPUT(UINT64_C(13111074439792077036), 0, 4008024) // Dire, Dire Docks - Coin surrounding the sea-floor chest 2
 COIN_OUTPUT(UINT64_C(2240098397070788150), 0, 4008025) // Dire, Dire Docks - Coin surrounding the sea-floor chest 3
@@ -874,16 +874,16 @@ COIN_OUTPUT(UINT64_C(5446012360660660711), 4, 4008054) // Dire, Dire Docks - Sea
 COIN_OUTPUT(UINT64_C(5446012360660660711), 5, 4008055) // Dire, Dire Docks - Sea-Floor Coin Ring by the Koopa Shell Clam, Coin 6
 COIN_OUTPUT(UINT64_C(5446012360660660711), 6, 4008056) // Dire, Dire Docks - Sea-Floor Coin Ring by the Koopa Shell Clam, Coin 7
 COIN_OUTPUT(UINT64_C(5446012360660660711), 7, 4008057) // Dire, Dire Docks - Sea-Floor Coin Ring by the Koopa Shell Clam, Coin 8
-COIN_OUTPUT(UINT64_C(2352510633111137788), 0, 4008058) // Dire, Dire Docks - Vertical Coin Line by the Moat Exit, Coin 1
-COIN_OUTPUT(UINT64_C(2352510633111137788), 1, 4008059) // Dire, Dire Docks - Vertical Coin Line by the Moat Exit, Coin 2
-COIN_OUTPUT(UINT64_C(2352510633111137788), 2, 4008060) // Dire, Dire Docks - Vertical Coin Line by the Moat Exit, Coin 3
-COIN_OUTPUT(UINT64_C(2352510633111137788), 3, 4008061) // Dire, Dire Docks - Vertical Coin Line by the Moat Exit, Coin 4
-COIN_OUTPUT(UINT64_C(2352510633111137788), 4, 4008062) // Dire, Dire Docks - Vertical Coin Line by the Moat Exit, Coin 5
-COIN_OUTPUT(UINT64_C(3546215089401017384), 0, 4008063) // Dire, Dire Docks - Coin Line on the Bowser's Sub Area Dock, Coin 1
-COIN_OUTPUT(UINT64_C(3546215089401017384), 1, 4008064) // Dire, Dire Docks - Coin Line on the Bowser's Sub Area Dock, Coin 2
-COIN_OUTPUT(UINT64_C(3546215089401017384), 2, 4008065) // Dire, Dire Docks - Coin Line on the Bowser's Sub Area Dock, Coin 3
-COIN_OUTPUT(UINT64_C(3546215089401017384), 3, 4008066) // Dire, Dire Docks - Coin Line on the Bowser's Sub Area Dock, Coin 4
-COIN_OUTPUT(UINT64_C(3546215089401017384), 4, 4008067) // Dire, Dire Docks - Coin Line on the Bowser's Sub Area Dock, Coin 5
+COIN_OUTPUT(UINT64_C(6653844087100020241), 0, 4008058) // Dire, Dire Docks - Vertical Coin Line by the Moat Exit, Coin 1
+COIN_OUTPUT(UINT64_C(6653844087100020241), 1, 4008059) // Dire, Dire Docks - Vertical Coin Line by the Moat Exit, Coin 2
+COIN_OUTPUT(UINT64_C(6653844087100020241), 2, 4008060) // Dire, Dire Docks - Vertical Coin Line by the Moat Exit, Coin 3
+COIN_OUTPUT(UINT64_C(6653844087100020241), 3, 4008061) // Dire, Dire Docks - Vertical Coin Line by the Moat Exit, Coin 4
+COIN_OUTPUT(UINT64_C(6653844087100020241), 4, 4008062) // Dire, Dire Docks - Vertical Coin Line by the Moat Exit, Coin 5
+COIN_OUTPUT(UINT64_C(10230244405460854563), 0, 4008063) // Dire, Dire Docks - Coin Line on the Bowser's Sub Area Dock, Coin 1
+COIN_OUTPUT(UINT64_C(10230244405460854563), 1, 4008064) // Dire, Dire Docks - Coin Line on the Bowser's Sub Area Dock, Coin 2
+COIN_OUTPUT(UINT64_C(10230244405460854563), 2, 4008065) // Dire, Dire Docks - Coin Line on the Bowser's Sub Area Dock, Coin 3
+COIN_OUTPUT(UINT64_C(10230244405460854563), 3, 4008066) // Dire, Dire Docks - Coin Line on the Bowser's Sub Area Dock, Coin 4
+COIN_OUTPUT(UINT64_C(10230244405460854563), 4, 4008067) // Dire, Dire Docks - Coin Line on the Bowser's Sub Area Dock, Coin 5
 COIN_OUTPUT(UINT64_C(14312627626781387420), 0, 4008068) // Dire, Dire Docks - Blue Coin Block, Blue Coin 1
 COIN_OUTPUT(UINT64_C(8950597997808973362), 0, 4008069) // Dire, Dire Docks - Blue Coin Block, Blue Coin 2
 COIN_OUTPUT(UINT64_C(15715663951500616232), 0, 4008070) // Dire, Dire Docks - Blue Coin Block, Blue Coin 3
@@ -898,117 +898,117 @@ COIN_OUTPUT(UINT64_C(7087480147723625971), 0, 4009004) // Snowman's Land - Upper
 COIN_OUTPUT(UINT64_C(6679112684284108255), 0, 4009005) // Snowman's Land - Upper Area Red Coin 3
 COIN_OUTPUT(UINT64_C(12329403890245757754), 0, 4009006) // Snowman's Land - Upper Area Red Coin 4
 COIN_OUTPUT(UINT64_C(1950029244357072761), 0, 4009007) // Snowman's Land - Upper Area Red Coin 5
-COIN_OUTPUT(UINT64_C(7492938643573794693), 0, 4009008) // Snowman's Land - Coin to the left of the start 1
-COIN_OUTPUT(UINT64_C(14852852717242393360), 0, 4009009) // Snowman's Land - Coin to the left of the start 2
-COIN_OUTPUT(UINT64_C(16088409167933281710), 0, 4009010) // Snowman's Land - Spindrift 1, Coin 1
-COIN_OUTPUT(UINT64_C(16088409167933281710), 1, 4009011) // Snowman's Land - Spindrift 1, Coin 2
-COIN_OUTPUT(UINT64_C(16088409167933281710), 2, 4009012) // Snowman's Land - Spindrift 1, Coin 3
-COIN_OUTPUT(UINT64_C(10160985286321796349), 0, 4009013) // Snowman's Land - Spindrift 2, Coin 1
-COIN_OUTPUT(UINT64_C(10160985286321796349), 1, 4009014) // Snowman's Land - Spindrift 2, Coin 2
-COIN_OUTPUT(UINT64_C(10160985286321796349), 2, 4009015) // Snowman's Land - Spindrift 2, Coin 3
-COIN_OUTPUT(UINT64_C(7725852762849613280), 0, 4009016) // Snowman's Land - Spindrift 3, Coin 1
-COIN_OUTPUT(UINT64_C(7725852762849613280), 1, 4009017) // Snowman's Land - Spindrift 3, Coin 2
-COIN_OUTPUT(UINT64_C(7725852762849613280), 2, 4009018) // Snowman's Land - Spindrift 3, Coin 3
-COIN_OUTPUT(UINT64_C(11191748824926356512), 0, 4009019) // Snowman's Land - Spindrift 4, Coin 1
-COIN_OUTPUT(UINT64_C(11191748824926356512), 1, 4009020) // Snowman's Land - Spindrift 4, Coin 2
-COIN_OUTPUT(UINT64_C(11191748824926356512), 2, 4009021) // Snowman's Land - Spindrift 4, Coin 3
-COIN_OUTPUT(UINT64_C(17147385638834605675), 0, 4009022) // Snowman's Land - Spindrift 5, Coin 1
-COIN_OUTPUT(UINT64_C(17147385638834605675), 1, 4009023) // Snowman's Land - Spindrift 5, Coin 2
-COIN_OUTPUT(UINT64_C(17147385638834605675), 2, 4009024) // Snowman's Land - Spindrift 5, Coin 3
-COIN_OUTPUT(UINT64_C(14069095341501401659), 0, 4009025) // Snowman's Land - Spindrift 6, Coin 1
-COIN_OUTPUT(UINT64_C(14069095341501401659), 1, 4009026) // Snowman's Land - Spindrift 6, Coin 2
-COIN_OUTPUT(UINT64_C(14069095341501401659), 2, 4009027) // Snowman's Land - Spindrift 6, Coin 3
-COIN_OUTPUT(UINT64_C(2107856898993926830), 0, 4009028) // Snowman's Land - Spindrift 7, Coin 1
-COIN_OUTPUT(UINT64_C(2107856898993926830), 1, 4009029) // Snowman's Land - Spindrift 7, Coin 2
-COIN_OUTPUT(UINT64_C(2107856898993926830), 2, 4009030) // Snowman's Land - Spindrift 7, Coin 3
-COIN_OUTPUT(UINT64_C(8917769875028990840), 0, 4009031) // Snowman's Land - Spindrift 8, Coin 1
-COIN_OUTPUT(UINT64_C(8917769875028990840), 1, 4009032) // Snowman's Land - Spindrift 8, Coin 2
-COIN_OUTPUT(UINT64_C(8917769875028990840), 2, 4009033) // Snowman's Land - Spindrift 8, Coin 3
-COIN_OUTPUT(UINT64_C(4363970510784860473), 0, 4009034) // Snowman's Land - Spindrift 9, Coin 1
-COIN_OUTPUT(UINT64_C(4363970510784860473), 1, 4009035) // Snowman's Land - Spindrift 9, Coin 2
-COIN_OUTPUT(UINT64_C(4363970510784860473), 2, 4009036) // Snowman's Land - Spindrift 9, Coin 3
-COIN_OUTPUT(UINT64_C(5765316583175035318), 0, 4009037) // Snowman's Land - Spindrift 10, Coin 1
-COIN_OUTPUT(UINT64_C(5765316583175035318), 1, 4009038) // Snowman's Land - Spindrift 10, Coin 2
-COIN_OUTPUT(UINT64_C(5765316583175035318), 2, 4009039) // Snowman's Land - Spindrift 10, Coin 3
-COIN_OUTPUT(UINT64_C(12774522627545135696), 0, 4009040) // Snowman's Land - Spindrift 11, Coin 1
-COIN_OUTPUT(UINT64_C(12774522627545135696), 1, 4009041) // Snowman's Land - Spindrift 11, Coin 2
-COIN_OUTPUT(UINT64_C(12774522627545135696), 2, 4009042) // Snowman's Land - Spindrift 11, Coin 3
-COIN_OUTPUT(UINT64_C(12698850772539389505), 0, 4009043) // Snowman's Land - Starting Area Mr. Blizzard 1, Coin 1
-COIN_OUTPUT(UINT64_C(12698850772539389505), 1, 4009044) // Snowman's Land - Starting Area Mr. Blizzard 1, Coin 2
-COIN_OUTPUT(UINT64_C(12698850772539389505), 2, 4009045) // Snowman's Land - Starting Area Mr. Blizzard 1, Coin 3
-COIN_OUTPUT(UINT64_C(12770671748981521689), 0, 4009046) // Snowman's Land - Starting Area Mr. Blizzard 2, Coin 1
-COIN_OUTPUT(UINT64_C(12770671748981521689), 1, 4009047) // Snowman's Land - Starting Area Mr. Blizzard 2, Coin 2
-COIN_OUTPUT(UINT64_C(12770671748981521689), 2, 4009048) // Snowman's Land - Starting Area Mr. Blizzard 2, Coin 3
-COIN_OUTPUT(UINT64_C(3902661467295987505), 0, 4009049) // Snowman's Land - Starting Area Mr. Blizzard 3, Coin 1
-COIN_OUTPUT(UINT64_C(3902661467295987505), 1, 4009050) // Snowman's Land - Starting Area Mr. Blizzard 3, Coin 2
-COIN_OUTPUT(UINT64_C(3902661467295987505), 2, 4009051) // Snowman's Land - Starting Area Mr. Blizzard 3, Coin 3
-COIN_OUTPUT(UINT64_C(14168140510935366300), 0, 4009052) // Snowman's Land - Moneybag 1, Coin 1
-COIN_OUTPUT(UINT64_C(14168140510935366300), 1, 4009053) // Snowman's Land - Moneybag 1, Coin 2
-COIN_OUTPUT(UINT64_C(14168140510935366300), 2, 4009054) // Snowman's Land - Moneybag 1, Coin 3
-COIN_OUTPUT(UINT64_C(14168140510935366300), 3, 4009055) // Snowman's Land - Moneybag 1, Coin 4
-COIN_OUTPUT(UINT64_C(14168140510935366300), 4, 4009056) // Snowman's Land - Moneybag 1, Coin 5
-COIN_OUTPUT(UINT64_C(4971008611639653755), 0, 4009057) // Snowman's Land - Moneybag 2, Coin 1
-COIN_OUTPUT(UINT64_C(4971008611639653755), 1, 4009058) // Snowman's Land - Moneybag 2, Coin 2
-COIN_OUTPUT(UINT64_C(4971008611639653755), 2, 4009059) // Snowman's Land - Moneybag 2, Coin 3
-COIN_OUTPUT(UINT64_C(4971008611639653755), 3, 4009060) // Snowman's Land - Moneybag 2, Coin 4
-COIN_OUTPUT(UINT64_C(4971008611639653755), 4, 4009061) // Snowman's Land - Moneybag 2, Coin 5
-COIN_OUTPUT(UINT64_C(7670238381772268072), 0, 4009062) // Snowman's Land - Fly Guy, Coin 1
-COIN_OUTPUT(UINT64_C(7670238381772268072), 1, 4009063) // Snowman's Land - Fly Guy, Coin 2
-COIN_OUTPUT(UINT64_C(12212517742990945444), 0, 4009064) // Snowman's Land - Whirl Mr. Blizzard, Coin 1
-COIN_OUTPUT(UINT64_C(12212517742990945444), 1, 4009065) // Snowman's Land - Whirl Mr. Blizzard, Coin 2
-COIN_OUTPUT(UINT64_C(12212517742990945444), 2, 4009066) // Snowman's Land - Whirl Mr. Blizzard, Coin 3
-COIN_OUTPUT(UINT64_C(7043976321488496346), 0, 4009067) // Snowman's Land - Coin Line on the Slope toward the Igloo, Coin 1
-COIN_OUTPUT(UINT64_C(7043976321488496346), 1, 4009068) // Snowman's Land - Coin Line on the Slope toward the Igloo, Coin 2
-COIN_OUTPUT(UINT64_C(7043976321488496346), 2, 4009069) // Snowman's Land - Coin Line on the Slope toward the Igloo, Coin 3
-COIN_OUTPUT(UINT64_C(7043976321488496346), 3, 4009070) // Snowman's Land - Coin Line on the Slope toward the Igloo, Coin 4
-COIN_OUTPUT(UINT64_C(7043976321488496346), 4, 4009071) // Snowman's Land - Coin Line on the Slope toward the Igloo, Coin 5
-COIN_OUTPUT(UINT64_C(12059202497748338399), 0, 4009072) // Snowman's Land - Coin on the slope toward the Igloo 1
-COIN_OUTPUT(UINT64_C(13807215121659027055), 0, 4009073) // Snowman's Land - Coin on the slope toward the Igloo 2
-COIN_OUTPUT(UINT64_C(17509080467391167207), 0, 4009074) // Snowman's Land - Coin on the slope toward the Igloo 3
-COIN_OUTPUT(UINT64_C(16000374341636346187), 0, 4009075) // Snowman's Land - Coin by the penguin and snowman's face 1
-COIN_OUTPUT(UINT64_C(1935755855598764578), 0, 4009076) // Snowman's Land - Coin by the penguin and snowman's face 2
-COIN_OUTPUT(UINT64_C(9274632352889607366), 0, 4009077) // Snowman's Land - Coin by the penguin and snowman's face 3
-COIN_OUTPUT(UINT64_C(10400236185832743012), 0, 4009078) // Snowman's Land - Upper Spindrift 1, Coin 1
-COIN_OUTPUT(UINT64_C(10400236185832743012), 1, 4009079) // Snowman's Land - Upper Spindrift 1, Coin 2
-COIN_OUTPUT(UINT64_C(10400236185832743012), 2, 4009080) // Snowman's Land - Upper Spindrift 1, Coin 3
-COIN_OUTPUT(UINT64_C(3036630138039916877), 0, 4009081) // Snowman's Land - Upper Spindrift 2, Coin 1
-COIN_OUTPUT(UINT64_C(3036630138039916877), 1, 4009082) // Snowman's Land - Upper Spindrift 2, Coin 2
-COIN_OUTPUT(UINT64_C(3036630138039916877), 2, 4009083) // Snowman's Land - Upper Spindrift 2, Coin 3
-COIN_OUTPUT(UINT64_C(6759329844412779376), 0, 4009084) // Snowman's Land - Upper Spindrift 3, Coin 1
-COIN_OUTPUT(UINT64_C(6759329844412779376), 1, 4009085) // Snowman's Land - Upper Spindrift 3, Coin 2
-COIN_OUTPUT(UINT64_C(6759329844412779376), 2, 4009086) // Snowman's Land - Upper Spindrift 3, Coin 3
-COIN_OUTPUT(UINT64_C(14949877359224318930), 0, 4009087) // Snowman's Land - Upper Goomba 1, Coin
-COIN_OUTPUT(UINT64_C(10187495627118315744), 0, 4009088) // Snowman's Land - Upper Goomba 2, Coin
-COIN_OUTPUT(UINT64_C(14120503613981409538), 0, 4009089) // Snowman's Land - Upper Goomba 3, Coin
-COIN_OUTPUT(UINT64_C(3236195636679362149), 0, 4009090) // Snowman's Land - Coin on the wooden plank near the top of the snowman 1
-COIN_OUTPUT(UINT64_C(3338395758496780874), 0, 4009091) // Snowman's Land - Coin on the wooden plank near the top of the snowman 2
-COIN_OUTPUT(UINT64_C(10104491440344065670), 0, 4009092) // Snowman's Land - Frozen Coin Line Inside the Igloo 1, Coin 1
-COIN_OUTPUT(UINT64_C(10104491440344065670), 1, 4009093) // Snowman's Land - Frozen Coin Line Inside the Igloo 1, Coin 2
-COIN_OUTPUT(UINT64_C(10104491440344065670), 2, 4009094) // Snowman's Land - Frozen Coin Line Inside the Igloo 1, Coin 3
-COIN_OUTPUT(UINT64_C(10104491440344065670), 3, 4009095) // Snowman's Land - Frozen Coin Line Inside the Igloo 1, Coin 4
-COIN_OUTPUT(UINT64_C(10104491440344065670), 4, 4009096) // Snowman's Land - Frozen Coin Line Inside the Igloo 1, Coin 5
-COIN_OUTPUT(UINT64_C(5635835492727782802), 0, 4009097) // Snowman's Land - Frozen Coin Line Inside the Igloo 2, Coin 1
-COIN_OUTPUT(UINT64_C(5635835492727782802), 1, 4009098) // Snowman's Land - Frozen Coin Line Inside the Igloo 2, Coin 2
-COIN_OUTPUT(UINT64_C(5635835492727782802), 2, 4009099) // Snowman's Land - Frozen Coin Line Inside the Igloo 2, Coin 3
-COIN_OUTPUT(UINT64_C(5635835492727782802), 3, 4009100) // Snowman's Land - Frozen Coin Line Inside the Igloo 2, Coin 4
-COIN_OUTPUT(UINT64_C(5635835492727782802), 4, 4009101) // Snowman's Land - Frozen Coin Line Inside the Igloo 2, Coin 5
-COIN_OUTPUT(UINT64_C(4457205641551269969), 0, 4009102) // Snowman's Land - Frozen Coin Line Inside the Igloo 3, Coin 1
-COIN_OUTPUT(UINT64_C(4457205641551269969), 1, 4009103) // Snowman's Land - Frozen Coin Line Inside the Igloo 3, Coin 2
-COIN_OUTPUT(UINT64_C(4457205641551269969), 2, 4009104) // Snowman's Land - Frozen Coin Line Inside the Igloo 3, Coin 3
-COIN_OUTPUT(UINT64_C(4457205641551269969), 3, 4009105) // Snowman's Land - Frozen Coin Line Inside the Igloo 3, Coin 4
-COIN_OUTPUT(UINT64_C(4457205641551269969), 4, 4009106) // Snowman's Land - Frozen Coin Line Inside the Igloo 3, Coin 5
-COIN_OUTPUT(UINT64_C(17033079345410080605), 0, 4009107) // Snowman's Land - Frozen Coin Line Inside the Igloo 4, Coin 1
-COIN_OUTPUT(UINT64_C(17033079345410080605), 1, 4009108) // Snowman's Land - Frozen Coin Line Inside the Igloo 4, Coin 2
-COIN_OUTPUT(UINT64_C(17033079345410080605), 2, 4009109) // Snowman's Land - Frozen Coin Line Inside the Igloo 4, Coin 3
-COIN_OUTPUT(UINT64_C(17033079345410080605), 3, 4009110) // Snowman's Land - Frozen Coin Line Inside the Igloo 4, Coin 4
-COIN_OUTPUT(UINT64_C(17033079345410080605), 4, 4009111) // Snowman's Land - Frozen Coin Line Inside the Igloo 4, Coin 5
-COIN_OUTPUT(UINT64_C(18018974196416356833), 0, 4009112) // Snowman's Land - Coin inside the Igloo 1
-COIN_OUTPUT(UINT64_C(15616086837633518731), 0, 4009113) // Snowman's Land - Coin inside the Igloo 2
-COIN_OUTPUT(UINT64_C(15782127493981436176), 0, 4009114) // Snowman's Land - Coin inside the Igloo 3
-COIN_OUTPUT(UINT64_C(17412057028717502031), 0, 4009115) // Snowman's Land - 3-Coin Block Inside the Igloo, Coin 1
-COIN_OUTPUT(UINT64_C(17412057028717502031), 1, 4009116) // Snowman's Land - 3-Coin Block Inside the Igloo, Coin 2
-COIN_OUTPUT(UINT64_C(17412057028717502031), 2, 4009117) // Snowman's Land - 3-Coin Block Inside the Igloo, Coin 3
-COIN_OUTPUT(UINT64_C(8265089627245004165), 0, 4009118) // Snowman's Land - Impossible Coin
+COIN_OUTPUT(UINT64_C(8265089627245004165), 0, 4009008) // Snowman's Land - Coin to the left of the start 1
+COIN_OUTPUT(UINT64_C(15782127493981436176), 0, 4009009) // Snowman's Land - Coin to the left of the start 2
+COIN_OUTPUT(UINT64_C(11191748824926356512), 0, 4009010) // Snowman's Land - Spindrift 1, Coin 1
+COIN_OUTPUT(UINT64_C(11191748824926356512), 1, 4009011) // Snowman's Land - Spindrift 1, Coin 2
+COIN_OUTPUT(UINT64_C(11191748824926356512), 2, 4009012) // Snowman's Land - Spindrift 1, Coin 3
+COIN_OUTPUT(UINT64_C(17147385638834605675), 0, 4009013) // Snowman's Land - Spindrift 2, Coin 1
+COIN_OUTPUT(UINT64_C(17147385638834605675), 1, 4009014) // Snowman's Land - Spindrift 2, Coin 2
+COIN_OUTPUT(UINT64_C(17147385638834605675), 2, 4009015) // Snowman's Land - Spindrift 2, Coin 3
+COIN_OUTPUT(UINT64_C(14069095341501401659), 0, 4009016) // Snowman's Land - Spindrift 3, Coin 1
+COIN_OUTPUT(UINT64_C(14069095341501401659), 1, 4009017) // Snowman's Land - Spindrift 3, Coin 2
+COIN_OUTPUT(UINT64_C(14069095341501401659), 2, 4009018) // Snowman's Land - Spindrift 3, Coin 3
+COIN_OUTPUT(UINT64_C(2107856898993926830), 0, 4009019) // Snowman's Land - Spindrift 4, Coin 1
+COIN_OUTPUT(UINT64_C(2107856898993926830), 1, 4009020) // Snowman's Land - Spindrift 4, Coin 2
+COIN_OUTPUT(UINT64_C(2107856898993926830), 2, 4009021) // Snowman's Land - Spindrift 4, Coin 3
+COIN_OUTPUT(UINT64_C(8917769875028990840), 0, 4009022) // Snowman's Land - Spindrift 5, Coin 1
+COIN_OUTPUT(UINT64_C(8917769875028990840), 1, 4009023) // Snowman's Land - Spindrift 5, Coin 2
+COIN_OUTPUT(UINT64_C(8917769875028990840), 2, 4009024) // Snowman's Land - Spindrift 5, Coin 3
+COIN_OUTPUT(UINT64_C(4363970510784860473), 0, 4009025) // Snowman's Land - Spindrift 6, Coin 1
+COIN_OUTPUT(UINT64_C(4363970510784860473), 1, 4009026) // Snowman's Land - Spindrift 6, Coin 2
+COIN_OUTPUT(UINT64_C(4363970510784860473), 2, 4009027) // Snowman's Land - Spindrift 6, Coin 3
+COIN_OUTPUT(UINT64_C(5765316583175035318), 0, 4009028) // Snowman's Land - Spindrift 7, Coin 1
+COIN_OUTPUT(UINT64_C(5765316583175035318), 1, 4009029) // Snowman's Land - Spindrift 7, Coin 2
+COIN_OUTPUT(UINT64_C(5765316583175035318), 2, 4009030) // Snowman's Land - Spindrift 7, Coin 3
+COIN_OUTPUT(UINT64_C(12774522627545135696), 0, 4009031) // Snowman's Land - Spindrift 8, Coin 1
+COIN_OUTPUT(UINT64_C(12774522627545135696), 1, 4009032) // Snowman's Land - Spindrift 8, Coin 2
+COIN_OUTPUT(UINT64_C(12774522627545135696), 2, 4009033) // Snowman's Land - Spindrift 8, Coin 3
+COIN_OUTPUT(UINT64_C(12698850772539389505), 0, 4009034) // Snowman's Land - Starting Area Mr. Blizzard 1, Coin 1
+COIN_OUTPUT(UINT64_C(12698850772539389505), 1, 4009035) // Snowman's Land - Starting Area Mr. Blizzard 1, Coin 2
+COIN_OUTPUT(UINT64_C(12698850772539389505), 2, 4009036) // Snowman's Land - Starting Area Mr. Blizzard 1, Coin 3
+COIN_OUTPUT(UINT64_C(12770671748981521689), 0, 4009037) // Snowman's Land - Starting Area Mr. Blizzard 2, Coin 1
+COIN_OUTPUT(UINT64_C(12770671748981521689), 1, 4009038) // Snowman's Land - Starting Area Mr. Blizzard 2, Coin 2
+COIN_OUTPUT(UINT64_C(12770671748981521689), 2, 4009039) // Snowman's Land - Starting Area Mr. Blizzard 2, Coin 3
+COIN_OUTPUT(UINT64_C(3902661467295987505), 0, 4009040) // Snowman's Land - Starting Area Mr. Blizzard 3, Coin 1
+COIN_OUTPUT(UINT64_C(3902661467295987505), 1, 4009041) // Snowman's Land - Starting Area Mr. Blizzard 3, Coin 2
+COIN_OUTPUT(UINT64_C(3902661467295987505), 2, 4009042) // Snowman's Land - Starting Area Mr. Blizzard 3, Coin 3
+COIN_OUTPUT(UINT64_C(14168140510935366300), 0, 4009043) // Snowman's Land - Moneybag 1, Coin 1
+COIN_OUTPUT(UINT64_C(14168140510935366300), 1, 4009044) // Snowman's Land - Moneybag 1, Coin 2
+COIN_OUTPUT(UINT64_C(14168140510935366300), 2, 4009045) // Snowman's Land - Moneybag 1, Coin 3
+COIN_OUTPUT(UINT64_C(14168140510935366300), 3, 4009046) // Snowman's Land - Moneybag 1, Coin 4
+COIN_OUTPUT(UINT64_C(14168140510935366300), 4, 4009047) // Snowman's Land - Moneybag 1, Coin 5
+COIN_OUTPUT(UINT64_C(4971008611639653755), 0, 4009048) // Snowman's Land - Moneybag 2, Coin 1
+COIN_OUTPUT(UINT64_C(4971008611639653755), 1, 4009049) // Snowman's Land - Moneybag 2, Coin 2
+COIN_OUTPUT(UINT64_C(4971008611639653755), 2, 4009050) // Snowman's Land - Moneybag 2, Coin 3
+COIN_OUTPUT(UINT64_C(4971008611639653755), 3, 4009051) // Snowman's Land - Moneybag 2, Coin 4
+COIN_OUTPUT(UINT64_C(4971008611639653755), 4, 4009052) // Snowman's Land - Moneybag 2, Coin 5
+COIN_OUTPUT(UINT64_C(7670238381772268072), 0, 4009053) // Snowman's Land - Fly Guy, Coin 1
+COIN_OUTPUT(UINT64_C(7670238381772268072), 1, 4009054) // Snowman's Land - Fly Guy, Coin 2
+COIN_OUTPUT(UINT64_C(12212517742990945444), 0, 4009055) // Snowman's Land - Whirl Mr. Blizzard, Coin 1
+COIN_OUTPUT(UINT64_C(12212517742990945444), 1, 4009056) // Snowman's Land - Whirl Mr. Blizzard, Coin 2
+COIN_OUTPUT(UINT64_C(12212517742990945444), 2, 4009057) // Snowman's Land - Whirl Mr. Blizzard, Coin 3
+COIN_OUTPUT(UINT64_C(17033079345410080605), 0, 4009058) // Snowman's Land - Coin Line on the Slope toward the Igloo, Coin 1
+COIN_OUTPUT(UINT64_C(17033079345410080605), 1, 4009059) // Snowman's Land - Coin Line on the Slope toward the Igloo, Coin 2
+COIN_OUTPUT(UINT64_C(17033079345410080605), 2, 4009060) // Snowman's Land - Coin Line on the Slope toward the Igloo, Coin 3
+COIN_OUTPUT(UINT64_C(17033079345410080605), 3, 4009061) // Snowman's Land - Coin Line on the Slope toward the Igloo, Coin 4
+COIN_OUTPUT(UINT64_C(17033079345410080605), 4, 4009062) // Snowman's Land - Coin Line on the Slope toward the Igloo, Coin 5
+COIN_OUTPUT(UINT64_C(3338395758496780874), 0, 4009063) // Snowman's Land - Coin on the slope toward the Igloo 1
+COIN_OUTPUT(UINT64_C(18018974196416356833), 0, 4009064) // Snowman's Land - Coin on the slope toward the Igloo 2
+COIN_OUTPUT(UINT64_C(15616086837633518731), 0, 4009065) // Snowman's Land - Coin on the slope toward the Igloo 3
+COIN_OUTPUT(UINT64_C(13807215121659027055), 0, 4009066) // Snowman's Land - Coin by the penguin and snowman's face 1
+COIN_OUTPUT(UINT64_C(17509080467391167207), 0, 4009067) // Snowman's Land - Coin by the penguin and snowman's face 2
+COIN_OUTPUT(UINT64_C(1935755855598764578), 0, 4009068) // Snowman's Land - Coin by the penguin and snowman's face 3
+COIN_OUTPUT(UINT64_C(10400236185832743012), 0, 4009069) // Snowman's Land - Upper Spindrift 1, Coin 1
+COIN_OUTPUT(UINT64_C(10400236185832743012), 1, 4009070) // Snowman's Land - Upper Spindrift 1, Coin 2
+COIN_OUTPUT(UINT64_C(10400236185832743012), 2, 4009071) // Snowman's Land - Upper Spindrift 1, Coin 3
+COIN_OUTPUT(UINT64_C(3036630138039916877), 0, 4009072) // Snowman's Land - Upper Spindrift 2, Coin 1
+COIN_OUTPUT(UINT64_C(3036630138039916877), 1, 4009073) // Snowman's Land - Upper Spindrift 2, Coin 2
+COIN_OUTPUT(UINT64_C(3036630138039916877), 2, 4009074) // Snowman's Land - Upper Spindrift 2, Coin 3
+COIN_OUTPUT(UINT64_C(6759329844412779376), 0, 4009075) // Snowman's Land - Upper Spindrift 3, Coin 1
+COIN_OUTPUT(UINT64_C(6759329844412779376), 1, 4009076) // Snowman's Land - Upper Spindrift 3, Coin 2
+COIN_OUTPUT(UINT64_C(6759329844412779376), 2, 4009077) // Snowman's Land - Upper Spindrift 3, Coin 3
+COIN_OUTPUT(UINT64_C(14949877359224318930), 0, 4009078) // Snowman's Land - Igloo Goomba 1, Coin
+COIN_OUTPUT(UINT64_C(10187495627118315744), 0, 4009079) // Snowman's Land - Igloo Goomba 2, Coin
+COIN_OUTPUT(UINT64_C(14120503613981409538), 0, 4009080) // Snowman's Land - Igloo Goomba 3, Coin
+COIN_OUTPUT(UINT64_C(9274632352889607366), 0, 4009081) // Snowman's Land - Coin on the wooden plank near the top of the snowman 1
+COIN_OUTPUT(UINT64_C(3236195636679362149), 0, 4009082) // Snowman's Land - Coin on the wooden plank near the top of the snowman 2
+COIN_OUTPUT(UINT64_C(7043976321488496346), 0, 4009083) // Snowman's Land - Frozen Coin Line Inside the Igloo 1, Coin 1
+COIN_OUTPUT(UINT64_C(7043976321488496346), 1, 4009084) // Snowman's Land - Frozen Coin Line Inside the Igloo 1, Coin 2
+COIN_OUTPUT(UINT64_C(7043976321488496346), 2, 4009085) // Snowman's Land - Frozen Coin Line Inside the Igloo 1, Coin 3
+COIN_OUTPUT(UINT64_C(7043976321488496346), 3, 4009086) // Snowman's Land - Frozen Coin Line Inside the Igloo 1, Coin 4
+COIN_OUTPUT(UINT64_C(7043976321488496346), 4, 4009087) // Snowman's Land - Frozen Coin Line Inside the Igloo 1, Coin 5
+COIN_OUTPUT(UINT64_C(10104491440344065670), 0, 4009088) // Snowman's Land - Frozen Coin Line Inside the Igloo 2, Coin 1
+COIN_OUTPUT(UINT64_C(10104491440344065670), 1, 4009089) // Snowman's Land - Frozen Coin Line Inside the Igloo 2, Coin 2
+COIN_OUTPUT(UINT64_C(10104491440344065670), 2, 4009090) // Snowman's Land - Frozen Coin Line Inside the Igloo 2, Coin 3
+COIN_OUTPUT(UINT64_C(10104491440344065670), 3, 4009091) // Snowman's Land - Frozen Coin Line Inside the Igloo 2, Coin 4
+COIN_OUTPUT(UINT64_C(10104491440344065670), 4, 4009092) // Snowman's Land - Frozen Coin Line Inside the Igloo 2, Coin 5
+COIN_OUTPUT(UINT64_C(5635835492727782802), 0, 4009093) // Snowman's Land - Frozen Coin Line Inside the Igloo 3, Coin 1
+COIN_OUTPUT(UINT64_C(5635835492727782802), 1, 4009094) // Snowman's Land - Frozen Coin Line Inside the Igloo 3, Coin 2
+COIN_OUTPUT(UINT64_C(5635835492727782802), 2, 4009095) // Snowman's Land - Frozen Coin Line Inside the Igloo 3, Coin 3
+COIN_OUTPUT(UINT64_C(5635835492727782802), 3, 4009096) // Snowman's Land - Frozen Coin Line Inside the Igloo 3, Coin 4
+COIN_OUTPUT(UINT64_C(5635835492727782802), 4, 4009097) // Snowman's Land - Frozen Coin Line Inside the Igloo 3, Coin 5
+COIN_OUTPUT(UINT64_C(4457205641551269969), 0, 4009098) // Snowman's Land - Frozen Coin Line Inside the Igloo 4, Coin 1
+COIN_OUTPUT(UINT64_C(4457205641551269969), 1, 4009099) // Snowman's Land - Frozen Coin Line Inside the Igloo 4, Coin 2
+COIN_OUTPUT(UINT64_C(4457205641551269969), 2, 4009100) // Snowman's Land - Frozen Coin Line Inside the Igloo 4, Coin 3
+COIN_OUTPUT(UINT64_C(4457205641551269969), 3, 4009101) // Snowman's Land - Frozen Coin Line Inside the Igloo 4, Coin 4
+COIN_OUTPUT(UINT64_C(4457205641551269969), 4, 4009102) // Snowman's Land - Frozen Coin Line Inside the Igloo 4, Coin 5
+COIN_OUTPUT(UINT64_C(7492938643573794693), 0, 4009103) // Snowman's Land - Coin inside the Igloo 1
+COIN_OUTPUT(UINT64_C(14852852717242393360), 0, 4009104) // Snowman's Land - Coin inside the Igloo 2
+COIN_OUTPUT(UINT64_C(12059202497748338399), 0, 4009105) // Snowman's Land - Coin inside the Igloo 3
+COIN_OUTPUT(UINT64_C(17412057028717502031), 0, 4009106) // Snowman's Land - 3-Coin Block Inside the Igloo, Coin 1
+COIN_OUTPUT(UINT64_C(17412057028717502031), 1, 4009107) // Snowman's Land - 3-Coin Block Inside the Igloo, Coin 2
+COIN_OUTPUT(UINT64_C(17412057028717502031), 2, 4009108) // Snowman's Land - 3-Coin Block Inside the Igloo, Coin 3
+COIN_OUTPUT(UINT64_C(16088409167933281710), 0, 4009109) // Snowman's Land - Igloo Spindrift 1, Coin 1
+COIN_OUTPUT(UINT64_C(16088409167933281710), 1, 4009110) // Snowman's Land - Igloo Spindrift 1, Coin 2
+COIN_OUTPUT(UINT64_C(16088409167933281710), 2, 4009111) // Snowman's Land - Igloo Spindrift 1, Coin 3
+COIN_OUTPUT(UINT64_C(10160985286321796349), 0, 4009112) // Snowman's Land - Igloo Spindrift 2, Coin 1
+COIN_OUTPUT(UINT64_C(10160985286321796349), 1, 4009113) // Snowman's Land - Igloo Spindrift 2, Coin 2
+COIN_OUTPUT(UINT64_C(10160985286321796349), 2, 4009114) // Snowman's Land - Igloo Spindrift 2, Coin 3
+COIN_OUTPUT(UINT64_C(7725852762849613280), 0, 4009115) // Snowman's Land - Igloo Spindrift 3, Coin 1
+COIN_OUTPUT(UINT64_C(7725852762849613280), 1, 4009116) // Snowman's Land - Igloo Spindrift 3, Coin 2
+COIN_OUTPUT(UINT64_C(7725852762849613280), 2, 4009117) // Snowman's Land - Igloo Spindrift 3, Coin 3
+COIN_OUTPUT(UINT64_C(16000374341636346187), 0, 4009118) // Snowman's Land - Impossible Coin
 COIN_OUTPUT(UINT64_C(141604321038733838), 0, 4010000) // Wet-Dry World - First Downtown Red Coin
 COIN_OUTPUT(UINT64_C(1355965686889103381), 0, 4010001) // Wet-Dry World - Downtown Red Coin Beyond the Water Level Diamonds 1
 COIN_OUTPUT(UINT64_C(14805797850467431111), 0, 4010002) // Wet-Dry World - Downtown Red Coin Beyond the Water Level Diamonds 2
@@ -1023,14 +1023,14 @@ COIN_OUTPUT(UINT64_C(15529324596611709761), 2, 4010010) // Wet-Dry World - Main 
 COIN_OUTPUT(UINT64_C(7927177702612267901), 0, 4010011) // Wet-Dry World - Main Area Skeeter 2, Coin 1
 COIN_OUTPUT(UINT64_C(7927177702612267901), 1, 4010012) // Wet-Dry World - Main Area Skeeter 2, Coin 2
 COIN_OUTPUT(UINT64_C(7927177702612267901), 2, 4010013) // Wet-Dry World - Main Area Skeeter 2, Coin 3
-COIN_OUTPUT(UINT64_C(17695138920237964141), 0, 4010014) // Wet-Dry World - Coin Ring around the Amp Pillar, Coin 1
-COIN_OUTPUT(UINT64_C(17695138920237964141), 1, 4010015) // Wet-Dry World - Coin Ring around the Amp Pillar, Coin 2
-COIN_OUTPUT(UINT64_C(17695138920237964141), 2, 4010016) // Wet-Dry World - Coin Ring around the Amp Pillar, Coin 3
-COIN_OUTPUT(UINT64_C(17695138920237964141), 3, 4010017) // Wet-Dry World - Coin Ring around the Amp Pillar, Coin 4
-COIN_OUTPUT(UINT64_C(17695138920237964141), 4, 4010018) // Wet-Dry World - Coin Ring around the Amp Pillar, Coin 5
-COIN_OUTPUT(UINT64_C(17695138920237964141), 5, 4010019) // Wet-Dry World - Coin Ring around the Amp Pillar, Coin 6
-COIN_OUTPUT(UINT64_C(17695138920237964141), 6, 4010020) // Wet-Dry World - Coin Ring around the Amp Pillar, Coin 7
-COIN_OUTPUT(UINT64_C(17695138920237964141), 7, 4010021) // Wet-Dry World - Coin Ring around the Amp Pillar, Coin 8
+COIN_OUTPUT(UINT64_C(11616754949966696967), 0, 4010014) // Wet-Dry World - Coin Ring around the Amp Pillar, Coin 1
+COIN_OUTPUT(UINT64_C(11616754949966696967), 1, 4010015) // Wet-Dry World - Coin Ring around the Amp Pillar, Coin 2
+COIN_OUTPUT(UINT64_C(11616754949966696967), 2, 4010016) // Wet-Dry World - Coin Ring around the Amp Pillar, Coin 3
+COIN_OUTPUT(UINT64_C(11616754949966696967), 3, 4010017) // Wet-Dry World - Coin Ring around the Amp Pillar, Coin 4
+COIN_OUTPUT(UINT64_C(11616754949966696967), 4, 4010018) // Wet-Dry World - Coin Ring around the Amp Pillar, Coin 5
+COIN_OUTPUT(UINT64_C(11616754949966696967), 5, 4010019) // Wet-Dry World - Coin Ring around the Amp Pillar, Coin 6
+COIN_OUTPUT(UINT64_C(11616754949966696967), 6, 4010020) // Wet-Dry World - Coin Ring around the Amp Pillar, Coin 7
+COIN_OUTPUT(UINT64_C(11616754949966696967), 7, 4010021) // Wet-Dry World - Coin Ring around the Amp Pillar, Coin 8
 COIN_OUTPUT(UINT64_C(17191882111694754350), 0, 4010022) // Wet-Dry World - 10-Coin Block on the Pillar, Coin 1
 COIN_OUTPUT(UINT64_C(17191882111694754350), 1, 4010023) // Wet-Dry World - 10-Coin Block on the Pillar, Coin 2
 COIN_OUTPUT(UINT64_C(17191882111694754350), 2, 4010024) // Wet-Dry World - 10-Coin Block on the Pillar, Coin 3
@@ -1075,16 +1075,16 @@ COIN_OUTPUT(UINT64_C(12152654132819111788), 0, 4010062) // Wet-Dry World - Blue 
 COIN_OUTPUT(UINT64_C(3508715211436502736), 0, 4010063) // Wet-Dry World - 3-Coin Block on the Wooden Structure, Coin 1
 COIN_OUTPUT(UINT64_C(3508715211436502736), 1, 4010064) // Wet-Dry World - 3-Coin Block on the Wooden Structure, Coin 2
 COIN_OUTPUT(UINT64_C(3508715211436502736), 2, 4010065) // Wet-Dry World - 3-Coin Block on the Wooden Structure, Coin 3
-COIN_OUTPUT(UINT64_C(17911946472201193947), 0, 4010066) // Wet-Dry World - Coin Line by the Fourth Water-Level Diamond, Coin 1
-COIN_OUTPUT(UINT64_C(17911946472201193947), 1, 4010067) // Wet-Dry World - Coin Line by the Fourth Water-Level Diamond, Coin 2
-COIN_OUTPUT(UINT64_C(17911946472201193947), 2, 4010068) // Wet-Dry World - Coin Line by the Fourth Water-Level Diamond, Coin 3
-COIN_OUTPUT(UINT64_C(17911946472201193947), 3, 4010069) // Wet-Dry World - Coin Line by the Fourth Water-Level Diamond, Coin 4
-COIN_OUTPUT(UINT64_C(17911946472201193947), 4, 4010070) // Wet-Dry World - Coin Line by the Fourth Water-Level Diamond, Coin 5
-COIN_OUTPUT(UINT64_C(15221395641428046396), 0, 4010071) // Wet-Dry World - Coin Line at the Highest Water-Level Diamond, Coin 1
-COIN_OUTPUT(UINT64_C(15221395641428046396), 1, 4010072) // Wet-Dry World - Coin Line at the Highest Water-Level Diamond, Coin 2
-COIN_OUTPUT(UINT64_C(15221395641428046396), 2, 4010073) // Wet-Dry World - Coin Line at the Highest Water-Level Diamond, Coin 3
-COIN_OUTPUT(UINT64_C(15221395641428046396), 3, 4010074) // Wet-Dry World - Coin Line at the Highest Water-Level Diamond, Coin 4
-COIN_OUTPUT(UINT64_C(15221395641428046396), 4, 4010075) // Wet-Dry World - Coin Line at the Highest Water-Level Diamond, Coin 5
+COIN_OUTPUT(UINT64_C(12000009830638745519), 0, 4010066) // Wet-Dry World - Coin Line by the Fourth Water-Level Diamond, Coin 1
+COIN_OUTPUT(UINT64_C(12000009830638745519), 1, 4010067) // Wet-Dry World - Coin Line by the Fourth Water-Level Diamond, Coin 2
+COIN_OUTPUT(UINT64_C(12000009830638745519), 2, 4010068) // Wet-Dry World - Coin Line by the Fourth Water-Level Diamond, Coin 3
+COIN_OUTPUT(UINT64_C(12000009830638745519), 3, 4010069) // Wet-Dry World - Coin Line by the Fourth Water-Level Diamond, Coin 4
+COIN_OUTPUT(UINT64_C(12000009830638745519), 4, 4010070) // Wet-Dry World - Coin Line by the Fourth Water-Level Diamond, Coin 5
+COIN_OUTPUT(UINT64_C(786269259037731204), 0, 4010071) // Wet-Dry World - Coin Line at the Highest Water-Level Diamond, Coin 1
+COIN_OUTPUT(UINT64_C(786269259037731204), 1, 4010072) // Wet-Dry World - Coin Line at the Highest Water-Level Diamond, Coin 2
+COIN_OUTPUT(UINT64_C(786269259037731204), 2, 4010073) // Wet-Dry World - Coin Line at the Highest Water-Level Diamond, Coin 3
+COIN_OUTPUT(UINT64_C(786269259037731204), 3, 4010074) // Wet-Dry World - Coin Line at the Highest Water-Level Diamond, Coin 4
+COIN_OUTPUT(UINT64_C(786269259037731204), 4, 4010075) // Wet-Dry World - Coin Line at the Highest Water-Level Diamond, Coin 5
 COIN_OUTPUT(UINT64_C(1015925870187391566), 0, 4010076) // Wet-Dry World - Top Chuckya, Coin 1
 COIN_OUTPUT(UINT64_C(1015925870187391566), 1, 4010077) // Wet-Dry World - Top Chuckya, Coin 2
 COIN_OUTPUT(UINT64_C(1015925870187391566), 2, 4010078) // Wet-Dry World - Top Chuckya, Coin 3
@@ -1100,29 +1100,29 @@ COIN_OUTPUT(UINT64_C(1115470279253350631), 6, 4010087) // Wet-Dry World - 10-Coi
 COIN_OUTPUT(UINT64_C(1115470279253350631), 7, 4010088) // Wet-Dry World - 10-Coin Block above the Express Elevator, Coin 8
 COIN_OUTPUT(UINT64_C(1115470279253350631), 8, 4010089) // Wet-Dry World - 10-Coin Block above the Express Elevator, Coin 9
 COIN_OUTPUT(UINT64_C(1115470279253350631), 9, 4010090) // Wet-Dry World - 10-Coin Block above the Express Elevator, Coin 10
-COIN_OUTPUT(UINT64_C(11616754949966696967), 0, 4010091) // Wet-Dry World - Downtown Statue Coin Ring, Coin 1
-COIN_OUTPUT(UINT64_C(11616754949966696967), 1, 4010092) // Wet-Dry World - Downtown Statue Coin Ring, Coin 2
-COIN_OUTPUT(UINT64_C(11616754949966696967), 2, 4010093) // Wet-Dry World - Downtown Statue Coin Ring, Coin 3
-COIN_OUTPUT(UINT64_C(11616754949966696967), 3, 4010094) // Wet-Dry World - Downtown Statue Coin Ring, Coin 4
-COIN_OUTPUT(UINT64_C(11616754949966696967), 4, 4010095) // Wet-Dry World - Downtown Statue Coin Ring, Coin 5
-COIN_OUTPUT(UINT64_C(11616754949966696967), 5, 4010096) // Wet-Dry World - Downtown Statue Coin Ring, Coin 6
-COIN_OUTPUT(UINT64_C(11616754949966696967), 6, 4010097) // Wet-Dry World - Downtown Statue Coin Ring, Coin 7
-COIN_OUTPUT(UINT64_C(11616754949966696967), 7, 4010098) // Wet-Dry World - Downtown Statue Coin Ring, Coin 8
+COIN_OUTPUT(UINT64_C(17695138920237964141), 0, 4010091) // Wet-Dry World - Downtown Statue Coin Ring, Coin 1
+COIN_OUTPUT(UINT64_C(17695138920237964141), 1, 4010092) // Wet-Dry World - Downtown Statue Coin Ring, Coin 2
+COIN_OUTPUT(UINT64_C(17695138920237964141), 2, 4010093) // Wet-Dry World - Downtown Statue Coin Ring, Coin 3
+COIN_OUTPUT(UINT64_C(17695138920237964141), 3, 4010094) // Wet-Dry World - Downtown Statue Coin Ring, Coin 4
+COIN_OUTPUT(UINT64_C(17695138920237964141), 4, 4010095) // Wet-Dry World - Downtown Statue Coin Ring, Coin 5
+COIN_OUTPUT(UINT64_C(17695138920237964141), 5, 4010096) // Wet-Dry World - Downtown Statue Coin Ring, Coin 6
+COIN_OUTPUT(UINT64_C(17695138920237964141), 6, 4010097) // Wet-Dry World - Downtown Statue Coin Ring, Coin 7
+COIN_OUTPUT(UINT64_C(17695138920237964141), 7, 4010098) // Wet-Dry World - Downtown Statue Coin Ring, Coin 8
 COIN_OUTPUT(UINT64_C(11365175105837717666), 0, 4010099) // Wet-Dry World - Downtown Metal Cap Coin Line, Coin 1
 COIN_OUTPUT(UINT64_C(11365175105837717666), 1, 4010100) // Wet-Dry World - Downtown Metal Cap Coin Line, Coin 2
 COIN_OUTPUT(UINT64_C(11365175105837717666), 2, 4010101) // Wet-Dry World - Downtown Metal Cap Coin Line, Coin 3
 COIN_OUTPUT(UINT64_C(11365175105837717666), 3, 4010102) // Wet-Dry World - Downtown Metal Cap Coin Line, Coin 4
 COIN_OUTPUT(UINT64_C(11365175105837717666), 4, 4010103) // Wet-Dry World - Downtown Metal Cap Coin Line, Coin 5
-COIN_OUTPUT(UINT64_C(12000009830638745519), 0, 4010104) // Wet-Dry World - Downtown First Building Coin Line, Coin 1
-COIN_OUTPUT(UINT64_C(12000009830638745519), 1, 4010105) // Wet-Dry World - Downtown First Building Coin Line, Coin 2
-COIN_OUTPUT(UINT64_C(12000009830638745519), 2, 4010106) // Wet-Dry World - Downtown First Building Coin Line, Coin 3
-COIN_OUTPUT(UINT64_C(12000009830638745519), 3, 4010107) // Wet-Dry World - Downtown First Building Coin Line, Coin 4
-COIN_OUTPUT(UINT64_C(12000009830638745519), 4, 4010108) // Wet-Dry World - Downtown First Building Coin Line, Coin 5
-COIN_OUTPUT(UINT64_C(786269259037731204), 0, 4010109) // Wet-Dry World - Downtown Second Building Coin Line, Coin 1
-COIN_OUTPUT(UINT64_C(786269259037731204), 1, 4010110) // Wet-Dry World - Downtown Second Building Coin Line, Coin 2
-COIN_OUTPUT(UINT64_C(786269259037731204), 2, 4010111) // Wet-Dry World - Downtown Second Building Coin Line, Coin 3
-COIN_OUTPUT(UINT64_C(786269259037731204), 3, 4010112) // Wet-Dry World - Downtown Second Building Coin Line, Coin 4
-COIN_OUTPUT(UINT64_C(786269259037731204), 4, 4010113) // Wet-Dry World - Downtown Second Building Coin Line, Coin 5
+COIN_OUTPUT(UINT64_C(17911946472201193947), 0, 4010104) // Wet-Dry World - Downtown First Building Coin Line, Coin 1
+COIN_OUTPUT(UINT64_C(17911946472201193947), 1, 4010105) // Wet-Dry World - Downtown First Building Coin Line, Coin 2
+COIN_OUTPUT(UINT64_C(17911946472201193947), 2, 4010106) // Wet-Dry World - Downtown First Building Coin Line, Coin 3
+COIN_OUTPUT(UINT64_C(17911946472201193947), 3, 4010107) // Wet-Dry World - Downtown First Building Coin Line, Coin 4
+COIN_OUTPUT(UINT64_C(17911946472201193947), 4, 4010108) // Wet-Dry World - Downtown First Building Coin Line, Coin 5
+COIN_OUTPUT(UINT64_C(15221395641428046396), 0, 4010109) // Wet-Dry World - Downtown Second Building Coin Line, Coin 1
+COIN_OUTPUT(UINT64_C(15221395641428046396), 1, 4010110) // Wet-Dry World - Downtown Second Building Coin Line, Coin 2
+COIN_OUTPUT(UINT64_C(15221395641428046396), 2, 4010111) // Wet-Dry World - Downtown Second Building Coin Line, Coin 3
+COIN_OUTPUT(UINT64_C(15221395641428046396), 3, 4010112) // Wet-Dry World - Downtown Second Building Coin Line, Coin 4
+COIN_OUTPUT(UINT64_C(15221395641428046396), 4, 4010113) // Wet-Dry World - Downtown Second Building Coin Line, Coin 5
 COIN_OUTPUT(UINT64_C(6819829468560711102), 0, 4010114) // Wet-Dry World - Downtown Skeeter 1, Coin 1
 COIN_OUTPUT(UINT64_C(6819829468560711102), 1, 4010115) // Wet-Dry World - Downtown Skeeter 1, Coin 2
 COIN_OUTPUT(UINT64_C(6819829468560711102), 2, 4010116) // Wet-Dry World - Downtown Skeeter 1, Coin 3
@@ -1161,11 +1161,11 @@ COIN_OUTPUT(UINT64_C(10563236713714400947), 1, 4011028) // Tall, Tall Mountain -
 COIN_OUTPUT(UINT64_C(10563236713714400947), 2, 4011029) // Tall, Tall Mountain - Middle Chuckya, Coin 3
 COIN_OUTPUT(UINT64_C(10563236713714400947), 3, 4011030) // Tall, Tall Mountain - Middle Chuckya, Coin 4
 COIN_OUTPUT(UINT64_C(10563236713714400947), 4, 4011031) // Tall, Tall Mountain - Middle Chuckya, Coin 5
-COIN_OUTPUT(UINT64_C(2833901662442743239), 0, 4011032) // Tall, Tall Mountain - Coin Line on the Bridge from Chuckya to the Bob-omb Buddy, Coin 1
-COIN_OUTPUT(UINT64_C(2833901662442743239), 1, 4011033) // Tall, Tall Mountain - Coin Line on the Bridge from Chuckya to the Bob-omb Buddy, Coin 2
-COIN_OUTPUT(UINT64_C(2833901662442743239), 2, 4011034) // Tall, Tall Mountain - Coin Line on the Bridge from Chuckya to the Bob-omb Buddy, Coin 3
-COIN_OUTPUT(UINT64_C(2833901662442743239), 3, 4011035) // Tall, Tall Mountain - Coin Line on the Bridge from Chuckya to the Bob-omb Buddy, Coin 4
-COIN_OUTPUT(UINT64_C(2833901662442743239), 4, 4011036) // Tall, Tall Mountain - Coin Line on the Bridge from Chuckya to the Bob-omb Buddy, Coin 5
+COIN_OUTPUT(UINT64_C(11454665129307681385), 0, 4011032) // Tall, Tall Mountain - Coin Line on the Bridge from Chuckya to the Bob-omb Buddy, Coin 1
+COIN_OUTPUT(UINT64_C(11454665129307681385), 1, 4011033) // Tall, Tall Mountain - Coin Line on the Bridge from Chuckya to the Bob-omb Buddy, Coin 2
+COIN_OUTPUT(UINT64_C(11454665129307681385), 2, 4011034) // Tall, Tall Mountain - Coin Line on the Bridge from Chuckya to the Bob-omb Buddy, Coin 3
+COIN_OUTPUT(UINT64_C(11454665129307681385), 3, 4011035) // Tall, Tall Mountain - Coin Line on the Bridge from Chuckya to the Bob-omb Buddy, Coin 4
+COIN_OUTPUT(UINT64_C(11454665129307681385), 4, 4011036) // Tall, Tall Mountain - Coin Line on the Bridge from Chuckya to the Bob-omb Buddy, Coin 5
 COIN_OUTPUT(UINT64_C(11987859919191989463), 0, 4011037) // Tall, Tall Mountain - Middle Fly Guy, Coin 1
 COIN_OUTPUT(UINT64_C(11987859919191989463), 1, 4011038) // Tall, Tall Mountain - Middle Fly Guy, Coin 2
 COIN_OUTPUT(UINT64_C(10406173362992152297), 0, 4011039) // Tall, Tall Mountain - Upper Goomba 1, Coin
@@ -1173,11 +1173,11 @@ COIN_OUTPUT(UINT64_C(4559285445325823600), 0, 4011040) // Tall, Tall Mountain - 
 COIN_OUTPUT(UINT64_C(9527816945216595161), 0, 4011041) // Tall, Tall Mountain - Upper Goomba 3, Coin
 COIN_OUTPUT(UINT64_C(2742323716890106421), 0, 4011042) // Tall, Tall Mountain - Upper Bob-omb 1, Coin
 COIN_OUTPUT(UINT64_C(7614865598263668099), 0, 4011043) // Tall, Tall Mountain - Upper Bob-omb 2, Coin
-COIN_OUTPUT(UINT64_C(3039610285052741582), 0, 4011044) // Tall, Tall Mountain - Coin Line by the Upper Monty Moles, Coin 1
-COIN_OUTPUT(UINT64_C(3039610285052741582), 1, 4011045) // Tall, Tall Mountain - Coin Line by the Upper Monty Moles, Coin 2
-COIN_OUTPUT(UINT64_C(3039610285052741582), 2, 4011046) // Tall, Tall Mountain - Coin Line by the Upper Monty Moles, Coin 3
-COIN_OUTPUT(UINT64_C(3039610285052741582), 3, 4011047) // Tall, Tall Mountain - Coin Line by the Upper Monty Moles, Coin 4
-COIN_OUTPUT(UINT64_C(3039610285052741582), 4, 4011048) // Tall, Tall Mountain - Coin Line by the Upper Monty Moles, Coin 5
+COIN_OUTPUT(UINT64_C(17472154721167752906), 0, 4011044) // Tall, Tall Mountain - Coin Line by the Upper Monty Moles, Coin 1
+COIN_OUTPUT(UINT64_C(17472154721167752906), 1, 4011045) // Tall, Tall Mountain - Coin Line by the Upper Monty Moles, Coin 2
+COIN_OUTPUT(UINT64_C(17472154721167752906), 2, 4011046) // Tall, Tall Mountain - Coin Line by the Upper Monty Moles, Coin 3
+COIN_OUTPUT(UINT64_C(17472154721167752906), 3, 4011047) // Tall, Tall Mountain - Coin Line by the Upper Monty Moles, Coin 4
+COIN_OUTPUT(UINT64_C(17472154721167752906), 4, 4011048) // Tall, Tall Mountain - Coin Line by the Upper Monty Moles, Coin 5
 COIN_OUTPUT(UINT64_C(12709172236609452611), 0, 4011049) // Tall, Tall Mountain - Top Goomba 1, Coin
 COIN_OUTPUT(UINT64_C(2150827226442299182), 0, 4011050) // Tall, Tall Mountain - Top Goomba 2, Coin
 COIN_OUTPUT(UINT64_C(6646234747635461901), 0, 4011051) // Tall, Tall Mountain - Top Goomba 3, Coin
@@ -1208,41 +1208,41 @@ COIN_OUTPUT(UINT64_C(9123654913344506013), 0, 4011075) // Tall, Tall Mountain - 
 COIN_OUTPUT(UINT64_C(7807676102610291148), 0, 4011076) // Tall, Tall Mountain - Coin on the slide 24
 COIN_OUTPUT(UINT64_C(9522601909088970956), 0, 4011077) // Tall, Tall Mountain - Coin on the slide 25
 COIN_OUTPUT(UINT64_C(7148741074512878797), 0, 4011078) // Tall, Tall Mountain - Coin on the slide 26
-COIN_OUTPUT(UINT64_C(5013633397701404384), 0, 4011079) // Tall, Tall Mountain - Coin Line on the Slide 1, Coin 1
-COIN_OUTPUT(UINT64_C(5013633397701404384), 1, 4011080) // Tall, Tall Mountain - Coin Line on the Slide 1, Coin 2
-COIN_OUTPUT(UINT64_C(5013633397701404384), 2, 4011081) // Tall, Tall Mountain - Coin Line on the Slide 1, Coin 3
-COIN_OUTPUT(UINT64_C(5013633397701404384), 3, 4011082) // Tall, Tall Mountain - Coin Line on the Slide 1, Coin 4
-COIN_OUTPUT(UINT64_C(5013633397701404384), 4, 4011083) // Tall, Tall Mountain - Coin Line on the Slide 1, Coin 5
-COIN_OUTPUT(UINT64_C(11454665129307681385), 0, 4011084) // Tall, Tall Mountain - Coin Line on the Slide 2, Coin 1
-COIN_OUTPUT(UINT64_C(11454665129307681385), 1, 4011085) // Tall, Tall Mountain - Coin Line on the Slide 2, Coin 2
-COIN_OUTPUT(UINT64_C(11454665129307681385), 2, 4011086) // Tall, Tall Mountain - Coin Line on the Slide 2, Coin 3
-COIN_OUTPUT(UINT64_C(11454665129307681385), 3, 4011087) // Tall, Tall Mountain - Coin Line on the Slide 2, Coin 4
-COIN_OUTPUT(UINT64_C(11454665129307681385), 4, 4011088) // Tall, Tall Mountain - Coin Line on the Slide 2, Coin 5
-COIN_OUTPUT(UINT64_C(4746061238642040830), 0, 4011089) // Tall, Tall Mountain - Coin Line on the Slide 3, Coin 1
-COIN_OUTPUT(UINT64_C(4746061238642040830), 1, 4011090) // Tall, Tall Mountain - Coin Line on the Slide 3, Coin 2
-COIN_OUTPUT(UINT64_C(4746061238642040830), 2, 4011091) // Tall, Tall Mountain - Coin Line on the Slide 3, Coin 3
-COIN_OUTPUT(UINT64_C(4746061238642040830), 3, 4011092) // Tall, Tall Mountain - Coin Line on the Slide 3, Coin 4
-COIN_OUTPUT(UINT64_C(4746061238642040830), 4, 4011093) // Tall, Tall Mountain - Coin Line on the Slide 3, Coin 5
-COIN_OUTPUT(UINT64_C(14620917698446547538), 0, 4011094) // Tall, Tall Mountain - Coin Line on the Slide 4, Coin 1
-COIN_OUTPUT(UINT64_C(14620917698446547538), 1, 4011095) // Tall, Tall Mountain - Coin Line on the Slide 4, Coin 2
-COIN_OUTPUT(UINT64_C(14620917698446547538), 2, 4011096) // Tall, Tall Mountain - Coin Line on the Slide 4, Coin 3
-COIN_OUTPUT(UINT64_C(14620917698446547538), 3, 4011097) // Tall, Tall Mountain - Coin Line on the Slide 4, Coin 4
-COIN_OUTPUT(UINT64_C(14620917698446547538), 4, 4011098) // Tall, Tall Mountain - Coin Line on the Slide 4, Coin 5
+COIN_OUTPUT(UINT64_C(2833901662442743239), 0, 4011079) // Tall, Tall Mountain - Coin Line on the Slide 1, Coin 1
+COIN_OUTPUT(UINT64_C(2833901662442743239), 1, 4011080) // Tall, Tall Mountain - Coin Line on the Slide 1, Coin 2
+COIN_OUTPUT(UINT64_C(2833901662442743239), 2, 4011081) // Tall, Tall Mountain - Coin Line on the Slide 1, Coin 3
+COIN_OUTPUT(UINT64_C(2833901662442743239), 3, 4011082) // Tall, Tall Mountain - Coin Line on the Slide 1, Coin 4
+COIN_OUTPUT(UINT64_C(2833901662442743239), 4, 4011083) // Tall, Tall Mountain - Coin Line on the Slide 1, Coin 5
+COIN_OUTPUT(UINT64_C(3039610285052741582), 0, 4011084) // Tall, Tall Mountain - Coin Line on the Slide 2, Coin 1
+COIN_OUTPUT(UINT64_C(3039610285052741582), 1, 4011085) // Tall, Tall Mountain - Coin Line on the Slide 2, Coin 2
+COIN_OUTPUT(UINT64_C(3039610285052741582), 2, 4011086) // Tall, Tall Mountain - Coin Line on the Slide 2, Coin 3
+COIN_OUTPUT(UINT64_C(3039610285052741582), 3, 4011087) // Tall, Tall Mountain - Coin Line on the Slide 2, Coin 4
+COIN_OUTPUT(UINT64_C(3039610285052741582), 4, 4011088) // Tall, Tall Mountain - Coin Line on the Slide 2, Coin 5
+COIN_OUTPUT(UINT64_C(12880330779759868149), 0, 4011089) // Tall, Tall Mountain - Coin Line on the Slide 3, Coin 1
+COIN_OUTPUT(UINT64_C(12880330779759868149), 1, 4011090) // Tall, Tall Mountain - Coin Line on the Slide 3, Coin 2
+COIN_OUTPUT(UINT64_C(12880330779759868149), 2, 4011091) // Tall, Tall Mountain - Coin Line on the Slide 3, Coin 3
+COIN_OUTPUT(UINT64_C(12880330779759868149), 3, 4011092) // Tall, Tall Mountain - Coin Line on the Slide 3, Coin 4
+COIN_OUTPUT(UINT64_C(12880330779759868149), 4, 4011093) // Tall, Tall Mountain - Coin Line on the Slide 3, Coin 5
+COIN_OUTPUT(UINT64_C(5013633397701404384), 0, 4011094) // Tall, Tall Mountain - Coin Line on the Slide 4, Coin 1
+COIN_OUTPUT(UINT64_C(5013633397701404384), 1, 4011095) // Tall, Tall Mountain - Coin Line on the Slide 4, Coin 2
+COIN_OUTPUT(UINT64_C(5013633397701404384), 2, 4011096) // Tall, Tall Mountain - Coin Line on the Slide 4, Coin 3
+COIN_OUTPUT(UINT64_C(5013633397701404384), 3, 4011097) // Tall, Tall Mountain - Coin Line on the Slide 4, Coin 4
+COIN_OUTPUT(UINT64_C(5013633397701404384), 4, 4011098) // Tall, Tall Mountain - Coin Line on the Slide 4, Coin 5
 COIN_OUTPUT(UINT64_C(12623921726769875385), 0, 4011099) // Tall, Tall Mountain - Single Blue Coins on the Slide, Blue Coin 1
 COIN_OUTPUT(UINT64_C(4118601345076614479), 0, 4011100) // Tall, Tall Mountain - Single Blue Coins on the Slide, Blue Coin 2
 COIN_OUTPUT(UINT64_C(13635132024081888305), 0, 4011101) // Tall, Tall Mountain - Single Blue Coins on the Slide, Blue Coin 3
-COIN_OUTPUT(UINT64_C(17472154721167752906), 0, 4011102) // Tall, Tall Mountain - Coin Line by the Slide Entrance, Coin 1
-COIN_OUTPUT(UINT64_C(17472154721167752906), 1, 4011103) // Tall, Tall Mountain - Coin Line by the Slide Entrance, Coin 2
-COIN_OUTPUT(UINT64_C(17472154721167752906), 2, 4011104) // Tall, Tall Mountain - Coin Line by the Slide Entrance, Coin 3
-COIN_OUTPUT(UINT64_C(17472154721167752906), 3, 4011105) // Tall, Tall Mountain - Coin Line by the Slide Entrance, Coin 4
-COIN_OUTPUT(UINT64_C(17472154721167752906), 4, 4011106) // Tall, Tall Mountain - Coin Line by the Slide Entrance, Coin 5
+COIN_OUTPUT(UINT64_C(4746061238642040830), 0, 4011102) // Tall, Tall Mountain - Coin Line by the Slide Entrance, Coin 1
+COIN_OUTPUT(UINT64_C(4746061238642040830), 1, 4011103) // Tall, Tall Mountain - Coin Line by the Slide Entrance, Coin 2
+COIN_OUTPUT(UINT64_C(4746061238642040830), 2, 4011104) // Tall, Tall Mountain - Coin Line by the Slide Entrance, Coin 3
+COIN_OUTPUT(UINT64_C(4746061238642040830), 3, 4011105) // Tall, Tall Mountain - Coin Line by the Slide Entrance, Coin 4
+COIN_OUTPUT(UINT64_C(4746061238642040830), 4, 4011106) // Tall, Tall Mountain - Coin Line by the Slide Entrance, Coin 5
 COIN_OUTPUT(UINT64_C(6526162838064779917), 0, 4011107) // Tall, Tall Mountain - Lower Coins by the Purple Switch near the Mountain Top, Coin 1
 COIN_OUTPUT(UINT64_C(6526162838064779917), 1, 4011108) // Tall, Tall Mountain - Lower Coins by the Purple Switch near the Mountain Top, Coin 2
-COIN_OUTPUT(UINT64_C(12880330779759868149), 0, 4011109) // Tall, Tall Mountain - Coin Line on the Rock Bridge beside the Waterfall, Coin 1
-COIN_OUTPUT(UINT64_C(12880330779759868149), 1, 4011110) // Tall, Tall Mountain - Coin Line on the Rock Bridge beside the Waterfall, Coin 2
-COIN_OUTPUT(UINT64_C(12880330779759868149), 2, 4011111) // Tall, Tall Mountain - Coin Line on the Rock Bridge beside the Waterfall, Coin 3
-COIN_OUTPUT(UINT64_C(12880330779759868149), 3, 4011112) // Tall, Tall Mountain - Coin Line on the Rock Bridge beside the Waterfall, Coin 4
-COIN_OUTPUT(UINT64_C(12880330779759868149), 4, 4011113) // Tall, Tall Mountain - Coin Line on the Rock Bridge beside the Waterfall, Coin 5
+COIN_OUTPUT(UINT64_C(14620917698446547538), 0, 4011109) // Tall, Tall Mountain - Coin Line on the Rock Bridge beside the Waterfall, Coin 1
+COIN_OUTPUT(UINT64_C(14620917698446547538), 1, 4011110) // Tall, Tall Mountain - Coin Line on the Rock Bridge beside the Waterfall, Coin 2
+COIN_OUTPUT(UINT64_C(14620917698446547538), 2, 4011111) // Tall, Tall Mountain - Coin Line on the Rock Bridge beside the Waterfall, Coin 3
+COIN_OUTPUT(UINT64_C(14620917698446547538), 3, 4011112) // Tall, Tall Mountain - Coin Line on the Rock Bridge beside the Waterfall, Coin 4
+COIN_OUTPUT(UINT64_C(14620917698446547538), 4, 4011113) // Tall, Tall Mountain - Coin Line on the Rock Bridge beside the Waterfall, Coin 5
 COIN_OUTPUT(UINT64_C(6526162838064779917), 2, 4011114) // Tall, Tall Mountain - Middle Coins by the Purple Switch near the Mountain Top, Coin 1
 COIN_OUTPUT(UINT64_C(6526162838064779917), 3, 4011115) // Tall, Tall Mountain - Middle Coins by the Purple Switch near the Mountain Top, Coin 2
 COIN_OUTPUT(UINT64_C(6526162838064779917), 4, 4011116) // Tall, Tall Mountain - Highest Coin by the Purple Switch near the Mountain Top, Coin
@@ -1390,16 +1390,16 @@ COIN_OUTPUT(UINT64_C(3739198132939703908), 0, 4013004) // Tick Tock Clock - Firs
 COIN_OUTPUT(UINT64_C(4132020738098895304), 0, 4013005) // Tick Tock Clock - Spinner Red Coin 1
 COIN_OUTPUT(UINT64_C(14239731974152209691), 0, 4013006) // Tick Tock Clock - Spinner Red Coin 2
 COIN_OUTPUT(UINT64_C(13579713657476037518), 0, 4013007) // Tick Tock Clock - Spinner Red Coin 3
-COIN_OUTPUT(UINT64_C(9529143994740379348), 0, 4013008) // Tick Tock Clock - 10-Coin Block behind the Start, Coin 1
-COIN_OUTPUT(UINT64_C(9529143994740379348), 1, 4013009) // Tick Tock Clock - 10-Coin Block behind the Start, Coin 2
-COIN_OUTPUT(UINT64_C(9529143994740379348), 2, 4013010) // Tick Tock Clock - 10-Coin Block behind the Start, Coin 3
-COIN_OUTPUT(UINT64_C(9529143994740379348), 3, 4013011) // Tick Tock Clock - 10-Coin Block behind the Start, Coin 4
-COIN_OUTPUT(UINT64_C(9529143994740379348), 4, 4013012) // Tick Tock Clock - 10-Coin Block behind the Start, Coin 5
-COIN_OUTPUT(UINT64_C(9529143994740379348), 5, 4013013) // Tick Tock Clock - 10-Coin Block behind the Start, Coin 6
-COIN_OUTPUT(UINT64_C(9529143994740379348), 6, 4013014) // Tick Tock Clock - 10-Coin Block behind the Start, Coin 7
-COIN_OUTPUT(UINT64_C(9529143994740379348), 7, 4013015) // Tick Tock Clock - 10-Coin Block behind the Start, Coin 8
-COIN_OUTPUT(UINT64_C(9529143994740379348), 8, 4013016) // Tick Tock Clock - 10-Coin Block behind the Start, Coin 9
-COIN_OUTPUT(UINT64_C(9529143994740379348), 9, 4013017) // Tick Tock Clock - 10-Coin Block behind the Start, Coin 10
+COIN_OUTPUT(UINT64_C(5518623956952914474), 0, 4013008) // Tick Tock Clock - 10-Coin Block behind the Start, Coin 1
+COIN_OUTPUT(UINT64_C(5518623956952914474), 1, 4013009) // Tick Tock Clock - 10-Coin Block behind the Start, Coin 2
+COIN_OUTPUT(UINT64_C(5518623956952914474), 2, 4013010) // Tick Tock Clock - 10-Coin Block behind the Start, Coin 3
+COIN_OUTPUT(UINT64_C(5518623956952914474), 3, 4013011) // Tick Tock Clock - 10-Coin Block behind the Start, Coin 4
+COIN_OUTPUT(UINT64_C(5518623956952914474), 4, 4013012) // Tick Tock Clock - 10-Coin Block behind the Start, Coin 5
+COIN_OUTPUT(UINT64_C(5518623956952914474), 5, 4013013) // Tick Tock Clock - 10-Coin Block behind the Start, Coin 6
+COIN_OUTPUT(UINT64_C(5518623956952914474), 6, 4013014) // Tick Tock Clock - 10-Coin Block behind the Start, Coin 7
+COIN_OUTPUT(UINT64_C(5518623956952914474), 7, 4013015) // Tick Tock Clock - 10-Coin Block behind the Start, Coin 8
+COIN_OUTPUT(UINT64_C(5518623956952914474), 8, 4013016) // Tick Tock Clock - 10-Coin Block behind the Start, Coin 9
+COIN_OUTPUT(UINT64_C(5518623956952914474), 9, 4013017) // Tick Tock Clock - 10-Coin Block behind the Start, Coin 10
 COIN_OUTPUT(UINT64_C(3069512257523061106), 0, 4013018) // Tick Tock Clock - Starting Area Bob-omb 1, Coin
 COIN_OUTPUT(UINT64_C(14792639509504044139), 0, 4013019) // Tick Tock Clock - Starting Area Bob-omb 2, Coin
 COIN_OUTPUT(UINT64_C(6164718277736868578), 0, 4013020) // Tick Tock Clock - Coin above the first turning cube 1
@@ -1444,16 +1444,16 @@ COIN_OUTPUT(UINT64_C(7492431130108587774), 9, 4013058) // Tick Tock Clock - 10-C
 COIN_OUTPUT(UINT64_C(3418023344841195823), 0, 4013059) // Tick Tock Clock - 3-Coin Block past the Three Spinners, Coin 1
 COIN_OUTPUT(UINT64_C(3418023344841195823), 1, 4013060) // Tick Tock Clock - 3-Coin Block past the Three Spinners, Coin 2
 COIN_OUTPUT(UINT64_C(3418023344841195823), 2, 4013061) // Tick Tock Clock - 3-Coin Block past the Three Spinners, Coin 3
-COIN_OUTPUT(UINT64_C(5518623956952914474), 0, 4013062) // Tick Tock Clock - 10-Coin Block Beneath the Thwomp, Coin 1
-COIN_OUTPUT(UINT64_C(5518623956952914474), 1, 4013063) // Tick Tock Clock - 10-Coin Block Beneath the Thwomp, Coin 2
-COIN_OUTPUT(UINT64_C(5518623956952914474), 2, 4013064) // Tick Tock Clock - 10-Coin Block Beneath the Thwomp, Coin 3
-COIN_OUTPUT(UINT64_C(5518623956952914474), 3, 4013065) // Tick Tock Clock - 10-Coin Block Beneath the Thwomp, Coin 4
-COIN_OUTPUT(UINT64_C(5518623956952914474), 4, 4013066) // Tick Tock Clock - 10-Coin Block Beneath the Thwomp, Coin 5
-COIN_OUTPUT(UINT64_C(5518623956952914474), 5, 4013067) // Tick Tock Clock - 10-Coin Block Beneath the Thwomp, Coin 6
-COIN_OUTPUT(UINT64_C(5518623956952914474), 6, 4013068) // Tick Tock Clock - 10-Coin Block Beneath the Thwomp, Coin 7
-COIN_OUTPUT(UINT64_C(5518623956952914474), 7, 4013069) // Tick Tock Clock - 10-Coin Block Beneath the Thwomp, Coin 8
-COIN_OUTPUT(UINT64_C(5518623956952914474), 8, 4013070) // Tick Tock Clock - 10-Coin Block Beneath the Thwomp, Coin 9
-COIN_OUTPUT(UINT64_C(5518623956952914474), 9, 4013071) // Tick Tock Clock - 10-Coin Block Beneath the Thwomp, Coin 10
+COIN_OUTPUT(UINT64_C(9529143994740379348), 0, 4013062) // Tick Tock Clock - 10-Coin Block Beneath the Thwomp, Coin 1
+COIN_OUTPUT(UINT64_C(9529143994740379348), 1, 4013063) // Tick Tock Clock - 10-Coin Block Beneath the Thwomp, Coin 2
+COIN_OUTPUT(UINT64_C(9529143994740379348), 2, 4013064) // Tick Tock Clock - 10-Coin Block Beneath the Thwomp, Coin 3
+COIN_OUTPUT(UINT64_C(9529143994740379348), 3, 4013065) // Tick Tock Clock - 10-Coin Block Beneath the Thwomp, Coin 4
+COIN_OUTPUT(UINT64_C(9529143994740379348), 4, 4013066) // Tick Tock Clock - 10-Coin Block Beneath the Thwomp, Coin 5
+COIN_OUTPUT(UINT64_C(9529143994740379348), 5, 4013067) // Tick Tock Clock - 10-Coin Block Beneath the Thwomp, Coin 6
+COIN_OUTPUT(UINT64_C(9529143994740379348), 6, 4013068) // Tick Tock Clock - 10-Coin Block Beneath the Thwomp, Coin 7
+COIN_OUTPUT(UINT64_C(9529143994740379348), 7, 4013069) // Tick Tock Clock - 10-Coin Block Beneath the Thwomp, Coin 8
+COIN_OUTPUT(UINT64_C(9529143994740379348), 8, 4013070) // Tick Tock Clock - 10-Coin Block Beneath the Thwomp, Coin 9
+COIN_OUTPUT(UINT64_C(9529143994740379348), 9, 4013071) // Tick Tock Clock - 10-Coin Block Beneath the Thwomp, Coin 10
 COIN_OUTPUT(UINT64_C(1949727026018609842), 0, 4013072) // Tick Tock Clock - 10-Coin Block at the Top Clock Hand, Coin 1
 COIN_OUTPUT(UINT64_C(1949727026018609842), 1, 4013073) // Tick Tock Clock - 10-Coin Block at the Top Clock Hand, Coin 2
 COIN_OUTPUT(UINT64_C(1949727026018609842), 2, 4013074) // Tick Tock Clock - 10-Coin Block at the Top Clock Hand, Coin 3
@@ -1502,10 +1502,10 @@ COIN_OUTPUT(UINT64_C(16749090309656643877), 1, 4014024) // Rainbow Ride - Vertic
 COIN_OUTPUT(UINT64_C(16749090309656643877), 2, 4014025) // Rainbow Ride - Vertical Coin Line by the First Swing, Coin 3
 COIN_OUTPUT(UINT64_C(16749090309656643877), 3, 4014026) // Rainbow Ride - Vertical Coin Line by the First Swing, Coin 4
 COIN_OUTPUT(UINT64_C(16749090309656643877), 4, 4014027) // Rainbow Ride - Vertical Coin Line by the First Swing, Coin 5
-COIN_OUTPUT(UINT64_C(12231870656769351872), 0, 4014028) // Rainbow Ride - Coin on the first Donut Lifts 1
-COIN_OUTPUT(UINT64_C(9638960172615935238), 0, 4014029) // Rainbow Ride - Coin on the first Donut Lifts 2
-COIN_OUTPUT(UINT64_C(3278976059445547044), 0, 4014030) // Rainbow Ride - Coin on the first Donut Lifts 3
-COIN_OUTPUT(UINT64_C(13041436145694580536), 0, 4014031) // Rainbow Ride - Coin on the first Donut Lifts 4
+COIN_OUTPUT(UINT64_C(3278976059445547044), 0, 4014028) // Rainbow Ride - Coin on the first Donut Lifts 1
+COIN_OUTPUT(UINT64_C(13041436145694580536), 0, 4014029) // Rainbow Ride - Coin on the first Donut Lifts 2
+COIN_OUTPUT(UINT64_C(2807519796863961272), 0, 4014030) // Rainbow Ride - Coin on the first Donut Lifts 3
+COIN_OUTPUT(UINT64_C(816702927119551548), 0, 4014031) // Rainbow Ride - Coin on the first Donut Lifts 4
 COIN_OUTPUT(UINT64_C(13271372111098498159), 0, 4014032) // Rainbow Ride - Coin Line before the Second Swing, Coin 1
 COIN_OUTPUT(UINT64_C(13271372111098498159), 1, 4014033) // Rainbow Ride - Coin Line before the Second Swing, Coin 2
 COIN_OUTPUT(UINT64_C(13271372111098498159), 2, 4014034) // Rainbow Ride - Coin Line before the Second Swing, Coin 3
@@ -1540,19 +1540,19 @@ COIN_OUTPUT(UINT64_C(15467173147053099165), 3, 4014062) // Rainbow Ride - Maze L
 COIN_OUTPUT(UINT64_C(15467173147053099165), 4, 4014063) // Rainbow Ride - Maze Lakitu, Coin 5
 COIN_OUTPUT(UINT64_C(11374171417207295320), 0, 4014064) // Rainbow Ride - Maze Bob-omb 1, Coin
 COIN_OUTPUT(UINT64_C(5202202053261794371), 0, 4014065) // Rainbow Ride - Maze Bob-omb 2, Coin
-COIN_OUTPUT(UINT64_C(12764360259665205783), 0, 4014066) // Rainbow Ride - First Blue Coin from the Maze Block, Blue Coin
-COIN_OUTPUT(UINT64_C(685557988193389440), 0, 4014067) // Rainbow Ride - Remaining Maze Blue Coins with Wall Kick, Blue Coin 1
-COIN_OUTPUT(UINT64_C(5473471591890698193), 0, 4014068) // Rainbow Ride - Remaining Maze Blue Coins with Wall Kick, Blue Coin 2
-COIN_OUTPUT(UINT64_C(11704082242024976975), 0, 4014069) // Rainbow Ride - Remaining Maze Blue Coins with Wall Kick, Blue Coin 3
-COIN_OUTPUT(UINT64_C(8373868312637973357), 0, 4014070) // Rainbow Ride - Remaining Maze Blue Coins with Wall Kick, Blue Coin 4
+COIN_OUTPUT(UINT64_C(8373868312637973357), 0, 4014066) // Rainbow Ride - First Blue Coin from the Maze Block, Blue Coin
+COIN_OUTPUT(UINT64_C(12764360259665205783), 0, 4014067) // Rainbow Ride - Remaining Maze Blue Coins with Wall Kick, Blue Coin 1
+COIN_OUTPUT(UINT64_C(685557988193389440), 0, 4014068) // Rainbow Ride - Remaining Maze Blue Coins with Wall Kick, Blue Coin 2
+COIN_OUTPUT(UINT64_C(5473471591890698193), 0, 4014069) // Rainbow Ride - Remaining Maze Blue Coins with Wall Kick, Blue Coin 3
+COIN_OUTPUT(UINT64_C(11704082242024976975), 0, 4014070) // Rainbow Ride - Remaining Maze Blue Coins with Wall Kick, Blue Coin 4
 COIN_OUTPUT(UINT64_C(16815011148829768592), 0, 4014071) // Rainbow Ride - Remaining Maze Blue Coins with Wall Kick, Blue Coin 5
 COIN_OUTPUT(UINT64_C(281812237504586828), 0, 4014072) // Rainbow Ride - Carpets Lakitu, Coin 1
 COIN_OUTPUT(UINT64_C(281812237504586828), 1, 4014073) // Rainbow Ride - Carpets Lakitu, Coin 2
 COIN_OUTPUT(UINT64_C(281812237504586828), 2, 4014074) // Rainbow Ride - Carpets Lakitu, Coin 3
 COIN_OUTPUT(UINT64_C(281812237504586828), 3, 4014075) // Rainbow Ride - Carpets Lakitu, Coin 4
 COIN_OUTPUT(UINT64_C(281812237504586828), 4, 4014076) // Rainbow Ride - Carpets Lakitu, Coin 5
-COIN_OUTPUT(UINT64_C(2807519796863961272), 0, 4014077) // Rainbow Ride - Coin on the Second Carpet's Grey Platform
-COIN_OUTPUT(UINT64_C(816702927119551548), 0, 4014078) // Rainbow Ride - Coin in the Air Along the Second Carpet
+COIN_OUTPUT(UINT64_C(12231870656769351872), 0, 4014077) // Rainbow Ride - Coin on the Second Carpet's Grey Platform
+COIN_OUTPUT(UINT64_C(9638960172615935238), 0, 4014078) // Rainbow Ride - Coin in the Air Along the Second Carpet
 COIN_OUTPUT(UINT64_C(15410044463075982768), 0, 4014079) // Rainbow Ride - Vertical Coin Line on the House-Path Donut Lifts, Coin 1
 COIN_OUTPUT(UINT64_C(15410044463075982768), 1, 4014080) // Rainbow Ride - Vertical Coin Line on the House-Path Donut Lifts, Coin 2
 COIN_OUTPUT(UINT64_C(15410044463075982768), 2, 4014081) // Rainbow Ride - Vertical Coin Line on the House-Path Donut Lifts, Coin 3
@@ -1911,8 +1911,8 @@ COIN_OUTPUT(UINT64_C(4516186078679388384), 0, 4021054) // Bowser in the Dark Wor
 COIN_OUTPUT(UINT64_C(10788333973273253918), 0, 4021055) // Bowser in the Dark World - Coin before the slope 14
 COIN_OUTPUT(UINT64_C(13492187064399921317), 0, 4021056) // Bowser in the Dark World - Coin before the slope 15
 COIN_OUTPUT(UINT64_C(8921241406522889144), 0, 4021057) // Bowser in the Dark World - Coin before the slope 16
-COIN_OUTPUT(UINT64_C(2386272961115352555), 0, 4021058) // Bowser in the Dark World - Coin before the slope 17
-COIN_OUTPUT(UINT64_C(12949919814256795088), 0, 4021059) // Bowser in the Dark World - Coin before the slope 18
+COIN_OUTPUT(UINT64_C(11287661594960764664), 0, 4021058) // Bowser in the Dark World - Coin before the slope 17
+COIN_OUTPUT(UINT64_C(13731882239458841883), 0, 4021059) // Bowser in the Dark World - Coin before the slope 18
 COIN_OUTPUT(UINT64_C(2296003268571355058), 0, 4021060) // Bowser in the Dark World - 3-Coin Block, Coin 1
 COIN_OUTPUT(UINT64_C(2296003268571355058), 1, 4021061) // Bowser in the Dark World - 3-Coin Block, Coin 2
 COIN_OUTPUT(UINT64_C(2296003268571355058), 2, 4021062) // Bowser in the Dark World - 3-Coin Block, Coin 3
@@ -1922,9 +1922,9 @@ COIN_OUTPUT(UINT64_C(15839200708750137779), 0, 4021065) // Bowser in the Dark Wo
 COIN_OUTPUT(UINT64_C(1397384776058338619), 0, 4021066) // Bowser in the Dark World - Goomba 4, Coin
 COIN_OUTPUT(UINT64_C(12002212610561012219), 0, 4021067) // Bowser in the Dark World - Goomba 5, Coin
 COIN_OUTPUT(UINT64_C(17144970819127907761), 0, 4021068) // Bowser in the Dark World - Goomba 6, Coin
-COIN_OUTPUT(UINT64_C(3044938082056275524), 0, 4021069) // Bowser in the Dark World - Coin on the slope 1
-COIN_OUTPUT(UINT64_C(11287661594960764664), 0, 4021070) // Bowser in the Dark World - Coin on the slope 2
-COIN_OUTPUT(UINT64_C(13731882239458841883), 0, 4021071) // Bowser in the Dark World - Coin on the slope 3
+COIN_OUTPUT(UINT64_C(2386272961115352555), 0, 4021069) // Bowser in the Dark World - Coin on the slope 1
+COIN_OUTPUT(UINT64_C(12949919814256795088), 0, 4021070) // Bowser in the Dark World - Coin on the slope 2
+COIN_OUTPUT(UINT64_C(3044938082056275524), 0, 4021071) // Bowser in the Dark World - Coin on the slope 3
 COIN_OUTPUT(UINT64_C(5644165344078668303), 0, 4022000) // Bowser in the Fire Sea - Initial Red Coin 1
 COIN_OUTPUT(UINT64_C(4943428940413145644), 0, 4022001) // Bowser in the Fire Sea - Initial Red Coin 2
 COIN_OUTPUT(UINT64_C(17349503663790041342), 0, 4022002) // Bowser in the Fire Sea - Upper Course Red Coin 1
@@ -2016,11 +2016,11 @@ COIN_OUTPUT(UINT64_C(9061249682430562227), 1, 4023015) // Bowser in the Sky - Co
 COIN_OUTPUT(UINT64_C(9061249682430562227), 2, 4023016) // Bowser in the Sky - Coin Line Beneath the Whomp 1, Coin 3
 COIN_OUTPUT(UINT64_C(9061249682430562227), 3, 4023017) // Bowser in the Sky - Coin Line Beneath the Whomp 1, Coin 4
 COIN_OUTPUT(UINT64_C(9061249682430562227), 4, 4023018) // Bowser in the Sky - Coin Line Beneath the Whomp 1, Coin 5
-COIN_OUTPUT(UINT64_C(14173834641707679399), 0, 4023019) // Bowser in the Sky - Coin Line Beneath the Whomp 2, Coin 1
-COIN_OUTPUT(UINT64_C(14173834641707679399), 1, 4023020) // Bowser in the Sky - Coin Line Beneath the Whomp 2, Coin 2
-COIN_OUTPUT(UINT64_C(14173834641707679399), 2, 4023021) // Bowser in the Sky - Coin Line Beneath the Whomp 2, Coin 3
-COIN_OUTPUT(UINT64_C(14173834641707679399), 3, 4023022) // Bowser in the Sky - Coin Line Beneath the Whomp 2, Coin 4
-COIN_OUTPUT(UINT64_C(14173834641707679399), 4, 4023023) // Bowser in the Sky - Coin Line Beneath the Whomp 2, Coin 5
+COIN_OUTPUT(UINT64_C(1585274839001224111), 0, 4023019) // Bowser in the Sky - Coin Line Beneath the Whomp 2, Coin 1
+COIN_OUTPUT(UINT64_C(1585274839001224111), 1, 4023020) // Bowser in the Sky - Coin Line Beneath the Whomp 2, Coin 2
+COIN_OUTPUT(UINT64_C(1585274839001224111), 2, 4023021) // Bowser in the Sky - Coin Line Beneath the Whomp 2, Coin 3
+COIN_OUTPUT(UINT64_C(1585274839001224111), 3, 4023022) // Bowser in the Sky - Coin Line Beneath the Whomp 2, Coin 4
+COIN_OUTPUT(UINT64_C(1585274839001224111), 4, 4023023) // Bowser in the Sky - Coin Line Beneath the Whomp 2, Coin 5
 COIN_OUTPUT(UINT64_C(16651038721833197228), 0, 4023024) // Bowser in the Sky - Whomp (Jump), Coin 1
 COIN_OUTPUT(UINT64_C(16651038721833197228), 1, 4023025) // Bowser in the Sky - Whomp (Jump), Coin 2
 COIN_OUTPUT(UINT64_C(16651038721833197228), 2, 4023026) // Bowser in the Sky - Whomp (Jump), Coin 3
@@ -2043,11 +2043,11 @@ COIN_OUTPUT(UINT64_C(14211798205006662547), 0, 4023042) // Bowser in the Sky - C
 COIN_OUTPUT(UINT64_C(10174488410934882887), 0, 4023043) // Bowser in the Sky - Coin on the raised steps 4
 COIN_OUTPUT(UINT64_C(8931741477326976016), 0, 4023044) // Bowser in the Sky - Coin on the raised steps 5
 COIN_OUTPUT(UINT64_C(11856813869888796030), 0, 4023045) // Bowser in the Sky - Coin on the raised steps 6
-COIN_OUTPUT(UINT64_C(1585274839001224111), 0, 4023046) // Bowser in the Sky - Coin Line on the Suction-Cup Platform, Coin 1
-COIN_OUTPUT(UINT64_C(1585274839001224111), 1, 4023047) // Bowser in the Sky - Coin Line on the Suction-Cup Platform, Coin 2
-COIN_OUTPUT(UINT64_C(1585274839001224111), 2, 4023048) // Bowser in the Sky - Coin Line on the Suction-Cup Platform, Coin 3
-COIN_OUTPUT(UINT64_C(1585274839001224111), 3, 4023049) // Bowser in the Sky - Coin Line on the Suction-Cup Platform, Coin 4
-COIN_OUTPUT(UINT64_C(1585274839001224111), 4, 4023050) // Bowser in the Sky - Coin Line on the Suction-Cup Platform, Coin 5
+COIN_OUTPUT(UINT64_C(14173834641707679399), 0, 4023046) // Bowser in the Sky - Coin Line on the Suction-Cup Platform, Coin 1
+COIN_OUTPUT(UINT64_C(14173834641707679399), 1, 4023047) // Bowser in the Sky - Coin Line on the Suction-Cup Platform, Coin 2
+COIN_OUTPUT(UINT64_C(14173834641707679399), 2, 4023048) // Bowser in the Sky - Coin Line on the Suction-Cup Platform, Coin 3
+COIN_OUTPUT(UINT64_C(14173834641707679399), 3, 4023049) // Bowser in the Sky - Coin Line on the Suction-Cup Platform, Coin 4
+COIN_OUTPUT(UINT64_C(14173834641707679399), 4, 4023050) // Bowser in the Sky - Coin Line on the Suction-Cup Platform, Coin 5
 COIN_OUTPUT(UINT64_C(17564072643664567165), 0, 4023051) // Bowser in the Sky - Coin on the spinning platform after the fifth Red Coin 1
 COIN_OUTPUT(UINT64_C(16775418442334642873), 0, 4023052) // Bowser in the Sky - Coin on the spinning platform after the fifth Red Coin 2
 COIN_OUTPUT(UINT64_C(2932846808984964597), 0, 4023053) // Bowser in the Sky - Coin on the spinning platform after the fifth Red Coin 3
