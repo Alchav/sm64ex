@@ -31210,6 +31210,42 @@
           "origin": "levels/bits/areas/1/macro.inc.c"
         }
       ]
+    },
+    {
+      "course": "Castle",
+      "source_id": "castle_grounds_bridge_coins",
+      "label": "Coins under the bridge",
+      "physical_outputs": [
+        {"physical_source_hash": "2157455861602796768", "slot": 0},
+        {"physical_source_hash": "16330817500381477859", "slot": 0}
+      ]
+    },
+    {
+      "course": "Castle",
+      "source_id": "castle_lobby_coins",
+      "label": "Coins in the lobby",
+      "physical_outputs": [
+        {"physical_source_hash": "3037459968408057125", "slot": 0},
+        {"physical_source_hash": "16939346357142410508", "slot": 0},
+        {"physical_source_hash": "9766074890907063255", "slot": 0},
+        {"physical_source_hash": "10884078425327435414", "slot": 0}
+      ]
+    },
+    {
+      "course": "Castle",
+      "source_id": "castle_courtyard_boos",
+      "label": "Boos in the courtyard",
+      "physical_outputs": [
+        {"physical_source_hash": "2203361233269287844", "slot": 0},
+        {"physical_source_hash": "14841654854636993736", "slot": 0},
+        {"physical_source_hash": "26121953391252576", "slot": 0},
+        {"physical_source_hash": "11976037598274316981", "slot": 0},
+        {"physical_source_hash": "15823715873747016921", "slot": 0},
+        {"physical_source_hash": "2183444161697976049", "slot": 0},
+        {"physical_source_hash": "3126752482729280826", "slot": 0},
+        {"physical_source_hash": "17244651315157000310", "slot": 0},
+        {"physical_source_hash": "5294323331005988574", "slot": 0}
+      ]
     }
   ]
 }

@@ -88,7 +88,7 @@ void bhv_courtyard_boo_triplet_init(void) {
     s32 i;
     struct Object *boo;
 
-    if (!SM64AP_HaveBBH()) {
+    if (!SM64AP_HaveCoinSource(SM64AP_COIN_SOURCE_BOO, LEVEL_CASTLE_COURTYARD)) {
         obj_mark_for_deletion(o);
     } else {
         for (i = 0; i < 3; i++) {

@@ -1142,6 +1142,10 @@ bool SM64AP_HaveObjectItem(int item) {
 }
 
 bool SM64AP_HaveCoinSource(int source, s16 level) {
+    if (source == SM64AP_COIN_SOURCE_YELLOW_COIN && level == LEVEL_CASTLE_GROUNDS) {
+        level = LEVEL_CASTLE;
+    }
+
     for (int i = 0; i < SM64AP_NUM_COIN_GLOBAL_ITEMS; i++) {
         if (sm64_coin_global_items[i].source == source && sm64_have_coin_global_items[i]) {
             return true;
@@ -1903,12 +1907,14 @@ bool SM64AP_ShouldSpawnLevelObject(s16 level, s16, s16 model, s16 x, s16 y, s16 
     }
 
     int enemySource = SM64AP_EnemyCoinSource(behavior);
+    if (behavior_is(behavior, bhvCourtyardBooTriplet)) {
+        return SM64AP_HaveCoinSource(SM64AP_COIN_SOURCE_BOO, LEVEL_CASTLE_COURTYARD);
+    }
     if (behavior_is(behavior, bhvBigBullyWithMinions)
         && !SM64AP_HaveCoinSource(SM64AP_COIN_SOURCE_BULLY, level)) {
         return false;
     }
-    if (enemySource == SM64AP_COIN_SOURCE_BOO
-        && (level == LEVEL_CASTLE || level == LEVEL_CASTLE_COURTYARD)) {
+    if (behavior_is(behavior, bhvBooInCastle) || behavior_is(behavior, bhvBooWithCage)) {
         return SM64AP_HaveBBH();
     }
     if (enemySource >= 0

@@ -33,6 +33,8 @@ LEVEL_TO_COURSE = {
     "LEVEL_TOTWC": "Tower of the Wing Cap", "LEVEL_VCUTM": "Vanish Cap Under the Moat",
     "LEVEL_COTMC": "Cavern of the Metal Cap", "LEVEL_BITDW": "Bowser in the Dark World",
     "LEVEL_BITFS": "Bowser in the Fire Sea", "LEVEL_BITS": "Bowser in the Sky",
+    "LEVEL_CASTLE_GROUNDS": "Castle", "LEVEL_CASTLE": "Castle",
+    "LEVEL_CASTLE_COURTYARD": "Castle",
 }
 
 CATEGORY_BY_SOURCE_KIND = {

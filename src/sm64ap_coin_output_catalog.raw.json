@@ -2,9 +2,9 @@
   "schema_version": 1,
   "hash_algorithm": "SM64AP_AssignPermanentCoinSource/FNV64-fields-v1",
   "semantic_source_ids_assigned": false,
-  "root_count": 972,
-  "enumerated_output_count": 2132,
-  "enumerated_coin_value": 2764,
+  "root_count": 970,
+  "enumerated_output_count": 2130,
+  "enumerated_coin_value": 2754,
   "roots": [
     {
       "physical_source_hash": "2008227892804457910",
@@ -665,30 +665,6 @@
         {
           "slot": 2,
           "value": 1
-        }
-      ]
-    },
-    {
-      "physical_source_hash": "8527841406894047502",
-      "level": "LEVEL_CASTLE",
-      "level_id": 6,
-      "area": 1,
-      "model": "MODEL_BOO_CASTLE",
-      "model_id": 101,
-      "position": [
-        -1000,
-        50,
-        -3500
-      ],
-      "behavior_params": "0x00000000",
-      "behavior": "bhvBooInCastle",
-      "source_category": "boo",
-      "origin": "levels/castle_inside/script.c:area1",
-      "preset": null,
-      "outputs": [
-        {
-          "slot": 0,
-          "value": 5
         }
       ]
     },
@@ -1723,30 +1699,6 @@
       ]
     },
     {
-      "physical_source_hash": "7113233709710046421",
-      "level": "LEVEL_CASTLE_COURTYARD",
-      "level_id": 26,
-      "area": 1,
-      "model": "MODEL_BOO",
-      "model_id": 84,
-      "position": [
-        -2360,
-        -100,
-        -2712
-      ],
-      "behavior_params": "0x01050000",
-      "behavior": "bhvBooWithCage",
-      "source_category": "boo",
-      "origin": "levels/castle_courtyard/script.c:area1",
-      "preset": null,
-      "outputs": [
-        {
-          "slot": 0,
-          "value": 5
-        }
-      ]
-    },
-    {
       "physical_source_hash": "2203361233269287844",
       "parent_physical_source_hash": "14808331201323425007",
       "dynamic_ordinal": 0,
@@ -1761,7 +1713,7 @@
         0
       ],
       "behavior_params": "0x00010000",
-      "behavior": "bhvBooInCastle",
+      "behavior": "bhvGhostHuntBoo",
       "source_category": "boo",
       "origin": "levels/castle_courtyard/script.c:script_func_local_2",
       "preset": null,
@@ -1787,7 +1739,7 @@
         210
       ],
       "behavior_params": "0x00010000",
-      "behavior": "bhvBooInCastle",
+      "behavior": "bhvGhostHuntBoo",
       "source_category": "boo",
       "origin": "levels/castle_courtyard/script.c:script_func_local_2",
       "preset": null,
@@ -1813,7 +1765,7 @@
         -210
       ],
       "behavior_params": "0x00010000",
-      "behavior": "bhvBooInCastle",
+      "behavior": "bhvGhostHuntBoo",
       "source_category": "boo",
       "origin": "levels/castle_courtyard/script.c:script_func_local_2",
       "preset": null,
@@ -1844,7 +1796,7 @@
       "dynamic": {
         "kind": "runtime_children",
         "count": 3,
-        "child": "bhvBooInCastle"
+        "child": "bhvGhostHuntBoo"
       },
       "outputs": []
     },
@@ -1863,7 +1815,7 @@
         0
       ],
       "behavior_params": "0x00010000",
-      "behavior": "bhvBooInCastle",
+      "behavior": "bhvGhostHuntBoo",
       "source_category": "boo",
       "origin": "levels/castle_courtyard/script.c:script_func_local_2",
       "preset": null,
@@ -1889,7 +1841,7 @@
         210
       ],
       "behavior_params": "0x00010000",
-      "behavior": "bhvBooInCastle",
+      "behavior": "bhvGhostHuntBoo",
       "source_category": "boo",
       "origin": "levels/castle_courtyard/script.c:script_func_local_2",
       "preset": null,
@@ -1915,7 +1867,7 @@
         -210
       ],
       "behavior_params": "0x00010000",
-      "behavior": "bhvBooInCastle",
+      "behavior": "bhvGhostHuntBoo",
       "source_category": "boo",
       "origin": "levels/castle_courtyard/script.c:script_func_local_2",
       "preset": null,
@@ -1946,7 +1898,7 @@
       "dynamic": {
         "kind": "runtime_children",
         "count": 3,
-        "child": "bhvBooInCastle"
+        "child": "bhvGhostHuntBoo"
       },
       "outputs": []
     },
@@ -1965,7 +1917,7 @@
         0
       ],
       "behavior_params": "0x00010000",
-      "behavior": "bhvBooInCastle",
+      "behavior": "bhvGhostHuntBoo",
       "source_category": "boo",
       "origin": "levels/castle_courtyard/script.c:script_func_local_2",
       "preset": null,
@@ -1991,7 +1943,7 @@
         210
       ],
       "behavior_params": "0x00010000",
-      "behavior": "bhvBooInCastle",
+      "behavior": "bhvGhostHuntBoo",
       "source_category": "boo",
       "origin": "levels/castle_courtyard/script.c:script_func_local_2",
       "preset": null,
@@ -2017,7 +1969,7 @@
         -210
       ],
       "behavior_params": "0x00010000",
-      "behavior": "bhvBooInCastle",
+      "behavior": "bhvGhostHuntBoo",
       "source_category": "boo",
       "origin": "levels/castle_courtyard/script.c:script_func_local_2",
       "preset": null,
@@ -2048,7 +2000,7 @@
       "dynamic": {
         "kind": "runtime_children",
         "count": 3,
-        "child": "bhvBooInCastle"
+        "child": "bhvGhostHuntBoo"
       },
       "outputs": []
     },
@@ -28230,9 +28182,9 @@
     {
       "source_category": "boo",
       "expected_placements": 11,
-      "enumerated_placements": 22,
+      "enumerated_placements": 20,
       "expected_coins": 55,
-      "enumerated_coins": 110,
+      "enumerated_coins": 100,
       "matches": false
     },
     {

@@ -2540,6 +2540,7 @@ struct PauseUnlockView {
 enum PauseCastleUnlockType {
     PAUSE_CASTLE_UNLOCK_KEY,
     PAUSE_CASTLE_UNLOCK_MIPS,
+    PAUSE_CASTLE_UNLOCK_BOOS,
     PAUSE_CASTLE_UNLOCK_LEVEL_CAP,
     PAUSE_CASTLE_UNLOCK_CANNON,
     PAUSE_CASTLE_UNLOCK_YOSHI,
@@ -2609,6 +2610,10 @@ static const u8 sMoveClimb[] = { TEXT_CLIMB };
 static const u8 sMoveLedgeGrab[] = { TEXT_LEDGE_GRAB };
 
 static const u8 sUnlockBaby[] = { TEXT_UNLOCK_BABY };
+static const u8 sUnlockBoos[] = {
+    ASCII_TO_DIALOG('B'), ASCII_TO_DIALOG('O'), ASCII_TO_DIALOG('O'),
+    ASCII_TO_DIALOG('S'), DIALOG_CHAR_TERMINATOR
+};
 static const u8 sUnlockBeast[] = { TEXT_UNLOCK_BEAST };
 static const u8 sUnlockBitfs[] = { TEXT_UNLOCK_BITFS };
 static const u8 sUnlockBuddy[] = { TEXT_UNLOCK_BUDDY };
@@ -2840,6 +2845,7 @@ static const struct PauseCastleUnlock sPauseCastleUnlocks[] = {
     { PAUSE_CASTLE_UNLOCK_KEY, SM64AP_CASTLE_KEY_70_STAR, sUnlockKey4f },
     { PAUSE_CASTLE_UNLOCK_MIPS, 1, sUnlockMips1 },
     { PAUSE_CASTLE_UNLOCK_MIPS, 2, sUnlockMips2 },
+    { PAUSE_CASTLE_UNLOCK_BOOS, 0, sUnlockBoos },
     { PAUSE_CASTLE_UNLOCK_LEVEL_CAP, SM64AP_LEVEL_CAP_CASTLE_WING, sUnlockWing },
     { PAUSE_CASTLE_UNLOCK_YOSHI, 0, sUnlockYoshi },
     { PAUSE_CASTLE_UNLOCK_CANNON, 0, sUnlockCastleCannon },
@@ -2895,6 +2901,8 @@ static bool pause_castle_unlock_collected(const struct PauseCastleUnlock *unlock
             return SM64AP_HaveCastleKey(unlock->id);
         case PAUSE_CASTLE_UNLOCK_MIPS:
             return SM64AP_HaveProgressiveMips(unlock->id);
+        case PAUSE_CASTLE_UNLOCK_BOOS:
+            return SM64AP_HaveCoinSource(SM64AP_COIN_SOURCE_BOO, LEVEL_CASTLE_COURTYARD);
         case PAUSE_CASTLE_UNLOCK_LEVEL_CAP:
             return SM64AP_HaveLevelCapOrGlobal(unlock->id);
         case PAUSE_CASTLE_UNLOCK_CANNON:

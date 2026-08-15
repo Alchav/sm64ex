@@ -43,8 +43,7 @@ BEHAVIOR_MANIFEST: dict[str, tuple[str, tuple[int, ...] | None]] = {
     "bhvBlueCoinSliding": ("moving_blue_coin", (5,)),
     "bhvHiddenBlueCoin": ("blue_coin_switch", (5,)),
     "bhvBobomb": ("bobomb", (1,)), "bhvBoo": ("boo", (5,)),
-    "bhvGhostHuntBoo": ("boo", (5,)), "bhvBooInCastle": ("boo", (5,)),
-    "bhvBooWithCage": ("boo", (5,)), "bhvGhostHuntBigBoo": ("big_boo", (5,)),
+    "bhvGhostHuntBoo": ("boo", (5,)), "bhvGhostHuntBigBoo": ("big_boo", (5,)),
     "bhvBalconyBigBoo": ("big_boo", (5,)), "bhvSmallBully": ("bully", (1,)),
     "bhvChuckya": ("chuckya", (1, 1, 1, 1, 1)),
     "bhvEnemyLakitu": ("enemy_lakitu", (1, 1, 1, 1, 1)),
@@ -71,7 +70,7 @@ BEHAVIOR_MANIFEST: dict[str, tuple[str, tuple[int, ...] | None]] = {
 DYNAMIC_MANIFEST = {
     "bhvGoombaTripletSpawner": {"kind": "relative_children", "count": 3, "child": "bhvGoomba"},
     "bhvMerryGoRoundBooManager": {"kind": "ordinal_children", "count": 5, "child": "bhvMerryGoRoundBoo"},
-    "bhvCourtyardBooTriplet": {"kind": "runtime_children", "count": 3, "child": "bhvBooInCastle"},
+    "bhvCourtyardBooTriplet": {"kind": "runtime_children", "count": 3, "child": "bhvGhostHuntBoo"},
     "bhvBookendSpawn": {"kind": "runtime_child", "count": 1, "child": "bhvFlyingBookend"},
     "bhvScuttlebugSpawn": {"kind": "runtime_children", "count": None, "child": "bhvScuttlebug"},
 }
@@ -282,7 +281,7 @@ def expand_inherited_dynamic(parent_hash: int, p: Placement, source: str, dynami
     child = dynamic["child"]
     values = {
         "bhvFlyingBookend": (5,), "bhvScuttlebug": (1, 1, 1), "bhvWoodenPost": (1,) * 5,
-        "bhvSmallBully": (1,), "bhvBooInCastle": (5,),
+        "bhvSmallBully": (1,), "bhvGhostHuntBoo": (5,),
     }[child]
     params = 0x00010000 if p.behavior == "bhvCourtyardBooTriplet" else 0
     return [dynamic_child_record(parent_hash, p, source, child, ordinal, position, values, params)
