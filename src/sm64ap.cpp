@@ -52,9 +52,10 @@ extern "C" {
 #include <sstream>
 #include <mutex>
 #include <limits>
+#include <atomic>
 
-// APCpp's public Raw DataStorage API reparses JSON through a shared reader. Sending an already
-// serialized packet avoids racing that reader against incoming network messages.
+// APCpp's JSON reader and writer are shared by its network thread. Game-thread messages are
+// serialized here before entering APCpp so coin collection cannot race incoming messages.
 extern void APSend(std::string request);
 
 #define WARP_NODE_CREDITS_MIN 0xF8 // level_update.c
@@ -93,7 +94,8 @@ bool sm64_hat_restore_without_animation_pending = false;
 bool sm64_easy_butterflies = false;
 bool sm64_no_despawn = false;
 bool sm64_mips_skip_enabled = false;
-bool sm64_live_object_reconcile_requested = false;
+static std::atomic<int> sm64_live_object_reconcile_frames { 0 };
+static constexpr int SM64AP_LIVE_OBJECT_RECONCILE_DELAY = 3;
 bool sm64_have_wingcap = false;
 bool sm64_have_metalcap = false;
 bool sm64_have_vanishcap = false;
@@ -3341,6 +3343,14 @@ int SM64AP_BoxLocationId(int id) {
     return it->second;
 }
 
+static void SM64AP_SendSerializedRequest(const std::string &request) {
+    if (request.empty() || request.front() != '[' || request.back() != ']') {
+        fprintf(stderr, "SM64AP: Refusing to send malformed protocol request.\n");
+        return;
+    }
+    APSend(request);
+}
+
 void SM64AP_SendByBoxID(int id) {
     int locId = SM64AP_BoxLocationId(id);
 
@@ -3355,7 +3365,9 @@ void SM64AP_SendItem(int idx) {
     }
 
     sm64ap_last_location_check_id = idx;
-    AP_SendItem(idx);
+    std::ostringstream request;
+    request << "[{\"cmd\":\"LocationChecks\",\"locations\":[" << idx << "]}]";
+    SM64AP_SendSerializedRequest(request.str());
 }
 
 int SM64AP_LastLocationCheckId() {
@@ -4795,7 +4807,7 @@ void SM64AP_FlushPermanentCoinLedger() {
     request << "[{\"cmd\":\"Set\",\"key\":\"" << sm64_permanent_coin_ledger_key
             << "\",\"operations\":[{\"operation\":\"update\",\"value\":" << serialized
             << "}],\"default\":{},\"want_reply\":false}]";
-    APSend(request.str());
+    SM64AP_SendSerializedRequest(request.str());
     sm64_permanent_coin_updates.clear();
 }
 
@@ -4948,13 +4960,19 @@ void SM64AP_UpdatePermanentCoinTrap() {
 }
 
 void SM64AP_RequestLiveObjectReconcile() {
-    sm64_live_object_reconcile_requested = true;
+    sm64_live_object_reconcile_frames.store(
+        SM64AP_LIVE_OBJECT_RECONCILE_DELAY, std::memory_order_release);
 }
 
 bool SM64AP_ConsumeLiveObjectReconcileRequest() {
-    bool requested = sm64_live_object_reconcile_requested;
-    sm64_live_object_reconcile_requested = false;
-    return requested;
+    int frames = sm64_live_object_reconcile_frames.load(std::memory_order_acquire);
+    while (frames > 0) {
+        if (sm64_live_object_reconcile_frames.compare_exchange_weak(
+                frames, frames - 1, std::memory_order_acq_rel)) {
+            return frames == 1;
+        }
+    }
+    return false;
 }
 
 bool SM64AP_MoatDrained() {
