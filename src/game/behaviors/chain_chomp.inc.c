@@ -549,6 +549,14 @@ void bhv_chain_chomp_gate_init(void) {
  * Update function for chain chomp gate
  */
 void bhv_chain_chomp_gate_update(void) {
+    if (o->parentObj == NULL || o->parentObj->activeFlags == ACTIVE_FLAG_DEACTIVATED) {
+        o->parentObj = cur_obj_nearest_object_with_behavior(bhvChainChomp);
+    }
+
+    if (o->parentObj == NULL) {
+        return;
+    }
+
     if (o->parentObj->oChainChompHitGate) {
         spawn_mist_particles_with_sound(SOUND_GENERAL_WALL_EXPLOSION);
         set_camera_shake_from_point(SHAKE_POS_SMALL, o->oPosX, o->oPosY, o->oPosZ);

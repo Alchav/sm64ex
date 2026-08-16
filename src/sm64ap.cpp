@@ -109,7 +109,10 @@ struct SM64APSignHint {
     std::string text;
     int64_t location;
     int entrance;
+    int locationPlayer;
 };
+
+static void SM64AP_SendSerializedRequest(const std::string &request);
 
 static const int sm64_shuffled_entrance_ids[] = {
     91, 241, 121, 51, 41, 71, 221, 81, 231, 101,
@@ -278,6 +281,47 @@ static constexpr int SM64AP_NUM_COIN_LEVEL_ITEMS =
 
 std::bitset<SM64AP_NUM_COIN_GLOBAL_ITEMS> sm64_have_coin_global_items;
 std::bitset<SM64AP_NUM_COIN_LEVEL_ITEMS> sm64_have_coin_level_items;
+
+enum SM64APEnemyUnlockSource {
+    SM64AP_ENEMY_UNLOCK_BOWSER,
+    SM64AP_ENEMY_UNLOCK_CHAIN_CHOMP,
+    SM64AP_ENEMY_UNLOCK_WIGGLER,
+    SM64AP_ENEMY_UNLOCK_TWEESTER,
+    SM64AP_ENEMY_UNLOCK_KLEPTO,
+    SM64AP_ENEMY_UNLOCK_AMP,
+    SM64AP_ENEMY_UNLOCK_MAD_PIANO,
+    SM64AP_ENEMY_UNLOCK_HAUNTED_CHAIR,
+    SM64AP_ENEMY_UNLOCK_SUSHI_SHARK,
+    SM64AP_ENEMY_UNLOCK_BUBBA,
+    SM64AP_ENEMY_UNLOCK_TOX_BOX,
+    SM64AP_ENEMY_UNLOCK_BOWLING_BALL,
+    SM64AP_ENEMY_UNLOCK_WATER_BOMB,
+    SM64AP_ENEMY_UNLOCK_BOULDER,
+    SM64AP_ENEMY_UNLOCK_FIRE_HAZARD,
+    SM64AP_ENEMY_UNLOCK_BOUNCING_FIREBALL,
+    SM64AP_ENEMY_UNLOCK_SPINDEL,
+    SM64AP_ENEMY_UNLOCK_FALLING_PILLAR,
+};
+
+struct SM64APEnemyUnlockItem {
+    int64_t id;
+    int source;
+    s16 level;
+    const char *name;
+};
+
+#define ENEMY_GLOBAL(id, source, name) { id, source, -1, name },
+#define ENEMY_LEVEL(id, source, level, name) { id, source, level, name },
+static constexpr SM64APEnemyUnlockItem sm64_enemy_unlock_items[] = {
+#include "sm64ap_enemy_items.inc"
+};
+#undef ENEMY_LEVEL
+#undef ENEMY_GLOBAL
+
+static constexpr int SM64AP_NUM_ENEMY_UNLOCK_ITEMS =
+    sizeof(sm64_enemy_unlock_items) / sizeof(sm64_enemy_unlock_items[0]);
+std::bitset<SM64AP_NUM_ENEMY_UNLOCK_ITEMS> sm64_have_enemy_unlock_items;
+
 std::bitset<SM64AP_NUM_COIN_CHECKS> sm64_sent_coin_checks;
 std::bitset<SM64AP_NUM_1UP_CHECKS> sm64_sent_1up_checks;
 std::bitset<SM64AP_NUM_BLOCKSANITY_CHECKS> sm64_sent_blocksanity_checks;
@@ -729,6 +773,14 @@ void SM64AP_RecvItem(int64_t idx, bool notify) {
         return;
     }
 
+    for (int i = 0; i < SM64AP_NUM_ENEMY_UNLOCK_ITEMS; i++) {
+        if (idx == sm64_enemy_unlock_items[i].id) {
+            sm64_have_enemy_unlock_items[i] = true;
+            SM64AP_RequestLiveObjectReconcile();
+            return;
+        }
+    }
+
     if (idx >= SM64AP_ID_OBJECT_ITEM(0)
         && idx <= SM64AP_ID_OBJECT_ITEM(SM64AP_NUM_CONTIGUOUS_OBJECT_ITEMS - 1)
         && idx != SM64AP_ID_BITFS) {
@@ -1132,6 +1184,7 @@ static int SM64AP_EnemyCoinSource(const void *behavior) {
     if (behavior_is(behavior, bhvThwomp) || behavior_is(behavior, bhvThwomp2)
         || behavior_is(behavior, bhvGrindel)
         || behavior_is(behavior, bhvHorizontalGrindel)) return SM64AP_COIN_SOURCE_THWOMP;
+    if (behavior_is(behavior, bhvHeaveHo)) return SM64AP_COIN_SOURCE_HEAVE_HO;
     return -1;
 }
 
@@ -1165,10 +1218,47 @@ bool SM64AP_HaveCoinSource(int source, s16 level) {
     return false;
 }
 
+static s16 SM64AP_NormalizeEnemyUnlockLevel(s16 level) {
+    switch (level) {
+        case LEVEL_BOWSER_1:
+            return LEVEL_BITDW;
+        case LEVEL_BOWSER_2:
+            return LEVEL_BITFS;
+        case LEVEL_BOWSER_3:
+            return LEVEL_BITS;
+        default:
+            return level;
+    }
+}
+
+static bool SM64AP_HaveEnemyUnlock(int source, s16 level) {
+    level = SM64AP_NormalizeEnemyUnlockLevel(level);
+    bool appliesToLevel = false;
+    bool haveGlobal = false;
+
+    for (int i = 0; i < SM64AP_NUM_ENEMY_UNLOCK_ITEMS; i++) {
+        const SM64APEnemyUnlockItem &item = sm64_enemy_unlock_items[i];
+        if (item.source != source) {
+            continue;
+        }
+        if (item.level == -1) {
+            haveGlobal |= sm64_have_enemy_unlock_items[i];
+        } else if (item.level == level) {
+            appliesToLevel = true;
+            if (sm64_have_enemy_unlock_items[i]) {
+                return true;
+            }
+        }
+    }
+
+    return !appliesToLevel || haveGlobal;
+}
+
 static bool SM64AP_IsEnemyCoinSource(int source) {
     return (source >= SM64AP_COIN_SOURCE_BOBOMB && source <= SM64AP_COIN_SOURCE_WHOMP)
         || source == SM64AP_COIN_SOURCE_BIG_BOO
-        || source == SM64AP_COIN_SOURCE_THWOMP;
+        || source == SM64AP_COIN_SOURCE_THWOMP
+        || source == SM64AP_COIN_SOURCE_HEAVE_HO;
 }
 
 static const SM64APCoinLevelItem *SM64AP_LevelCoinUnlockAt(s16 level, bool enemies, int index) {
@@ -1185,17 +1275,72 @@ static const SM64APCoinLevelItem *SM64AP_LevelCoinUnlockAt(s16 level, bool enemi
     return nullptr;
 }
 
+static const SM64APEnemyUnlockItem *SM64AP_LevelEnemyUnlockAt(s16 level, int index) {
+    level = SM64AP_NormalizeEnemyUnlockLevel(level);
+    for (int i = 0; i < SM64AP_NUM_ENEMY_UNLOCK_ITEMS; i++) {
+        const SM64APEnemyUnlockItem &item = sm64_enemy_unlock_items[i];
+        if (item.level != level) {
+            continue;
+        }
+        if (index-- == 0) {
+            return &item;
+        }
+    }
+    return nullptr;
+}
+
 int SM64AP_LevelCoinUnlockCount(s16 level, bool enemies) {
     int count = 0;
     while (SM64AP_LevelCoinUnlockAt(level, enemies, count) != nullptr) {
         count++;
+    }
+    if (enemies) {
+        int enemyIndex = 0;
+        while (SM64AP_LevelEnemyUnlockAt(level, enemyIndex++) != nullptr) {
+            count++;
+        }
     }
     return count;
 }
 
 const char *SM64AP_LevelCoinUnlockName(s16 level, bool enemies, int index) {
     const SM64APCoinLevelItem *item = SM64AP_LevelCoinUnlockAt(level, enemies, index);
-    if (item == nullptr || item->name == nullptr) {
+    if (item == nullptr) {
+        if (!enemies) {
+            return "";
+        }
+        int coinEnemyCount = 0;
+        while (SM64AP_LevelCoinUnlockAt(level, true, coinEnemyCount) != nullptr) {
+            coinEnemyCount++;
+        }
+        const SM64APEnemyUnlockItem *enemyItem =
+            SM64AP_LevelEnemyUnlockAt(level, index - coinEnemyCount);
+        if (enemyItem == nullptr) {
+            return "";
+        }
+        switch (enemyItem->source) {
+            case SM64AP_ENEMY_UNLOCK_BOWSER:             return "BOWSER";
+            case SM64AP_ENEMY_UNLOCK_CHAIN_CHOMP:        return "CHAIN CHOMP";
+            case SM64AP_ENEMY_UNLOCK_WIGGLER:            return "WIGGLER";
+            case SM64AP_ENEMY_UNLOCK_TWEESTER:           return "TWEESTERS";
+            case SM64AP_ENEMY_UNLOCK_KLEPTO:             return "KLEPTO";
+            case SM64AP_ENEMY_UNLOCK_AMP:                return "AMPS";
+            case SM64AP_ENEMY_UNLOCK_MAD_PIANO:          return "MAD PIANO";
+            case SM64AP_ENEMY_UNLOCK_HAUNTED_CHAIR:      return "CHAIRS";
+            case SM64AP_ENEMY_UNLOCK_SUSHI_SHARK:        return "SUSHI SHARKS";
+            case SM64AP_ENEMY_UNLOCK_BUBBA:              return "BUBBAS";
+            case SM64AP_ENEMY_UNLOCK_TOX_BOX:            return "TOX BOXES";
+            case SM64AP_ENEMY_UNLOCK_BOWLING_BALL:       return "BOWLING BALLS";
+            case SM64AP_ENEMY_UNLOCK_WATER_BOMB:         return "WATER BOMBS";
+            case SM64AP_ENEMY_UNLOCK_BOULDER:            return "BOULDERS";
+            case SM64AP_ENEMY_UNLOCK_FIRE_HAZARD:        return "FIRE HAZARDS";
+            case SM64AP_ENEMY_UNLOCK_BOUNCING_FIREBALL:  return "BOUNCE FIRE";
+            case SM64AP_ENEMY_UNLOCK_SPINDEL:            return "SPINDEL";
+            case SM64AP_ENEMY_UNLOCK_FALLING_PILLAR:     return "FALL PILLARS";
+            default:                                     return "";
+        }
+    }
+    if (item->name == nullptr) {
         return "";
     }
 
@@ -1241,14 +1386,28 @@ const char *SM64AP_LevelCoinUnlockName(s16 level, bool enemies, int index) {
         case SM64AP_COIN_SOURCE_MONTY_MOLE:          return "MONTY MOLES";
         case SM64AP_COIN_SOURCE_BIG_BULLY:           return "BIG BULLY";
         case SM64AP_COIN_SOURCE_BIG_BOO:             return "BIG BOO";
-        case SM64AP_COIN_SOURCE_THWOMP:              return "THWOMP";
+        case SM64AP_COIN_SOURCE_THWOMP:
+            return SM64AP_NormalizeEnemyUnlockLevel(level) == LEVEL_SSL ? "GRINDEL" : "THWOMP";
+        case SM64AP_COIN_SOURCE_HEAVE_HO:            return "HEAVE HO";
         default:                                     return "";
     }
 }
 
 bool SM64AP_LevelCoinUnlockEnabled(s16 level, bool enemies, int index) {
     const SM64APCoinLevelItem *item = SM64AP_LevelCoinUnlockAt(level, enemies, index);
-    return item != nullptr && SM64AP_HaveCoinSource(item->source, level);
+    if (item != nullptr) {
+        return SM64AP_HaveCoinSource(item->source, level);
+    }
+    if (!enemies) {
+        return false;
+    }
+    int coinEnemyCount = 0;
+    while (SM64AP_LevelCoinUnlockAt(level, true, coinEnemyCount) != nullptr) {
+        coinEnemyCount++;
+    }
+    const SM64APEnemyUnlockItem *enemyItem =
+        SM64AP_LevelEnemyUnlockAt(level, index - coinEnemyCount);
+    return enemyItem != nullptr && SM64AP_HaveEnemyUnlock(enemyItem->source, level);
 }
 
 static int SM64AP_LevelSpecificObjectItemForLevel(int item, s16 level) {
@@ -1604,7 +1763,46 @@ bool SM64AP_HaveTreasureChests(s16 level) {
     return true;
 }
 
-static bool SM64AP_ShouldSpawnBobObject(s16 x, s16, s16, u32 behParam, const void *behavior) {
+static int SM64AP_EnemyUnlockSource(u32 behParam, const void *behavior) {
+    if (behavior_is(behavior, bhvBowser)) return SM64AP_ENEMY_UNLOCK_BOWSER;
+    if (behavior_is(behavior, bhvChainChomp)) return SM64AP_ENEMY_UNLOCK_CHAIN_CHOMP;
+    if (behavior_is(behavior, bhvWigglerHead)) return SM64AP_ENEMY_UNLOCK_WIGGLER;
+    if (behavior_is(behavior, bhvTweester)) return SM64AP_ENEMY_UNLOCK_TWEESTER;
+    if (behavior_is(behavior, bhvKlepto) && beh_param_second_byte(behParam) == 0) {
+        return SM64AP_ENEMY_UNLOCK_KLEPTO;
+    }
+    if (behavior_is(behavior, bhvHomingAmp) || behavior_is(behavior, bhvCirclingAmp)) {
+        return SM64AP_ENEMY_UNLOCK_AMP;
+    }
+    if (behavior_is(behavior, bhvMadPiano)) return SM64AP_ENEMY_UNLOCK_MAD_PIANO;
+    if (behavior_is(behavior, bhvHauntedChair)) return SM64AP_ENEMY_UNLOCK_HAUNTED_CHAIR;
+    if (behavior_is(behavior, bhvSushiShark)) return SM64AP_ENEMY_UNLOCK_SUSHI_SHARK;
+    if (behavior_is(behavior, bhvBubba)) return SM64AP_ENEMY_UNLOCK_BUBBA;
+    if (behavior_is(behavior, bhvToxBox)) return SM64AP_ENEMY_UNLOCK_TOX_BOX;
+    if (behavior_is(behavior, bhvBobBowlingBallSpawner)
+        || behavior_is(behavior, bhvTtmBowlingBallSpawner)
+        || behavior_is(behavior, bhvThiBowlingBallSpawner)
+        || behavior_is(behavior, bhvPitBowlingBall)) {
+        return SM64AP_ENEMY_UNLOCK_BOWLING_BALL;
+    }
+    if (behavior_is(behavior, bhvWaterBombSpawner)
+        || behavior_is(behavior, bhvWaterBombCannon)) {
+        return SM64AP_ENEMY_UNLOCK_WATER_BOMB;
+    }
+    if (behavior_is(behavior, bhvBigBoulderGenerator)) return SM64AP_ENEMY_UNLOCK_BOULDER;
+    if (behavior_is(behavior, bhvFlamethrower)
+        || behavior_is(behavior, bhvLllRotatingBlockWithFireBars)) {
+        return SM64AP_ENEMY_UNLOCK_FIRE_HAZARD;
+    }
+    if (behavior_is(behavior, bhvBouncingFireball)) {
+        return SM64AP_ENEMY_UNLOCK_BOUNCING_FIREBALL;
+    }
+    if (behavior_is(behavior, bhvSpindel)) return SM64AP_ENEMY_UNLOCK_SPINDEL;
+    if (behavior_is(behavior, bhvFallingPillar)) return SM64AP_ENEMY_UNLOCK_FALLING_PILLAR;
+    return -1;
+}
+
+static bool SM64AP_ShouldSpawnBobObject(s16 x, s16 y, s16 z, u32 behParam, const void *behavior) {
     bool haveBobombBuddy = SM64AP_HaveBobombBuddy(LEVEL_BOB);
     bool haveBobCannon = SM64AP_HaveCannon(AP_COURSE_BOB);
 
@@ -1620,7 +1818,8 @@ static bool SM64AP_ShouldSpawnBobObject(s16 x, s16, s16, u32 behParam, const voi
     if (behavior_is(behavior, bhvCannonClosed)) {
         return true;
     }
-    if (behavior_is(behavior, bhvWaterBombCannon) || behavior_is(behavior, bhvWaterBombSpawner)) {
+    if (behavior_is(behavior, bhvWaterBombCannon)
+        && x == -5694 && y == 128 && z == 5600) {
         return !haveBobCannon;
     }
     if (behavior_is(behavior, bhvBobombBuddy)) {
@@ -1720,13 +1919,9 @@ static bool SM64AP_ShouldSpawnSslObject(u32 behParam, const void *behavior) {
         return SM64AP_HaveObjectItem(SM64AP_OBJECT_ITEM_SSL_PYRAMID_ELEVATOR);
     }
     if (behavior_is(behavior, bhvKlepto)) {
-        bool kleptoStarCollected = SM64AP_CollectedCourseStar(AP_COURSE_SSL, 0);
-        bool kleptoShouldHoldStar = SM64AP_HaveFeature(SM64AP_FEATURE_SSL_KLEPTO_STAR)
-            && !kleptoStarCollected;
-
         return beh_param_second_byte(behParam) != 0
-            ? kleptoShouldHoldStar
-            : !kleptoShouldHoldStar;
+            ? SM64AP_HaveFeature(SM64AP_FEATURE_SSL_KLEPTO_STAR)
+            : SM64AP_HaveEnemyUnlock(SM64AP_ENEMY_UNLOCK_KLEPTO, LEVEL_SSL);
     }
     return true;
 }
@@ -1877,6 +2072,11 @@ bool SM64AP_ShouldSpawnLevelObject(s16 level, s16, s16 model, s16 x, s16 y, s16 
         int arena = SM64AP_BowserArenaIndex(level);
         int bomb = SM64AP_BowserArenaBombIndex(level, x, z);
         if (arena >= 0 && bomb >= 0) return bomb < sm64_bowser_arena_bombs[arena];
+    }
+
+    int enemyUnlockSource = SM64AP_EnemyUnlockSource(behParam, behavior);
+    if (enemyUnlockSource >= 0 && !SM64AP_HaveEnemyUnlock(enemyUnlockSource, level)) {
+        return false;
     }
 
     if (behavior_is(behavior, bhvHiddenRedCoinStar)
@@ -2647,6 +2847,7 @@ static void SM64AP_SetSignHintData(std::string rawHints) {
         int key = 0;
         int location = 0;
         int entrance = 0;
+        int locationPlayer = 0;
         std::string hint;
         if (!SM64AP_ParseJsonQuotedIntKey(rawHints, pos, key)
             || !SM64AP_ConsumeJsonChar(rawHints, pos, ':')
@@ -2661,8 +2862,13 @@ static void SM64AP_SetSignHintData(std::string rawHints) {
             pos++;
             if (!SM64AP_ParseJsonInt(rawHints, pos, entrance)) return;
         }
+        SM64AP_SkipJsonWhitespace(rawHints, pos);
+        if (pos < rawHints.size() && rawHints[pos] == ',') {
+            pos++;
+            if (!SM64AP_ParseJsonInt(rawHints, pos, locationPlayer)) return;
+        }
         if (!SM64AP_ConsumeJsonChar(rawHints, pos, ']')) return;
-        parsed[key] = SM64APSignHint{ std::move(hint), location, entrance };
+        parsed[key] = SM64APSignHint{ std::move(hint), location, entrance, locationPlayer };
 
         SM64AP_SkipJsonWhitespace(rawHints, pos);
         if (pos < rawHints.size() && rawHints[pos] == ',') {
@@ -2785,17 +2991,19 @@ void SM64AP_ReadSign(s16 level, s16 dialog) {
 
     SM64AP_EncodeSignHint(hint.text);
     sm64_active_sign_dialog = dialog;
-    if (hint.location > 0 && AP_GetConnectionStatus() == AP_ConnectionStatus::Authenticated) {
-        AP_SendLocationScouts({ hint.location }, 2);
+    if (hint.location > 0 && hint.locationPlayer > 0
+        && AP_GetConnectionStatus() == AP_ConnectionStatus::Authenticated) {
+        std::ostringstream request;
+        request << "[{\"cmd\":\"CreateHints\",\"player\":" << hint.locationPlayer
+                << ",\"locations\":[" << hint.location << "]}]";
+        SM64AP_SendSerializedRequest(request.str());
     }
     if (hint.entrance > 0) {
         SM64AP_DiscoverEntrance(hint.entrance);
     }
 }
 
-static void SM64AP_IgnoreLocationInfo(std::vector<AP_NetworkItem>) {
-    // Sign hints only need LocationScouts to create the server hint.
-}
+static void SM64AP_IgnoreLocationInfo(std::vector<AP_NetworkItem>) {}
 
 struct DialogEntry *SM64AP_GetSignDialogEntry(s16 dialog, struct DialogEntry *vanilla) {
     return gMarioState != nullptr
@@ -3067,6 +3275,7 @@ void SM64AP_ResetItems() {
     sm64_have_object_items.reset();
     sm64_have_coin_global_items.reset();
     sm64_have_coin_level_items.reset();
+    sm64_have_enemy_unlock_items.reset();
     sm64_have_one_up_global_items.reset();
     sm64_have_one_up_level_items.reset();
     sm64_have_global_signs = false;
@@ -5011,6 +5220,7 @@ enum SM64APCheatItemKind {
     SM64AP_CHEAT_ITEM_BOWSER_ARENA_BOMB,
     SM64AP_CHEAT_ITEM_CAP_LENGTH,
     SM64AP_CHEAT_ITEM_SIGN_UNLOCK,
+    SM64AP_CHEAT_ITEM_ENEMY_UNLOCK,
 };
 
 enum SM64APCheatBoolItem {
@@ -5073,7 +5283,7 @@ static constexpr const char *SM64AP_CHEAT_FEATURE_NAMES[SM64AP_NUM_FEATURES] = {
     "JRB JET STREAM",
     "JRB UNAGI",
     "LLL KOOPA SHELL",
-    "SSL KLEPTO STAR",
+    "SSL KLEPTO WITH STAR",
     "THI KOOPA QUICK",
     "TTM UKIKI",
     "DDD MANTA RAY",
@@ -5293,6 +5503,12 @@ static void SM64AP_InitCheatItems() {
         SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_COIN_UNLOCK,
                         SM64AP_COIN_LEVEL_ITEM_OFFSET + i,
                         sm64_coin_level_items[i].name);
+    }
+    for (int i = 0; i < SM64AP_NUM_ENEMY_UNLOCK_ITEMS; i++) {
+        const SM64APEnemyUnlockItem &item = sm64_enemy_unlock_items[i];
+        SM64AP_CheatAdd(
+            SM64AP_CHEAT_ITEM_ENEMY_UNLOCK, i,
+            item.level == -1 ? std::string("GLOBAL ") + item.name : item.name);
     }
     static constexpr const char *globalOneUpNames[SM64AP_NUM_ONE_UP_CATEGORIES] = {
         "GLOBAL FREE 1UPS", "GLOBAL TRIGGER 1UPS", "GLOBAL 1UP BLOCKS", "GLOBAL BUTTERFLIES"
@@ -5619,6 +5835,9 @@ bool SM64AP_CheatItemEnabled(int index) {
             return item.index >= SM64AP_SIGN_LEVEL_ITEM_OFFSET
                 && item.index <= SM64AP_SIGN_LEVEL_ITEM_END
                 && sm64_have_level_signs[item.index - SM64AP_SIGN_LEVEL_ITEM_OFFSET];
+        case SM64AP_CHEAT_ITEM_ENEMY_UNLOCK:
+            return item.index >= 0 && item.index < SM64AP_NUM_ENEMY_UNLOCK_ITEMS
+                && sm64_have_enemy_unlock_items[item.index];
     }
 
     return false;
@@ -5728,6 +5947,11 @@ void SM64AP_CheatSetItemEnabled(int index, bool enabled) {
                 sm64_have_level_signs[item.index - SM64AP_SIGN_LEVEL_ITEM_OFFSET] = enabled;
             }
             SM64AP_RequestLiveObjectReconcile();
+            break;
+        case SM64AP_CHEAT_ITEM_ENEMY_UNLOCK:
+            if (item.index >= 0 && item.index < SM64AP_NUM_ENEMY_UNLOCK_ITEMS) {
+                sm64_have_enemy_unlock_items[item.index] = enabled;
+            }
             break;
     }
     SM64AP_RequestLiveObjectReconcile();

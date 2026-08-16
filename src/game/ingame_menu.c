@@ -3006,10 +3006,10 @@ static void render_pause_coin_unlock_column(s16 x, s16 y, s16 statusX, s16 level
     u8 label[19];
     s16 count = SM64AP_LevelCoinUnlockCount(levelNum, enemies);
 
-    for (s16 i = 0; i < count && i < 10; i++) {
+    for (s16 i = 0; i < count && i < 11; i++) {
         pause_ascii_to_dialog_string(SM64AP_LevelCoinUnlockName(levelNum, enemies, i), label, 18);
         render_pause_unlock_status(
-            x, y - i * 11, statusX, label,
+            x, y - i * 10, statusX, label,
             SM64AP_LevelCoinUnlockEnabled(levelNum, enemies, i));
     }
 }
