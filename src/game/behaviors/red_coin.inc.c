@@ -63,8 +63,10 @@ void bhv_red_coin_loop(void) {
         }
         // ...and there is a red coin star in the level...
         if (o->parentObj != NULL) {
-            // ...increment the star's counter.
-            o->parentObj->oHiddenStarTriggerCounter++;
+            // Mario's interaction update has already recorded the coin. Read the
+            // authoritative ledger instead of counting the same coin a second time.
+            o->parentObj->oHiddenStarTriggerCounter =
+                MIN(SM64AP_CollectedPermanentRedCoins(gCurrCourseNum), 8);
 
             // For JP version, play an identical sound for all coins.
 #ifdef VERSION_JP

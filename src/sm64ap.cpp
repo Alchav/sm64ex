@@ -1324,7 +1324,8 @@ const char *SM64AP_LevelCoinUnlockName(s16 level, bool enemies, int index) {
             case SM64AP_ENEMY_UNLOCK_WIGGLER:            return "WIGGLER";
             case SM64AP_ENEMY_UNLOCK_TWEESTER:           return "TWEESTERS";
             case SM64AP_ENEMY_UNLOCK_KLEPTO:             return "KLEPTO";
-            case SM64AP_ENEMY_UNLOCK_AMP:                return "AMPS";
+            case SM64AP_ENEMY_UNLOCK_AMP:
+                return (level == LEVEL_SL || level == LEVEL_VCUTM) ? "AMP" : "AMPS";
             case SM64AP_ENEMY_UNLOCK_MAD_PIANO:          return "MAD PIANO";
             case SM64AP_ENEMY_UNLOCK_HAUNTED_CHAIR:      return "CHAIRS";
             case SM64AP_ENEMY_UNLOCK_SUSHI_SHARK:        return "SUSHI SHARKS";
@@ -1361,22 +1362,24 @@ const char *SM64AP_LevelCoinUnlockName(s16 level, bool enemies, int index) {
         case SM64AP_COIN_SOURCE_BOWSER_PUZZLE:       return "BOWSER PUZZLE";
         case SM64AP_COIN_SOURCE_THREE_COIN_BOX:      return "3 COIN BLOCK";
         case SM64AP_COIN_SOURCE_TEN_COIN_BOX:        return "10 COIN BLOCK";
-        case SM64AP_COIN_SOURCE_BOBOMB:              return "BOB OMBS";
+        case SM64AP_COIN_SOURCE_BOBOMB:              return level == LEVEL_BITFS ? "BOB OMB" : "BOB OMBS";
         case SM64AP_COIN_SOURCE_BOO:                 return "BOOS";
         case SM64AP_COIN_SOURCE_BULLY:               return "BULLIES";
-        case SM64AP_COIN_SOURCE_CHUCKYA:             return "CHUCKYAS";
-        case SM64AP_COIN_SOURCE_ENEMY_LAKITU:        return "LAKITU";
+        case SM64AP_COIN_SOURCE_CHUCKYA:             return "CHUCKYA";
+        case SM64AP_COIN_SOURCE_ENEMY_LAKITU:        return level == LEVEL_RR ? "LAKITUS" : "LAKITU";
         case SM64AP_COIN_SOURCE_EYEROK:              return "EYEROK";
-        case SM64AP_COIN_SOURCE_FIRE_PIRANHA_PLANT:  return "FIRE PIRANHA";
-        case SM64AP_COIN_SOURCE_FLY_GUY:             return "FLY GUYS";
+        case SM64AP_COIN_SOURCE_FIRE_PIRANHA_PLANT:  return "FIRE PIRANHAS";
+        case SM64AP_COIN_SOURCE_FLY_GUY:
+            return (level == LEVEL_SSL || level == LEVEL_THI) ? "FLY GUYS" : "FLY GUY";
         case SM64AP_COIN_SOURCE_FLYING_BOOKEND:      return "BOOKENDS";
-        case SM64AP_COIN_SOURCE_GOOMBA:              return "GOOMBAS";
-        case SM64AP_COIN_SOURCE_KOOPA_TROOPA:        return "KOOPA TROOPA";
+        case SM64AP_COIN_SOURCE_GOOMBA:              return level == LEVEL_RR ? "GOOMBA" : "GOOMBAS";
+        case SM64AP_COIN_SOURCE_KOOPA_TROOPA:
+            return level == LEVEL_THI ? "KOOPA TROOPAS" : "KOOPA TROOPA";
         case SM64AP_COIN_SOURCE_MONEYBAG:            return "MONEYBAGS";
         case SM64AP_COIN_SOURCE_MR_BLIZZARD:         return "MR BLIZZARDS";
         case SM64AP_COIN_SOURCE_MR_I:                return "MR IS";
         case SM64AP_COIN_SOURCE_SCUTTLEBUG:          return "SCUTTLEBUGS";
-        case SM64AP_COIN_SOURCE_PIRANHA_PLANT:       return "PIRANHA PLANT";
+        case SM64AP_COIN_SOURCE_PIRANHA_PLANT:       return "PIRANHA PLANTS";
         case SM64AP_COIN_SOURCE_POKEY:               return "POKEYS";
         case SM64AP_COIN_SOURCE_SKEETER:             return "SKEETERS";
         case SM64AP_COIN_SOURCE_SNUFIT:              return "SNUFITS";
@@ -1384,11 +1387,13 @@ const char *SM64AP_LevelCoinUnlockName(s16 level, bool enemies, int index) {
         case SM64AP_COIN_SOURCE_SWOOP:               return "SWOOPS";
         case SM64AP_COIN_SOURCE_WHOMP:               return "WHOMPS";
         case SM64AP_COIN_SOURCE_MONTY_MOLE:          return "MONTY MOLES";
-        case SM64AP_COIN_SOURCE_BIG_BULLY:           return "BIG BULLY";
-        case SM64AP_COIN_SOURCE_BIG_BOO:             return "BIG BOO";
+        case SM64AP_COIN_SOURCE_BIG_BULLY:
+            return level == LEVEL_LLL ? "BIG BULLIES" : "CHILL BULLY";
+        case SM64AP_COIN_SOURCE_BIG_BOO:             return "BIG BOOS";
         case SM64AP_COIN_SOURCE_THWOMP:
-            return SM64AP_NormalizeEnemyUnlockLevel(level) == LEVEL_SSL ? "GRINDEL" : "THWOMP";
-        case SM64AP_COIN_SOURCE_HEAVE_HO:            return "HEAVE HO";
+            if (SM64AP_NormalizeEnemyUnlockLevel(level) == LEVEL_SSL) return "GRINDEL";
+            return level == LEVEL_WF ? "THWOMPS" : "THWOMP";
+        case SM64AP_COIN_SOURCE_HEAVE_HO:            return level == LEVEL_WDW ? "HEAVE HOS" : "HEAVE HO";
         default:                                     return "";
     }
 }
