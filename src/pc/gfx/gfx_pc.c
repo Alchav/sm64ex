@@ -15,6 +15,7 @@
 #define _LANGUAGE_C
 #endif
 #include <PR/gbi.h>
+#include "sm64ap_visual.h"
 
 #include "config.h"
 
@@ -49,6 +50,8 @@
 #define MAX_BUFFERED 256
 #define MAX_LIGHTS 2
 #define MAX_VERTICES 64
+
+static uint8_t sm64ap_visual_state = SM64AP_VISUAL_NORMAL;
 
 #ifdef EXTERNAL_DATA
 # define MAX_CACHED_TEXTURES 4096 // for preloading purposes
@@ -945,6 +948,8 @@ static void gfx_sp_tri1(uint8_t vtx1_idx, uint8_t vtx2_idx, uint8_t vtx3_idx) {
     if (use_fog) cc_id |= SHADER_OPT_FOG;
     if (texture_edge) cc_id |= SHADER_OPT_TEXTURE_EDGE;
     if (use_noise) cc_id |= SHADER_OPT_NOISE;
+    if (sm64ap_visual_state != SM64AP_VISUAL_NORMAL) cc_id |= SHADER_OPT_GRAYSCALE;
+    if (sm64ap_visual_state == SM64AP_VISUAL_EXHAUSTED_DARK) cc_id |= SHADER_OPT_DARK;
     
     if (!use_alpha) {
         cc_id &= ~0xfff000;
@@ -1509,6 +1514,11 @@ static void gfx_run_dl(Gfx* cmd) {
         uint32_t opcode = cmd->words.w0 >> 24;
         
         switch (opcode) {
+            case (uint8_t) G_NOOP:
+                if ((cmd->words.w1 & SM64AP_VISUAL_TAG_MASK) == SM64AP_VISUAL_TAG_BASE) {
+                    sm64ap_visual_state = cmd->words.w1 & 0xFF;
+                }
+                break;
             // RSP commands:
             case G_MTX:
 #ifdef F3DEX_GBI_2

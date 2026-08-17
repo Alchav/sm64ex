@@ -22,6 +22,8 @@ extern "C" {
     #include "pc/configfile.h"
     #include "object_constants.h"
     #include "object_fields.h"
+    #include "dialog_ids.h"
+    #include "sm64ap_visual.h"
 
     void SM64AP_SetMarioShirtColor(u8 r, u8 g, u8 b);
     void SM64AP_SetMarioOverallsColor(u8 r, u8 g, u8 b);
@@ -301,6 +303,8 @@ enum SM64APEnemyUnlockSource {
     SM64AP_ENEMY_UNLOCK_BOUNCING_FIREBALL,
     SM64AP_ENEMY_UNLOCK_SPINDEL,
     SM64AP_ENEMY_UNLOCK_FALLING_PILLAR,
+    SM64AP_ENEMY_UNLOCK_FIRE_SPITTER,
+    SM64AP_ENEMY_UNLOCK_BUB,
 };
 
 struct SM64APEnemyUnlockItem {
@@ -1338,6 +1342,9 @@ const char *SM64AP_LevelCoinUnlockName(s16 level, bool enemies, int index) {
             case SM64AP_ENEMY_UNLOCK_BOUNCING_FIREBALL:  return "BOUNCE FIRE";
             case SM64AP_ENEMY_UNLOCK_SPINDEL:            return "SPINDEL";
             case SM64AP_ENEMY_UNLOCK_FALLING_PILLAR:     return "FALL PILLARS";
+            case SM64AP_ENEMY_UNLOCK_FIRE_SPITTER:
+                return (level == LEVEL_BITFS || level == LEVEL_DDD) ? "FIRE SPITTER" : "FIRE SPITTERS";
+            case SM64AP_ENEMY_UNLOCK_BUB:                return "BUBS";
             default:                                     return "";
         }
     }
@@ -1804,6 +1811,10 @@ static int SM64AP_EnemyUnlockSource(u32 behParam, const void *behavior) {
     }
     if (behavior_is(behavior, bhvSpindel)) return SM64AP_ENEMY_UNLOCK_SPINDEL;
     if (behavior_is(behavior, bhvFallingPillar)) return SM64AP_ENEMY_UNLOCK_FALLING_PILLAR;
+    if (behavior_is(behavior, bhvFireSpitter)) return SM64AP_ENEMY_UNLOCK_FIRE_SPITTER;
+    if (behavior_is(behavior, bhvFish2) || behavior_is(behavior, bhvFish3)) {
+        return SM64AP_ENEMY_UNLOCK_BUB;
+    }
     return -1;
 }
 
@@ -3926,28 +3937,22 @@ int SM64AP_ResolveOneUpLocation(s16 level, s16 area, s16 sourceType, s16 sourceP
 }
 
 bool SM64AP_ShouldSuppressOneUp(int locId) {
-    int offset = SM64AP_OneUpCheckOffsetFromLocationId(locId);
-
     if (!SM64AP_HaveOneUpForLocation(locId)) {
         return true;
     }
+    return false;
+}
 
-    if (Cheats.EnableCheats && Cheats.RespawnCollectedOneUps) {
+bool SM64AP_OneUpCollected(int locId) {
+    int offset = SM64AP_OneUpCheckOffsetFromLocationId(locId);
+
+    if (!sm64_1up_checks_enabled) {
         return false;
     }
-
     if (SM64AP_IsOneUpBoxLocation(locId)) {
-        if (!sm64_1up_checks_enabled) {
-            return false;
-        }
         return sm64_sent_box_checks.count(locId) != 0 || SM64AP_CheckedLoc(locId);
     }
-
-    if (!sm64_1up_checks_enabled || offset < 0) {
-        return false;
-    }
-
-    return sm64_sent_1up_checks[offset] || SM64AP_CheckedLoc(locId);
+    return offset >= 0 && (sm64_sent_1up_checks[offset] || SM64AP_CheckedLoc(locId));
 }
 
 bool SM64AP_CollectOneUp(int locId) {
@@ -3955,6 +3960,9 @@ bool SM64AP_CollectOneUp(int locId) {
 
     if (SM64AP_IsOneUpBoxLocation(locId)) {
         if (!sm64_1up_checks_enabled) {
+            return false;
+        }
+        if (SM64AP_OneUpCollected(locId)) {
             return false;
         }
         if (SM64AP_CanReportProgress()
@@ -3967,6 +3975,10 @@ bool SM64AP_CollectOneUp(int locId) {
     }
 
     if (!SM64AP_CanReportProgress() || !sm64_1up_checks_enabled || offset < 0) {
+        return false;
+    }
+
+    if (SM64AP_OneUpCollected(locId)) {
         return false;
     }
 
@@ -4002,6 +4014,245 @@ static int SM64AP_ResolveBlocksanityLocation(s16 level, s16 area, s32 behParams,
     }
 
     return 0;
+}
+
+bool SM64AP_BlocksanityChecked(s16 level, s16 area, s32 behParams, s16 x, s16 y, s16 z) {
+    int locId = SM64AP_ResolveBlocksanityLocation(level, area, behParams, x, y, z);
+    int offset = SM64AP_BlocksanityOffsetFromLocationId(locId);
+    return offset >= 0 && (sm64_sent_blocksanity_checks[offset] || SM64AP_CheckedLoc(locId));
+}
+
+static u64 SM64AP_ExpectedPermanentCoinMask(u64 sourceId) {
+    static std::map<u64, u64> expectedMasks;
+    static bool initialized = false;
+
+    if (!initialized) {
+        for (const auto &entry : sm64_coin_output_catalog) {
+            if (entry.physicalSource != 0 && entry.physicalSlot < 64) {
+                expectedMasks[entry.physicalSource] |= 1ULL << entry.physicalSlot;
+            }
+        }
+        for (const auto &entry : sm64_coin_completion_catalog) {
+            if (entry.physicalSource == 0) {
+                continue;
+            }
+            for (int slot = 0; slot < entry.requiredOutputCount && slot < 64; slot++) {
+                expectedMasks[entry.physicalSource] |= 1ULL << slot;
+            }
+        }
+        initialized = true;
+    }
+
+    auto expected = expectedMasks.find(sourceId);
+    return expected != expectedMasks.end() ? expected->second : 0;
+}
+
+static bool SM64AP_PermanentCoinSourceExhausted(u64 sourceId) {
+    u64 expectedMask = SM64AP_ExpectedPermanentCoinMask(sourceId);
+    if (expectedMask == 0) {
+        return false;
+    }
+
+    u64 collectedMask = 0;
+    for (int slot = 0; slot < 64; slot++) {
+        if ((expectedMask & (1ULL << slot)) != 0
+            && sm64_permanent_coins.count(std::make_pair(sourceId, static_cast<u8>(slot))) != 0) {
+            collectedMask |= 1ULL << slot;
+        }
+    }
+    return collectedMask == expectedMask;
+}
+
+static bool SM64AP_IsRenderedCoin(const void *behavior) {
+    return behavior_is(behavior, bhvYellowCoin)
+        || behavior_is(behavior, bhvOneCoin)
+        || behavior_is(behavior, bhvRedCoin)
+        || behavior_is(behavior, bhvMovingBlueCoin)
+        || behavior_is(behavior, bhvBlueCoinSliding)
+        || behavior_is(behavior, bhvHiddenBlueCoin);
+}
+
+static bool SM64AP_IsOneUpBehavior(const void *behavior) {
+    return behavior_is(behavior, bhv1Up)
+        || behavior_is(behavior, bhv1upSliding)
+        || behavior_is(behavior, bhv1upJumpOnApproach)
+        || behavior_is(behavior, bhvHidden1up)
+        || behavior_is(behavior, bhvHidden1upInPole)
+        || behavior_is(behavior, bhv1upWalking)
+        || behavior_is(behavior, bhv1upRunningAway);
+}
+
+static int SM64AP_StarProducerIndex(struct Object *obj) {
+    const void *behavior = obj->behavior;
+    u8 starIndex = beh_param_star(obj->oBehParams);
+
+    if (behavior_is(behavior, bhvKingBobomb)
+        || behavior_is(behavior, bhvWhompKingBoss)
+        || behavior_is(behavior, bhvFirePiranhaPlant)
+        || behavior_is(behavior, bhvBigBully)
+        || behavior_is(behavior, bhvBigBullyWithMinions)
+        || behavior_is(behavior, bhvBigChillBully)
+        || behavior_is(behavior, bhvTuxiesMother)
+        || behavior_is(behavior, bhvEyerokBoss)
+        || behavior_is(behavior, bhvSnowmansHead)
+        || behavior_is(behavior, bhvWigglerHead)
+        || behavior_is(behavior, bhvRacingPenguin)
+        || behavior_is(behavior, bhvUkikiCage)
+        || behavior_is(behavior, bhvMantaRay)
+        || behavior_is(behavior, bhvGhostHuntBigBoo)
+        || behavior_is(behavior, bhvMerryGoRoundBigBoo)
+        || behavior_is(behavior, bhvBalconyBigBoo)
+        || behavior_is(behavior, bhvTreasureChests)
+        || behavior_is(behavior, bhvTreasureChestsJrb)
+        || behavior_is(behavior, bhvTreasureChestsShip)) {
+        return starIndex;
+    }
+
+    if ((behavior_is(behavior, bhvUnagi) && beh_param_second_byte(obj->oBehParams) == 1)
+        || (behavior_is(behavior, bhvKlepto) && beh_param_second_byte(obj->oBehParams) == 1)
+        || (behavior_is(behavior, bhvMrI) && beh_param_second_byte(obj->oBehParams) != 0)) {
+        return starIndex;
+    }
+
+    if (behavior_is(behavior, bhvKoopa) && beh_param_second_byte(obj->oBehParams) >= 2) {
+        return starIndex;
+    }
+
+    return -1;
+}
+
+static bool SM64AP_SpecialStarProducerExhausted(struct Object *obj, bool *isProducer) {
+    *isProducer = true;
+    if (behavior_is(obj->behavior, bhvYoshi)) {
+        return SM64AP_CheckedLoc(SM64AP_LOCATIONID_YOSHI);
+    }
+    if (behavior_is(obj->behavior, bhvMips)) {
+        return SM64AP_CheckedLoc(SM64AP_LOCATIONID_MIPS1)
+            && SM64AP_CheckedLoc(SM64AP_LOCATIONID_MIPS2);
+    }
+    if (behavior_is(obj->behavior, bhvToadMessage)) {
+        switch (obj->oBehParams >> 24) {
+            case DIALOG_082:
+            case DIALOG_154:
+                return SM64AP_CheckedLoc(SM64AP_LOCATIONID_BASEMENTTOAD);
+            case DIALOG_076:
+            case DIALOG_155:
+                return SM64AP_CheckedLoc(SM64AP_LOCATIONID_SECONDFLOORTOAD);
+            case DIALOG_083:
+            case DIALOG_156:
+                return SM64AP_CheckedLoc(SM64AP_LOCATIONID_THIRDFLOORTOAD);
+        }
+    }
+    *isProducer = false;
+    return false;
+}
+
+static bool SM64AP_BlockContentsExhausted(struct Object *obj) {
+    int content = obj->oBehParams2ndByte;
+    if ((obj->oBehParams >> 16) == 0x1404) {
+        return SM64AP_OneUpCollected(SM64AP_BoxLocationId(obj->oBehParams & 0xFFFF));
+    }
+    if (content >= 4 && content <= 6) {
+        return SM64AP_PermanentCoinSourceExhausted(obj->apCoinSourceId);
+    }
+    if (content == 7 || content == 9) {
+        int locId = SM64AP_ResolveOneUpLocation(
+            gCurrLevelNum, gCurrAreaIndex, SM64AP_1UP_SOURCE_BOX, content,
+            static_cast<s16>(obj->oHomeX), static_cast<s16>(obj->oHomeY),
+            static_cast<s16>(obj->oHomeZ));
+        return SM64AP_OneUpCollected(locId);
+    }
+    if (content == 8 || (content >= 10 && content <= 14)) {
+        int starIndex = content == 8 ? 0 : content - 9;
+        return SM64AP_CollectedCourseStar(gCurrCourseNum - COURSE_MIN, starIndex);
+    }
+    return true;
+}
+
+static u8 SM64AP_ComputeObjectVisualState(struct Object *obj) {
+    bool hasExhaustibleOutput = false;
+    bool exhausted = true;
+    int enemySource = SM64AP_EnemyCoinSource(obj->behavior);
+    struct Object *producer = obj;
+
+    for (int depth = 0; depth < 4 && producer != nullptr; depth++) {
+        int ancestorEnemySource = SM64AP_EnemyCoinSource(producer->behavior);
+        if (ancestorEnemySource == SM64AP_COIN_SOURCE_BOO
+            || ancestorEnemySource == SM64AP_COIN_SOURCE_BIG_BOO) {
+            enemySource = ancestorEnemySource;
+        }
+        if (SM64AP_StarProducerIndex(producer) >= 0) {
+            break;
+        }
+        bool specialProducer = false;
+        SM64AP_SpecialStarProducerExhausted(producer, &specialProducer);
+        if (specialProducer) {
+            break;
+        }
+        producer = producer->parentObj != producer ? producer->parentObj : nullptr;
+    }
+
+    if (behavior_is(obj->behavior, bhvExclamationBox)) {
+        int locId = SM64AP_ResolveBlocksanityLocation(
+            gCurrLevelNum, gCurrAreaIndex, obj->oBehParams,
+            static_cast<s16>(obj->oHomeX), static_cast<s16>(obj->oHomeY),
+            static_cast<s16>(obj->oHomeZ));
+        if (locId != 0) {
+            hasExhaustibleOutput = true;
+            exhausted = SM64AP_BlocksanityChecked(
+                gCurrLevelNum, gCurrAreaIndex, obj->oBehParams,
+                static_cast<s16>(obj->oHomeX), static_cast<s16>(obj->oHomeY),
+                static_cast<s16>(obj->oHomeZ))
+                && SM64AP_BlockContentsExhausted(obj);
+        }
+    } else if (SM64AP_IsOneUpBehavior(obj->behavior)) {
+        hasExhaustibleOutput = obj->o1UpApLocationId != 0;
+        exhausted = hasExhaustibleOutput && SM64AP_OneUpCollected(obj->o1UpApLocationId);
+    } else if (!SM64AP_IsRenderedCoin(obj->behavior) && obj->apCoinSourceId != 0) {
+        u64 expectedMask = SM64AP_ExpectedPermanentCoinMask(obj->apCoinSourceId);
+        if (expectedMask != 0) {
+            hasExhaustibleOutput = true;
+            exhausted = SM64AP_PermanentCoinSourceExhausted(obj->apCoinSourceId);
+        }
+    }
+
+    int starIndex = producer != nullptr ? SM64AP_StarProducerIndex(producer) : -1;
+    if (starIndex >= 0) {
+        hasExhaustibleOutput = true;
+        exhausted = exhausted
+            && SM64AP_CollectedCourseStar(gCurrCourseNum - COURSE_MIN, starIndex);
+    } else {
+        bool specialProducer = false;
+        bool specialExhausted = producer != nullptr
+            && SM64AP_SpecialStarProducerExhausted(producer, &specialProducer);
+        if (specialProducer) {
+            hasExhaustibleOutput = true;
+            exhausted = exhausted && specialExhausted;
+        }
+    }
+
+    if (hasExhaustibleOutput && exhausted) {
+        if (enemySource == SM64AP_COIN_SOURCE_BOO || enemySource == SM64AP_COIN_SOURCE_BIG_BOO) {
+            return SM64AP_VISUAL_EXHAUSTED_DARK;
+        }
+        return SM64AP_VISUAL_EXHAUSTED;
+    }
+    return SM64AP_VISUAL_NORMAL;
+}
+
+u8 SM64AP_ObjectVisualState(struct Object *obj) {
+    if (obj == nullptr) {
+        return SM64AP_VISUAL_NORMAL;
+    }
+    if (obj->apVisualStateFrame != gGlobalTimer) {
+        obj->apVisualStateFrame = gGlobalTimer;
+        obj->apVisualState = SM64AP_ComputeObjectVisualState(obj);
+        if (obj->apVisualState == SM64AP_VISUAL_NORMAL && obj->parentObj != nullptr
+            && obj->parentObj != obj) {
+            obj->apVisualState = SM64AP_ObjectVisualState(obj->parentObj);
+        }
+    }
+    return obj->apVisualState;
 }
 
 void SM64AP_SendBlocksanityCheck(s16 level, s16 area, s32 behParams, s16 x, s16 y, s16 z) {

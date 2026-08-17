@@ -30,6 +30,8 @@ enum {
 #define SHADER_OPT_FOG (1 << 25)
 #define SHADER_OPT_TEXTURE_EDGE (1 << 26)
 #define SHADER_OPT_NOISE (1 << 27)
+#define SHADER_OPT_GRAYSCALE (1u << 28)
+#define SHADER_OPT_DARK (1u << 29)
 
 struct CCFeatures {
     uint8_t c[2][4];
@@ -37,6 +39,8 @@ struct CCFeatures {
     bool opt_fog;
     bool opt_texture_edge;
     bool opt_noise;
+    bool opt_grayscale;
+    bool opt_dark;
     bool used_textures[2];
     int num_inputs;
     bool do_single[2];

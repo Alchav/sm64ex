@@ -15,6 +15,8 @@ void get_cc_features(uint32_t shader_id, CCFeatures *cc_features) {
     cc_features->opt_fog = (shader_id & SHADER_OPT_FOG) != 0;
     cc_features->opt_texture_edge = (shader_id & SHADER_OPT_TEXTURE_EDGE) != 0;
     cc_features->opt_noise = (shader_id & SHADER_OPT_NOISE) != 0;
+    cc_features->opt_grayscale = (shader_id & SHADER_OPT_GRAYSCALE) != 0;
+    cc_features->opt_dark = (shader_id & SHADER_OPT_DARK) != 0;
 
     cc_features->used_textures[0] = false;
     cc_features->used_textures[1] = false;
@@ -300,6 +302,13 @@ void gfx_direct3d_common_build_shader(char buf[4096], size_t& len, size_t& num_f
     if (cc_features.opt_alpha && cc_features.opt_noise) {
         append_line(buf, &len, "    float2 coords = (input.screenPos.xy / input.screenPos.w) * noise_scale;");
         append_line(buf, &len, "    texel.a *= round(random(float3(floor(coords), noise_frame)));");
+    }
+
+    if (cc_features.opt_grayscale) {
+        append_line(buf, &len, "    texel.rgb = dot(texel.rgb, float3(0.299, 0.587, 0.114));");
+    }
+    if (cc_features.opt_dark) {
+        append_line(buf, &len, "    texel.rgb *= 0.35;");
     }
 
     if (cc_features.opt_alpha) {

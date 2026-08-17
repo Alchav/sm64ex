@@ -120,6 +120,7 @@ struct DisplayListNode
     Mtx *transform;
     void *displayList;
     struct DisplayListNode *next;
+    u8 apVisualState;
 };
 
 /** GraphNode that manages the 8 top-level display lists that will be drawn

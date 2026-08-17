@@ -10,6 +10,8 @@
 #include "rendering_graph_node.h"
 #include "shadow.h"
 #include "sm64.h"
+#include "sm64ap.h"
+#include "sm64ap_visual.h"
 
 /**
  * This file contains the code that processes the scene graph for rendering.
@@ -156,6 +158,7 @@ static void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
         if ((currList = node->listHeads[i]) != NULL) {
             gDPSetRenderMode(gDisplayListHead++, modeList->modes[i], mode2List->modes[i]);
             while (currList != NULL) {
+                gDPNoOpTag(gDisplayListHead++, SM64AP_VISUAL_TAG_BASE | currList->apVisualState);
                 gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(currList->transform),
                           G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
                 gSPDisplayList(gDisplayListHead++, currList->displayList);
@@ -186,6 +189,12 @@ static void geo_append_display_list(void *displayList, s16 layer) {
         listNode->transform = gMatStackFixed[gMatStackIndex];
         listNode->displayList = displayList;
         listNode->next = 0;
+        listNode->apVisualState = SM64AP_VISUAL_NORMAL;
+        if (gCurGraphNodeObject != NULL) {
+            listNode->apVisualState = SM64AP_ObjectVisualState((struct Object *) gCurGraphNodeObject);
+        } else if (gCurGraphNodeHeldObject != NULL && gCurGraphNodeHeldObject->objNode != NULL) {
+            listNode->apVisualState = SM64AP_ObjectVisualState(gCurGraphNodeHeldObject->objNode);
+        }
         if (gCurGraphNodeMasterList->listHeads[layer] == 0) {
             gCurGraphNodeMasterList->listHeads[layer] = listNode;
         } else {

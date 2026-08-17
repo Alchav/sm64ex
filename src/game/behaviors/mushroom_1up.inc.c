@@ -118,6 +118,7 @@ static bool bhv_1up_collect_on_no_despawn_floor(s16 collisionFlags) {
 
 void bhv_1up_common_init(void) {
     bhv_1up_assign_ap_location();
+    o->oFlags |= OBJ_FLAG_PERSISTENT_RESPAWN;
     if (SM64AP_ShouldSuppressOneUp(o->o1UpApLocationId)) {
         o->activeFlags = ACTIVE_FLAG_DEACTIVATED;
         return;

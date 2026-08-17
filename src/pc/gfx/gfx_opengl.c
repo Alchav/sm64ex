@@ -210,6 +210,8 @@ static struct ShaderProgram *gfx_opengl_create_and_load_new_shader(uint32_t shad
     bool opt_alpha = (shader_id & SHADER_OPT_ALPHA) != 0;
     bool opt_fog = (shader_id & SHADER_OPT_FOG) != 0;
     bool opt_texture_edge = (shader_id & SHADER_OPT_TEXTURE_EDGE) != 0;
+    bool opt_grayscale = (shader_id & SHADER_OPT_GRAYSCALE) != 0;
+    bool opt_dark = (shader_id & SHADER_OPT_DARK) != 0;
 #ifdef USE_GLES
     bool opt_noise = false;
 #else
@@ -239,7 +241,7 @@ static struct ShaderProgram *gfx_opengl_create_and_load_new_shader(uint32_t shad
     bool color_alpha_same = (shader_id & 0xfff) == ((shader_id >> 12) & 0xfff);
 
     char vs_buf[1024];
-    char fs_buf[2048];
+    char fs_buf[2304];
     size_t vs_len = 0;
     size_t fs_len = 0;
     size_t num_floats = 4;
@@ -379,6 +381,13 @@ static struct ShaderProgram *gfx_opengl_create_and_load_new_shader(uint32_t shad
 
     if (opt_alpha && opt_noise) 
         append_line(fs_buf, &fs_len, "texel.a *= floor(random(floor(vec3(gl_FragCoord.xy, frame_count))) + 0.5);");
+
+    if (opt_grayscale) {
+        append_line(fs_buf, &fs_len, "texel.rgb = vec3(dot(texel.rgb, vec3(0.299, 0.587, 0.114)));");
+    }
+    if (opt_dark) {
+        append_line(fs_buf, &fs_len, "texel.rgb *= 0.35;");
+    }
 
     if (opt_alpha) {
         append_line(fs_buf, &fs_len, "gl_FragColor = texel;");
