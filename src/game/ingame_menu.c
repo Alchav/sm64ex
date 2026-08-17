@@ -3049,7 +3049,7 @@ static const struct PauseUnlockView *pause_unlock_view_at(s16 viewIndex) {
     return &sPauseUnlockViews[viewIndex];
 }
 
-static void render_pause_move_unlocks(s16 x, s16 y, s16 moveArea) {
+static void render_pause_move_unlocks(s16 x, s16 y, s16 moveArea, s16 levelNum) {
     static const u8 textNotApplicable[] = { TEXT_PAINTING_NA };
     static const s16 statusX = 112;
 
@@ -3057,7 +3057,14 @@ static void render_pause_move_unlocks(s16 x, s16 y, s16 moveArea) {
         const struct PauseMoveUnlock *unlock = &sPauseMoveUnlocks[i];
         const u8 *label = unlock->label;
         bool unlocked = SM64AP_HaveLevelMoveOrGlobal(moveArea, unlock->move);
-        bool notApplicable = moveArea == SM64AP_LEVEL_MOVE_AREA_BBH && unlock->move == SM64AP_LEVEL_MOVE_CLIMB;
+        bool noClimbableObjects = moveArea == SM64AP_LEVEL_MOVE_AREA_BBH
+            || levelNum == LEVEL_PSS
+            || levelNum == LEVEL_SA
+            || levelNum == LEVEL_BITDW
+            || levelNum == LEVEL_VCUTM
+            || levelNum == LEVEL_COTMC
+            || levelNum == LEVEL_TOTWC;
+        bool notApplicable = noClimbableObjects && unlock->move == SM64AP_LEVEL_MOVE_CLIMB;
 
         if (unlock->move == SM64AP_LEVEL_MOVE_TRIPLE_JUMP && !unlocked && SM64AP_CanDoubleJumpForArea(moveArea)) {
             label = sMoveDouble;
@@ -3175,7 +3182,7 @@ static void render_pause_unlock_view_page(s16 viewIndex) {
             : pause_unlock_view_title(view));
     print_generic_string(266, 140 + contentYOffset, sPauseUnlockPage == 0 ? textPageOne : textPageTwo);
     if (sPauseUnlockPage == 0) {
-        render_pause_move_unlocks(-8, 122 + contentYOffset, view->moveArea);
+        render_pause_move_unlocks(-8, 122 + contentYOffset, view->moveArea, view->levelNum);
         render_pause_sign_unlock(-8, 1 + contentYOffset, 112, view->levelNum);
     }
 
