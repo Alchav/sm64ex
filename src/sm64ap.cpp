@@ -14,6 +14,7 @@ extern "C" {
     #include "model_ids.h"
     #include "seq_ids.h"
     #include "engine/behavior_script.h"
+    #include "engine/surface_collision.h"
     #include "game/level_update.h"
     #include "game/ingame_menu.h"
     #include "game/object_list_processor.h"
@@ -55,6 +56,7 @@ extern "C" {
 #include <mutex>
 #include <limits>
 #include <atomic>
+#include <cmath>
 
 // APCpp's JSON reader and writer are shared by its network thread. Game-thread messages are
 // serialized here before entering APCpp so coin collection cannot race incoming messages.
@@ -119,7 +121,7 @@ static void SM64AP_SendSerializedRequest(const std::string &request);
 static const int sm64_shuffled_entrance_ids[] = {
     91, 241, 121, 51, 41, 71, 221, 81, 231, 101,
     111, 112, 113, 361, 132, 131, 141, 142, 143, 144,
-    151, 271, 201, 171, 291, 281, 181, 191, 311,
+    151, 211, 271, 201, 171, 291, 281, 181, 191, 311,
 };
 
 static std::map<int, SM64APSignHint> sm64_sign_hints;
@@ -342,12 +344,37 @@ int cur_msg_frame_duration = msg_frame_duration;
 std::queue<int64_t> delayed_queue;
 
 std::map<int,int> map_entrances;
-std::set<int> course_dest_supported;
+std::map<int,int> map_sub_area_entrances;
+static bool sm64_ccm_slide_exit_arrival_pending = false;
+
+struct SM64APReturnPoint {
+    s16 level;
+    s8 area;
+    s16 node;
+    s16 entranceLevel;
+    s16 pos[3];
+    s16 yaw;
+    u32 starSpawnType;
+    bool normalCastleEntrance;
+    bool overridePosition;
+    bool reverseStarFacing;
+};
+
+struct SM64APPendingReturnSpawn {
+    s16 pos[3];
+    s16 yaw;
+    u32 spawnType;
+    bool active;
+    bool overridePosition;
+    bool moveAwayFromWarp;
+    bool reverseFacing;
+};
+
+static std::vector<SM64APReturnPoint> sm64_return_stack;
+static SM64APPendingReturnSpawn sm64_pending_return_spawn = {};
 
 std::map<int,int> map_boxid_locid;
 
-int sm64_exit_return_to;
-int sm64_exit_orig_entrancelvl;
 int sm64_wdw_entrance_variant = 0;
 int sm64_ttc_entrance_variant = SM64AP_ENTRANCE_TTC_STOPPED;
 int sm64_music_shuffle_mode = 0;
@@ -1256,6 +1283,10 @@ static bool SM64AP_HaveEnemyUnlock(int source, s16 level) {
     }
 
     return !appliesToLevel || haveGlobal;
+}
+
+bool SM64AP_HaveBowser(s16 level) {
+    return SM64AP_HaveEnemyUnlock(SM64AP_ENEMY_UNLOCK_BOWSER, level);
 }
 
 static bool SM64AP_IsEnemyCoinSource(int source) {
@@ -2305,6 +2336,10 @@ void setCourseNodeAndArea(int coursenum, s16* oldnode, bool isDeathWarp, int war
             return;
         case LEVEL_WMOTR:
             *oldnode = (isDeathWarp || warpOp != WARP_OP_STAR_EXIT) ? 0x6D : 0x38;
+            return;
+        case LEVEL_BITS:
+        case LEVEL_BOWSER_3:
+            *oldnode = 0x6B;
         default:
             return;
     }
@@ -2355,6 +2390,29 @@ static void SM64AP_DiscoverEntrance(int sourceEntrance) {
     }
 }
 
+static void SM64AP_DiscoverSubAreaEntrance(int sourceId) {
+    if (AP_GetConnectionStatus() != AP_ConnectionStatus::Authenticated
+        || sourceId <= 0 || sourceId >= 64) {
+        return;
+    }
+
+    const bool high = sourceId >= 32;
+    const int bit = high ? sourceId - 32 : sourceId - 1;
+    std::string key = high
+        ? "SM64SpicyFoundSubAreaEntrancesHigh_"
+        : "SM64SpicyFoundSubAreaEntrancesLow_";
+    key += std::to_string(AP_GetPlayerID());
+    SM64AP_SetServerInt(key, "or", 1 << bit);
+}
+
+static void SM64AP_DiscoverRandomizedSource(int sourceId) {
+    if (sourceId > 0 && sourceId < 64) {
+        SM64AP_DiscoverSubAreaEntrance(sourceId);
+    } else {
+        SM64AP_DiscoverEntrance(sourceId);
+    }
+}
+
 static void SM64AP_SetTTCEntranceVariantSpeed(int variant) {
     switch (variant) {
         case SM64AP_ENTRANCE_TTC_STOPPED:
@@ -2393,6 +2451,97 @@ static void SM64AP_ApplyEntranceDestination(int destination, s16* destLevel, s16
     }
 }
 
+static void SM64AP_ApplySubAreaDestination(
+    int destination, s16* destLevel, s16* destArea, s16* destWarpNode, s32* warpArg
+) {
+    int variant = (destination >> 24) & 0x0F;
+    int level = (destination >> 16) & 0xFF;
+
+    SM64AP_SetWDWEntranceVariant(0);
+    *destLevel = level;
+    *destArea = (destination >> 8) & 0xFF;
+    *destWarpNode = destination & 0xFF;
+    *warpArg = (destination >> 28) & 0x0F;
+    sm64_ccm_slide_exit_arrival_pending =
+        level == LEVEL_CCM && *destArea == 1 && *destWarpNode == 0x14;
+
+    if (level == LEVEL_WDW && variant != 0) {
+        SM64AP_SetWDWEntranceVariant(variant);
+    } else if (level == LEVEL_TTC && variant != 0) {
+        SM64AP_SetTTCEntranceVariantSpeed(variant);
+    }
+}
+
+bool SM64AP_ConsumeCCMSlideExitArrival(s16 level, s8 area) {
+    bool shouldSpawnStar = sm64_ccm_slide_exit_arrival_pending
+        && level == LEVEL_CCM && area == 1;
+    sm64_ccm_slide_exit_arrival_pending = false;
+    return shouldSpawnStar;
+}
+
+static int SM64AP_PhysicalSubAreaSource(s16 level, s8 area, s16 warpNode) {
+    switch (level) {
+        case LEVEL_CCM:
+            if (area == 1 && warpNode == 0x1E) return 1;
+            if (area == 2 && warpNode == 0x14) return 21;
+            break;
+        case LEVEL_SL:
+            if (area == 1 && warpNode == 0x0C) return 2;
+            if (area == 2 && warpNode == 0x0B) return 22;
+            break;
+        case LEVEL_TTM:
+            if (area == 1 && warpNode >= 0x00 && warpNode <= 0x02) return 3;
+            if (area == 4 && warpNode == 0x0A) return 23;
+            break;
+        case LEVEL_THI:
+            if (area == 1 && warpNode == 0x0C) return 4;
+            if (area == 1 && warpNode == 0x0D) return 10;
+            if (area == 3 && warpNode == 0x0C) return 24;
+            break;
+        case LEVEL_HMC:
+            if (area == 1 && warpNode == 0x0B) return 5;
+            break;
+        case LEVEL_JRB:
+            if (area == 1 && warpNode == 0xF3) return 6;
+            break;
+        case LEVEL_LLL:
+            if (area == 1 && warpNode == 0x0B) return 7;
+            break;
+        case LEVEL_SSL:
+            if (area == 1 && warpNode == 0x14) return 8;
+            if (area == 1 && warpNode == 0x1E) return 9;
+            break;
+        case LEVEL_BITDW:
+            if (area == 1 && warpNode == 0x0B) return 11;
+            break;
+        case LEVEL_BITFS:
+            if (area == 1 && warpNode == 0x0B) return 12;
+            break;
+        case LEVEL_BITS:
+            if (area == 1 && warpNode == 0x0B) return 13;
+            break;
+        case LEVEL_PSS:
+            if (area == 1 && warpNode == 0xF3) return 31;
+            break;
+        case LEVEL_TOTWC:
+            if (area == 1 && warpNode == 0xF3) return 32;
+            break;
+        case LEVEL_VCUTM:
+            if (area == 1 && warpNode == 0xF3) return 33;
+            break;
+        case LEVEL_COTMC:
+            if (area == 1 && warpNode == 0xF3) return 34;
+            break;
+        case LEVEL_DDD:
+            if (area == 2 && warpNode == 0xF3) return 35;
+            break;
+        case LEVEL_WMOTR:
+            if (area == 1 && warpNode == 0xF3) return 36;
+            break;
+    }
+    return 0;
+}
+
 static int SM64AP_SourceEntranceKey(s16 destLevel, s16 destArea, s32 sourceEntrance) {
     if (sourceEntrance != 0) {
         return sourceEntrance;
@@ -2409,32 +2558,238 @@ static int SM64AP_SourceEntranceKey(s16 destLevel, s16 destArea, s32 sourceEntra
     }
 }
 
-void SM64AP_RedirectWarp(s16* curLevel, s16* destLevel, s8* curArea, s16* destArea, s16* destWarpNode, bool isDeathWarp, int warpOp, s32 sourceEntrance) {
+static void SM64AP_PushNormalReturnPoint(s16 level, s8 area, int entranceLevel) {
+    SM64APReturnPoint point = {};
+    point.level = level;
+    point.area = area;
+    point.entranceLevel = entranceLevel;
+    point.normalCastleEntrance = true;
+    sm64_return_stack.push_back(point);
+}
+
+static s16 SM64AP_SubAreaReturnNode(s16 sourceWarpNode, bool hasSourceNode) {
+    return hasSourceNode ? sourceWarpNode : 0x0A;
+}
+
+static void SM64AP_PushSubAreaReturnPoint(
+    int sourceId, s16 level, s8 area, s16 sourceWarpNode
+) {
+    struct ObjectWarpNode *sourceNode = area_get_warp_node(sourceWarpNode);
+    bool hasSourceNode = sourceNode != nullptr && sourceNode->object != nullptr;
+    SM64APReturnPoint point = {};
+    point.level = level;
+    point.area = area;
+    point.node = SM64AP_SubAreaReturnNode(sourceWarpNode, hasSourceNode);
+    bool bowserArenaEntrance = sourceId >= 11 && sourceId <= 13;
+    point.starSpawnType = bowserArenaEntrance ? MARIO_SPAWN_UNKNOWN_03
+        : hasSourceNode ? get_mario_spawn_type(sourceNode->object)
+                        : MARIO_SPAWN_SPIN_AIRBORNE;
+    point.reverseStarFacing = bowserArenaEntrance;
+    point.overridePosition = !hasSourceNode || sourceId == 4 || sourceId == 8;
+    if (sourceId == 4) {
+        // The Huge Island cave entrance is itself a warp trigger. Place Mario
+        // farther outside the cave so a return cannot immediately re-enter it.
+        point.pos[0] = 410;
+        point.pos[1] = -400;
+        point.pos[2] = 1200;
+        point.yaw = 0;
+    } else if (sourceId == 8) {
+        // The pyramid's side warp sits at the bottom of a slope and immediately
+        // catches arrivals. Return to the flat ground above the entrance.
+        point.pos[0] = -2048;
+        point.pos[1] = 300;
+        point.pos[2] = 768;
+        point.yaw = 0;
+    } else if (point.overridePosition) {
+        point.yaw = gMarioState->faceAngle[1];
+        constexpr float angleToRadians = 3.14159265358979323846f / 32768.0f;
+        float yawRadians = point.yaw * angleToRadians;
+        point.pos[0] = (s16) (gMarioState->pos[0] - 300.0f * std::sin(yawRadians));
+        point.pos[1] = (s16) gMarioState->pos[1];
+        point.pos[2] = (s16) (gMarioState->pos[2] - 300.0f * std::cos(yawRadians));
+    }
+    sm64_return_stack.push_back(point);
+}
+
+static void SM64AP_SetPendingReturnSpawn(
+    const SM64APReturnPoint &point, u32 spawnType, bool overridePosition,
+    bool moveAwayFromWarp = false, bool reverseFacing = false
+) {
+    sm64_pending_return_spawn.active = true;
+    sm64_pending_return_spawn.overridePosition = overridePosition;
+    sm64_pending_return_spawn.spawnType = spawnType;
+    sm64_pending_return_spawn.moveAwayFromWarp = moveAwayFromWarp;
+    sm64_pending_return_spawn.reverseFacing = reverseFacing;
+    sm64_pending_return_spawn.yaw = point.yaw;
+    for (int i = 0; i < 3; i++) {
+        sm64_pending_return_spawn.pos[i] = point.pos[i];
+    }
+}
+
+static int SM64AP_ResolveReturnStyle(
+    bool isDeathWarp, int warpOp, int returnStyleOverride
+) {
+    if (returnStyleOverride != SM64AP_RETURN_STYLE_AUTO) {
+        return returnStyleOverride;
+    }
+    if (isDeathWarp || warpOp == WARP_OP_DEATH) {
+        return SM64AP_RETURN_STYLE_DEATH;
+    }
+    return SM64AP_RETURN_STYLE_STAR;
+}
+
+static bool SM64AP_TryReturnToPreviousEntrance(
+    s16* destLevel, s16* destArea, s16* destWarpNode, s32* warpArg,
+    bool isDeathWarp, int warpOp, int returnStyleOverride
+) {
+    bool isReturnWarp = returnStyleOverride != SM64AP_RETURN_STYLE_AUTO
+        || isDeathWarp || warpOp == WARP_OP_DEATH || warpOp == WARP_OP_STAR_EXIT;
+    if (!isReturnWarp || sm64_return_stack.empty()) {
+        return false;
+    }
+
+    int returnStyle = SM64AP_ResolveReturnStyle(isDeathWarp, warpOp, returnStyleOverride);
+    SM64APReturnPoint point = sm64_return_stack.back();
+    sm64_return_stack.pop_back();
+    *destLevel = point.level;
+    *destArea = point.area;
+    *warpArg = 0;
+
+    if (point.normalCastleEntrance) {
+        bool deathNode = returnStyle != SM64AP_RETURN_STYLE_STAR;
+        int nodeWarpOp = returnStyle == SM64AP_RETURN_STYLE_STAR
+            ? WARP_OP_STAR_EXIT : WARP_OP_NONE;
+        setCourseNodeAndArea(point.entranceLevel, destWarpNode, deathNode, nodeWarpOp);
+        if (returnStyle == SM64AP_RETURN_STYLE_GROUND) {
+            SM64AP_SetPendingReturnSpawn(
+                point, MARIO_SPAWN_INSTANT_ACTIVE, false, true);
+        } else if (returnStyle == SM64AP_RETURN_STYLE_DEATH) {
+            SM64AP_SetPendingReturnSpawn(point, MARIO_SPAWN_DEATH, false, true);
+        } else if (returnStyle == SM64AP_RETURN_STYLE_STAR
+                   && point.entranceLevel == LEVEL_BITS) {
+            SM64AP_SetPendingReturnSpawn(point, MARIO_SPAWN_LAUNCH_STAR_COLLECT, false);
+        }
+        return true;
+    }
+
+    *destWarpNode = point.node;
+    u32 spawnType = MARIO_SPAWN_INSTANT_ACTIVE;
+    if (returnStyle == SM64AP_RETURN_STYLE_DEATH) {
+        spawnType = MARIO_SPAWN_DEATH;
+    } else if (returnStyle == SM64AP_RETURN_STYLE_STAR) {
+        spawnType = point.starSpawnType != 0
+            ? point.starSpawnType : MARIO_SPAWN_SPIN_AIRBORNE;
+    }
+    SM64AP_SetPendingReturnSpawn(
+        point, spawnType, point.overridePosition, false,
+        returnStyle == SM64AP_RETURN_STYLE_STAR && point.reverseStarFacing);
+    return true;
+}
+
+bool SM64AP_ApplyPendingReturnSpawn(s16* pos, s16* angle, u32* spawnType, s32* actionArg) {
+    if (!sm64_pending_return_spawn.active) {
+        return false;
+    }
+    if (sm64_pending_return_spawn.overridePosition) {
+        for (int i = 0; i < 3; i++) {
+            pos[i] = sm64_pending_return_spawn.pos[i];
+        }
+        angle[0] = 0;
+        angle[1] = sm64_pending_return_spawn.yaw;
+        angle[2] = 0;
+    } else if (sm64_pending_return_spawn.moveAwayFromWarp) {
+        constexpr float angleToRadians = 3.14159265358979323846f / 32768.0f;
+        float yawRadians = angle[1] * angleToRadians;
+        pos[0] = (s16) (pos[0] - 400.0f * std::sin(yawRadians));
+        pos[2] = (s16) (pos[2] - 400.0f * std::cos(yawRadians));
+
+        struct Surface *floor = nullptr;
+        float floorHeight = find_floor(pos[0], pos[1] + 1000.0f, pos[2], &floor);
+        if (floor != nullptr) {
+            pos[1] = (s16) (floorHeight + 100.0f);
+        }
+    }
+    if (sm64_pending_return_spawn.reverseFacing) {
+        angle[1] += 0x8000;
+    }
+    *spawnType = sm64_pending_return_spawn.spawnType;
+    *actionArg = 0;
+    if (*spawnType != MARIO_SPAWN_PAINTING_STAR_COLLECT
+        && *spawnType != MARIO_SPAWN_AIRBORNE_STAR_COLLECT
+        && *spawnType != MARIO_SPAWN_LAUNCH_STAR_COLLECT) {
+        gPauseExitCourseSkipDoneScreen = false;
+    }
+    sm64_pending_return_spawn.active = false;
+    return true;
+}
+
+void SM64AP_ClearReturnStack() {
+    sm64_return_stack.clear();
+    sm64_pending_return_spawn.active = false;
+}
+
+void SM64AP_RedirectWarp(s16* curLevel, s16* destLevel, s8* curArea, s16* destArea,
+                         s16* destWarpNode, bool isDeathWarp, int warpOp,
+                         s32 sourceEntrance, s16 sourceWarpNode, s32* warpArg,
+                         int returnStyleOverride) {
     // When warping, always lock the clock and reset var to avoid segfault if old clock val is not in new area
     SM64AP_SetClockToTTCState();
-    if (*destLevel == LEVEL_BOWSER_3 || *curLevel == LEVEL_BOWSER_3 ||
-        *destLevel == LEVEL_BITS || *curLevel == LEVEL_BITS) return; // Dont play around with this one
-    if (*destWarpNode >= WARP_NODE_CREDITS_MIN) return; // Credit Warps
-    if ((*curLevel == LEVEL_CASTLE || *curLevel == LEVEL_CASTLE_COURTYARD || *curLevel == LEVEL_CASTLE_GROUNDS || *curLevel == LEVEL_HMC) && 
-         *destLevel != LEVEL_CASTLE && *destLevel != LEVEL_CASTLE_COURTYARD && *destLevel != LEVEL_CASTLE_GROUNDS) {
-        if (*curLevel == LEVEL_HMC && *destLevel != LEVEL_COTMC) return; // Safety Check: If in HMC only relevant warp is to COTMC
-        int sourceKey = SM64AP_SourceEntranceKey(*destLevel, *destArea, sourceEntrance);
-        int destination = SM64AP_GetMappedEntrance(sourceKey);
-        SM64AP_DiscoverEntrance(sourceKey);
-        if (*curLevel != LEVEL_HMC) { // HMC -> COTMC transition should not set new return point
-            sm64_exit_return_to = *curLevel * 10 + *curArea;
-            sm64_exit_orig_entrancelvl = sourceKey / 10;
+    if (*destWarpNode >= WARP_NODE_CREDITS_MIN
+        || warpOp == WARP_OP_CREDITS_START || warpOp == WARP_OP_CREDITS_NEXT
+        || warpOp == WARP_OP_CREDITS_END) {
+        SM64AP_ClearReturnStack();
+        return;
+    }
+
+    if (SM64AP_TryReturnToPreviousEntrance(
+            destLevel, destArea, destWarpNode, warpArg,
+            isDeathWarp, warpOp, returnStyleOverride)) {
+        return;
+    }
+
+    int subAreaSource = SM64AP_PhysicalSubAreaSource(*curLevel, *curArea, sourceWarpNode);
+    if (subAreaSource >= 1 && subAreaSource <= 13) {
+        SM64AP_PushSubAreaReturnPoint(subAreaSource, *curLevel, *curArea, sourceWarpNode);
+    }
+
+    int normalSourceKey = 0;
+    if ((*curLevel == LEVEL_CASTLE || *curLevel == LEVEL_CASTLE_COURTYARD
+         || *curLevel == LEVEL_CASTLE_GROUNDS)
+        && *destLevel != LEVEL_CASTLE && *destLevel != LEVEL_CASTLE_COURTYARD
+        && *destLevel != LEVEL_CASTLE_GROUNDS) {
+        normalSourceKey = SM64AP_SourceEntranceKey(*destLevel, *destArea, sourceEntrance);
+        SM64AP_PushNormalReturnPoint(*curLevel, *curArea, normalSourceKey / 10);
+        auto normalSubArea = map_sub_area_entrances.find(1000 + normalSourceKey);
+        if (normalSubArea != map_sub_area_entrances.end()) {
+            SM64AP_DiscoverEntrance(normalSourceKey);
+            SM64AP_ApplySubAreaDestination(
+                normalSubArea->second, destLevel, destArea, destWarpNode, warpArg);
+            return;
         }
+
+        int destination = SM64AP_GetMappedEntrance(normalSourceKey);
+        SM64AP_DiscoverEntrance(normalSourceKey);
         SM64AP_ApplyEntranceDestination(destination, destLevel, destArea);
         *destWarpNode = 0x0A;
         return;
     }
 
-    if ((*destLevel == LEVEL_CASTLE || *destLevel == LEVEL_CASTLE_COURTYARD || *destLevel == LEVEL_CASTLE_GROUNDS) && course_dest_supported.find(*curLevel) != course_dest_supported.end()) {
-        if (*destLevel == LEVEL_CASTLE && (*destWarpNode == 0x1F || *destWarpNode == 0x00)) return; //Exit Course or Inter-Castle warp
-        *destLevel = sm64_exit_return_to / 10;
-        *destArea = sm64_exit_return_to % 10;
-        setCourseNodeAndArea(sm64_exit_orig_entrancelvl, destWarpNode, isDeathWarp, warpOp);
+    auto subArea = map_sub_area_entrances.find(subAreaSource);
+    if (subAreaSource != 0 && subArea != map_sub_area_entrances.end()) {
+        SM64AP_DiscoverSubAreaEntrance(subAreaSource);
+        SM64AP_ApplySubAreaDestination(
+            subArea->second, destLevel, destArea, destWarpNode, warpArg);
+        return;
+    }
+
+    if (*destLevel == LEVEL_BOWSER_3 || *curLevel == LEVEL_BOWSER_3 ||
+        *destLevel == LEVEL_BITS || *curLevel == LEVEL_BITS) return; // Dont play around with this one
+    if (*curLevel == LEVEL_HMC && *destLevel == LEVEL_COTMC) {
+        int sourceKey = SM64AP_SourceEntranceKey(*destLevel, *destArea, sourceEntrance);
+        int destination = SM64AP_GetMappedEntrance(sourceKey);
+        SM64AP_DiscoverEntrance(sourceKey);
+        SM64AP_ApplyEntranceDestination(destination, destLevel, destArea);
+        *destWarpNode = 0x0A;
         return;
     }
 }
@@ -2522,6 +2877,10 @@ void SM64AP_SetCompletionType(int type) {
 
 void SM64AP_SetCourseMap(std::map<int,int> map) {
     map_entrances = map;
+}
+
+void SM64AP_SetSubAreaMap(std::map<int,int> map) {
+    map_sub_area_entrances = map;
 }
 
 static void SM64AP_ApplyStartInventory() {
@@ -3015,7 +3374,7 @@ void SM64AP_ReadSign(s16 level, s16 dialog) {
         SM64AP_SendSerializedRequest(request.str());
     }
     if (hint.entrance > 0) {
-        SM64AP_DiscoverEntrance(hint.entrance);
+        SM64AP_DiscoverRandomizedSource(hint.entrance);
     }
 }
 
@@ -3087,6 +3446,14 @@ static void SM64AP_SetCourseMap(std::string rawMap) {
         parsedMap.clear();
     }
     SM64AP_SetCourseMap(parsedMap);
+}
+
+static void SM64AP_SetSubAreaMap(std::string rawMap) {
+    std::map<int,int> parsedMap;
+    if (!SM64AP_ParseJsonIntMap(rawMap, parsedMap)) {
+        parsedMap.clear();
+    }
+    SM64AP_SetSubAreaMap(parsedMap);
 }
 
 static void SM64AP_SetMusicMap(std::string rawMap) {
@@ -3500,6 +3867,8 @@ void SM64AP_GenericInit() {
     AP_RegisterSlotDataIntCallback(
         "BowserInTheSkyStageCollapseHits", &SM64AP_SetBowserInTheSkyStageCollapseHits);
     AP_RegisterSlotDataRawCallback("AreaRando", static_cast<void (*)(std::string)>(&SM64AP_SetCourseMap));
+    AP_RegisterSlotDataRawCallback(
+        "SubAreaRando", static_cast<void (*)(std::string)>(&SM64AP_SetSubAreaMap));
     AP_RegisterSlotDataRawCallback("StartInventory", static_cast<void (*)(std::string)>(&SM64AP_SetStartInventory));
     AP_RegisterSlotDataIntCallback("MusicShuffleMode", &SM64AP_SetMusicShuffleMode);
     AP_RegisterSlotDataRawCallback("MusicMap", static_cast<void (*)(std::string)>(&SM64AP_SetMusicMap));
@@ -3509,12 +3878,6 @@ void SM64AP_GenericInit() {
     AP_RegisterSlotDataRawCallback("CoinStarRequirements", &SM64AP_SetCoinStarRequirements);
     AP_RegisterSlotDataRawCallback("SignHintData", &SM64AP_SetSignHintData);
 
-    course_dest_supported = {
-        LEVEL_BOB, LEVEL_WF, LEVEL_JRB, LEVEL_CCM, LEVEL_BBH, LEVEL_HMC, LEVEL_LLL, LEVEL_SSL, LEVEL_DDD, LEVEL_SL,
-        LEVEL_WDW, LEVEL_TTM, LEVEL_THI, LEVEL_TTC, LEVEL_RR, LEVEL_PSS, LEVEL_SA, LEVEL_BITDW, LEVEL_TOTWC, LEVEL_COTMC,
-        LEVEL_VCUTM, LEVEL_BITFS, LEVEL_WMOTR, LEVEL_BOWSER_1, LEVEL_BOWSER_2, LEVEL_BOWSER_3
-    };
-    
     map_boxid_locid[LEVEL_CCM*10 + 1] = 3626215;
     map_boxid_locid[LEVEL_CCM*10 + 2] = 3626216;
     map_boxid_locid[LEVEL_CCM*10 + 3] = 3626217;
@@ -4169,6 +4532,23 @@ static bool SM64AP_BlockContentsExhausted(struct Object *obj) {
     return true;
 }
 
+static bool SM64AP_IsValidObjectPointer(const struct Object *obj) {
+    uintptr_t address = reinterpret_cast<uintptr_t>(obj);
+    uintptr_t poolStart = reinterpret_cast<uintptr_t>(&gObjectPool[0]);
+    uintptr_t poolEnd = reinterpret_cast<uintptr_t>(&gObjectPool[OBJECT_POOL_CAPACITY]);
+    return address >= poolStart && address < poolEnd
+        && (address - poolStart) % sizeof(struct Object) == 0;
+}
+
+static struct Object *SM64AP_ValidObjectParent(struct Object *obj) {
+    struct Object *parent = obj->parentObj;
+    if (parent == obj || !SM64AP_IsValidObjectPointer(parent)
+        || !(parent->activeFlags & ACTIVE_FLAG_ACTIVE)) {
+        return nullptr;
+    }
+    return parent;
+}
+
 static u8 SM64AP_ComputeObjectVisualState(struct Object *obj) {
     bool hasExhaustibleOutput = false;
     bool exhausted = true;
@@ -4189,7 +4569,7 @@ static u8 SM64AP_ComputeObjectVisualState(struct Object *obj) {
         if (specialProducer) {
             break;
         }
-        producer = producer->parentObj != producer ? producer->parentObj : nullptr;
+        producer = SM64AP_ValidObjectParent(producer);
     }
 
     if (behavior_is(obj->behavior, bhvExclamationBox)) {
@@ -4247,9 +4627,9 @@ u8 SM64AP_ObjectVisualState(struct Object *obj) {
     if (obj->apVisualStateFrame != gGlobalTimer) {
         obj->apVisualStateFrame = gGlobalTimer;
         obj->apVisualState = SM64AP_ComputeObjectVisualState(obj);
-        if (obj->apVisualState == SM64AP_VISUAL_NORMAL && obj->parentObj != nullptr
-            && obj->parentObj != obj) {
-            obj->apVisualState = SM64AP_ObjectVisualState(obj->parentObj);
+        struct Object *parent = SM64AP_ValidObjectParent(obj);
+        if (obj->apVisualState == SM64AP_VISUAL_NORMAL && parent != nullptr) {
+            obj->apVisualState = SM64AP_ObjectVisualState(parent);
         }
     }
     return obj->apVisualState;

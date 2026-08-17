@@ -164,6 +164,7 @@ s16 sCurrPlayMode;
 u16 D_80339ECA;
 s16 sTransitionTimer;
 u8 gPauseExitCourseSkipDoneScreen = FALSE;
+static s32 sSM64APReturnStyleOverride = SM64AP_RETURN_STYLE_AUTO;
 void (*sTransitionUpdate)(s16 *);
 struct WarpDest sWarpDest;
 s16 D_80339EE0;
@@ -373,6 +374,7 @@ void set_mario_initial_action(struct MarioState *m, u32 spawnType, u32 actionArg
 void init_mario_after_warp(void) {
     struct ObjectWarpNode *spawnNode = area_get_warp_node(sWarpDest.nodeId);
     u32 marioSpawnType = get_mario_spawn_type(spawnNode->object);
+    s32 actionArg = sWarpDest.arg;
 
     if (gMarioState->action != ACT_UNINITIALIZED) {
         gPlayerSpawnInfos[0].startPos[0] = (s16) spawnNode->object->oPosX;
@@ -384,8 +386,11 @@ void init_mario_after_warp(void) {
         gPlayerSpawnInfos[0].startAngle[2] = 0;
 
         if (marioSpawnType == MARIO_SPAWN_DOOR_WARP) {
-            init_door_warp(&gPlayerSpawnInfos[0], sWarpDest.arg);
+            init_door_warp(&gPlayerSpawnInfos[0], actionArg);
         }
+        SM64AP_ApplyPendingReturnSpawn(
+            gPlayerSpawnInfos[0].startPos, gPlayerSpawnInfos[0].startAngle,
+            &marioSpawnType, &actionArg);
 
         if (sWarpDest.type == WARP_TYPE_CHANGE_LEVEL || sWarpDest.type == WARP_TYPE_CHANGE_AREA) {
             gPlayerSpawnInfos[0].areaIndex = sWarpDest.areaIdx;
@@ -393,7 +398,7 @@ void init_mario_after_warp(void) {
         }
 
         init_mario();
-        set_mario_initial_action(gMarioState, marioSpawnType, sWarpDest.arg);
+        set_mario_initial_action(gMarioState, marioSpawnType, actionArg);
 
         gMarioState->interactObj = spawnNode->object;
         gMarioState->usedObj = spawnNode->object;
@@ -617,9 +622,11 @@ s16 music_changed_through_warp(s16 arg) {
  * Set the current warp type and destination level/area/node.
  */
 
-void initiate_warp_with_source(s16 destLevel, s16 destArea, s16 destWarpNode, s32 arg3, s32 sourceEntrance) {
+void initiate_warp_with_source(s16 destLevel, s16 destArea, s16 destWarpNode, s32 arg3,
+                               s32 sourceEntrance, s16 sourceWarpNode) {
     SM64AP_RedirectWarp(&gCurrLevelNum, &destLevel, &(gCurrentArea->index), &destArea, &destWarpNode,
-                        sSourceWarpNodeId == WARP_NODE_DEATH, sDelayedWarpOp, sourceEntrance);
+                        sourceWarpNode == WARP_NODE_DEATH, sDelayedWarpOp, sourceEntrance,
+                        sourceWarpNode, &arg3, sSM64APReturnStyleOverride);
     if (destWarpNode >= WARP_NODE_CREDITS_MIN) {
         sWarpDest.type = WARP_TYPE_CHANGE_LEVEL;
     } else if (destLevel != gCurrLevelNum) {
@@ -637,7 +644,7 @@ void initiate_warp_with_source(s16 destLevel, s16 destArea, s16 destWarpNode, s3
 }
 
 void initiate_warp(s16 destLevel, s16 destArea, s16 destWarpNode, s32 arg3) {
-    initiate_warp_with_source(destLevel, destArea, destWarpNode, arg3, 0);
+    initiate_warp_with_source(destLevel, destArea, destWarpNode, arg3, 0, sSourceWarpNodeId);
 }
 
 // From Surface 0xD3 to 0xFC
@@ -788,8 +795,9 @@ void initiate_painting_warp(void) {
                     D_8032C9E0 = FALSE;
                 }
 
-                initiate_warp_with_source(warpNode.destLevel & 0x7F, warpNode.destArea, warpNode.destNode, 0,
-                                          get_ap_painting_source_entrance(warpNode.destLevel & 0x7F));
+                initiate_warp_with_source(
+                    warpNode.destLevel & 0x7F, warpNode.destArea, warpNode.destNode, 0,
+                    get_ap_painting_source_entrance(warpNode.destLevel & 0x7F), pWarpNode->id);
                 check_if_should_set_warp_checkpoint(&warpNode);
 
                 play_transition_after_delay(WARP_TRANSITION_FADE_INTO_COLOR, 30, 255, 255, 255, 45);
@@ -1150,12 +1158,19 @@ s32 play_mode_paused(void) {
             if (warpNode != NULL) {
                 previousDelayedWarpOp = sDelayedWarpOp;
                 gPauseExitCourseSkipDoneScreen = TRUE;
+                sSM64APReturnStyleOverride = SM64AP_RETURN_STYLE_GROUND;
+                if (gPlayer1Controller->buttonDown & L_TRIG) {
+                    sSM64APReturnStyleOverride = SM64AP_RETURN_STYLE_DEATH;
+                } else if (gPlayer1Controller->buttonDown & R_TRIG) {
+                    sSM64APReturnStyleOverride = SM64AP_RETURN_STYLE_STAR;
+                }
                 sDelayedWarpOp = WARP_OP_STAR_EXIT;
                 // The F1 node supplies a destination for stages without F0, but this is still a
                 // course exit rather than a death warp. Area rando uses the source ID to distinguish them.
                 sSourceWarpNodeId = WARP_NODE_F0;
                 initiate_warp(warpNode->node.destLevel & 0x7F, warpNode->node.destArea,
                               warpNode->node.destNode, 0);
+                sSM64APReturnStyleOverride = SM64AP_RETURN_STYLE_AUTO;
                 sDelayedWarpOp = previousDelayedWarpOp;
                 fade_into_special_warp(0, 0);
                 gSavedCourseNum = COURSE_NONE;
@@ -1407,6 +1422,7 @@ s32 lvl_init_from_save_file(UNUSED s16 arg0, s32 levelNum) {
 #endif
     sWarpDest.type = WARP_TYPE_NOT_WARPING;
     sDelayedWarpOp = WARP_OP_NONE;
+    SM64AP_ClearReturnStack();
     gShouldNotPlayCastleMusic = !save_file_exists(gCurrSaveFileNum - 1) && gCLIOpts.SkipIntro == 0 && configSkipIntro == 0;
 
     gCurrLevelNum = levelNum;
@@ -1435,10 +1451,12 @@ s32 lvl_set_current_level(UNUSED s16 arg0, s32 levelNum) {
         return 0;
     }
 
-    if (gCurrLevelNum != LEVEL_BOWSER_1 && gCurrLevelNum != LEVEL_BOWSER_2
-        && gCurrLevelNum != LEVEL_BOWSER_3) {
+    if (gSavedCourseNum != gCurrCourseNum) {
         gMarioState->numCoins = 0;
         gHudDisplay.coins = 0;
+    }
+    if (gCurrLevelNum != LEVEL_BOWSER_1 && gCurrLevelNum != LEVEL_BOWSER_2
+        && gCurrLevelNum != LEVEL_BOWSER_3) {
         gCurrCourseStarFlags = save_file_get_star_flags(gCurrSaveFileNum - 1, gCurrCourseNum - 1);
     }
 

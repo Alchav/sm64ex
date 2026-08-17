@@ -557,7 +557,7 @@ void spawn_objects_from_info(UNUSED s32 unused, struct SpawnInfo *spawnInfo) {
     clear_mario_platform();
 #endif
 
-    if (gCurrAreaIndex == 2) {
+    if (gCurrAreaIndex == 2 || SM64AP_ConsumeCCMSlideExitArrival(gCurrLevelNum, gCurrAreaIndex)) {
         gCCMEnteredSlide |= 1;
     }
 

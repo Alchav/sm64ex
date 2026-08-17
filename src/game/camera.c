@@ -3375,6 +3375,9 @@ void init_camera(struct Camera *c) {
     // Set the camera's starting position or start a cutscene for certain levels
     switch (gCurrLevelNum) {
         case LEVEL_BOWSER_1:
+            if (!SM64AP_HaveBowser(gCurrLevelNum)) {
+                break;
+            }
 #ifndef VERSION_JP
             if (gCurrDemoInput == NULL) {
                 start_cutscene(c, CUTSCENE_ENTER_BOWSER_ARENA);
@@ -3386,9 +3389,15 @@ void init_camera(struct Camera *c) {
 #endif
             break;
         case LEVEL_BOWSER_2:
+            if (!SM64AP_HaveBowser(gCurrLevelNum)) {
+                break;
+            }
             start_cutscene(c, CUTSCENE_ENTER_BOWSER_ARENA);
             break;
         case LEVEL_BOWSER_3:
+            if (!SM64AP_HaveBowser(gCurrLevelNum)) {
+                break;
+            }
             start_cutscene(c, CUTSCENE_ENTER_BOWSER_ARENA);
             break;
 

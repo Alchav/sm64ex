@@ -1152,6 +1152,9 @@ void bhv_bowser_init(void) {
     o->oBowserUnk1B2 = D_8032F690[level];
     o->oHealth = SM64AP_BowserHitRequirement(gCurrLevelNum);
     cur_obj_start_cam_event(o, CAM_EVENT_BOWSER_INIT);
+    if (gCamera != NULL && gCamera->cutscene == 0) {
+        start_cutscene(gCamera, CUTSCENE_ENTER_BOWSER_ARENA);
+    }
     o->oAction = 5;
     o->oBowserUnk1AE = 0;
     o->oBowserEyesShut = 0;

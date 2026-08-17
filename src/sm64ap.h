@@ -422,11 +422,19 @@ AP_EXTERN_C void SM64AP_InitMW(const char*, const char*, const char*);
 AP_EXTERN_C void SM64AP_InitSP(const char*);
 
 // Local Stars, Keys and Caps
+#define SM64AP_RETURN_STYLE_AUTO   0
+#define SM64AP_RETURN_STYLE_GROUND 1
+#define SM64AP_RETURN_STYLE_DEATH  2
+#define SM64AP_RETURN_STYLE_STAR   3
+
 AP_EXTERN_C int SM64AP_GetStars();
 AP_EXTERN_C int SM64AP_GetRequiredStars(int);
 AP_EXTERN_C int SM64AP_GetCoinStarRequirement(int);
 AP_EXTERN_C u32 SM64AP_CourseStarFlags(s32);
-AP_EXTERN_C void SM64AP_RedirectWarp(s16*,s16*,s8*,s16*,s16*,bool,int,s32);
+AP_EXTERN_C void SM64AP_RedirectWarp(s16*,s16*,s8*,s16*,s16*,bool,int,s32,s16,s32*,int);
+AP_EXTERN_C bool SM64AP_ApplyPendingReturnSpawn(s16*,s16*,u32*,s32*);
+AP_EXTERN_C void SM64AP_ClearReturnStack();
+AP_EXTERN_C bool SM64AP_ConsumeCCMSlideExitArrival(s16,s8);
 AP_EXTERN_C int SM64AP_EntranceToTTC();
 AP_EXTERN_C void SM64AP_SetClockToTTCAction(int* action);
 AP_EXTERN_C void SM64AP_SetClockToTTCState();
@@ -485,6 +493,7 @@ AP_EXTERN_C bool SM64AP_HaveSigns(s16);
 AP_EXTERN_C bool SM64AP_LevelHasSignUnlock(s16);
 AP_EXTERN_C bool SM64AP_HaveBobombBuddy(s16);
 AP_EXTERN_C bool SM64AP_HaveTreasureChests(s16);
+AP_EXTERN_C bool SM64AP_HaveBowser(s16);
 AP_EXTERN_C bool SM64AP_HaveCoinSource(int, s16);
 AP_EXTERN_C int SM64AP_LevelCoinUnlockCount(s16, bool);
 AP_EXTERN_C const char *SM64AP_LevelCoinUnlockName(s16, bool, int);
