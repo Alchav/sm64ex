@@ -1013,6 +1013,16 @@ void SM64AP_RecvItem(int64_t idx, bool notify) {
         case SM64AP_ID_LEVEL_MOVE(0, 0) ... SM64AP_ID_LEVEL_MOVE_END:
             sm64_have_level_moves[idx - SM64AP_LEVEL_MOVE_OFFSET] = true;
             break;
+        case SM64AP_ID_SECRET_LEVEL_MOVE(SM64AP_LEVEL_MOVE_AREA_BITDW, 0) ... SM64AP_ID_SECRET_LEVEL_MOVE_END:
+            sm64_have_level_moves[
+                SM64AP_LEVEL_MOVE_AREA_BITDW * SM64AP_NUM_LEVEL_MOVES
+                + idx - SM64AP_SECRET_LEVEL_MOVE_OFFSET] = true;
+            break;
+        case SM64AP_ID_MISC_LEVEL_MOVE(0) ... SM64AP_ID_MISC_LEVEL_MOVE(SM64AP_NUM_LEVEL_MOVES - 1):
+            sm64_have_level_moves[
+                SM64AP_LEVEL_MOVE_AREA_MISC * SM64AP_NUM_LEVEL_MOVES
+                + idx - SM64AP_MISC_LEVEL_MOVE_OFFSET] = true;
+            break;
         case SM64AP_ID_1_HEALTH_PIP ... SM64AP_ID_GUST_TRAP:
             if(!notify) break;
             delayed_queue.push(idx);
@@ -6033,6 +6043,10 @@ static constexpr const char *SM64AP_CHEAT_LEVEL_MOVE_AREA_NAMES[SM64AP_NUM_LEVEL
     "BITFS",
     "BITS",
     "VCUTM",
+    "COTMC",
+    "TOTWC",
+    "WMOTR",
+    "MISC",
 };
 
 static constexpr const char *SM64AP_CHEAT_LEVEL_MOVE_NAMES[SM64AP_NUM_LEVEL_MOVES] = {
@@ -6630,17 +6644,24 @@ int SM64AP_LevelMoveAreaForLevel(s16 level) {
         case LEVEL_CASTLE_COURTYARD:
         case LEVEL_PSS:
         case LEVEL_SA:
+            return SM64AP_LEVEL_MOVE_AREA_CASTLE;
         case LEVEL_BITDW:
         case LEVEL_BOWSER_1:
+            return SM64AP_LEVEL_MOVE_AREA_BITDW;
         case LEVEL_BITFS:
         case LEVEL_BOWSER_2:
+            return SM64AP_LEVEL_MOVE_AREA_BITFS;
         case LEVEL_BITS:
         case LEVEL_BOWSER_3:
+            return SM64AP_LEVEL_MOVE_AREA_BITS;
         case LEVEL_VCUTM:
+            return SM64AP_LEVEL_MOVE_AREA_VCUTM;
         case LEVEL_COTMC:
+            return SM64AP_LEVEL_MOVE_AREA_COTMC;
         case LEVEL_TOTWC:
+            return SM64AP_LEVEL_MOVE_AREA_TOTWC;
         case LEVEL_WMOTR:
-            return SM64AP_LEVEL_MOVE_AREA_CASTLE;
+            return SM64AP_LEVEL_MOVE_AREA_WMOTR;
     }
 
     return SM64AP_LEVEL_MOVE_AREA_CASTLE;
@@ -6688,7 +6709,11 @@ bool SM64AP_HaveLevelMoveOrGlobal(int area, int move) {
         return false;
     }
 
-    return sm64_have_abilities[ability] || SM64AP_HaveLevelMove(area, move);
+    return sm64_have_abilities[ability]
+        || SM64AP_HaveLevelMove(area, move)
+        || (area != SM64AP_LEVEL_MOVE_AREA_MISC
+            && area >= SM64AP_LEVEL_MOVE_AREA_CASTLE
+            && SM64AP_HaveLevelMove(SM64AP_LEVEL_MOVE_AREA_MISC, move));
 }
 
 static bool SM64AP_HaveAbilityForCurrentLevel(int ability) {
