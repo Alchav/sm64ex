@@ -4,7 +4,7 @@
   "semantic_source_ids_assigned": false,
   "root_count": 970,
   "enumerated_output_count": 2130,
-  "enumerated_coin_value": 2754,
+  "enumerated_coin_value": 2718,
   "roots": [
     {
       "physical_source_hash": "2008227892804457910",
@@ -1699,8 +1699,8 @@
       ]
     },
     {
-      "physical_source_hash": "2203361233269287844",
-      "parent_physical_source_hash": "14808331201323425007",
+      "physical_source_hash": "13827330324851217627",
+      "parent_physical_source_hash": "14188640967384174196",
       "dynamic_ordinal": 0,
       "level": "LEVEL_CASTLE_COURTYARD",
       "level_id": 26,
@@ -1708,9 +1708,9 @@
       "model": null,
       "model_id": null,
       "position": [
-        0,
-        50,
-        0
+        -3217,
+        150,
+        -101
       ],
       "behavior_params": "0x00010000",
       "behavior": "bhvGhostHuntBoo",
@@ -1720,13 +1720,13 @@
       "outputs": [
         {
           "slot": 0,
-          "value": 5
+          "value": 1
         }
       ]
     },
     {
-      "physical_source_hash": "14841654854636993736",
-      "parent_physical_source_hash": "14808331201323425007",
+      "physical_source_hash": "15532012561141637485",
+      "parent_physical_source_hash": "14188640967384174196",
       "dynamic_ordinal": 1,
       "level": "LEVEL_CASTLE_COURTYARD",
       "level_id": 26,
@@ -1734,9 +1734,9 @@
       "model": null,
       "model_id": null,
       "position": [
+        -3007,
         210,
-        110,
-        210
+        109
       ],
       "behavior_params": "0x00010000",
       "behavior": "bhvGhostHuntBoo",
@@ -1746,13 +1746,13 @@
       "outputs": [
         {
           "slot": 0,
-          "value": 5
+          "value": 1
         }
       ]
     },
     {
-      "physical_source_hash": "26121953391252576",
-      "parent_physical_source_hash": "14808331201323425007",
+      "physical_source_hash": "7549438160062669023",
+      "parent_physical_source_hash": "14188640967384174196",
       "dynamic_ordinal": 2,
       "level": "LEVEL_CASTLE_COURTYARD",
       "level_id": 26,
@@ -1760,9 +1760,9 @@
       "model": null,
       "model_id": null,
       "position": [
-        -210,
-        70,
-        -210
+        -3427,
+        170,
+        -311
       ],
       "behavior_params": "0x00010000",
       "behavior": "bhvGhostHuntBoo",
@@ -1772,12 +1772,12 @@
       "outputs": [
         {
           "slot": 0,
-          "value": 5
+          "value": 1
         }
       ]
     },
     {
-      "physical_source_hash": "14808331201323425007",
+      "physical_source_hash": "14188640967384174196",
       "level": "LEVEL_CASTLE_COURTYARD",
       "level_id": 26,
       "area": 1,
@@ -1801,8 +1801,8 @@
       "outputs": []
     },
     {
-      "physical_source_hash": "11976037598274316981",
-      "parent_physical_source_hash": "14745161276735586318",
+      "physical_source_hash": "2136356700941350801",
+      "parent_physical_source_hash": "15780875762174811285",
       "dynamic_ordinal": 0,
       "level": "LEVEL_CASTLE_COURTYARD",
       "level_id": 26,
@@ -1810,9 +1810,9 @@
       "model": null,
       "model_id": null,
       "position": [
-        0,
-        50,
-        0
+        3317,
+        150,
+        -1701
       ],
       "behavior_params": "0x00010000",
       "behavior": "bhvGhostHuntBoo",
@@ -1822,13 +1822,13 @@
       "outputs": [
         {
           "slot": 0,
-          "value": 5
+          "value": 1
         }
       ]
     },
     {
-      "physical_source_hash": "15823715873747016921",
-      "parent_physical_source_hash": "14745161276735586318",
+      "physical_source_hash": "18079725013614110851",
+      "parent_physical_source_hash": "15780875762174811285",
       "dynamic_ordinal": 1,
       "level": "LEVEL_CASTLE_COURTYARD",
       "level_id": 26,
@@ -1836,9 +1836,9 @@
       "model": null,
       "model_id": null,
       "position": [
+        3527,
         210,
-        110,
-        210
+        -1491
       ],
       "behavior_params": "0x00010000",
       "behavior": "bhvGhostHuntBoo",
@@ -1848,13 +1848,13 @@
       "outputs": [
         {
           "slot": 0,
-          "value": 5
+          "value": 1
         }
       ]
     },
     {
-      "physical_source_hash": "2183444161697976049",
-      "parent_physical_source_hash": "14745161276735586318",
+      "physical_source_hash": "15545773201924517354",
+      "parent_physical_source_hash": "15780875762174811285",
       "dynamic_ordinal": 2,
       "level": "LEVEL_CASTLE_COURTYARD",
       "level_id": 26,
@@ -1862,9 +1862,9 @@
       "model": null,
       "model_id": null,
       "position": [
-        -210,
-        70,
-        -210
+        3107,
+        170,
+        -1911
       ],
       "behavior_params": "0x00010000",
       "behavior": "bhvGhostHuntBoo",
@@ -1874,12 +1874,12 @@
       "outputs": [
         {
           "slot": 0,
-          "value": 5
+          "value": 1
         }
       ]
     },
     {
-      "physical_source_hash": "14745161276735586318",
+      "physical_source_hash": "15780875762174811285",
       "level": "LEVEL_CASTLE_COURTYARD",
       "level_id": 26,
       "area": 1,
@@ -1903,8 +1903,8 @@
       "outputs": []
     },
     {
-      "physical_source_hash": "3126752482729280826",
-      "parent_physical_source_hash": "9294219995978300481",
+      "physical_source_hash": "3535099882712564471",
+      "parent_physical_source_hash": "4680357202338789426",
       "dynamic_ordinal": 0,
       "level": "LEVEL_CASTLE_COURTYARD",
       "level_id": 26,
@@ -1912,9 +1912,9 @@
       "model": null,
       "model_id": null,
       "position": [
-        0,
-        50,
-        0
+        -71,
+        51,
+        -1387
       ],
       "behavior_params": "0x00010000",
       "behavior": "bhvGhostHuntBoo",
@@ -1924,13 +1924,13 @@
       "outputs": [
         {
           "slot": 0,
-          "value": 5
+          "value": 1
         }
       ]
     },
     {
-      "physical_source_hash": "17244651315157000310",
-      "parent_physical_source_hash": "9294219995978300481",
+      "physical_source_hash": "13420328892179364659",
+      "parent_physical_source_hash": "4680357202338789426",
       "dynamic_ordinal": 1,
       "level": "LEVEL_CASTLE_COURTYARD",
       "level_id": 26,
@@ -1938,9 +1938,9 @@
       "model": null,
       "model_id": null,
       "position": [
-        210,
-        110,
-        210
+        139,
+        111,
+        -1177
       ],
       "behavior_params": "0x00010000",
       "behavior": "bhvGhostHuntBoo",
@@ -1950,13 +1950,13 @@
       "outputs": [
         {
           "slot": 0,
-          "value": 5
+          "value": 1
         }
       ]
     },
     {
-      "physical_source_hash": "5294323331005988574",
-      "parent_physical_source_hash": "9294219995978300481",
+      "physical_source_hash": "149211852993819841",
+      "parent_physical_source_hash": "4680357202338789426",
       "dynamic_ordinal": 2,
       "level": "LEVEL_CASTLE_COURTYARD",
       "level_id": 26,
@@ -1964,9 +1964,9 @@
       "model": null,
       "model_id": null,
       "position": [
-        -210,
-        70,
-        -210
+        -281,
+        71,
+        -1597
       ],
       "behavior_params": "0x00010000",
       "behavior": "bhvGhostHuntBoo",
@@ -1976,12 +1976,12 @@
       "outputs": [
         {
           "slot": 0,
-          "value": 5
+          "value": 1
         }
       ]
     },
     {
-      "physical_source_hash": "9294219995978300481",
+      "physical_source_hash": "4680357202338789426",
       "level": "LEVEL_CASTLE_COURTYARD",
       "level_id": 26,
       "area": 1,
@@ -28184,7 +28184,7 @@
       "expected_placements": 11,
       "enumerated_placements": 20,
       "expected_coins": 55,
-      "enumerated_coins": 100,
+      "enumerated_coins": 64,
       "matches": false
     },
     {
@@ -28212,14 +28212,6 @@
       "matches": true
     },
     {
-      "source_category": "enemy_lakitu",
-      "expected_placements": 3,
-      "enumerated_placements": 3,
-      "expected_coins": 15,
-      "enumerated_coins": 15,
-      "matches": true
-    },
-    {
       "source_category": "fire_piranha_plant",
       "expected_placements": 8,
       "enumerated_placements": 8,
@@ -28229,11 +28221,11 @@
     },
     {
       "source_category": "fly_guy",
-      "expected_placements": 5,
+      "expected_placements": 9,
       "enumerated_placements": 9,
-      "expected_coins": 10,
+      "expected_coins": 18,
       "enumerated_coins": 18,
-      "matches": false
+      "matches": true
     },
     {
       "source_category": "goomba",
@@ -28269,11 +28261,11 @@
     },
     {
       "source_category": "koopa_troopa",
-      "expected_placements": 2,
+      "expected_placements": 3,
       "enumerated_placements": 3,
-      "expected_coins": 10,
+      "expected_coins": 15,
       "enumerated_coins": 15,
-      "matches": false
+      "matches": true
     },
     {
       "source_category": "moving_blue_coin",

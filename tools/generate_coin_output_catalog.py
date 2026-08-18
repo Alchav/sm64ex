@@ -64,7 +64,7 @@ BEHAVIOR_MANIFEST: dict[str, tuple[str, tuple[int, ...] | None]] = {
     "bhvLllBowserPuzzle": ("bowser_puzzle", (1,) * 5),
     "bhvGoombaTripletSpawner": ("goomba", None),
     "bhvMerryGoRoundBooManager": ("boo", None), "bhvBookendSpawn": ("flying_bookend", None),
-    "bhvCourtyardBooTriplet": ("boo", None), "bhvScuttlebugSpawn": ("scuttlebug", None),
+    "bhvScuttlebugSpawn": ("scuttlebug", None),
 }
 
 DYNAMIC_MANIFEST = {
@@ -78,6 +78,7 @@ DYNAMIC_MANIFEST = {
 # Producers that do not themselves match SM64AP_EnemyCoinSource. Their placed
 # parent therefore hashes with sourceKind == -1 before children inherit it.
 ROOT_SPAWNER_MANIFEST = {
+    "bhvCourtyardBooTriplet": ("boo", DYNAMIC_MANIFEST["bhvCourtyardBooTriplet"]),
     "bhvChainChomp": ("wooden_post", {"kind": "spawn_child_at_parent", "count": 1,
                                       "child": "bhvWoodenPost"}),
     "bhvBigBullyWithMinions": ("bully", {"kind": "runtime_children", "count": 3,
@@ -274,6 +275,8 @@ def dynamic_child_record(parent_hash: int, p: Placement, source: str, behavior: 
 def expand_inherited_dynamic(parent_hash: int, p: Placement, source: str, dynamic: dict) -> list[dict] | None:
     if p.behavior in DYNAMIC_CHILD_POSITIONS:
         positions = DYNAMIC_CHILD_POSITIONS[p.behavior]
+        if p.behavior == "bhvCourtyardBooTriplet":
+            positions = tuple((p.x + x, p.y + y, p.z + z) for x, y, z in positions)
     elif p.behavior in ("bhvBookendSpawn", "bhvScuttlebugSpawn", "bhvChainChomp"):
         positions = ((p.x, p.y, p.z),)
     else:
@@ -281,7 +284,7 @@ def expand_inherited_dynamic(parent_hash: int, p: Placement, source: str, dynami
     child = dynamic["child"]
     values = {
         "bhvFlyingBookend": (5,), "bhvScuttlebug": (1, 1, 1), "bhvWoodenPost": (1,) * 5,
-        "bhvSmallBully": (1,), "bhvGhostHuntBoo": (5,),
+        "bhvSmallBully": (1,), "bhvGhostHuntBoo": (1,) if p.behavior == "bhvCourtyardBooTriplet" else (5,),
     }[child]
     params = 0x00010000 if p.behavior == "bhvCourtyardBooTriplet" else 0
     return [dynamic_child_record(parent_hash, p, source, child, ordinal, position, values, params)

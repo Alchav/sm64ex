@@ -350,6 +350,7 @@ void coin_inside_boo_act_1(void) {
 void coin_inside_boo_act_0(void) {
     s16 sp26;
     f32 sp20;
+    s32 coinValue = gCurrLevelNum == LEVEL_BBH ? 5 : 1;
     struct Object *parent = o->parentObj;
     cur_obj_become_intangible();
     if (o->oTimer == 0 && gCurrLevelNum == LEVEL_BBH) {
@@ -358,10 +359,10 @@ void coin_inside_boo_act_0(void) {
     }
     obj_copy_pos(o, parent);
     if (parent->oBooDeathStatus == BOO_DEATH_STATUS_DYING) {
-        if (!SM64AP_AssignPermanentCoinOutput(parent, o, 5, 1)) {
-            SM64AP_AssignPermanentCoinSlot(o, parent, 0, 5);
+        if (!SM64AP_AssignPermanentCoinOutput(parent, o, coinValue, 1)) {
+            SM64AP_AssignPermanentCoinSlot(o, parent, 0, coinValue);
         }
-        SM64AP_MarkSpentPermanentCoin(o, 5);
+        SM64AP_MarkSpentPermanentCoin(o, coinValue);
         o->oAction = 1;
         sp26 = gMarioObject->oMoveAngleYaw;
         sp20 = 3.0f;

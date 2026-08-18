@@ -42,7 +42,7 @@ CATEGORY_BY_SOURCE_KIND = {
                "vertical_ring", "bobomb", "bully", "fire_piranha_plant", "fly_guy", "goomba",
                "small_breakable_box", "jumping_box", "wooden_post", "bowser_puzzle", "thwomp",
                "three_coin_block", "ten_coin_block", "breakable_coin_box", "swoop", "scuttlebug",
-               "skeeter", "snufit", "spindrift", "whomp", "mr_blizzard"},
+               "skeeter", "snufit", "spindrift", "whomp", "mr_blizzard", "boo"},
     "blue": {"moving_blue_coin", "blue_coin_switch", "boo", "chuckya", "enemy_lakitu", "eyerok",
              "flying_bookend", "koopa_troopa", "moneybag", "mr_i", "monty_mole", "big_bully",
              "piranha_plant", "pokey", "big_boo"},
