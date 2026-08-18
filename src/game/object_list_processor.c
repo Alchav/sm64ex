@@ -520,7 +520,7 @@ static struct Object *spawn_object_from_info(struct SpawnInfo *spawnInfo) {
     object->respawnInfoType = RESPAWN_INFO_TYPE_32;
     object->respawnInfo = &spawnInfo->behaviorArg;
 
-    if (spawnInfo->behaviorArg & 0x01) {
+    if (spawnInfo == gMarioSpawnInfo) {
         gMarioObject = object;
         geo_make_first_child(&object->header.gfx.node);
     }

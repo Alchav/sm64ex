@@ -2594,6 +2594,10 @@ static void SM64AP_PushSubAreaReturnPoint(
     point.starSpawnType = bowserArenaEntrance ? MARIO_SPAWN_UNKNOWN_03
         : hasSourceNode ? get_mario_spawn_type(sourceNode->object)
                         : MARIO_SPAWN_SPIN_AIRBORNE;
+    if (sourceId == 4) {
+        // THI's Red Coin Cave uses a generic warp trigger, not a pipe.
+        point.starSpawnType = MARIO_SPAWN_AIRBORNE_STAR_COLLECT;
+    }
     point.reverseStarFacing = bowserArenaEntrance;
     point.overridePosition = !hasSourceNode || sourceId == 4 || sourceId == 8;
     if (sourceId == 4) {
