@@ -351,6 +351,7 @@ struct SM64APReturnPoint {
     s16 level;
     s8 area;
     s16 node;
+    int sourceId;
     s16 entranceLevel;
     s16 pos[3];
     s16 yaw;
@@ -2146,6 +2147,14 @@ bool SM64AP_ShouldSpawnLevelObject(s16 level, s16, s16 model, s16 x, s16 y, s16 
         }
     }
 
+    if (level == LEVEL_BITDW && behavior_is(behavior, bhvRedCoin)
+        && ((x == -3100 && y == -2900 && z == 4520)
+            || (x == -7810 && y == -3100 && z == 4900))
+        && (!SM64AP_HaveCoinSource(SM64AP_COIN_SOURCE_RED_COIN, level)
+            || !SM64AP_HaveObjectItemForLevel(SM64AP_OBJECT_ITEM_PURPLE_SWITCHES, level))) {
+        return false;
+    }
+
     if (behavior_is(behavior, bhvGhostHuntBigBoo)
         && (!SM64AP_HaveCoinSource(SM64AP_COIN_SOURCE_BOO, level)
             || !SM64AP_HaveCoinSource(SM64AP_COIN_SOURCE_BIG_BOO, level))) {
@@ -2590,6 +2599,7 @@ static void SM64AP_PushSubAreaReturnPoint(
     point.level = level;
     point.area = area;
     point.node = SM64AP_SubAreaReturnNode(sourceWarpNode, hasSourceNode);
+    point.sourceId = sourceId;
     bool bowserArenaEntrance = sourceId >= 11 && sourceId <= 13;
     point.starSpawnType = bowserArenaEntrance ? MARIO_SPAWN_UNKNOWN_03
         : hasSourceNode ? get_mario_spawn_type(sourceNode->object)
@@ -2687,9 +2697,14 @@ static bool SM64AP_TryReturnToPreviousEntrance(
     }
 
     *destWarpNode = point.node;
+    bool ccmChimneyReturn = point.sourceId == 1;
     u32 spawnType = MARIO_SPAWN_INSTANT_ACTIVE;
     if (returnStyle == SM64AP_RETURN_STYLE_DEATH) {
-        spawnType = MARIO_SPAWN_DEATH;
+        spawnType = ccmChimneyReturn ? MARIO_SPAWN_LAUNCH_DEATH : MARIO_SPAWN_DEATH;
+    } else if (returnStyle == SM64AP_RETURN_STYLE_GROUND && ccmChimneyReturn) {
+        // An instant spawn remains inside the chimney warp and immediately
+        // sends Mario back through it. Emerge upward as a normal pipe return.
+        spawnType = point.starSpawnType;
     } else if (returnStyle == SM64AP_RETURN_STYLE_STAR) {
         spawnType = point.starSpawnType != 0
             ? point.starSpawnType : MARIO_SPAWN_SPIN_AIRBORNE;
@@ -5135,6 +5150,9 @@ void SM64AP_AssignPermanentCoinSource(
     object->apCoinValue = 0;
     object->apCoinSlotCount = 0;
     object->apCoinSourceKind = 1;
+    object->apCoinSourceX = x;
+    object->apCoinSourceY = y;
+    object->apCoinSourceZ = z;
 }
 
 static bool SM64AP_PermanentCoinSlotCollected(u64 source, u8 slot) {
@@ -5162,6 +5180,23 @@ static void SM64AP_NormalizeInheritedCoinSource(struct Object *source) {
     hash = SM64AP_PermanentCoinHashValue(hash, static_cast<s32>(source->oHomeX));
     hash = SM64AP_PermanentCoinHashValue(hash, static_cast<s32>(source->oHomeY));
     hash = SM64AP_PermanentCoinHashValue(hash, static_cast<s32>(source->oHomeZ));
+    hash = SM64AP_PermanentCoinHashValue(hash, source->oBehParams);
+    source->apCoinSourceId = hash != 0 ? hash : 1;
+    source->apCoinSourceKind = 1;
+}
+
+void SM64AP_FinalizeRelativePermanentCoinSource(
+    struct Object *source, s16 relativeX, s16 relativeY, s16 relativeZ) {
+    if (source == nullptr || source->apCoinSourceKind != 2) {
+        return;
+    }
+    source->apCoinSourceX += relativeX;
+    source->apCoinSourceY += relativeY;
+    source->apCoinSourceZ += relativeZ;
+    u64 hash = source->apCoinSourceId;
+    hash = SM64AP_PermanentCoinHashValue(hash, static_cast<s32>(source->apCoinSourceX));
+    hash = SM64AP_PermanentCoinHashValue(hash, static_cast<s32>(source->apCoinSourceY));
+    hash = SM64AP_PermanentCoinHashValue(hash, static_cast<s32>(source->apCoinSourceZ));
     hash = SM64AP_PermanentCoinHashValue(hash, source->oBehParams);
     source->apCoinSourceId = hash != 0 ? hash : 1;
     source->apCoinSourceKind = 1;
@@ -5404,7 +5439,8 @@ static void SM64AP_LoadPermanentCoins(const std::string &rawLedger) {
         }
         if (source != 0 && slot >= 0 && slot < 64
             && course > COURSE_NONE && course <= COURSE_MAX
-            && value > 0 && value <= 5) {
+            && value > 0 && value <= 5
+            && (SM64AP_ExpectedPermanentCoinMask(source) & (1ULL << slot)) != 0) {
             parsed[std::make_pair(source, static_cast<u8>(slot))] = {
                 static_cast<u8>(course), static_cast<u8>(value)
             };

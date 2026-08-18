@@ -540,6 +540,9 @@ struct Object *spawn_object_at_origin(struct Object *parent, UNUSED s32 unusedAr
     obj->apCoinSourceId = parent->apCoinSourceId;
     obj->apCoinCourse = parent->apCoinCourse;
     obj->apCoinSourceKind = parent->apCoinSourceId != 0 ? 2 : 0;
+    obj->apCoinSourceX = parent->apCoinSourceX;
+    obj->apCoinSourceY = parent->apCoinSourceY;
+    obj->apCoinSourceZ = parent->apCoinSourceZ;
     obj->header.gfx.unk18 = parent->header.gfx.unk18;
     obj->header.gfx.unk19 = parent->header.gfx.unk18;
 

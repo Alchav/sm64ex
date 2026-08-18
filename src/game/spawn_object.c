@@ -288,6 +288,9 @@ struct Object *allocate_object(struct ObjectNode *objList) {
     obj->apCoinSpent = 0;
     obj->apVisualState = 0;
     obj->apVisualStateFrame = 0xFFFFFFFF;
+    obj->apCoinSourceX = 0;
+    obj->apCoinSourceY = 0;
+    obj->apCoinSourceZ = 0;
 
     obj->oDistanceToMario = 19000.0f;
     obj->oRoom = -1;

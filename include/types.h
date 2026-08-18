@@ -213,6 +213,9 @@ struct Object
     u8 apCoinSpent;
     u8 apVisualState;
     u32 apVisualStateFrame;
+    s16 apCoinSourceX;
+    s16 apCoinSourceY;
+    s16 apCoinSourceZ;
 };
 
 struct ObjectHitbox

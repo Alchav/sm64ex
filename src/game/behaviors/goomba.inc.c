@@ -74,6 +74,7 @@ void bhv_goomba_triplet_spawner_update(void) {
     s32 dAngle;
     s16 dx;
     s16 dz;
+    struct Object *goomba;
 
     // If mario is close enough and the goombas aren't currently loaded, then
     // spawn them
@@ -93,9 +94,11 @@ void bhv_goomba_triplet_spawner_update(void) {
                     dx = 500.0f * coss(angle);
                     dz = 500.0f * sins(angle);
 
-                    spawn_object_relative((o->oBehParams2ndByte & GOOMBA_TRIPLET_SPAWNER_BP_SIZE_MASK)
-                                              | (goombaFlag >> 6),
-                                          dx, 0, dz, o, MODEL_GOOMBA, bhvGoomba);
+                    goomba = spawn_object_relative(
+                        (o->oBehParams2ndByte & GOOMBA_TRIPLET_SPAWNER_BP_SIZE_MASK)
+                            | (goombaFlag >> 6),
+                        dx, 0, dz, o, MODEL_GOOMBA, bhvGoomba);
+                    SM64AP_FinalizeRelativePermanentCoinSource(goomba, dx, 0, dz);
                 }
             }
 
