@@ -4657,7 +4657,10 @@ u8 SM64AP_ObjectVisualState(struct Object *obj) {
         obj->apVisualStateFrame = gGlobalTimer;
         obj->apVisualState = SM64AP_ComputeObjectVisualState(obj);
         struct Object *parent = SM64AP_ValidObjectParent(obj);
-        if (obj->apVisualState == SM64AP_VISUAL_NORMAL && parent != nullptr) {
+        if (obj->apVisualState == SM64AP_VISUAL_NORMAL
+            && parent != nullptr
+            && !SM64AP_IsRenderedCoin(obj->behavior)
+            && !behavior_is(obj->behavior, bhvOrangeNumber)) {
             obj->apVisualState = SM64AP_ObjectVisualState(parent);
         }
     }

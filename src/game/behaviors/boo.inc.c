@@ -101,6 +101,11 @@ void bhv_courtyard_boo_triplet_init(void) {
                 MODEL_BOO,
                 bhvGhostHuntBoo
             );
+            SM64AP_FinalizeRelativePermanentCoinSource(
+                boo,
+                sCourtyardBooTripletPositions[i][0],
+                sCourtyardBooTripletPositions[i][1],
+                sCourtyardBooTripletPositions[i][2]);
 
             boo->oMoveAngleYaw = random_u16();
         }
