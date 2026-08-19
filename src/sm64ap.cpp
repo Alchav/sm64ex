@@ -4579,6 +4579,11 @@ static struct Object *SM64AP_ValidObjectParent(struct Object *obj) {
 }
 
 static u8 SM64AP_ComputeObjectVisualState(struct Object *obj) {
+    // Orange counters inherit their spawning coin's source metadata, but are UI feedback rather than coin outputs.
+    if (behavior_is(obj->behavior, bhvOrangeNumber)) {
+        return SM64AP_VISUAL_NORMAL;
+    }
+
     bool hasExhaustibleOutput = false;
     bool exhausted = true;
     int enemySource = SM64AP_EnemyCoinSource(obj->behavior);
