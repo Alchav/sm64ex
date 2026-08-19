@@ -95,6 +95,32 @@ REVIEWED_RED_HASH_ORDER: dict[str, tuple[int, ...]] = {
     ),
 }
 
+# Physical outputs whose semantic numbering follows a reviewed order that is
+# not represented by source order. Each token is (physical source hash, slot).
+REVIEWED_OUTPUT_ORDER: dict[tuple[str, str], tuple[tuple[int, int], ...]] = {
+    ("Tower of the Wing Cap", "red_coin"): tuple((hash_, 0) for hash_ in (
+        2647981142279759938, 18145410749851002875,
+        9916294783131193146, 2660154997581476067,
+        6886722025076844988, 654615134707837313,
+        16029695549819568119, 13541641743241052262,
+    )),
+    ("Tower of the Wing Cap", "totwc_single_yellow_coins"): tuple((hash_, 0) for hash_ in (
+        1849913861491102253, 2628286647720010284, 5351088518062821047,
+        18331948652615581382, 9747416949232951027, 2367604846651377465,
+        16985002078227786033, 13559150810322877781, 9522588669759971532,
+        282422605119439394, 7714838953167973092, 400632405561887190,
+        12313411549799293874, 4251248539443003240, 14541183058856757648,
+    )),
+    ("Tower of the Wing Cap", "coin_ring"): tuple(
+        (hash_, slot)
+        for hash_ in (
+            10834815184780141221, 5933618129751255523,
+            6344001050721121066, 9321291962489646780,
+        )
+        for slot in (2, 1, 3, 0, 4, 5, 7, 6)
+    ),
+}
+
 
 def load_overrides() -> dict[tuple[str, str], dict]:
     if not OVERRIDE_PATH.exists():
@@ -298,6 +324,15 @@ def main() -> int:
                                 raise ValueError(f"override {key} references missing output {hash_}/{slot}")
                             selected.append((root, slot))
                             used_outputs.add((hash_, slot))
+                        reviewed_order = REVIEWED_OUTPUT_ORDER.get(key)
+                        if reviewed_order is not None:
+                            order = {token: index for index, token in enumerate(reviewed_order)}
+                            selected_tokens = {
+                                (int(root["physical_source_hash"]), slot) for root, slot in selected
+                            }
+                            if set(order) != selected_tokens:
+                                raise ValueError(f"reviewed output order does not match override outputs for {key}")
+                            selected.sort(key=lambda token: order[(int(token[0]["physical_source_hash"]), token[1])])
                         associations[key] = {"outputs": selected}
                     pending.remove(source)
                     made_progress = True
@@ -431,7 +466,16 @@ def propose_overrides() -> int:
         else:
             available = [(root, output["slot"]) for root in candidates for output in root["outputs"]
                          if (int(root["physical_source_hash"]), output["slot"]) not in used_outputs]
-            if source.source_id == "red_coin" and source.course_name in REVIEWED_RED_HASH_ORDER:
+            reviewed_order = REVIEWED_OUTPUT_ORDER.get((source.course_name, source.source_id))
+            if reviewed_order is not None:
+                order = {token: index for index, token in enumerate(reviewed_order)}
+                if set(order) != {
+                    (int(root["physical_source_hash"]), slot) for root, slot in available
+                }:
+                    raise ValueError(f"reviewed output order does not match available outputs for "
+                                     f"{source.course_name}/{source.source_id}")
+                available.sort(key=lambda token: order[(int(token[0]["physical_source_hash"]), token[1])])
+            elif source.source_id == "red_coin" and source.course_name in REVIEWED_RED_HASH_ORDER:
                 order = {hash_: index for index, hash_ in enumerate(REVIEWED_RED_HASH_ORDER[source.course_name])}
                 available.sort(key=lambda token: order[int(token[0]["physical_source_hash"])])
             selected = available[:needed]
