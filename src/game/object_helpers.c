@@ -1,6 +1,7 @@
 #include <PR/ultratypes.h>
 
 #include "sm64ap.h"
+#include "sm64ap_visual.h"
 #include "sm64.h"
 #include "area.h"
 #include "behavior_actions.h"
@@ -165,6 +166,34 @@ Gfx *geo_switch_anim_state(s32 callContext, struct GraphNode *node) {
 
         // assign the case number for execution.
         switchCase->selectedCase = obj->oAnimState;
+    }
+
+    return NULL;
+}
+
+#ifdef AVOID_UB
+Gfx *geo_switch_exclamation_box_state(s32 callContext, struct GraphNode *node, UNUSED void *context) {
+#else
+Gfx *geo_switch_exclamation_box_state(s32 callContext, struct GraphNode *node) {
+#endif
+    struct Object *obj;
+    struct GraphNodeSwitchCase *switchCase;
+
+    if (callContext == GEO_CONTEXT_RENDER) {
+        obj = (struct Object *) gCurGraphNodeObject;
+        switchCase = (struct GraphNodeSwitchCase *) node;
+
+        if (gCurGraphNodeHeldObject != NULL) {
+            obj = gCurGraphNodeHeldObject->objNode;
+        }
+
+        switchCase->selectedCase = obj->oAnimState;
+        if (switchCase->selectedCase < 0 || switchCase->selectedCase >= 4) {
+            switchCase->selectedCase = 0;
+        }
+        if (SM64AP_ObjectVisualState(obj) == SM64AP_VISUAL_EXHAUSTED_BLOCK) {
+            switchCase->selectedCase += 4;
+        }
     }
 
     return NULL;

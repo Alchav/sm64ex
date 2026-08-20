@@ -46,6 +46,38 @@ ALIGNED8 static const u8 exclamation_box_seg8_texture_08017E28[] = {
 #include "actors/exclamation_box/exclamation_box_side.rgba16.inc.c"
 };
 
+ALIGNED8 static const u8 exclamation_box_wing_cap_box_front_collected[] = {
+#include "actors/exclamation_box/wing_cap_box_front_collected.rgba16.inc.c"
+};
+
+ALIGNED8 static const u8 exclamation_box_wing_cap_box_side_collected[] = {
+#include "actors/exclamation_box/wing_cap_box_side_collected.rgba16.inc.c"
+};
+
+ALIGNED8 static const u8 exclamation_box_metal_cap_box_front_collected[] = {
+#include "actors/exclamation_box/metal_cap_box_front_collected.rgba16.inc.c"
+};
+
+ALIGNED8 static const u8 exclamation_box_metal_cap_box_side_collected[] = {
+#include "actors/exclamation_box/metal_cap_box_side_collected.rgba16.inc.c"
+};
+
+ALIGNED8 static const u8 exclamation_box_vanish_cap_box_front_collected[] = {
+#include "actors/exclamation_box/vanish_cap_box_front_collected.rgba16.inc.c"
+};
+
+ALIGNED8 static const u8 exclamation_box_vanish_cap_box_side_collected[] = {
+#include "actors/exclamation_box/vanish_cap_box_side_collected.rgba16.inc.c"
+};
+
+ALIGNED8 static const u8 exclamation_box_front_collected[] = {
+#include "actors/exclamation_box/exclamation_box_front_collected.rgba16.inc.c"
+};
+
+ALIGNED8 static const u8 exclamation_box_side_collected[] = {
+#include "actors/exclamation_box/exclamation_box_side_collected.rgba16.inc.c"
+};
+
 // 0x08018E28
 static const Vtx exclamation_box_seg8_vertex_08018E28[] = {
     {{{   -25,      1,    -25}, 0, {   992,    992}, {0x00, 0x00, 0x81, 0xff}}},
@@ -243,6 +275,66 @@ const Gfx exclamation_box_seg8_dl_08019438[] = {
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 16, 0, G_TX_RENDERTILE, 0, G_TX_CLAMP, 5, G_TX_NOLOD, G_TX_CLAMP, 6, G_TX_NOLOD),
     gsDPSetTileSize(0, 0, 0, (64 - 1) << G_TEXTURE_IMAGE_FRAC, (32 - 1) << G_TEXTURE_IMAGE_FRAC),
     gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, exclamation_box_seg8_texture_08017E28),
+    gsDPLoadSync(),
+    gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 64 * 32 - 1, CALC_DXT(64, G_IM_SIZ_16b_BYTES)),
+    gsSPBranchList(exclamation_box_seg8_dl_08019280),
+};
+
+const Gfx exclamation_box_collected_wing_cap_dl[] = {
+    gsSPDisplayList(exclamation_box_seg8_dl_08019058),
+    gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, exclamation_box_wing_cap_box_front_collected),
+    gsDPLoadSync(),
+    gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 32 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
+    gsSPDisplayList(exclamation_box_seg8_dl_08018FA8),
+    gsDPTileSync(),
+    gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 0, G_TX_RENDERTILE, 0, G_TX_CLAMP, 6, G_TX_NOLOD, G_TX_CLAMP, 5, G_TX_NOLOD),
+    gsDPSetTileSize(0, 0, 0, (32 - 1) << G_TEXTURE_IMAGE_FRAC, (64 - 1) << G_TEXTURE_IMAGE_FRAC),
+    gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, exclamation_box_wing_cap_box_side_collected),
+    gsDPLoadSync(),
+    gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 64 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
+    gsSPBranchList(exclamation_box_seg8_dl_08019008),
+};
+
+const Gfx exclamation_box_collected_metal_cap_dl[] = {
+    gsSPDisplayList(exclamation_box_seg8_dl_080192D0),
+    gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, exclamation_box_metal_cap_box_front_collected),
+    gsDPLoadSync(),
+    gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 32 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
+    gsSPDisplayList(exclamation_box_seg8_dl_08019220),
+    gsDPTileSync(),
+    gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 16, 0, G_TX_RENDERTILE, 0, G_TX_CLAMP, 5, G_TX_NOLOD, G_TX_CLAMP, 6, G_TX_NOLOD),
+    gsDPSetTileSize(0, 0, 0, (64 - 1) << G_TEXTURE_IMAGE_FRAC, (32 - 1) << G_TEXTURE_IMAGE_FRAC),
+    gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, exclamation_box_metal_cap_box_side_collected),
+    gsDPLoadSync(),
+    gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 64 * 32 - 1, CALC_DXT(64, G_IM_SIZ_16b_BYTES)),
+    gsSPBranchList(exclamation_box_seg8_dl_08019280),
+};
+
+const Gfx exclamation_box_collected_vanish_cap_dl[] = {
+    gsSPDisplayList(exclamation_box_seg8_dl_08019058),
+    gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, exclamation_box_vanish_cap_box_front_collected),
+    gsDPLoadSync(),
+    gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 32 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
+    gsSPDisplayList(exclamation_box_seg8_dl_08018FA8),
+    gsDPTileSync(),
+    gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 0, G_TX_RENDERTILE, 0, G_TX_CLAMP, 6, G_TX_NOLOD, G_TX_CLAMP, 5, G_TX_NOLOD),
+    gsDPSetTileSize(0, 0, 0, (32 - 1) << G_TEXTURE_IMAGE_FRAC, (64 - 1) << G_TEXTURE_IMAGE_FRAC),
+    gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, exclamation_box_vanish_cap_box_side_collected),
+    gsDPLoadSync(),
+    gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 64 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
+    gsSPBranchList(exclamation_box_seg8_dl_08019008),
+};
+
+const Gfx exclamation_box_collected_generic_dl[] = {
+    gsSPDisplayList(exclamation_box_seg8_dl_080192D0),
+    gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, exclamation_box_front_collected),
+    gsDPLoadSync(),
+    gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 32 * 32 - 1, CALC_DXT(32, G_IM_SIZ_16b_BYTES)),
+    gsSPDisplayList(exclamation_box_seg8_dl_08019220),
+    gsDPTileSync(),
+    gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 16, 0, G_TX_RENDERTILE, 0, G_TX_CLAMP, 5, G_TX_NOLOD, G_TX_CLAMP, 6, G_TX_NOLOD),
+    gsDPSetTileSize(0, 0, 0, (64 - 1) << G_TEXTURE_IMAGE_FRAC, (32 - 1) << G_TEXTURE_IMAGE_FRAC),
+    gsDPSetTextureImage(G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, exclamation_box_side_collected),
     gsDPLoadSync(),
     gsDPLoadBlock(G_TX_LOADTILE, 0, 0, 64 * 32 - 1, CALC_DXT(64, G_IM_SIZ_16b_BYTES)),
     gsSPBranchList(exclamation_box_seg8_dl_08019280),

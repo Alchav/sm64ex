@@ -371,6 +371,7 @@ def main() -> int:
                     })
 
     rows = []
+    semantic_rows: set[tuple[int, int, str, int]] = set()
     mapped_ids = set()
     mapped_physical_outputs: set[tuple[int, int]] = set()
     for source in ap.coin_source_catalog:
@@ -387,6 +388,17 @@ def main() -> int:
                     raise ValueError(f"Giant Goomba value mismatch for {key}")
                 rows.extend((("output", int(root["physical_source_hash"]), 0, yellow.location_id, yellow.location_name),
                              ("completion", int(root["physical_source_hash"]), 5, blue.location_id, blue.location_name)))
+                semantic_rows.update(
+                    (int(root["physical_source_hash"]), slot, source.source_id, 1)
+                    for slot in range(5)
+                )
+                for method in yellow.source_methods:
+                    semantic_rows.add((int(root["physical_source_hash"]), 0, method, 1))
+                for method in blue.source_methods:
+                    semantic_rows.update(
+                        (int(root["physical_source_hash"]), slot, method, 1)
+                        for slot in range(5)
+                    )
                 physical_key = (int(root["physical_source_hash"]), 0)
                 if physical_key in mapped_physical_outputs:
                     raise ValueError(f"physical Giant Goomba output mapped twice: {physical_key}")
@@ -402,6 +414,9 @@ def main() -> int:
                                      f"physical {physical_value}")
                 rows.append(("output", int(root["physical_source_hash"]), slot,
                              output.location_id, output.location_name))
+                for source_id in dict.fromkeys((source.source_id, *output.source_methods)):
+                    semantic_rows.add((
+                        int(root["physical_source_hash"]), slot, source_id, output.coin_value))
                 physical_key = (int(root["physical_source_hash"]), slot)
                 if physical_key in mapped_physical_outputs:
                     raise ValueError(f"physical output mapped twice: {physical_key}")
@@ -416,6 +431,10 @@ def main() -> int:
         for kind, hash_, slot_or_count, location_id, name in rows:
             macro = "COIN_OUTPUT" if kind == "output" else "COIN_COMPLETION"
             lines.append(f"{macro}(UINT64_C({hash_}), {slot_or_count}, {location_id}) // {name}")
+        lines.append("")
+        for hash_, slot, source_id, value in sorted(semantic_rows):
+            lines.append(
+                f'COIN_SEMANTIC_SOURCE(UINT64_C({hash_}), {slot}, "{source_id}", {value})')
         args.inc.write_text("\n".join(lines) + "\n")
 
     report = {

@@ -948,7 +948,8 @@ static void gfx_sp_tri1(uint8_t vtx1_idx, uint8_t vtx2_idx, uint8_t vtx3_idx) {
     if (use_fog) cc_id |= SHADER_OPT_FOG;
     if (texture_edge) cc_id |= SHADER_OPT_TEXTURE_EDGE;
     if (use_noise) cc_id |= SHADER_OPT_NOISE;
-    if (sm64ap_visual_state != SM64AP_VISUAL_NORMAL) cc_id |= SHADER_OPT_GRAYSCALE;
+    if (sm64ap_visual_state == SM64AP_VISUAL_EXHAUSTED
+        || sm64ap_visual_state == SM64AP_VISUAL_EXHAUSTED_DARK) cc_id |= SHADER_OPT_GRAYSCALE;
     if (sm64ap_visual_state == SM64AP_VISUAL_EXHAUSTED_DARK) cc_id |= SHADER_OPT_DARK;
     
     if (!use_alpha) {

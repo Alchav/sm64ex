@@ -529,6 +529,7 @@ AP_EXTERN_C bool SM64AP_ShouldCreateWhirlpool(s16, s16, s8, s8, s16, s16, s16, s
 AP_EXTERN_C bool SM64AP_HavePainting(int);
 AP_EXTERN_C bool SM64AP_HavePaintingForArea(int, int);
 AP_EXTERN_C bool SM64AP_EasyButterflies();
+AP_EXTERN_C bool SM64AP_TriggerSparkles();
 AP_EXTERN_C bool SM64AP_NoDespawn();
 AP_EXTERN_C bool SM64AP_PermanentCoinCollection();
 AP_EXTERN_C void SM64AP_AssignPermanentCoinSource(

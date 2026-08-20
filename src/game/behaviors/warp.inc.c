@@ -28,5 +28,8 @@ void bhv_fading_warp_loop() // identical to the above function except for o->hit
             o->hitboxRadius = sp6 * 10.0;
         o->hitboxHeight = 50.0f;
     }
+    if (SM64AP_TriggerSparkles() && gGlobalTimer % 5 == 0) {
+        spawn_object(o, MODEL_NONE, bhvSparkleSpawn);
+    }
     o->oInteractStatus = 0;
 }

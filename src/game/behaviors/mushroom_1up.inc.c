@@ -390,8 +390,13 @@ void bhv_1up_hidden_loop(void) {
 
 void bhv_1up_hidden_trigger_loop(void) {
     struct Object *sp1C;
+
+    sp1C = cur_obj_nearest_object_with_behavior(bhvHidden1up);
+    if (SM64AP_TriggerSparkles() && gGlobalTimer % 5 == 0
+        && sp1C != NULL && !SM64AP_OneUpCollected(sp1C->o1UpApLocationId)) {
+        spawn_object(o, MODEL_NONE, bhvSparkleSpawn);
+    }
     if (obj_check_if_collided_with_object(o, gMarioObject) == 1) {
-        sp1C = cur_obj_nearest_object_with_behavior(bhvHidden1up);
         if (sp1C != NULL)
             sp1C->o1UpHiddenUnkF4++;
 
@@ -440,8 +445,12 @@ void bhv_1up_hidden_in_pole_loop(void) {
 void bhv_1up_hidden_in_pole_trigger_loop(void) {
     struct Object *sp1C;
 
+    sp1C = cur_obj_nearest_object_with_behavior(bhvHidden1upInPole);
+    if (SM64AP_TriggerSparkles() && gGlobalTimer % 5 == 0
+        && sp1C != NULL && !SM64AP_OneUpCollected(sp1C->o1UpApLocationId)) {
+        spawn_object(o, MODEL_NONE, bhvSparkleSpawn);
+    }
     if (obj_check_if_collided_with_object(o, gMarioObject) == 1) {
-        sp1C = cur_obj_nearest_object_with_behavior(bhvHidden1upInPole);
         if (sp1C != NULL) {
             sp1C->o1UpHiddenUnkF4++;
             ;
@@ -456,11 +465,15 @@ void bhv_1up_hidden_in_pole_spawner_loop(void) {
     s32 oneUpLocId;
     struct Object *oneUp;
 
-    if (is_point_within_radius_of_mario(o->oPosX, o->oPosY, o->oPosZ, 700)) {
-        oneUpLocId = SM64AP_ResolveOneUpLocation(
-            gCurrLevelNum, gCurrAreaIndex, SM64AP_1UP_SOURCE_HIDDEN_POLE, 0,
-            (s16) o->oPosX, (s16) o->oPosY, (s16) o->oPosZ);
+    oneUpLocId = SM64AP_ResolveOneUpLocation(
+        gCurrLevelNum, gCurrAreaIndex, SM64AP_1UP_SOURCE_HIDDEN_POLE, 0,
+        (s16) o->oPosX, (s16) o->oPosY, (s16) o->oPosZ);
+    if (SM64AP_TriggerSparkles() && gGlobalTimer % 5 == 0
+        && !SM64AP_OneUpCollected(oneUpLocId)) {
+        spawn_object(o, MODEL_NONE, bhvSparkleSpawn);
+    }
 
+    if (is_point_within_radius_of_mario(o->oPosX, o->oPosY, o->oPosZ, 700)) {
         if (!SM64AP_ShouldSuppressOneUp(oneUpLocId)) {
             oneUp = spawn_object_relative(2, 0, 50, 0, o, MODEL_1UP, bhvHidden1upInPole);
             oneUp->o1UpApLocationId = oneUpLocId;

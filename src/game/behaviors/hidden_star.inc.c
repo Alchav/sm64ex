@@ -35,8 +35,15 @@ void bhv_hidden_star_loop(void) {
 /* TODO: this is likely not a checkpoint but a Secret */
 void bhv_hidden_star_trigger_loop(void) {
     struct Object *hiddenStar;
+
+    hiddenStar = cur_obj_nearest_object_with_behavior(bhvHiddenStar);
+    if (SM64AP_TriggerSparkles() && gGlobalTimer % 5 == 0
+        && hiddenStar != NULL
+        && !SM64AP_CollectedCourseStar(
+            gCurrCourseNum - COURSE_MIN, (hiddenStar->oBehParams >> 24) & 0xFF)) {
+        spawn_object(o, MODEL_NONE, bhvSparkleSpawn);
+    }
     if (obj_check_if_collided_with_object(o, gMarioObject) == 1) {
-        hiddenStar = cur_obj_nearest_object_with_behavior(bhvHiddenStar);
         if (hiddenStar != NULL) {
             hiddenStar->oHiddenStarTriggerCounter++;
             if (hiddenStar->oHiddenStarTriggerCounter != 5) {

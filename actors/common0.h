@@ -122,6 +122,10 @@ extern const Gfx exclamation_box_seg8_dl_08019318[];
 extern const Gfx exclamation_box_seg8_dl_08019378[];
 extern const Gfx exclamation_box_seg8_dl_080193D8[];
 extern const Gfx exclamation_box_seg8_dl_08019438[];
+extern const Gfx exclamation_box_collected_wing_cap_dl[];
+extern const Gfx exclamation_box_collected_metal_cap_dl[];
+extern const Gfx exclamation_box_collected_vanish_cap_dl[];
+extern const Gfx exclamation_box_collected_generic_dl[];
 
 // exclamation_box_outline
 extern const GeoLayout exclamation_box_outline_geo[];
