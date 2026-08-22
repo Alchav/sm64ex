@@ -2,12 +2,14 @@
 #include "sm64ap.h"
 
 #include "sm64.h"
+#include "area.h"
 #include "engine/math_util.h"
 #include "engine/surface_collision.h"
 #include "mario.h"
 #include "audio/external.h"
 #include "game_init.h"
 #include "interaction.h"
+#include "level_update.h"
 #include "mario_step.h"
 
 static s16 sMovingSandSpeeds[] = { 12, 8, 4, 0 };
@@ -191,7 +193,7 @@ u32 mario_update_moving_sand(struct MarioState *m) {
 u32 mario_update_windy_ground(struct MarioState *m) {
     struct Surface *floor = m->floor;
 
-    if (floor->type == SURFACE_HORIZONTAL_WIND) {
+    if (floor->type == SURFACE_HORIZONTAL_WIND && SM64AP_HaveHorizontalWind(gCurrLevelNum)) {
         f32 pushSpeed;
         s16 pushAngle = floor->force << 8;
 
@@ -592,7 +594,8 @@ void apply_vertical_wind(struct MarioState *m) {
     if (m->action != ACT_GROUND_POUND) {
         offsetY = m->pos[1] - -1500.0f;
 
-        if (m->floor->type == SURFACE_VERTICAL_WIND && -3000.0f < offsetY && offsetY < 2000.0f) {
+        if (m->floor->type == SURFACE_VERTICAL_WIND && SM64AP_HaveVerticalWind(gCurrLevelNum)
+            && -3000.0f < offsetY && offsetY < 2000.0f) {
             if (offsetY >= 0.0f) {
                 maxVelY = 10000.0f / (offsetY + 200.0f);
             } else {

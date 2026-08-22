@@ -352,6 +352,29 @@ static constexpr int SM64AP_NUM_ENEMY_UNLOCK_ITEMS =
     sizeof(sm64_enemy_unlock_items) / sizeof(sm64_enemy_unlock_items[0]);
 std::bitset<SM64AP_NUM_ENEMY_UNLOCK_ITEMS> sm64_have_enemy_unlock_items;
 
+struct SM64APWindUnlockItem {
+    int64_t id;
+    int type;
+    s16 level;
+    const char *name;
+};
+
+static constexpr SM64APWindUnlockItem sm64_wind_unlock_items[] = {
+    { 3627102, SM64AP_WIND_VERTICAL, -1, "VERTICAL WIND" },
+    { 3627103, SM64AP_WIND_VERTICAL, LEVEL_CCM, "CCM V WIND" },
+    { 3627104, SM64AP_WIND_VERTICAL, LEVEL_TTM, "TTM V WIND" },
+    { 3627105, SM64AP_WIND_VERTICAL, LEVEL_THI, "THI V WIND" },
+    { 3627106, SM64AP_WIND_HORIZONTAL, -1, "HORIZONTAL WIND" },
+    { 3627107, SM64AP_WIND_HORIZONTAL, LEVEL_BITS, "BITS H WIND" },
+    { 3627108, SM64AP_WIND_HORIZONTAL, LEVEL_RR, "RR H WIND" },
+    { 3627109, SM64AP_WIND_HORIZONTAL, LEVEL_SL, "SL H WIND" },
+    { 3627110, SM64AP_WIND_HORIZONTAL, LEVEL_THI, "THI H WIND" },
+};
+
+static constexpr int SM64AP_NUM_WIND_UNLOCK_ITEMS =
+    sizeof(sm64_wind_unlock_items) / sizeof(sm64_wind_unlock_items[0]);
+std::bitset<SM64AP_NUM_WIND_UNLOCK_ITEMS> sm64_have_wind_unlock_items;
+
 std::bitset<SM64AP_NUM_COIN_CHECKS> sm64_sent_coin_checks;
 std::bitset<SM64AP_NUM_1UP_CHECKS> sm64_sent_1up_checks;
 std::bitset<SM64AP_NUM_BLOCKSANITY_CHECKS> sm64_sent_blocksanity_checks;
@@ -833,6 +856,13 @@ void SM64AP_RecvItem(int64_t idx, bool notify) {
         if (idx == sm64_enemy_unlock_items[i].id) {
             sm64_have_enemy_unlock_items[i] = true;
             SM64AP_RequestLiveObjectReconcile();
+            return;
+        }
+    }
+
+    for (int i = 0; i < SM64AP_NUM_WIND_UNLOCK_ITEMS; i++) {
+        if (idx == sm64_wind_unlock_items[i].id) {
+            sm64_have_wind_unlock_items[i] = true;
             return;
         }
     }
@@ -1322,6 +1352,36 @@ static bool SM64AP_HaveEnemyUnlock(int source, s16 level) {
 
 bool SM64AP_HaveBowser(s16 level) {
     return SM64AP_HaveEnemyUnlock(SM64AP_ENEMY_UNLOCK_BOWSER, level);
+}
+
+bool SM64AP_HaveWind(int type, s16 level) {
+    bool appliesToLevel = false;
+    bool haveGlobal = false;
+
+    for (int i = 0; i < SM64AP_NUM_WIND_UNLOCK_ITEMS; i++) {
+        const SM64APWindUnlockItem &item = sm64_wind_unlock_items[i];
+        if (item.type != type) {
+            continue;
+        }
+        if (item.level == -1) {
+            haveGlobal |= sm64_have_wind_unlock_items[i];
+        } else if (item.level == level) {
+            appliesToLevel = true;
+            if (sm64_have_wind_unlock_items[i]) {
+                return true;
+            }
+        }
+    }
+
+    return !appliesToLevel || haveGlobal;
+}
+
+bool SM64AP_HaveVerticalWind(s16 level) {
+    return SM64AP_HaveWind(SM64AP_WIND_VERTICAL, level);
+}
+
+bool SM64AP_HaveHorizontalWind(s16 level) {
+    return SM64AP_HaveWind(SM64AP_WIND_HORIZONTAL, level);
 }
 
 static bool SM64AP_IsEnemyCoinSource(int source) {
@@ -3716,6 +3776,7 @@ void SM64AP_ResetItems() {
     sm64_have_coin_global_items.reset();
     sm64_have_coin_level_items.reset();
     sm64_have_enemy_unlock_items.reset();
+    sm64_have_wind_unlock_items.reset();
     sm64_have_one_up_global_items.reset();
     sm64_have_one_up_level_items.reset();
     sm64_have_global_signs = false;
@@ -5990,6 +6051,7 @@ enum SM64APCheatItemKind {
     SM64AP_CHEAT_ITEM_CAP_LENGTH,
     SM64AP_CHEAT_ITEM_SIGN_UNLOCK,
     SM64AP_CHEAT_ITEM_ENEMY_UNLOCK,
+    SM64AP_CHEAT_ITEM_WIND_UNLOCK,
 };
 
 enum SM64APCheatBoolItem {
@@ -6281,6 +6343,12 @@ static void SM64AP_InitCheatItems() {
         const SM64APEnemyUnlockItem &item = sm64_enemy_unlock_items[i];
         SM64AP_CheatAdd(
             SM64AP_CHEAT_ITEM_ENEMY_UNLOCK, i,
+            item.level == -1 ? std::string("GLOBAL ") + item.name : item.name);
+    }
+    for (int i = 0; i < SM64AP_NUM_WIND_UNLOCK_ITEMS; i++) {
+        const SM64APWindUnlockItem &item = sm64_wind_unlock_items[i];
+        SM64AP_CheatAdd(
+            SM64AP_CHEAT_ITEM_WIND_UNLOCK, i,
             item.level == -1 ? std::string("GLOBAL ") + item.name : item.name);
     }
     static constexpr const char *globalOneUpNames[SM64AP_NUM_ONE_UP_CATEGORIES] = {
@@ -6611,6 +6679,9 @@ bool SM64AP_CheatItemEnabled(int index) {
         case SM64AP_CHEAT_ITEM_ENEMY_UNLOCK:
             return item.index >= 0 && item.index < SM64AP_NUM_ENEMY_UNLOCK_ITEMS
                 && sm64_have_enemy_unlock_items[item.index];
+        case SM64AP_CHEAT_ITEM_WIND_UNLOCK:
+            return item.index >= 0 && item.index < SM64AP_NUM_WIND_UNLOCK_ITEMS
+                && sm64_have_wind_unlock_items[item.index];
     }
 
     return false;
@@ -6724,6 +6795,11 @@ void SM64AP_CheatSetItemEnabled(int index, bool enabled) {
         case SM64AP_CHEAT_ITEM_ENEMY_UNLOCK:
             if (item.index >= 0 && item.index < SM64AP_NUM_ENEMY_UNLOCK_ITEMS) {
                 sm64_have_enemy_unlock_items[item.index] = enabled;
+            }
+            break;
+        case SM64AP_CHEAT_ITEM_WIND_UNLOCK:
+            if (item.index >= 0 && item.index < SM64AP_NUM_WIND_UNLOCK_ITEMS) {
+                sm64_have_wind_unlock_items[item.index] = enabled;
             }
             break;
     }

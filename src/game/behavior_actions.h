@@ -9,6 +9,7 @@ void spawn_triangle_break_particles(s16 numTris, s16 triModel, f32 triSize, s16 
 void spawn_mist_from_global(void);
 void clear_particle_flags(u32 flags);
 void spawn_wind_particles(s16 pitch, s16 yaw);
+void spawn_vertical_wind_debug_particles(s16 level, s16 area);
 s32 check_if_moving_over_floor(f32 a0, f32 a1);
 s32 arc_to_goal_pos(Vec3f a0, Vec3f a1, f32 yVel, f32 gravity);
 void vec3f_copy_2(Vec3f dest, Vec3f src);

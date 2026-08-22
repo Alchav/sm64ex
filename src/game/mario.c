@@ -1865,16 +1865,22 @@ s32 execute_mario_action(UNUSED struct Object *o) {
         update_mario_info_for_cam(gMarioState);
         mario_update_hitbox_and_cap_model(gMarioState);
 
+        if (Cheats.EnableCheats && Cheats.ShowVerticalWind && SM64AP_HaveVerticalWind(gCurrLevelNum)) {
+            spawn_vertical_wind_debug_particles(gCurrLevelNum, gCurrAreaIndex);
+        }
+
         // Both of the wind handling portions play wind audio only in
         // non-Japanese releases.
-        if (gMarioState->floor->type == SURFACE_HORIZONTAL_WIND) {
+        if (gMarioState->floor->type == SURFACE_HORIZONTAL_WIND
+            && SM64AP_HaveHorizontalWind(gCurrLevelNum)) {
             spawn_wind_particles(0, (gMarioState->floor->force << 8));
 #ifndef VERSION_JP
             play_sound(SOUND_ENV_WIND2, gMarioState->marioObj->header.gfx.cameraToObject);
 #endif
         }
 
-        if (gMarioState->floor->type == SURFACE_VERTICAL_WIND) {
+        if (gMarioState->floor->type == SURFACE_VERTICAL_WIND
+            && SM64AP_HaveVerticalWind(gCurrLevelNum)) {
             spawn_wind_particles(1, 0);
 #ifndef VERSION_JP
             play_sound(SOUND_ENV_WIND2, gMarioState->marioObj->header.gfx.cameraToObject);

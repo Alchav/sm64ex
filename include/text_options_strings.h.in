@@ -87,6 +87,7 @@
 #define TEXT_OPT_CHEAT9    _("TINY MARIO")
 #define TEXT_OPT_CHEAT10   _("LAST CHECK DISPLAY")
 #define TEXT_OPT_CHEAT11   _("RESPAWN CHECKED 1-UPS")
+#define TEXT_OPT_CHEAT12   _("SHOW VERTICAL WIND")
 
 #else // VERSION
 
@@ -153,6 +154,7 @@
 #define TEXT_OPT_CHEAT9    _("Tiny Mario")
 #define TEXT_OPT_CHEAT10   _("Last check display")
 #define TEXT_OPT_CHEAT11   _("Respawn checked 1-Ups")
+#define TEXT_OPT_CHEAT12   _("Show vertical wind")
 
 #endif // VERSION
 
