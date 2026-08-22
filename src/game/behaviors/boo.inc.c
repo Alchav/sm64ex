@@ -771,7 +771,8 @@ void bhv_merry_go_round_boo_manager_loop(void) {
                     o->oAction++;
                 }
 
-                if (o->oMerryGoRoundBooManagerNumBoosKilled > 4) {
+                if (o->oMerryGoRoundBooManagerNumBoosKilled > 4
+                    && SM64AP_HaveCoinSource(SM64AP_COIN_SOURCE_BIG_BOO, gCurrLevelNum)) {
                     struct Object *boo = spawn_object(o, MODEL_BOO, bhvMerryGoRoundBigBoo);
                     obj_copy_behavior_params(boo, o);
 
