@@ -5548,7 +5548,7 @@ static void SM64AP_LoadPermanentCoins(const std::string &rawLedger) {
             return;
         }
         if (source != 0 && slot >= 0 && slot < 64
-            && course > COURSE_NONE && course <= COURSE_MAX
+            && course >= COURSE_NONE && course <= COURSE_MAX
             && value > 0 && value <= 5
             && (SM64AP_ExpectedPermanentCoinMask(source) & (1ULL << slot)) != 0) {
             parsed[std::make_pair(source, static_cast<u8>(slot))] = {
