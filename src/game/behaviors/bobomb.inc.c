@@ -5,7 +5,7 @@ static struct ObjectHitbox sBobombHitbox = {
     /* downOffset:        */ 0,
     /* damageOrCoinValue: */ 0,
     /* health:            */ 0,
-    /* numLootCoins:      */ 0,
+    /* numLootCoins:      */ 1,
     /* radius:            */ 65,
     /* height:            */ 113,
     /* hurtboxRadius:     */ 0,
@@ -64,6 +64,8 @@ void bobomb_check_interactions(void) {
         o->oAction = BOBOMB_ACT_EXPLODE;
 }
 
+static s32 bobomb_check_floor_or_void_death(s16 collisionFlags);
+
 void bobomb_act_patrol(void) {
     UNUSED s8 filler[4];
     UNUSED s16 sp22;
@@ -78,7 +80,7 @@ void bobomb_act_patrol(void) {
         o->oBobombFuseLit = 1;
         o->oAction = BOBOMB_ACT_CHASE_MARIO;
     }
-    obj_check_floor_death(collisionFlags, sObjFloor);
+    bobomb_check_floor_or_void_death(collisionFlags);
 }
 
 void bobomb_act_chase_mario(void) {
@@ -94,14 +96,33 @@ void bobomb_act_chase_mario(void) {
         cur_obj_play_sound_2(SOUND_OBJ_BOBOMB_WALK);
 
     obj_turn_toward_object(o, gMarioObject, 16, 0x800);
+    bobomb_check_floor_or_void_death(collisionFlags);
+}
+
+static s32 bobomb_check_floor_or_void_death(s16 collisionFlags) {
+    s32 previousAction = o->oAction;
+
     obj_check_floor_death(collisionFlags, sObjFloor);
+    if (o->oAction != previousAction) {
+        return TRUE;
+    }
+
+    if (sObjFloor == NULL && o->oPosY <= -10000.0f) {
+        obj_collect_loot_coins_without_contact(o, o->oNumLootCoins);
+        o->oAction = BOBOMB_ACT_DEATH_PLANE_DEATH;
+        return TRUE;
+    }
+
+    return FALSE;
 }
 
 void bobomb_act_launched(void) {
     s16 collisionFlags = 0;
     collisionFlags = object_step();
-    if ((collisionFlags & OBJ_COL_FLAG_GROUNDED) == OBJ_COL_FLAG_GROUNDED)
+    if (!bobomb_check_floor_or_void_death(collisionFlags)
+        && (collisionFlags & OBJ_COL_FLAG_GROUNDED) == OBJ_COL_FLAG_GROUNDED) {
         o->oAction = BOBOMB_ACT_EXPLODE; /* bit 0 */
+    }
 }
 
 void generic_bobomb_free_loop(void) {

@@ -6129,49 +6129,49 @@
     {
       "course": "Cool, Cool Mountain",
       "source_id": "standard_mr_blizzard",
-      "label": "Defeatable Mr. Blizzard",
+      "label": "Mr. Blizzard",
       "physical_outputs": [
         {
-          "physical_source_hash": "18219571338427924684",
+          "physical_source_hash": "15286742028800002394",
           "slot": 0,
           "value": 1,
           "area": 1,
           "behavior": "bhvMrBlizzard",
           "source_category": "mr_blizzard",
           "position": [
-            -2376,
-            -1589,
-            4256
+            3054,
+            -2674,
+            2072
           ],
-          "origin": "levels/ccm/script.c:script_func_local_2"
+          "origin": "levels/ccm/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "18219571338427924684",
+          "physical_source_hash": "15286742028800002394",
           "slot": 1,
           "value": 1,
           "area": 1,
           "behavior": "bhvMrBlizzard",
           "source_category": "mr_blizzard",
           "position": [
-            -2376,
-            -1589,
-            4256
+            3054,
+            -2674,
+            2072
           ],
-          "origin": "levels/ccm/script.c:script_func_local_2"
+          "origin": "levels/ccm/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "18219571338427924684",
+          "physical_source_hash": "15286742028800002394",
           "slot": 2,
           "value": 1,
           "area": 1,
           "behavior": "bhvMrBlizzard",
           "source_category": "mr_blizzard",
           "position": [
-            -2376,
-            -1589,
-            4256
+            3054,
+            -2674,
+            2072
           ],
-          "origin": "levels/ccm/script.c:script_func_local_2"
+          "origin": "levels/ccm/areas/1/macro.inc.c"
         }
       ]
     },
@@ -8082,8 +8082,8 @@
     },
     {
       "course": "Hazy Maze Cave",
-      "source_id": "pit_room_swoop",
-      "label": "Swoop in the pit room",
+      "source_id": "amazing_emergency_exit_swoop_1",
+      "label": "A-Maze-Ing Emergency Exit Swoop 1",
       "physical_outputs": [
         {
           "physical_source_hash": "10974102297585737841",
@@ -8411,8 +8411,8 @@
     },
     {
       "course": "Hazy Maze Cave",
-      "source_id": "pit_island_room_swoops",
-      "label": "Two Swoops in the Pit Island elevator room",
+      "source_id": "pit_island_room_swoop",
+      "label": "Pit Island Room Swoop",
       "physical_outputs": [
         {
           "physical_source_hash": "6075404279226552842",
@@ -8427,7 +8427,14 @@
             -320
           ],
           "origin": "levels/hmc/areas/1/macro.inc.c"
-        },
+        }
+      ]
+    },
+    {
+      "course": "Hazy Maze Cave",
+      "source_id": "amazing_emergency_exit_swoop_2",
+      "label": "A-Maze-Ing Emergency Exit Swoop 2",
+      "physical_outputs": [
         {
           "physical_source_hash": "14267028476984649626",
           "slot": 0,

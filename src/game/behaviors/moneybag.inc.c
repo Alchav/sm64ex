@@ -147,7 +147,8 @@ void moneybag_act_return_home(void) {
     moneybag_check_mario_collision();
 
     if (is_point_close_to_object(o, o->oHomeX, o->oHomeY, o->oHomeZ, 100)) {
-        spawn_object(o, MODEL_YELLOW_COIN, bhvMoneybagHidden);
+        struct Object *hiddenMoneybag = spawn_object(o, MODEL_YELLOW_COIN, bhvMoneybagHidden);
+        SM64AP_PreserveInheritedPermanentCoinSource(hiddenMoneybag);
 #ifndef VERSION_JP
         cur_obj_play_sound_2(SOUND_GENERAL_VANISH_SFX);
 #endif
@@ -217,7 +218,8 @@ void bhv_moneybag_hidden_loop(void) {
     switch (o->oAction) {
         case FAKE_MONEYBAG_COIN_ACT_IDLE:
             if (is_point_within_radius_of_mario(o->oPosX, o->oPosY, o->oPosZ, 400)) {
-                spawn_object(o, MODEL_MONEYBAG, bhvMoneybag);
+                struct Object *moneybag = spawn_object(o, MODEL_MONEYBAG, bhvMoneybag);
+                SM64AP_PreserveInheritedPermanentCoinSource(moneybag);
 #ifndef VERSION_JP
                 cur_obj_play_sound_2(SOUND_GENERAL_VANISH_SFX);
 #endif

@@ -124,7 +124,7 @@ void bhv_scuttlebug_spawn_loop(void) {
         if (o->oTimer > 30 && 500.0f < o->oDistanceToMario && o->oDistanceToMario < 1500.0f) {
             cur_obj_play_sound_2(SOUND_OBJ2_SCUTTLEBUG_ALERT);
             scuttlebug = spawn_object(o, MODEL_SCUTTLEBUG, bhvScuttlebug);
-            SM64AP_PreserveInheritedPermanentCoinSource(scuttlebug);
+            SM64AP_FinalizeRelativePermanentCoinSource(scuttlebug, 0, 0, 0);
             scuttlebug->oScuttlebugUnkF4 = o->oScuttlebugSpawnerUnkF4;
             scuttlebug->oForwardVel = 30.0f;
             scuttlebug->oVelY = 80.0f;

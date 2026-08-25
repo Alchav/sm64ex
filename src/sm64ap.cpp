@@ -393,17 +393,18 @@ std::queue<int64_t> delayed_queue;
 std::map<int,int> map_entrances;
 std::map<int,int> map_sub_area_entrances;
 static bool sm64_ccm_slide_exit_arrival_pending = false;
+static int sm64_exit_return_to = 0;
+static int sm64_exit_orig_entrance_level = 0;
+static bool sm64_castle_exit_return_active = false;
 
 struct SM64APReturnPoint {
     s16 level;
     s8 area;
     s16 node;
     int sourceId;
-    s16 entranceLevel;
     s16 pos[3];
     s16 yaw;
     u32 starSpawnType;
-    bool normalCastleEntrance;
     bool overridePosition;
     bool reverseStarFacing;
 };
@@ -414,7 +415,6 @@ struct SM64APPendingReturnSpawn {
     u32 spawnType;
     bool active;
     bool overridePosition;
-    bool moveAwayFromWarp;
     bool reverseFacing;
 };
 
@@ -2661,17 +2661,9 @@ static int SM64AP_SourceEntranceKey(s16 destLevel, s16 destArea, s32 sourceEntra
     }
 }
 
-static void SM64AP_PushNormalReturnPoint(s16 level, s8 area, int entranceLevel) {
-    SM64APReturnPoint point = {};
-    point.level = level;
-    point.area = area;
-    point.entranceLevel = entranceLevel;
-    point.normalCastleEntrance = true;
-    sm64_return_stack.push_back(point);
-}
-
-static s16 SM64AP_SubAreaReturnNode(s16 sourceWarpNode, bool hasSourceNode) {
-    return hasSourceNode ? sourceWarpNode : 0x0A;
+static bool SM64AP_SubAreaReturnsToAreaStart(int sourceId) {
+    return (sourceId >= 21 && sourceId <= 24)
+        || (sourceId >= 31 && sourceId <= 36);
 }
 
 static void SM64AP_PushSubAreaReturnPoint(
@@ -2679,13 +2671,15 @@ static void SM64AP_PushSubAreaReturnPoint(
 ) {
     struct ObjectWarpNode *sourceNode = area_get_warp_node(sourceWarpNode);
     bool hasSourceNode = sourceNode != nullptr && sourceNode->object != nullptr;
+    bool returnToAreaStart = SM64AP_SubAreaReturnsToAreaStart(sourceId);
     SM64APReturnPoint point = {};
     point.level = level;
     point.area = area;
-    point.node = SM64AP_SubAreaReturnNode(sourceWarpNode, hasSourceNode);
+    point.node = returnToAreaStart || !hasSourceNode ? 0x0A : sourceWarpNode;
     point.sourceId = sourceId;
     bool bowserArenaEntrance = sourceId >= 11 && sourceId <= 13;
-    point.starSpawnType = bowserArenaEntrance ? MARIO_SPAWN_UNKNOWN_03
+    point.starSpawnType = returnToAreaStart ? MARIO_SPAWN_SPIN_AIRBORNE
+        : bowserArenaEntrance ? MARIO_SPAWN_UNKNOWN_03
         : hasSourceNode ? get_mario_spawn_type(sourceNode->object)
                         : MARIO_SPAWN_SPIN_AIRBORNE;
     if (sourceId == 4) {
@@ -2693,13 +2687,29 @@ static void SM64AP_PushSubAreaReturnPoint(
         point.starSpawnType = MARIO_SPAWN_AIRBORNE_STAR_COLLECT;
     }
     point.reverseStarFacing = bowserArenaEntrance;
-    point.overridePosition = !hasSourceNode || sourceId == 4 || sourceId == 8;
-    if (sourceId == 4) {
+    point.overridePosition = !returnToAreaStart
+        && (!hasSourceNode || sourceId == 2 || sourceId == 4
+            || sourceId == 7 || sourceId == 8);
+    if (sourceId == 2) {
+        // Leave the igloo in the direction its mouth faces. The warp trigger
+        // itself is too close to the entrance for any return animation.
+        point.pos[0] = 781;
+        point.pos[1] = 2250;
+        point.pos[2] = 1548;
+        point.yaw = 0x2000;
+    } else if (sourceId == 4) {
         // The Huge Island cave entrance is itself a warp trigger. Place Mario
         // farther outside the cave so a return cannot immediately re-enter it.
         point.pos[0] = 410;
         point.pos[1] = -400;
         point.pos[2] = 1200;
+        point.yaw = 0;
+    } else if (sourceId == 7) {
+        // The volcano warp covers the crater. Return beyond its trigger on the
+        // outer platform instead of dropping Mario back into the volcano.
+        point.pos[0] = 0;
+        point.pos[1] = 300;
+        point.pos[2] = 1400;
         point.yaw = 0;
     } else if (sourceId == 8) {
         // The pyramid's side warp sits at the bottom of a slope and immediately
@@ -2721,12 +2731,11 @@ static void SM64AP_PushSubAreaReturnPoint(
 
 static void SM64AP_SetPendingReturnSpawn(
     const SM64APReturnPoint &point, u32 spawnType, bool overridePosition,
-    bool moveAwayFromWarp = false, bool reverseFacing = false
+    bool reverseFacing = false
 ) {
     sm64_pending_return_spawn.active = true;
     sm64_pending_return_spawn.overridePosition = overridePosition;
     sm64_pending_return_spawn.spawnType = spawnType;
-    sm64_pending_return_spawn.moveAwayFromWarp = moveAwayFromWarp;
     sm64_pending_return_spawn.reverseFacing = reverseFacing;
     sm64_pending_return_spawn.yaw = point.yaw;
     for (int i = 0; i < 3; i++) {
@@ -2763,38 +2772,21 @@ static bool SM64AP_TryReturnToPreviousEntrance(
     *destArea = point.area;
     *warpArg = 0;
 
-    if (point.normalCastleEntrance) {
-        bool deathNode = returnStyle != SM64AP_RETURN_STYLE_STAR;
-        int nodeWarpOp = returnStyle == SM64AP_RETURN_STYLE_STAR
-            ? WARP_OP_STAR_EXIT : WARP_OP_NONE;
-        setCourseNodeAndArea(point.entranceLevel, destWarpNode, deathNode, nodeWarpOp);
-        if (returnStyle == SM64AP_RETURN_STYLE_GROUND) {
-            SM64AP_SetPendingReturnSpawn(
-                point, MARIO_SPAWN_INSTANT_ACTIVE, false, true);
-        } else if (returnStyle == SM64AP_RETURN_STYLE_DEATH) {
-            SM64AP_SetPendingReturnSpawn(point, MARIO_SPAWN_DEATH, false, true);
-        } else if (returnStyle == SM64AP_RETURN_STYLE_STAR
-                   && point.entranceLevel == LEVEL_BITS) {
-            SM64AP_SetPendingReturnSpawn(point, MARIO_SPAWN_LAUNCH_STAR_COLLECT, false);
-        }
-        return true;
-    }
-
     *destWarpNode = point.node;
-    bool ccmChimneyReturn = point.sourceId == 1;
+    bool emergeFromReusableEntrance = point.sourceId == 1 || point.sourceId == 2;
     u32 spawnType = MARIO_SPAWN_INSTANT_ACTIVE;
     if (returnStyle == SM64AP_RETURN_STYLE_DEATH) {
-        spawnType = ccmChimneyReturn ? MARIO_SPAWN_LAUNCH_DEATH : MARIO_SPAWN_DEATH;
-    } else if (returnStyle == SM64AP_RETURN_STYLE_GROUND && ccmChimneyReturn) {
-        // An instant spawn remains inside the chimney warp and immediately
-        // sends Mario back through it. Emerge upward as a normal pipe return.
+        spawnType = emergeFromReusableEntrance ? MARIO_SPAWN_LAUNCH_DEATH : MARIO_SPAWN_DEATH;
+    } else if (returnStyle == SM64AP_RETURN_STYLE_GROUND && emergeFromReusableEntrance) {
+        // An instant spawn remains inside these reusable entrances and
+        // immediately sends Mario back through them. Emerge from the portal.
         spawnType = point.starSpawnType;
     } else if (returnStyle == SM64AP_RETURN_STYLE_STAR) {
         spawnType = point.starSpawnType != 0
             ? point.starSpawnType : MARIO_SPAWN_SPIN_AIRBORNE;
     }
     SM64AP_SetPendingReturnSpawn(
-        point, spawnType, point.overridePosition, false,
+        point, spawnType, point.overridePosition,
         returnStyle == SM64AP_RETURN_STYLE_STAR && point.reverseStarFacing);
     return true;
 }
@@ -2810,17 +2802,6 @@ bool SM64AP_ApplyPendingReturnSpawn(s16* pos, s16* angle, u32* spawnType, s32* a
         angle[0] = 0;
         angle[1] = sm64_pending_return_spawn.yaw;
         angle[2] = 0;
-    } else if (sm64_pending_return_spawn.moveAwayFromWarp) {
-        constexpr float angleToRadians = 3.14159265358979323846f / 32768.0f;
-        float yawRadians = angle[1] * angleToRadians;
-        pos[0] = (s16) (pos[0] - 400.0f * std::sin(yawRadians));
-        pos[2] = (s16) (pos[2] - 400.0f * std::cos(yawRadians));
-
-        struct Surface *floor = nullptr;
-        float floorHeight = find_floor(pos[0], pos[1] + 1000.0f, pos[2], &floor);
-        if (floor != nullptr) {
-            pos[1] = (s16) (floorHeight + 100.0f);
-        }
     }
     if (sm64_pending_return_spawn.reverseFacing) {
         angle[1] += 0x8000;
@@ -2839,6 +2820,7 @@ bool SM64AP_ApplyPendingReturnSpawn(s16* pos, s16* angle, u32* spawnType, s32* a
 void SM64AP_ClearReturnStack() {
     sm64_return_stack.clear();
     sm64_pending_return_spawn.active = false;
+    sm64_castle_exit_return_active = false;
 }
 
 void SM64AP_RedirectWarp(s16* curLevel, s16* destLevel, s8* curArea, s16* destArea,
@@ -2861,17 +2843,19 @@ void SM64AP_RedirectWarp(s16* curLevel, s16* destLevel, s8* curArea, s16* destAr
     }
 
     int subAreaSource = SM64AP_PhysicalSubAreaSource(*curLevel, *curArea, sourceWarpNode);
-    if (subAreaSource >= 1 && subAreaSource <= 13) {
-        SM64AP_PushSubAreaReturnPoint(subAreaSource, *curLevel, *curArea, sourceWarpNode);
-    }
 
-    int normalSourceKey = 0;
     if ((*curLevel == LEVEL_CASTLE || *curLevel == LEVEL_CASTLE_COURTYARD
          || *curLevel == LEVEL_CASTLE_GROUNDS)
         && *destLevel != LEVEL_CASTLE && *destLevel != LEVEL_CASTLE_COURTYARD
         && *destLevel != LEVEL_CASTLE_GROUNDS) {
-        normalSourceKey = SM64AP_SourceEntranceKey(*destLevel, *destArea, sourceEntrance);
-        SM64AP_PushNormalReturnPoint(*curLevel, *curArea, normalSourceKey / 10);
+        int normalSourceKey = SM64AP_SourceEntranceKey(*destLevel, *destArea, sourceEntrance);
+        // Normal castle entrances already have correct vanilla exit/death
+        // handling. Keep their established area-randomizer return destination
+        // separate from the nested sub-area return stack.
+        SM64AP_ClearReturnStack();
+        sm64_exit_return_to = *curLevel * 10 + *curArea;
+        sm64_exit_orig_entrance_level = normalSourceKey / 10;
+        sm64_castle_exit_return_active = true;
         auto normalSubArea = map_sub_area_entrances.find(1000 + normalSourceKey);
         if (normalSubArea != map_sub_area_entrances.end()) {
             SM64AP_DiscoverEntrance(normalSourceKey);
@@ -2889,9 +2873,27 @@ void SM64AP_RedirectWarp(s16* curLevel, s16* destLevel, s8* curArea, s16* destAr
 
     auto subArea = map_sub_area_entrances.find(subAreaSource);
     if (subAreaSource != 0 && subArea != map_sub_area_entrances.end()) {
+        SM64AP_PushSubAreaReturnPoint(
+            subAreaSource, *curLevel, *curArea, sourceWarpNode);
         SM64AP_DiscoverSubAreaEntrance(subAreaSource);
         SM64AP_ApplySubAreaDestination(
             subArea->second, destLevel, destArea, destWarpNode, warpArg);
+        return;
+    }
+
+    if (sm64_castle_exit_return_active
+        && (*destLevel == LEVEL_CASTLE || *destLevel == LEVEL_CASTLE_COURTYARD
+            || *destLevel == LEVEL_CASTLE_GROUNDS)) {
+        // Preserve inter-castle warps; only course exits and deaths return to
+        // the castle entrance used to begin this chain.
+        if (*destLevel == LEVEL_CASTLE
+            && (*destWarpNode == 0x1F || *destWarpNode == 0x00)) {
+            return;
+        }
+        *destLevel = sm64_exit_return_to / 10;
+        *destArea = sm64_exit_return_to % 10;
+        setCourseNodeAndArea(
+            sm64_exit_orig_entrance_level, destWarpNode, isDeathWarp, warpOp);
         return;
     }
 
