@@ -2882,6 +2882,8 @@ void SM64AP_RedirectWarp(s16* curLevel, s16* destLevel, s8* curArea, s16* destAr
     }
 
     if (sm64_castle_exit_return_active
+        && *curLevel != LEVEL_CASTLE && *curLevel != LEVEL_CASTLE_COURTYARD
+        && *curLevel != LEVEL_CASTLE_GROUNDS
         && (*destLevel == LEVEL_CASTLE || *destLevel == LEVEL_CASTLE_COURTYARD
             || *destLevel == LEVEL_CASTLE_GROUNDS)) {
         // Preserve inter-castle warps; only course exits and deaths return to
@@ -2890,6 +2892,7 @@ void SM64AP_RedirectWarp(s16* curLevel, s16* destLevel, s8* curArea, s16* destAr
             && (*destWarpNode == 0x1F || *destWarpNode == 0x00)) {
             return;
         }
+        sm64_castle_exit_return_active = false;
         *destLevel = sm64_exit_return_to / 10;
         *destArea = sm64_exit_return_to % 10;
         setCourseNodeAndArea(
