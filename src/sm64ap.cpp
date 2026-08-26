@@ -6397,16 +6397,6 @@ static void SM64AP_InitCheatItems() {
             std::string("GLOBAL BOWSER ARENA BOMB ") + std::to_string(bomb));
     }
 
-    static constexpr const char *capLengthNames[] = {
-        "WING CAP LENGTH", "METAL CAP LENGTH", "VANISH CAP LENGTH"
-    };
-    for (int cap = 0; cap < 3; cap++) {
-        for (int item = 1; item <= sm64_cap_length_item_counts[cap]; item++) {
-            SM64AP_CheatAdd(
-                SM64AP_CHEAT_ITEM_CAP_LENGTH, cap * 10000 + item,
-                std::string(capLengthNames[cap]) + " " + std::to_string(item));
-        }
-    }
     static constexpr const char *bowserStageNames[] = { "BITDW", "BITFS", "BITS" };
     static constexpr int bowserStageBombCounts[] = { 4, 4, 5 };
     for (int arena = 0; arena < 3; arena++) {
