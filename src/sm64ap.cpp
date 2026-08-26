@@ -1969,6 +1969,17 @@ static bool SM64AP_ShouldSpawnBobObject(s16 x, s16 y, s16 z, u32 behParam, const
         return !haveBobCannon;
     }
     if (behavior_is(behavior, bhvBobombBuddy)) {
+        // Act filtering is disabled, so both the act-1 advice buddies and
+        // their later-act replacements are present in the level script. The
+        // cannon buddy replaces the first advice buddy, and the later-dialog
+        // buddy replaces the second one.
+        if (x == -5723 && y == 140 && z == 6017) {
+            return false;
+        }
+        if (x == -6250 && y == 0 && z == 6680
+            && ((behParam >> 16) & 0xFF) == DIALOG_001) {
+            return false;
+        }
         return haveBobombBuddy;
     }
     if (behavior_is(behavior, bhvBobBowlingBallSpawner)) {
