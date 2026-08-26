@@ -1354,6 +1354,10 @@ bool SM64AP_HaveBowser(s16 level) {
     return SM64AP_HaveEnemyUnlock(SM64AP_ENEMY_UNLOCK_BOWSER, level);
 }
 
+bool SM64AP_HaveChainChomp(s16 level) {
+    return SM64AP_HaveEnemyUnlock(SM64AP_ENEMY_UNLOCK_CHAIN_CHOMP, level);
+}
+
 bool SM64AP_HaveWind(int type, s16 level) {
     bool appliesToLevel = false;
     bool haveGlobal = false;
@@ -2217,7 +2221,12 @@ bool SM64AP_ShouldSpawnLevelObject(s16 level, s16, s16 model, s16 x, s16 y, s16 
     }
 
     int enemyUnlockSource = SM64AP_EnemyUnlockSource(behParam, behavior);
-    if (enemyUnlockSource >= 0 && !SM64AP_HaveEnemyUnlock(enemyUnlockSource, level)) {
+    // BoB's Chain Chomp is also the parent that creates its coin-producing
+    // wooden post. Keep a dormant host object so the independently unlocked
+    // post can exist and the gate always has a valid parent.
+    if (enemyUnlockSource >= 0
+        && !(level == LEVEL_BOB && enemyUnlockSource == SM64AP_ENEMY_UNLOCK_CHAIN_CHOMP)
+        && !SM64AP_HaveEnemyUnlock(enemyUnlockSource, level)) {
         return false;
     }
 

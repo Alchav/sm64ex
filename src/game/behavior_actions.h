@@ -447,6 +447,7 @@ void bhv_goomba_triplet_spawner_update(void);
 void bhv_chain_chomp_update(void);
 void bhv_chain_chomp_chain_part_update(void);
 void bhv_wooden_post_update(void);
+void bhv_wooden_post_load_collision(void);
 void bhv_chain_chomp_gate_init(void);
 void bhv_chain_chomp_gate_update(void);
 void bhv_wiggler_update(void);

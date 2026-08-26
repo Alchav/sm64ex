@@ -5260,7 +5260,7 @@ const BehaviorScript bhvWoodenPost[] = {
     SCALE(/*Unused*/ 0, /*Field*/ 50),
     BEGIN_LOOP(),
         CALL_NATIVE(bhv_wooden_post_update),
-        CALL_NATIVE(load_object_collision_model),
+        CALL_NATIVE(bhv_wooden_post_load_collision),
     END_LOOP(),
 };
 

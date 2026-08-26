@@ -476,6 +476,13 @@ static void chain_chomp_act_unload_chain(void) {
  * Update function for chain chomp.
  */
 void bhv_chain_chomp_update(void) {
+    if (!SM64AP_HaveChainChomp(gCurrLevelNum)) {
+        cur_obj_hide();
+        cur_obj_become_intangible();
+        return;
+    }
+    cur_obj_become_tangible();
+
     switch (o->oAction) {
         case CHAIN_CHOMP_ACT_UNINITIALIZED:
             chain_chomp_act_uninitialized();
@@ -494,9 +501,19 @@ void bhv_chain_chomp_update(void) {
  */
 void bhv_wooden_post_update(void) {
     if (!SM64AP_HaveCoinSource(SM64AP_COIN_SOURCE_WOODEN_POST, gCurrLevelNum)) {
+        // The Chain Chomp creates its post as a child. Preserve that child so
+        // Wooden Posts can activate it later without requiring a level reload.
+        if (o->parentObj != o) {
+            cur_obj_hide();
+            cur_obj_become_intangible();
+            return;
+        }
         obj_mark_for_deletion(o);
         return;
     }
+
+    cur_obj_unhide();
+    cur_obj_become_tangible();
 
     // When ground pounded by mario, drop by -45 + -20
     if (!o->oWoodenPostMarioPounding) {
@@ -535,6 +552,12 @@ void bhv_wooden_post_update(void) {
         }
 
         o->oWoodenPostPrevAngleToMario = o->oAngleToMario;
+    }
+}
+
+void bhv_wooden_post_load_collision(void) {
+    if (SM64AP_HaveCoinSource(SM64AP_COIN_SOURCE_WOODEN_POST, gCurrLevelNum)) {
+        load_object_collision_model();
     }
 }
 

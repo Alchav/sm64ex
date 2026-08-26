@@ -514,6 +514,7 @@ AP_EXTERN_C bool SM64AP_HaveWind(int, s16);
 AP_EXTERN_C bool SM64AP_HaveVerticalWind(s16);
 AP_EXTERN_C bool SM64AP_HaveHorizontalWind(s16);
 AP_EXTERN_C bool SM64AP_HaveCoinSource(int, s16);
+AP_EXTERN_C bool SM64AP_HaveChainChomp(s16);
 AP_EXTERN_C int SM64AP_LevelCoinUnlockCount(s16, bool);
 AP_EXTERN_C const char *SM64AP_LevelCoinUnlockName(s16, bool, int);
 AP_EXTERN_C bool SM64AP_LevelCoinUnlockEnabled(s16, bool, int);
