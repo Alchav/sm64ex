@@ -32,31 +32,31 @@ COIN_OUTPUT(UINT64_C(8671419953708949529), 1, 4000028) // Bob-omb Battlefield - 
 COIN_OUTPUT(UINT64_C(8671419953708949529), 2, 4000029) // Bob-omb Battlefield - Coin Line 3 Coin 3
 COIN_OUTPUT(UINT64_C(8671419953708949529), 3, 4000030) // Bob-omb Battlefield - Coin Line 3 Coin 4
 COIN_OUTPUT(UINT64_C(8671419953708949529), 4, 4000031) // Bob-omb Battlefield - Coin Line 3 Coin 5
-COIN_OUTPUT(UINT64_C(15670867680348128133), 0, 4000032) // Bob-omb Battlefield - Wooden Post 1 Coin 1
-COIN_OUTPUT(UINT64_C(15670867680348128133), 1, 4000033) // Bob-omb Battlefield - Wooden Post 1 Coin 2
-COIN_OUTPUT(UINT64_C(15670867680348128133), 2, 4000034) // Bob-omb Battlefield - Wooden Post 1 Coin 3
-COIN_OUTPUT(UINT64_C(15670867680348128133), 3, 4000035) // Bob-omb Battlefield - Wooden Post 1 Coin 4
-COIN_OUTPUT(UINT64_C(15670867680348128133), 4, 4000036) // Bob-omb Battlefield - Wooden Post 1 Coin 5
-COIN_OUTPUT(UINT64_C(6484333743646716050), 0, 4000037) // Bob-omb Battlefield - Wooden Post 2 Coin 1
-COIN_OUTPUT(UINT64_C(6484333743646716050), 1, 4000038) // Bob-omb Battlefield - Wooden Post 2 Coin 2
-COIN_OUTPUT(UINT64_C(6484333743646716050), 2, 4000039) // Bob-omb Battlefield - Wooden Post 2 Coin 3
-COIN_OUTPUT(UINT64_C(6484333743646716050), 3, 4000040) // Bob-omb Battlefield - Wooden Post 2 Coin 4
-COIN_OUTPUT(UINT64_C(6484333743646716050), 4, 4000041) // Bob-omb Battlefield - Wooden Post 2 Coin 5
-COIN_OUTPUT(UINT64_C(8014241325055651686), 0, 4000042) // Bob-omb Battlefield - Wooden Post 3 Coin 1
-COIN_OUTPUT(UINT64_C(8014241325055651686), 1, 4000043) // Bob-omb Battlefield - Wooden Post 3 Coin 2
-COIN_OUTPUT(UINT64_C(8014241325055651686), 2, 4000044) // Bob-omb Battlefield - Wooden Post 3 Coin 3
-COIN_OUTPUT(UINT64_C(8014241325055651686), 3, 4000045) // Bob-omb Battlefield - Wooden Post 3 Coin 4
-COIN_OUTPUT(UINT64_C(8014241325055651686), 4, 4000046) // Bob-omb Battlefield - Wooden Post 3 Coin 5
-COIN_OUTPUT(UINT64_C(8261188695036558574), 0, 4000047) // Bob-omb Battlefield - Wooden Post 4 Coin 1
-COIN_OUTPUT(UINT64_C(8261188695036558574), 1, 4000048) // Bob-omb Battlefield - Wooden Post 4 Coin 2
-COIN_OUTPUT(UINT64_C(8261188695036558574), 2, 4000049) // Bob-omb Battlefield - Wooden Post 4 Coin 3
-COIN_OUTPUT(UINT64_C(8261188695036558574), 3, 4000050) // Bob-omb Battlefield - Wooden Post 4 Coin 4
-COIN_OUTPUT(UINT64_C(8261188695036558574), 4, 4000051) // Bob-omb Battlefield - Wooden Post 4 Coin 5
-COIN_OUTPUT(UINT64_C(8422655644915345082), 0, 4000052) // Bob-omb Battlefield - Wooden Post 5 Coin 1
-COIN_OUTPUT(UINT64_C(8422655644915345082), 1, 4000053) // Bob-omb Battlefield - Wooden Post 5 Coin 2
-COIN_OUTPUT(UINT64_C(8422655644915345082), 2, 4000054) // Bob-omb Battlefield - Wooden Post 5 Coin 3
-COIN_OUTPUT(UINT64_C(8422655644915345082), 3, 4000055) // Bob-omb Battlefield - Wooden Post 5 Coin 4
-COIN_OUTPUT(UINT64_C(8422655644915345082), 4, 4000056) // Bob-omb Battlefield - Wooden Post 5 Coin 5
+COIN_OUTPUT(UINT64_C(15670867680348128133), 0, 4000032) // Bob-omb Battlefield - Chain Chomp's Wooden Post Coin 1
+COIN_OUTPUT(UINT64_C(15670867680348128133), 1, 4000033) // Bob-omb Battlefield - Chain Chomp's Wooden Post Coin 2
+COIN_OUTPUT(UINT64_C(15670867680348128133), 2, 4000034) // Bob-omb Battlefield - Chain Chomp's Wooden Post Coin 3
+COIN_OUTPUT(UINT64_C(15670867680348128133), 3, 4000035) // Bob-omb Battlefield - Chain Chomp's Wooden Post Coin 4
+COIN_OUTPUT(UINT64_C(15670867680348128133), 4, 4000036) // Bob-omb Battlefield - Chain Chomp's Wooden Post Coin 5
+COIN_OUTPUT(UINT64_C(6484333743646716050), 0, 4000037) // Bob-omb Battlefield - Wooden Post 1 Coin 1
+COIN_OUTPUT(UINT64_C(6484333743646716050), 1, 4000038) // Bob-omb Battlefield - Wooden Post 1 Coin 2
+COIN_OUTPUT(UINT64_C(6484333743646716050), 2, 4000039) // Bob-omb Battlefield - Wooden Post 1 Coin 3
+COIN_OUTPUT(UINT64_C(6484333743646716050), 3, 4000040) // Bob-omb Battlefield - Wooden Post 1 Coin 4
+COIN_OUTPUT(UINT64_C(6484333743646716050), 4, 4000041) // Bob-omb Battlefield - Wooden Post 1 Coin 5
+COIN_OUTPUT(UINT64_C(8014241325055651686), 0, 4000042) // Bob-omb Battlefield - Wooden Post 2 Coin 1
+COIN_OUTPUT(UINT64_C(8014241325055651686), 1, 4000043) // Bob-omb Battlefield - Wooden Post 2 Coin 2
+COIN_OUTPUT(UINT64_C(8014241325055651686), 2, 4000044) // Bob-omb Battlefield - Wooden Post 2 Coin 3
+COIN_OUTPUT(UINT64_C(8014241325055651686), 3, 4000045) // Bob-omb Battlefield - Wooden Post 2 Coin 4
+COIN_OUTPUT(UINT64_C(8014241325055651686), 4, 4000046) // Bob-omb Battlefield - Wooden Post 2 Coin 5
+COIN_OUTPUT(UINT64_C(8261188695036558574), 0, 4000047) // Bob-omb Battlefield - Wooden Post 3 Coin 1
+COIN_OUTPUT(UINT64_C(8261188695036558574), 1, 4000048) // Bob-omb Battlefield - Wooden Post 3 Coin 2
+COIN_OUTPUT(UINT64_C(8261188695036558574), 2, 4000049) // Bob-omb Battlefield - Wooden Post 3 Coin 3
+COIN_OUTPUT(UINT64_C(8261188695036558574), 3, 4000050) // Bob-omb Battlefield - Wooden Post 3 Coin 4
+COIN_OUTPUT(UINT64_C(8261188695036558574), 4, 4000051) // Bob-omb Battlefield - Wooden Post 3 Coin 5
+COIN_OUTPUT(UINT64_C(8422655644915345082), 0, 4000052) // Bob-omb Battlefield - Wooden Post 4 Coin 1
+COIN_OUTPUT(UINT64_C(8422655644915345082), 1, 4000053) // Bob-omb Battlefield - Wooden Post 4 Coin 2
+COIN_OUTPUT(UINT64_C(8422655644915345082), 2, 4000054) // Bob-omb Battlefield - Wooden Post 4 Coin 3
+COIN_OUTPUT(UINT64_C(8422655644915345082), 3, 4000055) // Bob-omb Battlefield - Wooden Post 4 Coin 4
+COIN_OUTPUT(UINT64_C(8422655644915345082), 4, 4000056) // Bob-omb Battlefield - Wooden Post 4 Coin 5
 COIN_OUTPUT(UINT64_C(1942189364407472022), 0, 4000057) // Bob-omb Battlefield - Flowerbed Coin Ring Coin 1
 COIN_OUTPUT(UINT64_C(1942189364407472022), 1, 4000058) // Bob-omb Battlefield - Flowerbed Coin Ring Coin 2
 COIN_OUTPUT(UINT64_C(1942189364407472022), 2, 4000059) // Bob-omb Battlefield - Flowerbed Coin Ring Coin 3
@@ -1108,11 +1108,11 @@ COIN_OUTPUT(UINT64_C(17695138920237964141), 4, 4010095) // Wet-Dry World - Downt
 COIN_OUTPUT(UINT64_C(17695138920237964141), 5, 4010096) // Wet-Dry World - Downtown Statue Coin Ring Coin 6
 COIN_OUTPUT(UINT64_C(17695138920237964141), 6, 4010097) // Wet-Dry World - Downtown Statue Coin Ring Coin 7
 COIN_OUTPUT(UINT64_C(17695138920237964141), 7, 4010098) // Wet-Dry World - Downtown Statue Coin Ring Coin 8
-COIN_OUTPUT(UINT64_C(11365175105837717666), 0, 4010099) // Wet-Dry World - Downtown Metal Cap Coin Line Coin 1
-COIN_OUTPUT(UINT64_C(11365175105837717666), 1, 4010100) // Wet-Dry World - Downtown Metal Cap Coin Line Coin 2
-COIN_OUTPUT(UINT64_C(11365175105837717666), 2, 4010101) // Wet-Dry World - Downtown Metal Cap Coin Line Coin 3
-COIN_OUTPUT(UINT64_C(11365175105837717666), 3, 4010102) // Wet-Dry World - Downtown Metal Cap Coin Line Coin 4
-COIN_OUTPUT(UINT64_C(11365175105837717666), 4, 4010103) // Wet-Dry World - Downtown Metal Cap Coin Line Coin 5
+COIN_OUTPUT(UINT64_C(11365175105837717666), 0, 4010099) // Wet-Dry World - Downtown Narrow Plank Coin Line Coin 1
+COIN_OUTPUT(UINT64_C(11365175105837717666), 1, 4010100) // Wet-Dry World - Downtown Narrow Plank Coin Line Coin 2
+COIN_OUTPUT(UINT64_C(11365175105837717666), 2, 4010101) // Wet-Dry World - Downtown Narrow Plank Coin Line Coin 3
+COIN_OUTPUT(UINT64_C(11365175105837717666), 3, 4010102) // Wet-Dry World - Downtown Narrow Plank Coin Line Coin 4
+COIN_OUTPUT(UINT64_C(11365175105837717666), 4, 4010103) // Wet-Dry World - Downtown Narrow Plank Coin Line Coin 5
 COIN_OUTPUT(UINT64_C(17911946472201193947), 0, 4010104) // Wet-Dry World - Beige Building Coin Line Coin 1
 COIN_OUTPUT(UINT64_C(17911946472201193947), 1, 4010105) // Wet-Dry World - Beige Building Coin Line Coin 2
 COIN_OUTPUT(UINT64_C(17911946472201193947), 2, 4010106) // Wet-Dry World - Beige Building Coin Line Coin 3
@@ -1497,25 +1497,25 @@ COIN_OUTPUT(UINT64_C(18319762100180874171), 3, 4014019) // Rainbow Ride - Coin L
 COIN_OUTPUT(UINT64_C(18319762100180874171), 4, 4014020) // Rainbow Ride - Coin Line by the Fly Guy Coin 5
 COIN_OUTPUT(UINT64_C(16270288399020816610), 0, 4014021) // Rainbow Ride - Fly Guy Coin 1
 COIN_OUTPUT(UINT64_C(16270288399020816610), 1, 4014022) // Rainbow Ride - Fly Guy Coin 2
-COIN_OUTPUT(UINT64_C(16749090309656643877), 0, 4014023) // Rainbow Ride - Vertical Coin Line by the First Swing Coin 1
-COIN_OUTPUT(UINT64_C(16749090309656643877), 1, 4014024) // Rainbow Ride - Vertical Coin Line by the First Swing Coin 2
-COIN_OUTPUT(UINT64_C(16749090309656643877), 2, 4014025) // Rainbow Ride - Vertical Coin Line by the First Swing Coin 3
-COIN_OUTPUT(UINT64_C(16749090309656643877), 3, 4014026) // Rainbow Ride - Vertical Coin Line by the First Swing Coin 4
-COIN_OUTPUT(UINT64_C(16749090309656643877), 4, 4014027) // Rainbow Ride - Vertical Coin Line by the First Swing Coin 5
+COIN_OUTPUT(UINT64_C(16749090309656643877), 0, 4014023) // Rainbow Ride - First Swing Vertical Coin Line Coin 1
+COIN_OUTPUT(UINT64_C(16749090309656643877), 1, 4014024) // Rainbow Ride - First Swing Vertical Coin Line Coin 2
+COIN_OUTPUT(UINT64_C(16749090309656643877), 2, 4014025) // Rainbow Ride - First Swing Vertical Coin Line Coin 3
+COIN_OUTPUT(UINT64_C(16749090309656643877), 3, 4014026) // Rainbow Ride - First Swing Vertical Coin Line Coin 4
+COIN_OUTPUT(UINT64_C(16749090309656643877), 4, 4014027) // Rainbow Ride - First Swing Vertical Coin Line Coin 5
 COIN_OUTPUT(UINT64_C(3278976059445547044), 0, 4014028) // Rainbow Ride - Coin on the First Donut Lifts 1
 COIN_OUTPUT(UINT64_C(13041436145694580536), 0, 4014029) // Rainbow Ride - Coin on the First Donut Lifts 2
 COIN_OUTPUT(UINT64_C(2807519796863961272), 0, 4014030) // Rainbow Ride - Coin on the First Donut Lifts 3
 COIN_OUTPUT(UINT64_C(816702927119551548), 0, 4014031) // Rainbow Ride - Coin on the First Donut Lifts 4
-COIN_OUTPUT(UINT64_C(13271372111098498159), 0, 4014032) // Rainbow Ride - Coin Line before the Second Swing Coin 1
-COIN_OUTPUT(UINT64_C(13271372111098498159), 1, 4014033) // Rainbow Ride - Coin Line before the Second Swing Coin 2
-COIN_OUTPUT(UINT64_C(13271372111098498159), 2, 4014034) // Rainbow Ride - Coin Line before the Second Swing Coin 3
-COIN_OUTPUT(UINT64_C(13271372111098498159), 3, 4014035) // Rainbow Ride - Coin Line before the Second Swing Coin 4
-COIN_OUTPUT(UINT64_C(13271372111098498159), 4, 4014036) // Rainbow Ride - Coin Line before the Second Swing Coin 5
-COIN_OUTPUT(UINT64_C(10413165817287422235), 0, 4014037) // Rainbow Ride - Slanted Coin Line before Tricky Triangles Coin 1
-COIN_OUTPUT(UINT64_C(10413165817287422235), 1, 4014038) // Rainbow Ride - Slanted Coin Line before Tricky Triangles Coin 2
-COIN_OUTPUT(UINT64_C(10413165817287422235), 2, 4014039) // Rainbow Ride - Slanted Coin Line before Tricky Triangles Coin 3
-COIN_OUTPUT(UINT64_C(10413165817287422235), 3, 4014040) // Rainbow Ride - Slanted Coin Line before Tricky Triangles Coin 4
-COIN_OUTPUT(UINT64_C(10413165817287422235), 4, 4014041) // Rainbow Ride - Slanted Coin Line before Tricky Triangles Coin 5
+COIN_OUTPUT(UINT64_C(13271372111098498159), 0, 4014032) // Rainbow Ride - Swingin' in the Breeze Coin Line Coin 1
+COIN_OUTPUT(UINT64_C(13271372111098498159), 1, 4014033) // Rainbow Ride - Swingin' in the Breeze Coin Line Coin 2
+COIN_OUTPUT(UINT64_C(13271372111098498159), 2, 4014034) // Rainbow Ride - Swingin' in the Breeze Coin Line Coin 3
+COIN_OUTPUT(UINT64_C(13271372111098498159), 3, 4014035) // Rainbow Ride - Swingin' in the Breeze Coin Line Coin 4
+COIN_OUTPUT(UINT64_C(13271372111098498159), 4, 4014036) // Rainbow Ride - Swingin' in the Breeze Coin Line Coin 5
+COIN_OUTPUT(UINT64_C(10413165817287422235), 0, 4014037) // Rainbow Ride - Tricky Triangles Coin Line Coin 1
+COIN_OUTPUT(UINT64_C(10413165817287422235), 1, 4014038) // Rainbow Ride - Tricky Triangles Coin Line Coin 2
+COIN_OUTPUT(UINT64_C(10413165817287422235), 2, 4014039) // Rainbow Ride - Tricky Triangles Coin Line Coin 3
+COIN_OUTPUT(UINT64_C(10413165817287422235), 3, 4014040) // Rainbow Ride - Tricky Triangles Coin Line Coin 4
+COIN_OUTPUT(UINT64_C(10413165817287422235), 4, 4014041) // Rainbow Ride - Tricky Triangles Coin Line Coin 5
 COIN_OUTPUT(UINT64_C(204811918629027299), 0, 4014042) // Rainbow Ride - Beneath Pole Goomba Coin
 COIN_OUTPUT(UINT64_C(14396615977518285086), 0, 4014043) // Rainbow Ride - Coin Ring at the Spinning Platforms 1 Coin 1
 COIN_OUTPUT(UINT64_C(14396615977518285086), 1, 4014044) // Rainbow Ride - Coin Ring at the Spinning Platforms 1 Coin 2

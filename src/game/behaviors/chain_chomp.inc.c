@@ -500,6 +500,10 @@ void bhv_chain_chomp_update(void) {
  * Update function for wooden post.
  */
 void bhv_wooden_post_update(void) {
+    // The Chain Chomp's post inherits a provisional source from its parent.
+    // Finalize it before coin output and exhausted-object rendering use it.
+    SM64AP_FinalizeRelativePermanentCoinSource(o, 0, 0, 0);
+
     if (!SM64AP_HaveCoinSource(SM64AP_COIN_SOURCE_WOODEN_POST, gCurrLevelNum)) {
         // The Chain Chomp creates its post as a child. Preserve that child so
         // Wooden Posts can activate it later without requiring a level reload.
