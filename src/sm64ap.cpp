@@ -2709,7 +2709,7 @@ static void SM64AP_PushSubAreaReturnPoint(
     point.reverseStarFacing = bowserArenaEntrance;
     point.overridePosition = !returnToAreaStart
         && (!hasSourceNode || sourceId == 2 || sourceId == 4
-            || sourceId == 7 || sourceId == 8);
+            || sourceId == 7 || sourceId == 8 || sourceId == 12);
     if (sourceId == 2) {
         // Leave the igloo in the direction its mouth faces. The warp trigger
         // itself is too close to the entrance for any return animation.
@@ -2738,6 +2738,15 @@ static void SM64AP_PushSubAreaReturnPoint(
         point.pos[1] = 300;
         point.pos[2] = 768;
         point.yaw = 0;
+    } else if (sourceId == 12) {
+        // The BITFS arena warp occupies the funnel itself. Return to the solid
+        // platform before it so no return style can fall back into the funnel.
+        point.pos[0] = 5900;
+        point.pos[1] = 4450;
+        point.pos[2] = 99;
+        // Star-style returns reverse this yaw before the pipe-emergence jump,
+        // sending Mario outward onto the fixed strip before the bridge.
+        point.yaw = 0x4000;
     } else if (point.overridePosition) {
         point.yaw = gMarioState->faceAngle[1];
         constexpr float angleToRadians = 3.14159265358979323846f / 32768.0f;
