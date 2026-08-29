@@ -4158,6 +4158,10 @@ void SM64AP_SetMoatDrained() {
     AP_SetServerData(&req);
 }
 
+int SM64AP_GetPrevEntrance() {
+    return sm64_exit_orig_entrance_level;
+}
+
 int SM64AP_GetStars() {
     return starsCollected;
 }

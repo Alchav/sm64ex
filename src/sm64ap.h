@@ -443,6 +443,7 @@ AP_EXTERN_C void SM64AP_InitSP(const char*);
 #define SM64AP_RETURN_STYLE_DEATH  2
 
 AP_EXTERN_C int SM64AP_GetStars();
+AP_EXTERN_C int SM64AP_GetPrevEntrance();
 AP_EXTERN_C int SM64AP_GetRequiredStars(int);
 AP_EXTERN_C int SM64AP_GetCoinStarRequirement(int);
 AP_EXTERN_C u32 SM64AP_CourseStarFlags(s32);

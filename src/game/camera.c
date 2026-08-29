@@ -2,6 +2,7 @@
 
 #define INCLUDED_FROM_CAMERA_C
 
+#include "sm64ap.h"
 #include "prevent_bss_reordering.h"
 #include "sm64.h"
 #include "camera.h"
@@ -5232,8 +5233,9 @@ u8 get_cutscene_from_mario_status(struct Camera *c) {
                 }
                 break;
             case ACT_SPECIAL_DEATH_EXIT:
-                if (gPrevLevel == LEVEL_BOWSER_1 || gPrevLevel == LEVEL_BOWSER_2
-                    || gPrevLevel == LEVEL_BOWSER_3) {
+                if (SM64AP_GetPrevEntrance() == LEVEL_BOWSER_1
+                    || SM64AP_GetPrevEntrance() == LEVEL_BOWSER_2
+                    || SM64AP_GetPrevEntrance() == LEVEL_BOWSER_3) {
                     cutscene = CUTSCENE_EXIT_BOWSER_DEATH;
                 } else {
                     cutscene = CUTSCENE_NONPAINTING_DEATH;
@@ -9197,7 +9199,7 @@ BAD_RETURN(s32) cutscene_non_painting_set_cam_pos(struct Camera *c) {
     struct Surface *floor;
     UNUSED Vec3f unused2;
 
-    switch (gPrevLevel) {
+    switch (SM64AP_GetPrevEntrance()) {
         case LEVEL_HMC:
             vec3f_set(c->pos, 3465.f, -1008.f, -2961.f);
             break;
@@ -9227,8 +9229,8 @@ BAD_RETURN(s32) cutscene_non_painting_set_cam_pos(struct Camera *c) {
 BAD_RETURN(s32) cutscene_non_painting_set_cam_focus(struct Camera *c) {
     offset_rotated(c->focus, sCutsceneVars[7].point, sCutsceneVars[6].point, sCutsceneVars[7].angle);
 
-    if ((gPrevLevel == LEVEL_COTMC) || (gPrevLevel == LEVEL_HMC) || (gPrevLevel == LEVEL_RR)
-        || (gPrevLevel == LEVEL_WMOTR)) {
+    if ((SM64AP_GetPrevEntrance() == LEVEL_COTMC) || (SM64AP_GetPrevEntrance() == LEVEL_HMC)
+        || (SM64AP_GetPrevEntrance() == LEVEL_RR) || (SM64AP_GetPrevEntrance() == LEVEL_WMOTR)) {
         c->focus[0] = c->pos[0] + (sMarioCamState->pos[0] - c->pos[0]) * 0.7f;
         c->focus[1] = c->pos[1] + (sMarioCamState->pos[1] - c->pos[1]) * 0.4f;
         c->focus[2] = c->pos[2] + (sMarioCamState->pos[2] - c->pos[2]) * 0.7f;
@@ -9351,7 +9353,7 @@ BAD_RETURN(s32) cutscene_exit_bowser_death(struct Camera *c) {
  * This overrides cutscene_non_painting_death_start()
  */
 BAD_RETURN(s32) cutscene_non_painting_death_override_offset(UNUSED struct Camera *c) {
-    switch (gPrevLevel) {
+    switch (SM64AP_GetPrevEntrance()) {
         case LEVEL_HMC:
             vec3f_set(sCutsceneVars[5].point, 187.f, 369.f, -197.f);
             break;
@@ -10139,7 +10141,7 @@ BAD_RETURN(s32) cutscene_exit_painting_start(struct Camera *c) {
     vec3f_set(sCutsceneVars[2].point, 258.f, -352.f, 1189.f);
     vec3f_set(sCutsceneVars[1].point, 65.f, -155.f, 444.f);
 
-    if (gPrevLevel == LEVEL_TTM) {
+    if (SM64AP_GetPrevEntrance() == LEVEL_TTM) {
         sCutsceneVars[1].point[1] = 0.f;
         sCutsceneVars[1].point[2] = 0.f;
     }
@@ -10206,7 +10208,7 @@ BAD_RETURN(s32) cutscene_exit_painting(struct Camera *c) {
     cutscene_event(cutscene_exit_painting_move_to_floor, c, 5, -1);
 
     //! Hardcoded position. TTM's painting is close to an opposite wall, so just fix the pos.
-    if (gPrevLevel == LEVEL_TTM) {
+    if (SM64AP_GetPrevEntrance() == LEVEL_TTM) {
         vec3f_set(c->pos, -296.f, 1261.f, 3521.f);
     }
 
