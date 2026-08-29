@@ -1486,3 +1486,7 @@ s32 lvl_play_the_end_screen_sound(UNUSED s16 arg0, UNUSED s32 arg1) {
     play_sound(SOUND_MENU_THANK_YOU_PLAYING_MY_GAME, gDefaultSoundArgs);
     return 1;
 }
+
+s32 credits_end_wait_for_reset(void) {
+    return (gPlayer1Controller->buttonPressed & START_BUTTON) != 0;
+}
