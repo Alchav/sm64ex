@@ -394,7 +394,7 @@ void bhv_1up_hidden_trigger_loop(void) {
     sp1C = cur_obj_nearest_object_with_behavior(bhvHidden1up);
     if (SM64AP_TriggerSparkles() && gGlobalTimer % 5 == 0
         && sp1C != NULL && !SM64AP_OneUpCollected(sp1C->o1UpApLocationId)) {
-        spawn_object(o, MODEL_NONE, bhvSparkleSpawn);
+        spawn_ap_trigger_sparkles(o, SM64AP_TRIGGER_SPARKLE_GREEN);
     }
     if (obj_check_if_collided_with_object(o, gMarioObject) == 1) {
         if (sp1C != NULL)
@@ -448,7 +448,7 @@ void bhv_1up_hidden_in_pole_trigger_loop(void) {
     sp1C = cur_obj_nearest_object_with_behavior(bhvHidden1upInPole);
     if (SM64AP_TriggerSparkles() && gGlobalTimer % 5 == 0
         && sp1C != NULL && !SM64AP_OneUpCollected(sp1C->o1UpApLocationId)) {
-        spawn_object(o, MODEL_NONE, bhvSparkleSpawn);
+        spawn_ap_trigger_sparkles(o, SM64AP_TRIGGER_SPARKLE_GREEN);
     }
     if (obj_check_if_collided_with_object(o, gMarioObject) == 1) {
         if (sp1C != NULL) {
@@ -470,7 +470,7 @@ void bhv_1up_hidden_in_pole_spawner_loop(void) {
         (s16) o->oPosX, (s16) o->oPosY, (s16) o->oPosZ);
     if (SM64AP_TriggerSparkles() && gGlobalTimer % 5 == 0
         && !SM64AP_OneUpCollected(oneUpLocId)) {
-        spawn_object(o, MODEL_NONE, bhvSparkleSpawn);
+        spawn_ap_trigger_sparkles(o, SM64AP_TRIGGER_SPARKLE_GREEN);
     }
 
     if (is_point_within_radius_of_mario(o->oPosX, o->oPosY, o->oPosZ, 700)) {

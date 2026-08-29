@@ -41,7 +41,7 @@ void bhv_hidden_star_trigger_loop(void) {
         && hiddenStar != NULL
         && !SM64AP_CollectedCourseStar(
             gCurrCourseNum - COURSE_MIN, (hiddenStar->oBehParams >> 24) & 0xFF)) {
-        spawn_object(o, MODEL_NONE, bhvSparkleSpawn);
+        spawn_ap_trigger_sparkles(o, SM64AP_TRIGGER_SPARKLE_YELLOW);
     }
     if (obj_check_if_collided_with_object(o, gMarioObject) == 1) {
         if (hiddenStar != NULL) {

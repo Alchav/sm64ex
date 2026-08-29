@@ -3,6 +3,8 @@
 
 #include "types.h"
 
+extern Gfx *geo_ap_sparkle_color(s32 callContext, struct GraphNode *node, void *context);
+
 // bubble
 extern const GeoLayout bubble_geo[];
 extern const GeoLayout purple_marble_geo[];

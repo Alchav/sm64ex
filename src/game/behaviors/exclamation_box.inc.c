@@ -68,6 +68,14 @@ static bool exclamation_box_unlocked(void) {
     if (!exclamation_box_one_up_unlocked() || !exclamation_box_coin_unlocked()) {
         return false;
     }
+    if (o->oBehParams2ndByte == 3
+        && !SM64AP_HaveLevelFeature(SM64AP_LEVEL_FEATURE_KOOPA_SHELL_BLOCK, gCurrLevelNum)) {
+        return false;
+    }
+    if (o->oBehParams2ndByte >= 8 && o->oBehParams2ndByte <= 14
+        && !SM64AP_HaveLevelFeature(SM64AP_LEVEL_FEATURE_STAR_BLOCK, gCurrLevelNum)) {
+        return false;
+    }
     return o->oBehParams2ndByte >= 3
         || SM64AP_HaveCap(D_8032F0C0[o->oBehParams2ndByte]);
 }

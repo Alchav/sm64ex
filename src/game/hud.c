@@ -6,6 +6,7 @@
 #include "gfx_dimensions.h"
 #include "game_init.h"
 #include "level_update.h"
+#include "mario.h"
 #include "camera.h"
 #include "print.h"
 #include "ingame_menu.h"
@@ -358,6 +359,51 @@ void render_hud_timer(void) {
     gSPDisplayList(gDisplayListHead++, dl_hud_img_end);
 }
 
+static void render_cap_timer_marker(s32 x, s32 y, u8 red, u8 green, u8 blue) {
+    u16 color = ((red >> 3) << 11) | ((green >> 3) << 6) | ((blue >> 3) << 1) | 1;
+    s32 screenY = 224 - y;
+
+    gDPPipeSync(gDisplayListHead++);
+    gDPSetCycleType(gDisplayListHead++, G_CYC_FILL);
+    gDPSetFillColor(gDisplayListHead++, color << 16 | color);
+    gDPFillRectangle(gDisplayListHead++, x, screenY, x + 5, screenY + 14);
+    gDPPipeSync(gDisplayListHead++);
+    gDPSetCycleType(gDisplayListHead++, G_CYC_1CYCLE);
+}
+
+static void render_cap_timer_row(const char *label, u16 frames, s32 y, u8 red, u8 green, u8 blue) {
+    s32 seconds = frames / 30;
+    s32 tenths = (frames % 30) / 3;
+    s32 x = GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(150);
+
+    render_cap_timer_marker(x - 10, y, red, green, blue);
+    print_text(x, y, label);
+    print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(48), y, "%02d", seconds);
+    print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(14), y, "%d", tenths);
+}
+
+static void render_cap_timers(bool raceTimerVisible) {
+    s32 y;
+    u32 caps;
+
+    if (gMarioState == NULL || gMarioState->capTimer == 0) {
+        return;
+    }
+    y = raceTimerVisible ? 165 : 185;
+    caps = gMarioState->flags;
+    if (caps & MARIO_WING_CAP) {
+        render_cap_timer_row("WING", gMarioState->capTimer, y, 255, 48, 48);
+        y -= 20;
+    }
+    if (caps & MARIO_VANISH_CAP) {
+        render_cap_timer_row("VANISH", gMarioState->capTimer, y, 64, 128, 255);
+        y -= 20;
+    }
+    if (caps & MARIO_METAL_CAP) {
+        render_cap_timer_row("METAL", gMarioState->capTimer, y, 64, 224, 96);
+    }
+}
+
 static void render_hud_last_location_check(void) {
     const s32 locId = SM64AP_LastLocationCheckId();
 
@@ -481,6 +527,9 @@ void render_hud(void) {
 
         if (hudDisplayFlags & HUD_DISPLAY_FLAG_TIMER && configHUD) {
             render_hud_timer();
+        }
+        if (configHUD) {
+            render_cap_timers((hudDisplayFlags & HUD_DISPLAY_FLAG_TIMER) != 0);
         }
 
         render_hud_last_location_check();

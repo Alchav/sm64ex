@@ -1098,7 +1098,16 @@ u32 interact_door(struct MarioState *m, UNUSED u32 interactType, struct Object *
     s16 orignumstars = get_door_id(o);
 
     if (m->action == ACT_WALKING || m->action == ACT_DECELERATING) {
-        if (ap_castle_door_is_replaced_star_door(orignumstars)) {
+        if (orignumstars == 0xFE) {
+            if (SM64AP_HavePainting(COURSE_COTMC)) {
+                m->interactObj = o;
+                m->usedObj = o;
+                return set_mario_action(m, ACT_ENTERING_STAR_DOOR, should_push_or_pull_door(m, o));
+            } else if (!sDisplayingDoorText) {
+                sDisplayingDoorText = TRUE;
+                return set_mario_action(m, ACT_READING_AUTOMATIC_DIALOG, DIALOG_022 << 16);
+            }
+        } else if (ap_castle_door_is_replaced_star_door(orignumstars)) {
             return interact_ap_castle_key_door(m, o, orignumstars);
         } else {
             s16 requiredNumStars = SM64AP_GetRequiredStars(orignumstars);

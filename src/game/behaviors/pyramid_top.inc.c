@@ -147,6 +147,9 @@ void bhv_pyramid_top_fragment_loop(void) {
  */
 void bhv_pyramid_pillar_touch_detector_loop(void) {
     cur_obj_become_tangible();
+    if (SM64AP_TriggerSparkles() && gGlobalTimer % 5 == 0) {
+        spawn_ap_trigger_sparkles(o, SM64AP_TRIGGER_SPARKLE_YELLOW);
+    }
     if (obj_check_if_collided_with_object(o, gMarioObject) == 1) {
         // Increase the pyramid top's count of pillars touched.
         o->parentObj->oPyramidTopPillarsTouched++;

@@ -182,7 +182,7 @@ void bhv_triplet_butterfly_update(void) {
             o->oBehParams2ndByte & TRIPLET_BUTTERFLY_BP_NO_BOMBS,
             (s16) o->oHomeX, (s16) o->oHomeY, (s16) o->oHomeZ);
         if (!SM64AP_OneUpCollected(oneUpLocId)) {
-            spawn_object(o, MODEL_NONE, bhvSparkleSpawn);
+            spawn_ap_trigger_sparkles(o, SM64AP_TRIGGER_SPARKLE_PURPLE);
         }
     }
 

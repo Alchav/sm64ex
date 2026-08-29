@@ -721,6 +721,21 @@ void reject_mario_from_painting(s16 courseNum, s16 destArea) {
         return;
     }
 
+    if (courseNum == COURSE_PSS || courseNum == COURSE_SA) {
+        s16 yaw = gMarioState->faceAngle[1];
+        gMarioState->pos[0] -= sins(yaw) * 150.0f;
+        gMarioState->pos[1] += 30.0f;
+        gMarioState->pos[2] -= coss(yaw) * 150.0f;
+        vec3f_copy(gMarioState->marioObj->header.gfx.pos, gMarioState->pos);
+        gMarioState->marioObj->oPosX = gMarioState->pos[0];
+        gMarioState->marioObj->oPosY = gMarioState->pos[1];
+        gMarioState->marioObj->oPosZ = gMarioState->pos[2];
+        gMarioState->forwardVel = -20.0f;
+        set_mario_action(gMarioState, ACT_HARD_BACKWARD_AIR_KB, 0);
+        play_sound(SOUND_GENERAL_PAINTING_EJECT, gDefaultSoundArgs);
+        return;
+    }
+
     switch(courseNum) {
         case 1:  p = bob_painting;      break;
         case 2:  p = wf_painting;       break;

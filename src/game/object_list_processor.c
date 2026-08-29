@@ -761,6 +761,7 @@ void update_objects(UNUSED s32 unused) {
 
     gObjectLists = gObjectListArray;
 
+    SM64AP_CheckLobbyFreeItems(gCurrLevelNum, gCurrentArea != NULL ? gCurrentArea->index : 0);
     SM64AP_UpdatePermanentCoinTrap();
     reconcile_permanent_coin_objects();
     SM64AP_RestorePermanentCoinCount();

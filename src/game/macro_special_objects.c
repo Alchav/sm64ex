@@ -369,6 +369,15 @@ struct LoadedSpecialObject {
     const BehaviorScript *behavior;
 };
 
+#define SM64AP_COTMC_DOOR_PARAM 0xFE
+
+static bool is_cotmc_entrance_door(const struct LoadedSpecialObject *entry) {
+    return gCurrLevelNum == LEVEL_HMC
+           && entry->y == -4279
+           && ((entry->x == -468 && entry->z == 6711)
+               || (entry->x == -359 && entry->z == 6602));
+}
+
 static void load_special_object_entry(s16 **specialObjList, struct LoadedSpecialObject *entry) {
     s32 offset = 0;
     u8 presetID;
@@ -416,6 +425,14 @@ static void load_special_object_entry(s16 **specialObjList, struct LoadedSpecial
             entry->extraParams[2] = **specialObjList;
             (*specialObjList)++;
             break;
+    }
+
+
+    if (SM64AP_FullLevelUnlocks() && is_cotmc_entrance_door(entry)) {
+        entry->model = MODEL_CASTLE_STAR_DOOR_8_STARS;
+        entry->behavior = bhvStarDoor;
+        entry->type = SPTYPE_DEF_PARAM_AND_YROT;
+        entry->defaultParam = SM64AP_COTMC_DOOR_PARAM;
     }
 }
 

@@ -87,6 +87,11 @@ bool sm64_have_hat = false;
 bool sm64_have_vcutm_entrance = false;
 bool sm64_have_rr_level_unlock = false;
 bool sm64_have_wmotr_level_unlock = false;
+bool sm64_have_pss_level_unlock = false;
+bool sm64_have_sa_level_unlock = false;
+bool sm64_have_cotmc_level_unlock = false;
+bool sm64_full_level_unlocks = false;
+bool sm64_have_ddd_moat_exit = false;
 bool sm64_1up_checks_enabled = false;
 bool sm64_buddy_checks_enabled = true;
 bool sm64_bowser_stage_1up_item_behavior = false;
@@ -127,6 +132,8 @@ static const int sm64_shuffled_entrance_ids[] = {
 
 static std::map<int, SM64APSignHint> sm64_sign_hints;
 static std::mutex sm64_sign_hint_mutex;
+static std::set<int> sm64_read_signs;
+static std::set<std::string> sm64_known_hint_locations;
 static std::vector<u8> sm64_sign_dialog_text = { DIALOG_CHAR_TERMINATOR };
 static struct DialogEntry sm64_sign_dialog_entry = { 1, 4, 30, 200, sm64_sign_dialog_text.data() };
 static s16 sm64_active_sign_dialog = -1;
@@ -374,6 +381,52 @@ static constexpr SM64APWindUnlockItem sm64_wind_unlock_items[] = {
 static constexpr int SM64AP_NUM_WIND_UNLOCK_ITEMS =
     sizeof(sm64_wind_unlock_items) / sizeof(sm64_wind_unlock_items[0]);
 std::bitset<SM64AP_NUM_WIND_UNLOCK_ITEMS> sm64_have_wind_unlock_items;
+
+struct SM64APLevelFeatureUnlockItem {
+    int64_t id;
+    int type;
+    s16 level;
+};
+
+static constexpr SM64APLevelFeatureUnlockItem sm64_level_feature_unlock_items[] = {
+    { 3627115, SM64AP_LEVEL_FEATURE_FREESTANDING_STAR, -1 },
+    { 3627119, SM64AP_LEVEL_FEATURE_FREESTANDING_STAR, LEVEL_BOB },
+    { 3627120, SM64AP_LEVEL_FEATURE_FREESTANDING_STAR, LEVEL_WF },
+    { 3627121, SM64AP_LEVEL_FEATURE_FREESTANDING_STAR, LEVEL_JRB },
+    { 3627122, SM64AP_LEVEL_FEATURE_FREESTANDING_STAR, LEVEL_CCM },
+    { 3627123, SM64AP_LEVEL_FEATURE_FREESTANDING_STAR, LEVEL_BBH },
+    { 3627124, SM64AP_LEVEL_FEATURE_FREESTANDING_STAR, LEVEL_HMC },
+    { 3627125, SM64AP_LEVEL_FEATURE_FREESTANDING_STAR, LEVEL_LLL },
+    { 3627126, SM64AP_LEVEL_FEATURE_FREESTANDING_STAR, LEVEL_SSL },
+    { 3627127, SM64AP_LEVEL_FEATURE_FREESTANDING_STAR, LEVEL_DDD },
+    { 3627128, SM64AP_LEVEL_FEATURE_FREESTANDING_STAR, LEVEL_SL },
+    { 3627129, SM64AP_LEVEL_FEATURE_FREESTANDING_STAR, LEVEL_WDW },
+    { 3627130, SM64AP_LEVEL_FEATURE_FREESTANDING_STAR, LEVEL_TTM },
+    { 3627131, SM64AP_LEVEL_FEATURE_FREESTANDING_STAR, LEVEL_TTC },
+    { 3627132, SM64AP_LEVEL_FEATURE_FREESTANDING_STAR, LEVEL_RR },
+    { 3627116, SM64AP_LEVEL_FEATURE_STAR_BLOCK, -1 },
+    { 3627133, SM64AP_LEVEL_FEATURE_STAR_BLOCK, LEVEL_BOB },
+    { 3627134, SM64AP_LEVEL_FEATURE_STAR_BLOCK, LEVEL_JRB },
+    { 3627135, SM64AP_LEVEL_FEATURE_STAR_BLOCK, LEVEL_PSS },
+    { 3627136, SM64AP_LEVEL_FEATURE_STAR_BLOCK, LEVEL_RR },
+    { 3627137, SM64AP_LEVEL_FEATURE_STAR_BLOCK, LEVEL_SL },
+    { 3627138, SM64AP_LEVEL_FEATURE_STAR_BLOCK, LEVEL_THI },
+    { 3627139, SM64AP_LEVEL_FEATURE_STAR_BLOCK, LEVEL_WDW },
+    { 3627117, SM64AP_LEVEL_FEATURE_KOOPA_SHELL_BLOCK, -1 },
+    { 3627140, SM64AP_LEVEL_FEATURE_KOOPA_SHELL_BLOCK, LEVEL_SSL },
+    { 3627141, SM64AP_LEVEL_FEATURE_KOOPA_SHELL_BLOCK, LEVEL_SL },
+    { 3627118, SM64AP_LEVEL_FEATURE_STAR_SECRET, -1 },
+    { 3627142, SM64AP_LEVEL_FEATURE_STAR_SECRET, LEVEL_BOB },
+    { 3627143, SM64AP_LEVEL_FEATURE_STAR_SECRET, LEVEL_SSL },
+    { 3627144, SM64AP_LEVEL_FEATURE_STAR_SECRET, LEVEL_WDW },
+    { 3627145, SM64AP_LEVEL_FEATURE_STAR_SECRET, LEVEL_THI },
+    { 3627147, SM64AP_LEVEL_FEATURE_JET_STREAM, -1 },
+    { 3627146, SM64AP_LEVEL_FEATURE_JET_STREAM, LEVEL_DDD },
+};
+
+static constexpr int SM64AP_NUM_LEVEL_FEATURE_UNLOCK_ITEMS =
+    sizeof(sm64_level_feature_unlock_items) / sizeof(sm64_level_feature_unlock_items[0]);
+std::bitset<SM64AP_NUM_LEVEL_FEATURE_UNLOCK_ITEMS> sm64_have_level_feature_unlock_items;
 
 std::bitset<SM64AP_NUM_COIN_CHECKS> sm64_sent_coin_checks;
 std::bitset<SM64AP_NUM_1UP_CHECKS> sm64_sent_1up_checks;
@@ -865,6 +918,14 @@ void SM64AP_RecvItem(int64_t idx, bool notify) {
         }
     }
 
+    for (int i = 0; i < SM64AP_NUM_LEVEL_FEATURE_UNLOCK_ITEMS; i++) {
+        if (idx == sm64_level_feature_unlock_items[i].id) {
+            sm64_have_level_feature_unlock_items[i] = true;
+            SM64AP_RequestLiveObjectReconcile();
+            return;
+        }
+    }
+
     if (idx >= SM64AP_ID_OBJECT_ITEM(0)
         && idx <= SM64AP_ID_OBJECT_ITEM(SM64AP_NUM_CONTIGUOUS_OBJECT_ITEMS - 1)
         && idx != SM64AP_ID_BITFS) {
@@ -941,6 +1002,19 @@ void SM64AP_RecvItem(int64_t idx, bool notify) {
             break;
         case SM64AP_ID_WMOTR_LEVEL_UNLOCK:
             sm64_have_wmotr_level_unlock = true;
+            break;
+        case SM64AP_ID_PSS_LEVEL_UNLOCK:
+            sm64_have_pss_level_unlock = true;
+            break;
+        case SM64AP_ID_SA_LEVEL_UNLOCK:
+            sm64_have_sa_level_unlock = true;
+            break;
+        case SM64AP_ID_COTMC_LEVEL_UNLOCK:
+            sm64_have_cotmc_level_unlock = true;
+            break;
+        case SM64AP_ID_DDD_MOAT_EXIT:
+            sm64_have_ddd_moat_exit = true;
+            SM64AP_RequestLiveObjectReconcile();
             break;
         case SM64AP_ID_BOWSER_STAGE_1UPS:
             sm64_have_bowser_stage_1ups = true;
@@ -1049,7 +1123,6 @@ void SM64AP_RecvItem(int64_t idx, bool notify) {
             sm64_have_cannon[idx-(SM64AP_ID_CANNONUNLOCK(0))] = true;
             break;
         case SM64AP_ID_PAINTINGUNLOCK(0) ... SM64AP_ID_PAINTINGUNLOCK(NUM_PAINTING_LOCKS-1):
-            // We don't have a painting unlock for BoB, so (0) will never appear; index 1 corresponds to WF, and so on
             if (idx == SM64AP_ID_THI_TINY_PAINTING) {
                 sm64_have_thi_tiny_painting = true;
             } else {
@@ -1384,6 +1457,45 @@ bool SM64AP_HaveVerticalWind(s16 level) {
 
 bool SM64AP_HaveHorizontalWind(s16 level) {
     return SM64AP_HaveWind(SM64AP_WIND_HORIZONTAL, level);
+}
+
+bool SM64AP_HaveLevelFeature(int type, s16 level) {
+    bool appliesToLevel = false;
+    bool haveGlobal = false;
+
+    for (int i = 0; i < SM64AP_NUM_LEVEL_FEATURE_UNLOCK_ITEMS; i++) {
+        const SM64APLevelFeatureUnlockItem &item = sm64_level_feature_unlock_items[i];
+        if (item.type != type) {
+            continue;
+        }
+        if (item.level == -1) {
+            haveGlobal |= sm64_have_level_feature_unlock_items[i];
+        } else if (item.level == level) {
+            appliesToLevel = true;
+            if (sm64_have_level_feature_unlock_items[i]) {
+                return true;
+            }
+        }
+    }
+
+    if (type == SM64AP_LEVEL_FEATURE_KOOPA_SHELL_BLOCK && level == LEVEL_LLL) {
+        appliesToLevel = true;
+        if (SM64AP_HaveFeature(SM64AP_FEATURE_LLL_KOOPA_SHELL)) {
+            return true;
+        }
+    }
+    if (type == SM64AP_LEVEL_FEATURE_JET_STREAM && level == LEVEL_JRB) {
+        appliesToLevel = true;
+        if (SM64AP_HaveFeature(SM64AP_FEATURE_JRB_JET_STREAM)) {
+            return true;
+        }
+    }
+
+    return !appliesToLevel || haveGlobal;
+}
+
+bool SM64AP_HaveDddMoatExit() {
+    return sm64_have_ddd_moat_exit;
 }
 
 static bool SM64AP_IsEnemyCoinSource(int source) {
@@ -2046,7 +2158,7 @@ static bool SM64AP_ShouldSpawnJrbObject(u32 behParam, const void *behavior) {
     }
     if (behavior_is(behavior, bhvJetStream)
         || (behavior_is(behavior, bhvStar) && beh_param_star(behParam) == 5)) {
-        return SM64AP_HaveFeature(SM64AP_FEATURE_JRB_JET_STREAM);
+        return SM64AP_HaveLevelFeature(SM64AP_LEVEL_FEATURE_JET_STREAM, LEVEL_JRB);
     }
     if (behavior_is(behavior, bhvUnagi)) {
         bool star2Collected = SM64AP_CollectedCourseStar(AP_COURSE_JRB, 1);
@@ -2089,7 +2201,7 @@ static bool SM64AP_ShouldSpawnDddObject(u32 behParam, const void *behavior) {
         return SM64AP_HaveFeature(SM64AP_FEATURE_DDD_MANTA_RAY);
     }
     if (behavior_is(behavior, bhvBowserSubDoor)) {
-        return !SM64AP_HaveFeature(SM64AP_FEATURE_DDD_POLES);
+        return !SM64AP_HaveDddMoatExit();
     }
     if (behavior_is(behavior, bhvBowsersSub)) {
         return behParam == 0x000B0000 && SM64AP_HaveFeature(SM64AP_FEATURE_DDD_BOWSERS_SUB);
@@ -2276,6 +2388,23 @@ bool SM64AP_ShouldSpawnLevelObject(s16 level, s16, s16 model, s16 x, s16 y, s16 
         return false;
     }
 
+    if (behavior_is(behavior, bhvHiddenStarTrigger)
+        && !SM64AP_HaveLevelFeature(SM64AP_LEVEL_FEATURE_STAR_SECRET, level)) {
+        return false;
+    }
+
+    if (behavior_is(behavior, bhvStar)
+        && !SM64AP_HaveLevelFeature(SM64AP_LEVEL_FEATURE_FREESTANDING_STAR, level)) {
+        return false;
+    }
+
+    if (level == LEVEL_DDD
+        && (behavior_is(behavior, bhvJetStream)
+            || behavior_is(behavior, bhvJetStreamRingSpawner))
+        && !SM64AP_HaveLevelFeature(SM64AP_LEVEL_FEATURE_JET_STREAM, level)) {
+        return false;
+    }
+
     int enemySource = SM64AP_EnemyCoinSource(behavior);
     if (behavior_is(behavior, bhvCourtyardBooTriplet)) {
         return SM64AP_HaveCoinSource(SM64AP_COIN_SOURCE_BOO, LEVEL_CASTLE_COURTYARD);
@@ -2311,9 +2440,6 @@ bool SM64AP_ShouldSpawnLevelObject(s16 level, s16, s16 model, s16 x, s16 y, s16 
         case LEVEL_JRB:
             return SM64AP_ShouldSpawnJrbObject(behParam, behavior);
         case LEVEL_LLL:
-            if (behavior_is(behavior, bhvExclamationBox) && behParam == 0x00030000) {
-                return SM64AP_HaveFeature(SM64AP_FEATURE_LLL_KOOPA_SHELL);
-            }
             if (behavior_is(behavior, bhvLllRollingLog)) {
                 return SM64AP_HaveObjectItemForLevel(SM64AP_OBJECT_ITEM_ROLLING_LOGS, level);
             }
@@ -3074,6 +3200,10 @@ void SM64AP_SetOneUpChecks(int enabled) {
     sm64_1up_checks_enabled = enabled != 0;
 }
 
+static void SM64AP_SetFullLevelUnlocks(int enabled) {
+    sm64_full_level_unlocks = enabled != 0;
+}
+
 static void SM64AP_SetWingCapLengthItemCount(int count) {
     sm64_cap_length_item_counts[0] = std::max(0, count);
 }
@@ -3522,6 +3652,7 @@ void SM64AP_ReadSign(s16 level, s16 dialog) {
 
     SM64AP_EncodeSignHint(hint.text);
     sm64_active_sign_dialog = dialog;
+    sm64_read_signs.insert(level * 256 + dialog);
     if (hint.location > 0 && hint.locationPlayer > 0
         && AP_GetConnectionStatus() == AP_ConnectionStatus::Authenticated) {
         std::ostringstream request;
@@ -3816,6 +3947,7 @@ void SM64AP_ResetItems() {
     sm64_have_coin_level_items.reset();
     sm64_have_enemy_unlock_items.reset();
     sm64_have_wind_unlock_items.reset();
+    sm64_have_level_feature_unlock_items.reset();
     sm64_have_one_up_global_items.reset();
     sm64_have_one_up_level_items.reset();
     sm64_have_global_signs = false;
@@ -3840,6 +3972,10 @@ void SM64AP_ResetItems() {
     sm64_have_vcutm_entrance = false;
     sm64_have_rr_level_unlock = false;
     sm64_have_wmotr_level_unlock = false;
+    sm64_have_pss_level_unlock = false;
+    sm64_have_sa_level_unlock = false;
+    sm64_have_cotmc_level_unlock = false;
+    sm64_have_ddd_moat_exit = false;
     sm64_1up_checks_enabled = false;
     sm64_buddy_checks_enabled = true;
     sm64_bowser_stage_1up_item_behavior = false;
@@ -3964,6 +4100,8 @@ void SM64AP_GenericInit() {
         std::lock_guard<std::mutex> lock(sm64_sign_hint_mutex);
         sm64_sign_hints.clear();
     }
+    sm64_read_signs.clear();
+    sm64_known_hint_locations.clear();
     sm64_active_sign_dialog = -1;
     sm64_permanent_coins.clear();
     sm64_permanent_coin_updates.clear();
@@ -4013,6 +4151,7 @@ void SM64AP_GenericInit() {
     AP_RegisterSlotDataIntCallback("GlobalCapItems", &SM64AP_SetGlobalCapDisplay);
     AP_RegisterSlotDataIntCallback("ShowGlobalCapDisplay", &SM64AP_SetGlobalCapDisplay);
     AP_RegisterSlotDataIntCallback("OneUpChecks", &SM64AP_SetOneUpChecks);
+    AP_RegisterSlotDataIntCallback("FullLevelUnlocks", &SM64AP_SetFullLevelUnlocks);
     AP_RegisterSlotDataIntCallback("WingCapLengthItemCount", &SM64AP_SetWingCapLengthItemCount);
     AP_RegisterSlotDataIntCallback("MetalCapLengthItemCount", &SM64AP_SetMetalCapLengthItemCount);
     AP_RegisterSlotDataIntCallback("VanishCapLengthItemCount", &SM64AP_SetVanishCapLengthItemCount);
@@ -4117,6 +4256,24 @@ void SM64AP_SendItem(int idx) {
     std::ostringstream request;
     request << "[{\"cmd\":\"LocationChecks\",\"locations\":[" << idx << "]}]";
     SM64AP_SendSerializedRequest(request.str());
+}
+
+void SM64AP_CheckLobbyFreeItems(s16 level, s16 area) {
+    static bool sentThisVisit = false;
+    if (level != LEVEL_CASTLE || area != 1) {
+        sentThisVisit = false;
+        return;
+    }
+    if (sentThisVisit || !SM64AP_CanReportProgress()) {
+        return;
+    }
+
+    sentThisVisit = true;
+    for (int locationId : { 4025000, 4025001 }) {
+        if (sm64_checked_coin_output_locations.count(locationId) == 0) {
+            SM64AP_SendItem(locationId);
+        }
+    }
 }
 
 int SM64AP_LastLocationCheckId() {
@@ -4742,7 +4899,47 @@ static u8 SM64AP_ComputeObjectVisualState(struct Object *obj) {
         producer = SM64AP_ValidObjectParent(producer);
     }
 
-    if (behavior_is(obj->behavior, bhvExclamationBox)) {
+    if (behavior_is(obj->behavior, bhvMessagePanel)
+        || behavior_is(obj->behavior, bhvSignOnWall)) {
+        int signKey = gCurrLevelNum * 256 + obj->oBehParams2ndByte;
+        bool targetChecked = false;
+        {
+            std::lock_guard<std::mutex> lock(sm64_sign_hint_mutex);
+            auto hint = sm64_sign_hints.find(signKey);
+            if (hint != sm64_sign_hints.end()) {
+                targetChecked = hint->second.location > 0
+                    && hint->second.locationPlayer == AP_GetPlayerID()
+                    && SM64AP_CheckedLoc(static_cast<int>(hint->second.location));
+                if (!targetChecked) {
+                    for (const std::string &locationName : sm64_known_hint_locations) {
+                        if (hint->second.text.find(" is at " + locationName) != std::string::npos) {
+                            targetChecked = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        hasExhaustibleOutput = true;
+        exhausted = sm64_read_signs.count(signKey) != 0 || targetChecked;
+    } else if (behavior_is(obj->behavior, bhvMontyMole)) {
+        s16 group = 0;
+        if (gCurrLevelNum == LEVEL_HMC) {
+            group = obj->oPosZ < -2500.0f ? 0 : 1;
+        } else if (gCurrLevelNum == LEVEL_TTM) {
+            group = obj->oPosY > -1800.0f ? 0 : 1;
+        }
+        int locId = SM64AP_ResolveOneUpLocation(
+            gCurrLevelNum, gCurrAreaIndex, SM64AP_1UP_SOURCE_MONTY_MOLES,
+            group, 0, 0, 0);
+        hasExhaustibleOutput = true;
+        exhausted = !SM64AP_OneUpChecksEnabled() || SM64AP_OneUpCollected(locId);
+    } else if ((behavior_is(obj->behavior, bhvSmallPenguin)
+                || behavior_is(obj->behavior, bhvPenguinBaby))
+               && gCurrLevelNum == LEVEL_CCM) {
+        hasExhaustibleOutput = true;
+        exhausted = SM64AP_CollectedCourseStar(AP_COURSE_CCM, 1);
+    } else if (behavior_is(obj->behavior, bhvExclamationBox)) {
         int locId = SM64AP_ResolveBlocksanityLocation(
             gCurrLevelNum, gCurrAreaIndex, obj->oBehParams,
             static_cast<s16>(obj->oHomeX), static_cast<s16>(obj->oHomeY),
@@ -5221,9 +5418,14 @@ bool SM64AP_HaveCannon(int courseIdx) {
 
 bool SM64AP_HavePainting(int courseIdx) {
     switch(courseIdx) {
-        case 1:  // BOB painting is always unlocked
         case 5:  // BBH doesn't have a painting
             return true;
+        case COURSE_PSS:
+            return sm64_have_pss_level_unlock;
+        case COURSE_SA:
+            return sm64_have_sa_level_unlock;
+        case COURSE_COTMC:
+            return sm64_have_cotmc_level_unlock;
         case COURSE_RR:
             return sm64_have_rr_level_unlock;
         case COURSE_WMOTR:
@@ -5232,6 +5434,10 @@ bool SM64AP_HavePainting(int courseIdx) {
             // courses are 1-indexed, the items are 0-indexed
             return sm64_have_painting[courseIdx-1];
     }
+}
+
+bool SM64AP_FullLevelUnlocks() {
+    return sm64_full_level_unlocks;
 }
 
 bool SM64AP_HavePaintingForArea(int courseIdx, int areaIdx) {
@@ -6095,6 +6301,7 @@ enum SM64APCheatItemKind {
     SM64AP_CHEAT_ITEM_SIGN_UNLOCK,
     SM64AP_CHEAT_ITEM_ENEMY_UNLOCK,
     SM64AP_CHEAT_ITEM_WIND_UNLOCK,
+    SM64AP_CHEAT_ITEM_LEVEL_FEATURE,
 };
 
 enum SM64APCheatBoolItem {
@@ -6116,6 +6323,11 @@ enum SM64APCheatBoolItem {
     SM64AP_CHEAT_BOOL_VANISH_CAP,
     SM64AP_CHEAT_BOOL_RR_LEVEL_UNLOCK,
     SM64AP_CHEAT_BOOL_WMOTR_LEVEL_UNLOCK,
+    SM64AP_CHEAT_BOOL_BOB_LEVEL_UNLOCK,
+    SM64AP_CHEAT_BOOL_PSS_LEVEL_UNLOCK,
+    SM64AP_CHEAT_BOOL_SA_LEVEL_UNLOCK,
+    SM64AP_CHEAT_BOOL_COTMC_LEVEL_UNLOCK,
+    SM64AP_CHEAT_BOOL_DDD_MOAT_EXIT,
 };
 
 struct SM64APCheatItem {
@@ -6323,6 +6535,11 @@ static void SM64AP_InitCheatItems() {
     SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_BOOL, SM64AP_CHEAT_BOOL_RR_LEVEL_UNLOCK, "RR LEVEL UNLOCK");
     SM64AP_CheatAdd(
         SM64AP_CHEAT_ITEM_BOOL, SM64AP_CHEAT_BOOL_WMOTR_LEVEL_UNLOCK, "WMOTR LEVEL UNLOCK");
+    SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_BOOL, SM64AP_CHEAT_BOOL_BOB_LEVEL_UNLOCK, "BOB LEVEL UNLOCK");
+    SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_BOOL, SM64AP_CHEAT_BOOL_PSS_LEVEL_UNLOCK, "PSS LEVEL UNLOCK");
+    SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_BOOL, SM64AP_CHEAT_BOOL_SA_LEVEL_UNLOCK, "SA LEVEL UNLOCK");
+    SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_BOOL, SM64AP_CHEAT_BOOL_COTMC_LEVEL_UNLOCK, "COTMC LEVEL UNLOCK");
+    SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_BOOL, SM64AP_CHEAT_BOOL_DDD_MOAT_EXIT, "DDD MOAT EXIT");
 
     for (int i = 0; i < 15; i++) {
         SM64AP_CheatAdd(SM64AP_CHEAT_ITEM_CANNON, i, std::string(SM64AP_CHEAT_COURSE_NAMES[i]) + " CANNON");
@@ -6393,6 +6610,28 @@ static void SM64AP_InitCheatItems() {
         SM64AP_CheatAdd(
             SM64AP_CHEAT_ITEM_WIND_UNLOCK, i,
             item.level == -1 ? std::string("GLOBAL ") + item.name : item.name);
+    }
+    static constexpr const char *levelFeatureNames[] = {
+        "FREE STARS", "STAR BLOCKS", "SHELL BLOCKS", "STAR SECRETS", "JET STREAMS"
+    };
+    auto levelFeaturePrefix = [](s16 level) -> const char * {
+        switch (level) {
+            case LEVEL_BOB: return "BOB"; case LEVEL_WF: return "WF";
+            case LEVEL_JRB: return "JRB"; case LEVEL_CCM: return "CCM";
+            case LEVEL_BBH: return "BBH"; case LEVEL_HMC: return "HMC";
+            case LEVEL_LLL: return "LLL"; case LEVEL_SSL: return "SSL";
+            case LEVEL_DDD: return "DDD"; case LEVEL_SL: return "SL";
+            case LEVEL_WDW: return "WDW"; case LEVEL_TTM: return "TTM";
+            case LEVEL_THI: return "THI"; case LEVEL_TTC: return "TTC";
+            case LEVEL_RR: return "RR"; case LEVEL_PSS: return "PSS";
+            default: return "GLOBAL";
+        }
+    };
+    for (int i = 0; i < SM64AP_NUM_LEVEL_FEATURE_UNLOCK_ITEMS; i++) {
+        const SM64APLevelFeatureUnlockItem &item = sm64_level_feature_unlock_items[i];
+        SM64AP_CheatAdd(
+            SM64AP_CHEAT_ITEM_LEVEL_FEATURE, i,
+            std::string(levelFeaturePrefix(item.level)) + " " + levelFeatureNames[item.type]);
     }
     static constexpr const char *globalOneUpNames[SM64AP_NUM_ONE_UP_CATEGORIES] = {
         "GLOBAL FREE 1UPS", "GLOBAL TRIGGER 1UPS", "GLOBAL 1UP BLOCKS", "GLOBAL BUTTERFLIES"
@@ -6498,6 +6737,16 @@ static bool SM64AP_CheatBoolEnabled(int index) {
             return sm64_have_rr_level_unlock;
         case SM64AP_CHEAT_BOOL_WMOTR_LEVEL_UNLOCK:
             return sm64_have_wmotr_level_unlock;
+        case SM64AP_CHEAT_BOOL_BOB_LEVEL_UNLOCK:
+            return sm64_have_painting[COURSE_BOB - 1];
+        case SM64AP_CHEAT_BOOL_PSS_LEVEL_UNLOCK:
+            return sm64_have_pss_level_unlock;
+        case SM64AP_CHEAT_BOOL_SA_LEVEL_UNLOCK:
+            return sm64_have_sa_level_unlock;
+        case SM64AP_CHEAT_BOOL_COTMC_LEVEL_UNLOCK:
+            return sm64_have_cotmc_level_unlock;
+        case SM64AP_CHEAT_BOOL_DDD_MOAT_EXIT:
+            return sm64_have_ddd_moat_exit;
     }
 
     return false;
@@ -6560,6 +6809,21 @@ static void SM64AP_CheatSetBool(int index, bool enabled) {
             break;
         case SM64AP_CHEAT_BOOL_WMOTR_LEVEL_UNLOCK:
             sm64_have_wmotr_level_unlock = enabled;
+            break;
+        case SM64AP_CHEAT_BOOL_BOB_LEVEL_UNLOCK:
+            sm64_have_painting[COURSE_BOB - 1] = enabled;
+            break;
+        case SM64AP_CHEAT_BOOL_PSS_LEVEL_UNLOCK:
+            sm64_have_pss_level_unlock = enabled;
+            break;
+        case SM64AP_CHEAT_BOOL_SA_LEVEL_UNLOCK:
+            sm64_have_sa_level_unlock = enabled;
+            break;
+        case SM64AP_CHEAT_BOOL_COTMC_LEVEL_UNLOCK:
+            sm64_have_cotmc_level_unlock = enabled;
+            break;
+        case SM64AP_CHEAT_BOOL_DDD_MOAT_EXIT:
+            sm64_have_ddd_moat_exit = enabled;
             break;
     }
 }
@@ -6715,6 +6979,9 @@ bool SM64AP_CheatItemEnabled(int index) {
         case SM64AP_CHEAT_ITEM_WIND_UNLOCK:
             return item.index >= 0 && item.index < SM64AP_NUM_WIND_UNLOCK_ITEMS
                 && sm64_have_wind_unlock_items[item.index];
+        case SM64AP_CHEAT_ITEM_LEVEL_FEATURE:
+            return item.index >= 0 && item.index < SM64AP_NUM_LEVEL_FEATURE_UNLOCK_ITEMS
+                && sm64_have_level_feature_unlock_items[item.index];
     }
 
     return false;
@@ -6833,6 +7100,11 @@ void SM64AP_CheatSetItemEnabled(int index, bool enabled) {
         case SM64AP_CHEAT_ITEM_WIND_UNLOCK:
             if (item.index >= 0 && item.index < SM64AP_NUM_WIND_UNLOCK_ITEMS) {
                 sm64_have_wind_unlock_items[item.index] = enabled;
+            }
+            break;
+        case SM64AP_CHEAT_ITEM_LEVEL_FEATURE:
+            if (item.index >= 0 && item.index < SM64AP_NUM_LEVEL_FEATURE_UNLOCK_ITEMS) {
+                sm64_have_level_feature_unlock_items[item.index] = enabled;
             }
             break;
     }
@@ -7081,6 +7353,10 @@ void SM64AP_PrintNext() {
         display_duration = 30;
         AP_CountdownMessage* o_msg = static_cast<AP_CountdownMessage*>(msg);
         print_text(GFX_DIMENSIONS_FROM_LEFT_EDGE(0) + SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, std::to_string(o_msg->timer).c_str());
+    } else if (msg->type == AP_MessageType::Hint) {
+        AP_HintMessage* o_msg = static_cast<AP_HintMessage*>(msg);
+        std::lock_guard<std::mutex> lock(sm64_sign_hint_mutex);
+        sm64_known_hint_locations.insert(o_msg->location);
     } else {
         //print_text(GFX_DIMENSIONS_FROM_LEFT_EDGE(0), (1-0)*20, msg->text.c_str());
     }
