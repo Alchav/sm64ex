@@ -404,9 +404,7 @@ struct SM64APReturnPoint {
     int sourceId;
     s16 pos[3];
     s16 yaw;
-    u32 starSpawnType;
     bool overridePosition;
-    bool reverseStarFacing;
 };
 
 struct SM64APPendingReturnSpawn {
@@ -415,7 +413,7 @@ struct SM64APPendingReturnSpawn {
     u32 spawnType;
     bool active;
     bool overridePosition;
-    bool reverseFacing;
+    bool moveAwayFromWarp;
 };
 
 static std::vector<SM64APReturnPoint> sm64_return_stack;
@@ -2695,28 +2693,20 @@ static void SM64AP_PushSubAreaReturnPoint(
     SM64APReturnPoint point = {};
     point.level = level;
     point.area = area;
-    point.node = returnToAreaStart || !hasSourceNode ? 0x0A : sourceWarpNode;
+    point.node = sourceId == 2 ? 0x0B
+        : returnToAreaStart || !hasSourceNode ? 0x0A : sourceWarpNode;
     point.sourceId = sourceId;
-    bool bowserArenaEntrance = sourceId >= 11 && sourceId <= 13;
-    point.starSpawnType = returnToAreaStart ? MARIO_SPAWN_SPIN_AIRBORNE
-        : bowserArenaEntrance ? MARIO_SPAWN_UNKNOWN_03
-        : hasSourceNode ? get_mario_spawn_type(sourceNode->object)
-                        : MARIO_SPAWN_SPIN_AIRBORNE;
-    if (sourceId == 4) {
-        // THI's Red Coin Cave uses a generic warp trigger, not a pipe.
-        point.starSpawnType = MARIO_SPAWN_AIRBORNE_STAR_COLLECT;
-    }
-    point.reverseStarFacing = bowserArenaEntrance;
-    point.overridePosition = !returnToAreaStart
-        && (!hasSourceNode || sourceId == 2 || sourceId == 4
-            || sourceId == 7 || sourceId == 8 || sourceId == 12);
-    if (sourceId == 2) {
-        // Leave the igloo in the direction its mouth faces. The warp trigger
-        // itself is too close to the entrance for any return animation.
-        point.pos[0] = 781;
-        point.pos[1] = 2250;
-        point.pos[2] = 1548;
-        point.yaw = 0x2000;
+    point.overridePosition = sourceId == 1 || sourceId == 32
+        || (!returnToAreaStart
+            && (!hasSourceNode || sourceId == 4
+                || sourceId == 7 || sourceId == 8 || sourceId == 12));
+    if (sourceId == 1) {
+        // A grounded spawn on the chimney warp immediately re-enters it. Put
+        // Mario on the roof just outside the trigger instead.
+        point.pos[0] = -181;
+        point.pos[1] = 3018;
+        point.pos[2] = -1886;
+        point.yaw = 0;
     } else if (sourceId == 4) {
         // The Huge Island cave entrance is itself a warp trigger. Place Mario
         // farther outside the cave so a return cannot immediately re-enter it.
@@ -2744,9 +2734,15 @@ static void SM64AP_PushSubAreaReturnPoint(
         point.pos[0] = 5900;
         point.pos[1] = 4450;
         point.pos[2] = 99;
-        // Star-style returns reverse this yaw before the pipe-emergence jump,
-        // sending Mario outward onto the fixed strip before the bridge.
         point.yaw = 0x4000;
+    } else if (sourceId == 32) {
+        // TOTWC starts in midair with flight. Returning there without flight
+        // immediately drops Mario out of the course, so use its large bottom
+        // platform as the safe return point for every exit style.
+        point.pos[0] = 700;
+        point.pos[1] = -1740;
+        point.pos[2] = 0;
+        point.yaw = 0;
     } else if (point.overridePosition) {
         point.yaw = gMarioState->faceAngle[1];
         constexpr float angleToRadians = 3.14159265358979323846f / 32768.0f;
@@ -2760,12 +2756,12 @@ static void SM64AP_PushSubAreaReturnPoint(
 
 static void SM64AP_SetPendingReturnSpawn(
     const SM64APReturnPoint &point, u32 spawnType, bool overridePosition,
-    bool reverseFacing = false
+    bool moveAwayFromWarp = false
 ) {
     sm64_pending_return_spawn.active = true;
     sm64_pending_return_spawn.overridePosition = overridePosition;
     sm64_pending_return_spawn.spawnType = spawnType;
-    sm64_pending_return_spawn.reverseFacing = reverseFacing;
+    sm64_pending_return_spawn.moveAwayFromWarp = moveAwayFromWarp;
     sm64_pending_return_spawn.yaw = point.yaw;
     for (int i = 0; i < 3; i++) {
         sm64_pending_return_spawn.pos[i] = point.pos[i];
@@ -2775,13 +2771,11 @@ static void SM64AP_SetPendingReturnSpawn(
 static int SM64AP_ResolveReturnStyle(
     bool isDeathWarp, int warpOp, int returnStyleOverride
 ) {
-    if (returnStyleOverride != SM64AP_RETURN_STYLE_AUTO) {
-        return returnStyleOverride;
-    }
-    if (isDeathWarp || warpOp == WARP_OP_DEATH) {
+    if (returnStyleOverride == SM64AP_RETURN_STYLE_DEATH
+        || isDeathWarp || warpOp == WARP_OP_DEATH) {
         return SM64AP_RETURN_STYLE_DEATH;
     }
-    return SM64AP_RETURN_STYLE_STAR;
+    return SM64AP_RETURN_STYLE_GROUND;
 }
 
 static bool SM64AP_TryReturnToPreviousEntrance(
@@ -2802,21 +2796,11 @@ static bool SM64AP_TryReturnToPreviousEntrance(
     *warpArg = 0;
 
     *destWarpNode = point.node;
-    bool emergeFromReusableEntrance = point.sourceId == 1 || point.sourceId == 2;
     u32 spawnType = MARIO_SPAWN_INSTANT_ACTIVE;
     if (returnStyle == SM64AP_RETURN_STYLE_DEATH) {
-        spawnType = emergeFromReusableEntrance ? MARIO_SPAWN_LAUNCH_DEATH : MARIO_SPAWN_DEATH;
-    } else if (returnStyle == SM64AP_RETURN_STYLE_GROUND && emergeFromReusableEntrance) {
-        // An instant spawn remains inside these reusable entrances and
-        // immediately sends Mario back through them. Emerge from the portal.
-        spawnType = point.starSpawnType;
-    } else if (returnStyle == SM64AP_RETURN_STYLE_STAR) {
-        spawnType = point.starSpawnType != 0
-            ? point.starSpawnType : MARIO_SPAWN_SPIN_AIRBORNE;
+        spawnType = MARIO_SPAWN_DEATH;
     }
-    SM64AP_SetPendingReturnSpawn(
-        point, spawnType, point.overridePosition,
-        returnStyle == SM64AP_RETURN_STYLE_STAR && point.reverseStarFacing);
+    SM64AP_SetPendingReturnSpawn(point, spawnType, point.overridePosition);
     return true;
 }
 
@@ -2832,8 +2816,17 @@ bool SM64AP_ApplyPendingReturnSpawn(s16* pos, s16* angle, u32* spawnType, s32* a
         angle[1] = sm64_pending_return_spawn.yaw;
         angle[2] = 0;
     }
-    if (sm64_pending_return_spawn.reverseFacing) {
-        angle[1] += 0x8000;
+    if (sm64_pending_return_spawn.moveAwayFromWarp) {
+        constexpr float angleToRadians = 3.14159265358979323846f / 32768.0f;
+        float yawRadians = angle[1] * angleToRadians;
+        pos[0] = (s16) (pos[0] - 400.0f * std::sin(yawRadians));
+        pos[2] = (s16) (pos[2] - 400.0f * std::cos(yawRadians));
+
+        struct Surface *floor = nullptr;
+        float floorHeight = find_floor(pos[0], pos[1] + 1000.0f, pos[2], &floor);
+        if (floor != nullptr) {
+            pos[1] = (s16) (floorHeight + 100.0f);
+        }
     }
     *spawnType = sm64_pending_return_spawn.spawnType;
     *actionArg = 0;
@@ -2915,8 +2908,9 @@ void SM64AP_RedirectWarp(s16* curLevel, s16* destLevel, s8* curArea, s16* destAr
         && *curLevel != LEVEL_CASTLE_GROUNDS
         && (*destLevel == LEVEL_CASTLE || *destLevel == LEVEL_CASTLE_COURTYARD
             || *destLevel == LEVEL_CASTLE_GROUNDS)) {
-        // Preserve inter-castle warps; only course exits and deaths return to
-        // the castle entrance used to begin this chain.
+        // Preserve explicit lobby/inter-castle warps. Exit to Lobby clears the
+        // active return before initiating node 0x1F; this also protects other
+        // direct castle transitions from being treated as course exits.
         if (*destLevel == LEVEL_CASTLE
             && (*destWarpNode == 0x1F || *destWarpNode == 0x00)) {
             return;
@@ -2924,8 +2918,19 @@ void SM64AP_RedirectWarp(s16* curLevel, s16* destLevel, s8* curArea, s16* destAr
         sm64_castle_exit_return_active = false;
         *destLevel = sm64_exit_return_to / 10;
         *destArea = sm64_exit_return_to % 10;
+
+        // Use the castle entrance's vanilla return object. Exit Course and
+        // collected stars/keys share the normal entrance-emergence animation;
+        // deaths use the corresponding vanilla death object.
+        int returnStyle = SM64AP_ResolveReturnStyle(
+            isDeathWarp, warpOp, returnStyleOverride);
+        bool returnAsDeath = returnStyle == SM64AP_RETURN_STYLE_DEATH;
+        if (returnAsDeath) {
+            gPauseExitCourseSkipDoneScreen = false;
+        }
         setCourseNodeAndArea(
-            sm64_exit_orig_entrance_level, destWarpNode, isDeathWarp, warpOp);
+            sm64_exit_orig_entrance_level, destWarpNode, returnAsDeath,
+            returnAsDeath ? WARP_OP_DEATH : WARP_OP_STAR_EXIT);
         return;
     }
 

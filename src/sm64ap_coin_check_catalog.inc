@@ -65,18 +65,18 @@ COIN_OUTPUT(UINT64_C(1942189364407472022), 4, 4000061) // Bob-omb Battlefield - 
 COIN_OUTPUT(UINT64_C(1942189364407472022), 5, 4000062) // Bob-omb Battlefield - Flowerbed Coin Ring Coin 6
 COIN_OUTPUT(UINT64_C(1942189364407472022), 6, 4000063) // Bob-omb Battlefield - Flowerbed Coin Ring Coin 7
 COIN_OUTPUT(UINT64_C(1942189364407472022), 7, 4000064) // Bob-omb Battlefield - Flowerbed Coin Ring Coin 8
-COIN_OUTPUT(UINT64_C(3486023878218068749), 0, 4000065) // Bob-omb Battlefield - Switch Tunnel Bob-omb Coin
-COIN_OUTPUT(UINT64_C(1751290671411937382), 0, 4000066) // Bob-omb Battlefield - Main Area Bob-omb 2 Coin
-COIN_OUTPUT(UINT64_C(9040613835018155178), 0, 4000067) // Bob-omb Battlefield - Main Area Bob-omb 3 Coin
-COIN_OUTPUT(UINT64_C(4097689103061210960), 0, 4000068) // Bob-omb Battlefield - Main Area Bob-omb 4 Coin
-COIN_OUTPUT(UINT64_C(4682952730827534688), 0, 4000069) // Bob-omb Battlefield - Main Area Bob-omb 5 Coin
-COIN_OUTPUT(UINT64_C(9186408020462695870), 0, 4000070) // Bob-omb Battlefield - Main Area Bob-omb 6 Coin
-COIN_OUTPUT(UINT64_C(5639944777209499653), 0, 4000071) // Bob-omb Battlefield - Main Area Bob-omb 7 Coin
-COIN_OUTPUT(UINT64_C(3730440739087152723), 0, 4000072) // Bob-omb Battlefield - Main Area Bob-omb 8 Coin
-COIN_OUTPUT(UINT64_C(16279758581557239129), 0, 4000073) // Bob-omb Battlefield - Main Area Bob-omb 9 Coin
-COIN_OUTPUT(UINT64_C(6757103456477611720), 0, 4000074) // Bob-omb Battlefield - Main Area Bob-omb 10 Coin
-COIN_OUTPUT(UINT64_C(14473045918156287876), 0, 4000075) // Bob-omb Battlefield - Main Area Bob-omb 11 Coin
-COIN_OUTPUT(UINT64_C(6760598025969728796), 0, 4000076) // Bob-omb Battlefield - Bubble Cannon Bob-omb Coin
+COIN_OUTPUT(UINT64_C(3486023878218068749), 0, 4000065) // Bob-omb Battlefield - Bob-omb 1 Coin
+COIN_OUTPUT(UINT64_C(1751290671411937382), 0, 4000066) // Bob-omb Battlefield - Bob-omb 2 Coin
+COIN_OUTPUT(UINT64_C(9040613835018155178), 0, 4000067) // Bob-omb Battlefield - Bob-omb 3 Coin
+COIN_OUTPUT(UINT64_C(4097689103061210960), 0, 4000068) // Bob-omb Battlefield - Bob-omb 4 Coin
+COIN_OUTPUT(UINT64_C(4682952730827534688), 0, 4000069) // Bob-omb Battlefield - Bob-omb 5 Coin
+COIN_OUTPUT(UINT64_C(9186408020462695870), 0, 4000070) // Bob-omb Battlefield - Bob-omb 6 Coin
+COIN_OUTPUT(UINT64_C(5639944777209499653), 0, 4000071) // Bob-omb Battlefield - Bob-omb 7 Coin
+COIN_OUTPUT(UINT64_C(3730440739087152723), 0, 4000072) // Bob-omb Battlefield - Bob-omb 8 Coin
+COIN_OUTPUT(UINT64_C(16279758581557239129), 0, 4000073) // Bob-omb Battlefield - Bob-omb 9 Coin
+COIN_OUTPUT(UINT64_C(6757103456477611720), 0, 4000074) // Bob-omb Battlefield - Bob-omb 10 Coin
+COIN_OUTPUT(UINT64_C(14473045918156287876), 0, 4000075) // Bob-omb Battlefield - Bob-omb 11 Coin
+COIN_OUTPUT(UINT64_C(6760598025969728796), 0, 4000076) // Bob-omb Battlefield - Bob-omb 12 Coin
 COIN_OUTPUT(UINT64_C(18246637186801241488), 0, 4000077) // Bob-omb Battlefield - Main Area Goomba 1 Coin
 COIN_OUTPUT(UINT64_C(14275696977088578489), 0, 4000078) // Bob-omb Battlefield - Main Area Goomba 2 Coin
 COIN_OUTPUT(UINT64_C(12491573005431199610), 0, 4000079) // Bob-omb Battlefield - Main Area Goomba 3 Coin
@@ -716,10 +716,10 @@ COIN_OUTPUT(UINT64_C(17676223163915027477), 0, 4006113) // Lethal Lava Land - Bu
 COIN_OUTPUT(UINT64_C(4373150680789659948), 0, 4006114) // Lethal Lava Land - Coin on a Tiny Elevator Tour Platform 1
 COIN_OUTPUT(UINT64_C(4906233388512984418), 0, 4006115) // Lethal Lava Land - Coin on a Tiny Elevator Tour Platform 2
 COIN_OUTPUT(UINT64_C(4284622965933490953), 0, 4006116) // Lethal Lava Land - Coin on a Tiny Elevator Tour Platform 3
-COIN_OUTPUT(UINT64_C(14293553691176029742), 0, 4007000) // Shifting Sand Land - Low Red Coin 1
-COIN_OUTPUT(UINT64_C(9414584811979787400), 0, 4007001) // Shifting Sand Land - Low Red Coin 2
-COIN_OUTPUT(UINT64_C(12943639299368728442), 0, 4007002) // Shifting Sand Land - Low Red Coin 3
-COIN_OUTPUT(UINT64_C(701286945924817480), 0, 4007003) // Shifting Sand Land - Low Red Coin 4
+COIN_OUTPUT(UINT64_C(14293553691176029742), 0, 4007000) // Shifting Sand Land - Tox Box Maze Red Coin
+COIN_OUTPUT(UINT64_C(9414584811979787400), 0, 4007001) // Shifting Sand Land - Oasis Red Coin
+COIN_OUTPUT(UINT64_C(12943639299368728442), 0, 4007002) // Shifting Sand Land - Behind Start Red Coin
+COIN_OUTPUT(UINT64_C(701286945924817480), 0, 4007003) // Shifting Sand Land - Stone Structure Box Red Coin
 COIN_OUTPUT(UINT64_C(5565532866131989376), 0, 4007004) // Shifting Sand Land - High Red Coin 1
 COIN_OUTPUT(UINT64_C(1518695247012517621), 0, 4007005) // Shifting Sand Land - High Red Coin 2
 COIN_OUTPUT(UINT64_C(13021393807147271157), 0, 4007006) // Shifting Sand Land - High Red Coin 3
@@ -765,18 +765,18 @@ COIN_OUTPUT(UINT64_C(4300850242799412640), 0, 4007045) // Shifting Sand Land - P
 COIN_OUTPUT(UINT64_C(3942146596202142873), 0, 4007046) // Shifting Sand Land - Pokey 2 Blue Coin
 COIN_OUTPUT(UINT64_C(17963121787046851742), 0, 4007047) // Shifting Sand Land - Pokey 3 Blue Coin
 COIN_OUTPUT(UINT64_C(5886524149262709939), 0, 4007048) // Shifting Sand Land - Pokey 4 Blue Coin
-COIN_OUTPUT(UINT64_C(43344795016952615), 0, 4007049) // Shifting Sand Land - Goomba 1 Coin
-COIN_OUTPUT(UINT64_C(6097095007594835318), 0, 4007050) // Shifting Sand Land - Goomba 2 Coin
-COIN_OUTPUT(UINT64_C(4022216162794892250), 0, 4007051) // Shifting Sand Land - Goomba 3 Coin
-COIN_OUTPUT(UINT64_C(5485399327836507287), 0, 4007052) // Shifting Sand Land - Goomba 4 Coin
-COIN_OUTPUT(UINT64_C(1459529140049847000), 0, 4007053) // Shifting Sand Land - Goomba 5 Coin
-COIN_OUTPUT(UINT64_C(7516316606886145399), 0, 4007054) // Shifting Sand Land - Goomba 6 Coin
-COIN_OUTPUT(UINT64_C(12766528834923420576), 0, 4007055) // Shifting Sand Land - Goomba 7 Coin
-COIN_OUTPUT(UINT64_C(2752510711232817070), 0, 4007056) // Shifting Sand Land - Goomba 8 Coin
-COIN_OUTPUT(UINT64_C(6101657939476842103), 0, 4007057) // Shifting Sand Land - Goomba 9 Coin
-COIN_OUTPUT(UINT64_C(9720479807183085505), 0, 4007058) // Shifting Sand Land - Goomba 10 Coin
-COIN_OUTPUT(UINT64_C(12955379337663324672), 0, 4007059) // Shifting Sand Land - Goomba 11 Coin
-COIN_OUTPUT(UINT64_C(5514813420208284585), 0, 4007060) // Shifting Sand Land - Goomba 12 Coin
+COIN_OUTPUT(UINT64_C(43344795016952615), 0, 4007049) // Shifting Sand Land - Pyramid Pole Goomba 2 Coin
+COIN_OUTPUT(UINT64_C(6097095007594835318), 0, 4007050) // Shifting Sand Land - Pyramid Right Side Goomba 4 Coin
+COIN_OUTPUT(UINT64_C(4022216162794892250), 0, 4007051) // Shifting Sand Land - Pyramid Left Side Goomba 1 Coin
+COIN_OUTPUT(UINT64_C(5485399327836507287), 0, 4007052) // Shifting Sand Land - Pyramid Pole Goomba 1 Coin
+COIN_OUTPUT(UINT64_C(1459529140049847000), 0, 4007053) // Shifting Sand Land - Pyramid Wire Grid Goomba Coin
+COIN_OUTPUT(UINT64_C(7516316606886145399), 0, 4007054) // Shifting Sand Land - Pyramid Left Side Goomba 2 Coin
+COIN_OUTPUT(UINT64_C(12766528834923420576), 0, 4007055) // Shifting Sand Land - Pyramid Right Side Goomba 3 Coin
+COIN_OUTPUT(UINT64_C(2752510711232817070), 0, 4007056) // Shifting Sand Land - Pyramid Right Side Goomba 1 Coin
+COIN_OUTPUT(UINT64_C(6101657939476842103), 0, 4007057) // Shifting Sand Land - Pyramid Right Side Goomba 2 Coin
+COIN_OUTPUT(UINT64_C(9720479807183085505), 0, 4007058) // Shifting Sand Land - Stone Structure Goomba 3 Coin
+COIN_OUTPUT(UINT64_C(12955379337663324672), 0, 4007059) // Shifting Sand Land - Stone Structure Goomba 2 Coin
+COIN_OUTPUT(UINT64_C(5514813420208284585), 0, 4007060) // Shifting Sand Land - Stone Structure Goomba 1 Coin
 COIN_OUTPUT(UINT64_C(17968119346047888145), 0, 4007061) // Shifting Sand Land - Pyramid Coin Ring under the First Wire Grid Coin 1
 COIN_OUTPUT(UINT64_C(17968119346047888145), 1, 4007062) // Shifting Sand Land - Pyramid Coin Ring under the First Wire Grid Coin 2
 COIN_OUTPUT(UINT64_C(17968119346047888145), 2, 4007063) // Shifting Sand Land - Pyramid Coin Ring under the First Wire Grid Coin 3
@@ -1917,11 +1917,11 @@ COIN_OUTPUT(UINT64_C(2296003268571355058), 0, 4021060) // Bowser in the Dark Wor
 COIN_OUTPUT(UINT64_C(2296003268571355058), 1, 4021061) // Bowser in the Dark World - 3-Coin Block Coin 2
 COIN_OUTPUT(UINT64_C(2296003268571355058), 2, 4021062) // Bowser in the Dark World - 3-Coin Block Coin 3
 COIN_OUTPUT(UINT64_C(16852399680575977893), 0, 4021063) // Bowser in the Dark World - Goomba 5 Coin
-COIN_OUTPUT(UINT64_C(14457488283235740946), 0, 4021064) // Bowser in the Dark World - Goomba 4 Coin
+COIN_OUTPUT(UINT64_C(14457488283235740946), 0, 4021064) // Bowser in the Dark World - Goomba 6 Coin
 COIN_OUTPUT(UINT64_C(15839200708750137779), 0, 4021065) // Bowser in the Dark World - Goomba 3 Coin
 COIN_OUTPUT(UINT64_C(1397384776058338619), 0, 4021066) // Bowser in the Dark World - Goomba 1 Coin
 COIN_OUTPUT(UINT64_C(12002212610561012219), 0, 4021067) // Bowser in the Dark World - Goomba 2 Coin
-COIN_OUTPUT(UINT64_C(17144970819127907761), 0, 4021068) // Bowser in the Dark World - Goomba 6 Coin
+COIN_OUTPUT(UINT64_C(17144970819127907761), 0, 4021068) // Bowser in the Dark World - Goomba 4 Coin
 COIN_OUTPUT(UINT64_C(2386272961115352555), 0, 4021069) // Bowser in the Dark World - Moving Platform Coin 1
 COIN_OUTPUT(UINT64_C(12949919814256795088), 0, 4021070) // Bowser in the Dark World - Moving Platform Coin 2
 COIN_OUTPUT(UINT64_C(3044938082056275524), 0, 4021071) // Bowser in the Dark World - Moving Platform Coin 3
@@ -1940,14 +1940,14 @@ COIN_OUTPUT(UINT64_C(16175581653826391905), 1, 4022011) // Bowser in the Fire Se
 COIN_OUTPUT(UINT64_C(16175581653826391905), 2, 4022012) // Bowser in the Fire Sea - Sinking Platform Coin 3
 COIN_OUTPUT(UINT64_C(16175581653826391905), 3, 4022013) // Bowser in the Fire Sea - Sinking Platform Coin 4
 COIN_OUTPUT(UINT64_C(16175581653826391905), 4, 4022014) // Bowser in the Fire Sea - Sinking Platform Coin 5
-COIN_OUTPUT(UINT64_C(17857525755295352848), 0, 4022015) // Bowser in the Fire Sea - Coin Ring by the First Bully Coin 1
-COIN_OUTPUT(UINT64_C(17857525755295352848), 1, 4022016) // Bowser in the Fire Sea - Coin Ring by the First Bully Coin 2
-COIN_OUTPUT(UINT64_C(17857525755295352848), 2, 4022017) // Bowser in the Fire Sea - Coin Ring by the First Bully Coin 3
-COIN_OUTPUT(UINT64_C(17857525755295352848), 3, 4022018) // Bowser in the Fire Sea - Coin Ring by the First Bully Coin 4
-COIN_OUTPUT(UINT64_C(17857525755295352848), 4, 4022019) // Bowser in the Fire Sea - Coin Ring by the First Bully Coin 5
-COIN_OUTPUT(UINT64_C(17857525755295352848), 5, 4022020) // Bowser in the Fire Sea - Coin Ring by the First Bully Coin 6
-COIN_OUTPUT(UINT64_C(17857525755295352848), 6, 4022021) // Bowser in the Fire Sea - Coin Ring by the First Bully Coin 7
-COIN_OUTPUT(UINT64_C(17857525755295352848), 7, 4022022) // Bowser in the Fire Sea - Coin Ring by the First Bully Coin 8
+COIN_OUTPUT(UINT64_C(17857525755295352848), 0, 4022015) // Bowser in the Fire Sea - Wire Platform Coin Ring Coin 1
+COIN_OUTPUT(UINT64_C(17857525755295352848), 1, 4022016) // Bowser in the Fire Sea - Wire Platform Coin Ring Coin 2
+COIN_OUTPUT(UINT64_C(17857525755295352848), 2, 4022017) // Bowser in the Fire Sea - Wire Platform Coin Ring Coin 3
+COIN_OUTPUT(UINT64_C(17857525755295352848), 3, 4022018) // Bowser in the Fire Sea - Wire Platform Coin Ring Coin 4
+COIN_OUTPUT(UINT64_C(17857525755295352848), 4, 4022019) // Bowser in the Fire Sea - Wire Platform Coin Ring Coin 5
+COIN_OUTPUT(UINT64_C(17857525755295352848), 5, 4022020) // Bowser in the Fire Sea - Wire Platform Coin Ring Coin 6
+COIN_OUTPUT(UINT64_C(17857525755295352848), 6, 4022021) // Bowser in the Fire Sea - Wire Platform Coin Ring Coin 7
+COIN_OUTPUT(UINT64_C(17857525755295352848), 7, 4022022) // Bowser in the Fire Sea - Wire Platform Coin Ring Coin 8
 COIN_OUTPUT(UINT64_C(1594898432222632689), 0, 4022023) // Bowser in the Fire Sea - First Bully Coin
 COIN_OUTPUT(UINT64_C(1195418959348995378), 0, 4022024) // Bowser in the Fire Sea - Starting Area Goomba 1 Coin
 COIN_OUTPUT(UINT64_C(18215143470214485682), 0, 4022025) // Bowser in the Fire Sea - Starting Area Goomba 2 Coin
@@ -1960,14 +1960,14 @@ COIN_OUTPUT(UINT64_C(6956349668307959266), 1, 4022031) // Bowser in the Fire Sea
 COIN_OUTPUT(UINT64_C(6956349668307959266), 2, 4022032) // Bowser in the Fire Sea - Coin Line after the Elevator Coin 3
 COIN_OUTPUT(UINT64_C(6956349668307959266), 3, 4022033) // Bowser in the Fire Sea - Coin Line after the Elevator Coin 4
 COIN_OUTPUT(UINT64_C(6956349668307959266), 4, 4022034) // Bowser in the Fire Sea - Coin Line after the Elevator Coin 5
-COIN_OUTPUT(UINT64_C(244540455553905853), 0, 4022035) // Bowser in the Fire Sea - Wire Platform Coin Ring Coin 1
-COIN_OUTPUT(UINT64_C(244540455553905853), 1, 4022036) // Bowser in the Fire Sea - Wire Platform Coin Ring Coin 2
-COIN_OUTPUT(UINT64_C(244540455553905853), 2, 4022037) // Bowser in the Fire Sea - Wire Platform Coin Ring Coin 3
-COIN_OUTPUT(UINT64_C(244540455553905853), 3, 4022038) // Bowser in the Fire Sea - Wire Platform Coin Ring Coin 4
-COIN_OUTPUT(UINT64_C(244540455553905853), 4, 4022039) // Bowser in the Fire Sea - Wire Platform Coin Ring Coin 5
-COIN_OUTPUT(UINT64_C(244540455553905853), 5, 4022040) // Bowser in the Fire Sea - Wire Platform Coin Ring Coin 6
-COIN_OUTPUT(UINT64_C(244540455553905853), 6, 4022041) // Bowser in the Fire Sea - Wire Platform Coin Ring Coin 7
-COIN_OUTPUT(UINT64_C(244540455553905853), 7, 4022042) // Bowser in the Fire Sea - Wire Platform Coin Ring Coin 8
+COIN_OUTPUT(UINT64_C(244540455553905853), 0, 4022035) // Bowser in the Fire Sea - Coin Ring by the First Bully Coin 1
+COIN_OUTPUT(UINT64_C(244540455553905853), 1, 4022036) // Bowser in the Fire Sea - Coin Ring by the First Bully Coin 2
+COIN_OUTPUT(UINT64_C(244540455553905853), 2, 4022037) // Bowser in the Fire Sea - Coin Ring by the First Bully Coin 3
+COIN_OUTPUT(UINT64_C(244540455553905853), 3, 4022038) // Bowser in the Fire Sea - Coin Ring by the First Bully Coin 4
+COIN_OUTPUT(UINT64_C(244540455553905853), 4, 4022039) // Bowser in the Fire Sea - Coin Ring by the First Bully Coin 5
+COIN_OUTPUT(UINT64_C(244540455553905853), 5, 4022040) // Bowser in the Fire Sea - Coin Ring by the First Bully Coin 6
+COIN_OUTPUT(UINT64_C(244540455553905853), 6, 4022041) // Bowser in the Fire Sea - Coin Ring by the First Bully Coin 7
+COIN_OUTPUT(UINT64_C(244540455553905853), 7, 4022042) // Bowser in the Fire Sea - Coin Ring by the First Bully Coin 8
 COIN_OUTPUT(UINT64_C(7991062555025761001), 0, 4022043) // Bowser in the Fire Sea - Vertical Coin Line after the Second Block Coin 1
 COIN_OUTPUT(UINT64_C(7991062555025761001), 1, 4022044) // Bowser in the Fire Sea - Vertical Coin Line after the Second Block Coin 2
 COIN_OUTPUT(UINT64_C(7991062555025761001), 2, 4022045) // Bowser in the Fire Sea - Vertical Coin Line after the Second Block Coin 3
@@ -3466,7 +3466,7 @@ COIN_SEMANTIC_SOURCE(UINT64_C(9766074890907063255), 0, "castle_lobby_coins", 1)
 COIN_SEMANTIC_SOURCE(UINT64_C(9769717905674846357), 0, "ttm_slide_single_coins", 1)
 COIN_SEMANTIC_SOURCE(UINT64_C(9816707947596141169), 0, "lll_volcano_first_ridge_coin_line", 1)
 COIN_SEMANTIC_SOURCE(UINT64_C(9826967964898510821), 0, "vcutm_end_marker_coins", 1)
-COIN_SEMANTIC_SOURCE(UINT64_C(9867811889095465718), 0, "red_area_red_coins", 2)
+COIN_SEMANTIC_SOURCE(UINT64_C(9867811889095465718), 0, "red_area_movement_red_coin", 2)
 COIN_SEMANTIC_SOURCE(UINT64_C(9867811889095465718), 0, "red_coin", 2)
 COIN_SEMANTIC_SOURCE(UINT64_C(9916294783131193146), 0, "red_coin", 2)
 COIN_SEMANTIC_SOURCE(UINT64_C(9916294783131193146), 0, "totwc_red_coins", 2)

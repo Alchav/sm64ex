@@ -1140,6 +1140,11 @@ s32 play_mode_paused(void) {
         if (gDebugLevelSelect) {
             fade_into_special_warp(-9, 1);
         } else {
+            // "Exit to Lobby" intentionally abandons every randomized
+            // entrance return. Do this before initiating the lobby warp so it
+            // cannot be mistaken for a course exit from the current chain.
+            SM64AP_ClearReturnStack();
+            gPauseExitCourseSkipDoneScreen = FALSE;
             initiate_warp(LEVEL_CASTLE, 1, 0x1F, 0);
             fade_into_special_warp(0, 0);
             gSavedCourseNum = COURSE_NONE;
@@ -1161,8 +1166,6 @@ s32 play_mode_paused(void) {
                 sSM64APReturnStyleOverride = SM64AP_RETURN_STYLE_GROUND;
                 if (gPlayer1Controller->buttonDown & L_TRIG) {
                     sSM64APReturnStyleOverride = SM64AP_RETURN_STYLE_DEATH;
-                } else if (gPlayer1Controller->buttonDown & R_TRIG) {
-                    sSM64APReturnStyleOverride = SM64AP_RETURN_STYLE_STAR;
                 }
                 sDelayedWarpOp = WARP_OP_STAR_EXIT;
                 // The F1 node supplies a destination for stages without F0, but this is still a
