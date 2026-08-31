@@ -558,7 +558,7 @@ s32 act_ledge_grab(struct MarioState *m) {
 
     if (m->input & INPUT_UNKNOWN_10) {
         if (m->marioObj->oInteractStatus & INT_STATUS_MARIO_UNK1) {
-            m->hurtCounter += (m->flags & MARIO_CAP_ON_HEAD) ? 12 : 18;
+            m->hurtCounter += SM64AP_ApplyDamageDodge((m->flags & MARIO_CAP_ON_HEAD) ? 12 : 18);
         }
         return let_go_of_ledge(m);
     }

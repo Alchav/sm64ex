@@ -1,6 +1,7 @@
 #include <ultra64.h>
 
 #include "sm64ap.h"
+#include "sm64ap_visual.h"
 #include "hud.h"
 
 #include "actors/common1.h"
@@ -3980,6 +3981,9 @@ s16 render_course_complete_screen(void) {
 s16 render_menus_and_dialogs() {
     s16 mode = 0;
 
+    // Object exhaustion shading is tracked by the PC renderer. Menus are not
+    // object display lists, so explicitly return to the normal shader state.
+    gDPNoOpTag(gDisplayListHead++, SM64AP_VISUAL_TAG_BASE | SM64AP_VISUAL_NORMAL);
     create_dl_ortho_matrix();
 
     if (gMenuMode != -1) {
@@ -4009,5 +4013,6 @@ s16 render_menus_and_dialogs() {
         render_dialog_entries();
         gDialogColorFadeTimer = (s16) gDialogColorFadeTimer + 0x1000;
     }
+    gDPNoOpTag(gDisplayListHead++, SM64AP_VISUAL_TAG_BASE | SM64AP_VISUAL_NORMAL);
     return mode;
 }

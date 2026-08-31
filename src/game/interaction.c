@@ -700,7 +700,7 @@ u32 take_damage_from_interact_object(struct MarioState *m) {
         damage = 0;
     }
 
-    m->hurtCounter += 4 * damage;
+    m->hurtCounter += SM64AP_ApplyDamageDodge(4 * damage);
 
     queue_rumble_data(5, 80);
     set_camera_shake_from_hit(shake);
@@ -1954,7 +1954,7 @@ void update_arch_delayed_items(struct MarioState *m) {
             break;
         case SM64AP_ID_ELEC_TRAP:
             interact = spawn_object(m->marioObj, MODEL_NONE, bhvSmallParticleBubbles);
-            m->hurtCounter += 4; // hurt for one pip
+            m->hurtCounter += SM64AP_ApplyDamageDodge(4); // hurt for one pip
             interact_shock(m, INTERACT_SHOCK, interact);
             break;
         case SM64AP_ID_CHUCK_TRAP:
@@ -2059,7 +2059,7 @@ void check_death_barrier(struct MarioState *m) {
 void check_lava_boost(struct MarioState *m) {
     if (!(m->action & ACT_FLAG_RIDING_SHELL) && m->pos[1] < m->floorHeight + 10.0f) {
         if (!(m->flags & MARIO_METAL_CAP)) {
-            m->hurtCounter += (m->flags & MARIO_CAP_ON_HEAD) ? 12 : 18;
+            m->hurtCounter += SM64AP_ApplyDamageDodge((m->flags & MARIO_CAP_ON_HEAD) ? 12 : 18);
         }
 
         update_mario_sound_and_camera(m);

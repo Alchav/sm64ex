@@ -1127,7 +1127,7 @@ s32 drop_and_set_mario_action(struct MarioState *m, u32 action, u32 actionArg) {
  * Increment Mario's hurt counter and set a new action.
  */
 s32 hurt_and_set_mario_action(struct MarioState *m, u32 action, u32 actionArg, s16 hurtCounter) {
-    m->hurtCounter = hurtCounter;
+    m->hurtCounter = SM64AP_ApplyDamageDodge(hurtCounter);
 
     return set_mario_action(m, action, actionArg);
 }
@@ -1508,6 +1508,7 @@ void update_mario_health(struct MarioState *m) {
         // When already healing or hurting Mario, Mario's HP is not changed any more here.
         if (((u32) m->healCounter | (u32) m->hurtCounter) == 0) {
             if ((m->input & INPUT_IN_POISON_GAS) && ((m->action & ACT_FLAG_INTANGIBLE) == 0)) {
+                SM64AP_ResetUnderwaterBreathTimer();
                 if (((m->flags & MARIO_METAL_CAP) == 0) && (gDebugLevelSelect == 0)) {
                     m->health -= 4;
                 }
@@ -1519,10 +1520,13 @@ void update_mario_health(struct MarioState *m) {
                     // when in snow terrains lose 3 health.
                     // If using the debug level select, do not lose any HP to water.
                     if ((m->pos[1] >= (m->waterLevel - 140)) && !terrainIsSnow) {
+                        SM64AP_ResetUnderwaterBreathTimer();
                         m->health += 0x1A;
                     } else if (gDebugLevelSelect == 0) {
-                        m->health -= (terrainIsSnow ? 3 : 1);
+                        m->health -= SM64AP_ScaleUnderwaterHealthDrain(terrainIsSnow ? 3 : 1);
                     }
+                } else {
+                    SM64AP_ResetUnderwaterBreathTimer();
                 }
             }
         }

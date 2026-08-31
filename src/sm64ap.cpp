@@ -109,8 +109,11 @@ static constexpr int SM64AP_LIVE_OBJECT_RECONCILE_DELAY = 3;
 bool sm64_have_wingcap = false;
 bool sm64_have_metalcap = false;
 bool sm64_have_vanishcap = false;
-int sm64_cap_length_items[3] = { 0, 0, 0 };
-int sm64_cap_length_item_counts[3] = { 0, 0, 0 };
+int sm64_progressive_cap_length = 0;
+int sm64_progressive_underwater_breath = 0;
+int sm64_progressive_damage_dodge = 0;
+int sm64_underwater_breath_accumulator = 0;
+bool sm64_underwater_breath_active = false;
 int sm64_bowser_arena_bombs[3] = { 0, 0, 0 };
 int sm64_bowser_hit_requirements[3] = { 1, 1, 3 };
 int sm64_bowser_in_the_sky_stage_collapse_hits = 2;
@@ -1116,14 +1119,14 @@ void SM64AP_RecvItem(int64_t idx, bool notify) {
         case SM64AP_ID_VANISHCAP:
             sm64_have_vanishcap = true;
             break;
-        case SM64AP_ID_PROGRESSIVE_WING_CAP_LENGTH:
-            sm64_cap_length_items[0]++;
+        case SM64AP_ID_PROGRESSIVE_CAP_LENGTH:
+            sm64_progressive_cap_length++;
             break;
-        case SM64AP_ID_PROGRESSIVE_METAL_CAP_LENGTH:
-            sm64_cap_length_items[1]++;
+        case SM64AP_ID_PROGRESSIVE_UNDERWATER_BREATH:
+            sm64_progressive_underwater_breath++;
             break;
-        case SM64AP_ID_PROGRESSIVE_VANISH_CAP_LENGTH:
-            sm64_cap_length_items[2]++;
+        case SM64AP_ID_PROGRESSIVE_DAMAGE_DODGE:
+            sm64_progressive_damage_dodge++;
             break;
         case SM64AP_ID_LEVEL_CAP(0) ... SM64AP_ID_LEVEL_CAP(SM64AP_NUM_LEVEL_CAPS - 1):
             sm64_have_level_caps[idx - SM64AP_LEVEL_CAP_OFFSET] = true;
@@ -3241,33 +3244,41 @@ static void SM64AP_SetFullLevelUnlocks(int enabled) {
     sm64_full_level_unlocks = enabled != 0;
 }
 
-static void SM64AP_SetWingCapLengthItemCount(int count) {
-    sm64_cap_length_item_counts[0] = std::max(0, count);
-}
-
-static void SM64AP_SetMetalCapLengthItemCount(int count) {
-    sm64_cap_length_item_counts[1] = std::max(0, count);
-}
-
-static void SM64AP_SetVanishCapLengthItemCount(int count) {
-    sm64_cap_length_item_counts[2] = std::max(0, count);
-}
-
 u16 SM64AP_ScaleCapTimer(u32 capFlag, u16 baseTimer) {
-    int capIndex;
-    switch (capFlag) {
-        case MARIO_WING_CAP: capIndex = 0; break;
-        case MARIO_METAL_CAP: capIndex = 1; break;
-        case MARIO_VANISH_CAP: capIndex = 2; break;
-        default: return baseTimer;
-    }
-
-    int totalItems = sm64_cap_length_item_counts[capIndex];
-    if (totalItems <= 0) {
+    if (capFlag != MARIO_WING_CAP && capFlag != MARIO_METAL_CAP && capFlag != MARIO_VANISH_CAP) {
         return baseTimer;
     }
-    int receivedItems = std::min(sm64_cap_length_items[capIndex], totalItems);
-    return static_cast<u16>(baseTimer + (baseTimer * receivedItems) / totalItems);
+    u64 scaledTimer = static_cast<u64>(baseTimer)
+        * static_cast<u64>(100 + std::max(0, sm64_progressive_cap_length)) / 100;
+    return static_cast<u16>(std::min<u64>(scaledTimer, std::numeric_limits<u16>::max()));
+}
+
+s16 SM64AP_ScaleUnderwaterHealthDrain(s16 vanillaDrain) {
+    int interval = 100 + std::max(0, sm64_progressive_underwater_breath);
+    if (!sm64_underwater_breath_active) {
+        sm64_underwater_breath_accumulator = interval - 100;
+        sm64_underwater_breath_active = true;
+    }
+    sm64_underwater_breath_accumulator += 100;
+    if (sm64_underwater_breath_accumulator < interval) {
+        return 0;
+    }
+    sm64_underwater_breath_accumulator -= interval;
+    return vanillaDrain;
+}
+
+void SM64AP_ResetUnderwaterBreathTimer() {
+    sm64_underwater_breath_accumulator = 0;
+    sm64_underwater_breath_active = false;
+}
+
+s16 SM64AP_ApplyDamageDodge(s16 hurtCounter) {
+    for (int roll = 0; roll < sm64_progressive_damage_dodge && hurtCounter > 0; roll++) {
+        if (random_float() < 0.01f) {
+            hurtCounter = std::max<s16>(0, hurtCounter - 4);
+        }
+    }
+    return hurtCounter;
 }
 
 void SM64AP_SetBuddyChecks(int enabled) {
@@ -4230,7 +4241,10 @@ void SM64AP_ResetItems() {
     sm64_have_wingcap = false;
     sm64_have_metalcap = false;
     sm64_have_vanishcap = false;
-    std::fill_n(sm64_cap_length_items, 3, 0);
+    sm64_progressive_cap_length = 0;
+    sm64_progressive_underwater_breath = 0;
+    sm64_progressive_damage_dodge = 0;
+    SM64AP_ResetUnderwaterBreathTimer();
     for (int i = 0; i < 3; i++) {
         sm64_bowser_arena_bombs[i] = 0;
     }
@@ -4407,9 +4421,6 @@ void SM64AP_GenericInit() {
     AP_RegisterSlotDataIntCallback("ShowGlobalCapDisplay", &SM64AP_SetGlobalCapDisplay);
     AP_RegisterSlotDataIntCallback("OneUpChecks", &SM64AP_SetOneUpChecks);
     AP_RegisterSlotDataIntCallback("FullLevelUnlocks", &SM64AP_SetFullLevelUnlocks);
-    AP_RegisterSlotDataIntCallback("WingCapLengthItemCount", &SM64AP_SetWingCapLengthItemCount);
-    AP_RegisterSlotDataIntCallback("MetalCapLengthItemCount", &SM64AP_SetMetalCapLengthItemCount);
-    AP_RegisterSlotDataIntCallback("VanishCapLengthItemCount", &SM64AP_SetVanishCapLengthItemCount);
     AP_RegisterSlotDataIntCallback("BuddyChecks", &SM64AP_SetBuddyChecks);
     AP_RegisterSlotDataIntCallback("BowserStage1UpBehavior", &SM64AP_SetBowserStageOneUpBehavior);
     AP_RegisterSlotDataIntCallback("EasyButterflies", &SM64AP_SetEasyButterflies);
@@ -4575,16 +4586,14 @@ bool SM64AP_ShouldSpawnGrandStar() {
         return false;
     }
 
-    if (SM64AP_CheckedLoc(SM64AP_ID_BITS_GRAND_STAR)) {
-        return false;
-    }
-
     int stageFlag = 1 << stageIndex;
     return (sm64_finished_bowser_flags | stageFlag) == 0b111;
 }
 
 void SM64AP_CollectGrandStar() {
-    if (sm64_completion_type == 1) {
+    // The Grand Star location belongs to BITS. Other arenas can produce a Grand
+    // Star to play the ending for the all-Bowser goal, but have no location there.
+    if (sm64_completion_type == 1 && gCurrLevelNum == LEVEL_BOWSER_3) {
         SM64AP_SendItem(SM64AP_ID_BITS_GRAND_STAR);
     }
 }
@@ -5203,6 +5212,48 @@ static int SM64AP_CurrentBowserStageIndex() {
     }
 }
 
+static bool SM64AP_BlueCoinSwitchExhausted(struct Object *blueCoinSwitch) {
+    bool foundCoin = false;
+
+    for (int coinIndex = 0; coinIndex < OBJECT_POOL_CAPACITY; coinIndex++) {
+        struct Object *coin = &gObjectPool[coinIndex];
+        if (!(coin->activeFlags & ACTIVE_FLAG_ACTIVE)
+            || !behavior_is(coin->behavior, bhvHiddenBlueCoin)) {
+            continue;
+        }
+
+        struct Object *assignedSwitch = coin->oHiddenBlueCoinSwitch;
+        if (assignedSwitch == nullptr) {
+            f32 nearestDistance = std::numeric_limits<f32>::max();
+            for (int switchIndex = 0; switchIndex < OBJECT_POOL_CAPACITY; switchIndex++) {
+                struct Object *candidate = &gObjectPool[switchIndex];
+                if (!(candidate->activeFlags & ACTIVE_FLAG_ACTIVE)
+                    || !behavior_is(candidate->behavior, bhvBlueCoinSwitch)) {
+                    continue;
+                }
+                f32 dx = coin->oPosX - candidate->oPosX;
+                f32 dy = coin->oPosY - candidate->oPosY;
+                f32 dz = coin->oPosZ - candidate->oPosZ;
+                f32 distance = dx * dx + dy * dy + dz * dz;
+                if (distance < nearestDistance) {
+                    nearestDistance = distance;
+                    assignedSwitch = candidate;
+                }
+            }
+        }
+
+        if (assignedSwitch != blueCoinSwitch) {
+            continue;
+        }
+        foundCoin = true;
+        if (!SM64AP_PermanentCoinSourceExhausted(coin->apCoinSourceId)) {
+            return false;
+        }
+    }
+
+    return foundCoin;
+}
+
 static u8 SM64AP_ComputeObjectVisualState(struct Object *obj) {
     // Orange counters inherit their spawning coin's source metadata, but are UI feedback rather than coin outputs.
     if (behavior_is(obj->behavior, bhvOrangeNumber)) {
@@ -5229,6 +5280,9 @@ static u8 SM64AP_ComputeObjectVisualState(struct Object *obj) {
         || behavior_is(obj->behavior, bhvSignOnWall)) {
         hasExhaustibleOutput = true;
         exhausted = SM64AP_IsSignExhausted(gCurrLevelNum, obj->oBehParams2ndByte);
+    } else if (behavior_is(obj->behavior, bhvBlueCoinSwitch)) {
+        hasExhaustibleOutput = true;
+        exhausted = SM64AP_BlueCoinSwitchExhausted(obj);
     } else if (behavior_is(obj->behavior, bhvBowser)) {
         int stageIndex = SM64AP_CurrentBowserStageIndex();
         hasExhaustibleOutput = stageIndex >= 0;
@@ -6699,7 +6753,6 @@ enum SM64APCheatItemKind {
     SM64AP_CHEAT_ITEM_COIN_UNLOCK,
     SM64AP_CHEAT_ITEM_ONE_UP_UNLOCK,
     SM64AP_CHEAT_ITEM_BOWSER_ARENA_BOMB,
-    SM64AP_CHEAT_ITEM_CAP_LENGTH,
     SM64AP_CHEAT_ITEM_SIGN_UNLOCK,
     SM64AP_CHEAT_ITEM_ENEMY_UNLOCK,
     SM64AP_CHEAT_ITEM_WIND_UNLOCK,
@@ -7363,11 +7416,6 @@ bool SM64AP_CheatItemEnabled(int index) {
             }
             return arena >= 0 && arena < 3 && sm64_bowser_arena_bombs[arena] >= bomb;
         }
-        case SM64AP_CHEAT_ITEM_CAP_LENGTH: {
-            int cap = item.index / 10000;
-            int count = item.index % 10000;
-            return cap >= 0 && cap < 3 && sm64_cap_length_items[cap] >= count;
-        }
         case SM64AP_CHEAT_ITEM_SIGN_UNLOCK:
             if (item.index == SM64AP_ID_GLOBAL_SIGNS) {
                 return sm64_have_global_signs;
@@ -7469,18 +7517,6 @@ void SM64AP_CheatSetItemEnabled(int index, bool enabled) {
                     SM64AP_SetMin(sm64_bowser_arena_bombs[arena], value);
                 } else if (sm64_bowser_arena_bombs[arena] >= bomb) {
                     sm64_bowser_arena_bombs[arena] = value;
-                }
-            }
-            break;
-        }
-        case SM64AP_CHEAT_ITEM_CAP_LENGTH: {
-            int cap = item.index / 10000;
-            int count = item.index % 10000;
-            if (cap >= 0 && cap < 3) {
-                if (enabled) {
-                    SM64AP_SetMin(sm64_cap_length_items[cap], count);
-                } else if (sm64_cap_length_items[cap] >= count) {
-                    sm64_cap_length_items[cap] = count - 1;
                 }
             }
             break;
