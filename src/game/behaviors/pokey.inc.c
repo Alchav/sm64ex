@@ -162,6 +162,8 @@ static void pokey_act_uninitialized(void) {
             bodyPart = spawn_object_relative(i, 0, -i * 120 + 480, 0, o, partModel, bhvPokeyBodyPart);
 
             if (bodyPart != NULL) {
+                // Every body part belongs to the parent Pokey's single blue-coin output.
+                SM64AP_PreserveInheritedPermanentCoinSource(bodyPart);
                 obj_scale(bodyPart, 3.0f);
             }
 

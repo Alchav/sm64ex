@@ -635,12 +635,15 @@ static void obj_die_if_health_non_positive(void) {
                         coin->activeFlags = ACTIVE_FLAG_DEACTIVATED;
                     }
                 } else if (collectedMask == 0x1F) {
+                    SM64AP_MarkPermanentAggregateCoinSource(o, 5);
                     struct Object *coin = spawn_object(o, MODEL_BLUE_COIN, bhvMrIBlueCoin);
                     SM64AP_AssignPermanentCoinSlot(coin, o, 0, 5);
                     coin->apCoinSlotCount = 5;
                 } else {
                     // A partially exhausted Huge Goomba emits only its
-                    // remaining one-value slots.
+                    // remaining one-value slots, but still counts as using
+                    // the aggregate blue-coin route.
+                    SM64AP_MarkPermanentAggregateCoinSource(o, 5);
                     o->oNumLootCoins = 5;
                     obj_spawn_loot_yellow_coins(o, 5, 20.0f);
                 }

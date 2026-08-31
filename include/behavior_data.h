@@ -280,6 +280,8 @@ extern const BehaviorScript bhvFloorTrapInCastle[];
 extern const BehaviorScript bhvTree[];
 extern const BehaviorScript bhvSparkle[];
 extern const BehaviorScript bhvSparkleSpawn[];
+extern const BehaviorScript bhvAPTriggerSparkle[];
+extern const BehaviorScript bhvAPTriggerSparkleSpawn[];
 extern const BehaviorScript bhvSparkleParticleSpawner[];
 extern const BehaviorScript bhvSomeGfx[];
 extern const BehaviorScript bhvScuttlebug[];

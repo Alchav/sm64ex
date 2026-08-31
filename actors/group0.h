@@ -4,6 +4,7 @@
 #include "types.h"
 
 extern Gfx *geo_ap_sparkle_color(s32 callContext, struct GraphNode *node, void *context);
+extern const GeoLayout ap_trigger_sparkles_animation_geo[];
 
 // bubble
 extern const GeoLayout bubble_geo[];

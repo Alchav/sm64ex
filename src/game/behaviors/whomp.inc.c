@@ -175,7 +175,7 @@ void whomp_on_ground(void) {
                     numCoins += o->oNumLootCoins;
                 }
                 o->oNumLootCoins = numCoins;
-                obj_spawn_loot_yellow_coins(o, numCoins, 20.0f);
+                obj_spawn_whomp_loot_yellow_coins(o, numCoins, 20.0f);
                 o->oAction = 8;
             } else {
                 cur_obj_spawn_loot_coin_at_mario_pos();

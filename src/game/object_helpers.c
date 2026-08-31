@@ -1641,23 +1641,14 @@ void cur_obj_set_hurtbox_radius_and_height(f32 radius, f32 height) {
     o->hurtboxHeight = height;
 }
 
-static void obj_spawn_loot_coins(struct Object *obj, s32 numCoins, f32 sp30,
-                                    const BehaviorScript *coinBehavior,
-                                    s16 posJitter, s16 model) {
+static void obj_spawn_loot_coins_in_range(struct Object *obj, s32 numCoins, f32 sp30,
+                                          const BehaviorScript *coinBehavior,
+                                          s16 posJitter, s16 model,
+                                          s32 firstSlot, s32 slotCount) {
     s32 i;
     f32 spawnHeight;
     struct Surface *floor;
     struct Object *coin;
-    s32 slotCount = numCoins;
-
-    if (obj->oNumLootCoins > slotCount) {
-        slotCount = obj->oNumLootCoins;
-    }
-    if (obj_has_behavior(obj, bhvSmallWhomp)) {
-        slotCount = 10;
-    } else if (obj_has_behavior(obj, bhvGoomba) && obj->oGoombaSize == GOOMBA_SIZE_HUGE) {
-        slotCount = 5;
-    }
 
     spawnHeight = find_floor(obj->oPosX, obj->oPosY, obj->oPosZ, &floor);
     if (obj->oPosY - spawnHeight > 100.0f) {
@@ -1672,8 +1663,8 @@ static void obj_spawn_loot_coins(struct Object *obj, s32 numCoins, f32 sp30,
         obj->oNumLootCoins--;
 
         coin = spawn_object(obj, model, coinBehavior);
-        if (!SM64AP_AssignPermanentCoinOutput(
-                obj, coin, model == MODEL_BLUE_COIN ? 5 : 1, slotCount)) {
+        if (!SM64AP_AssignPermanentCoinOutputRange(
+                obj, coin, model == MODEL_BLUE_COIN ? 5 : 1, firstSlot, slotCount)) {
             coin->activeFlags = ACTIVE_FLAG_DEACTIVATED;
             continue;
         }
@@ -1683,12 +1674,44 @@ static void obj_spawn_loot_coins(struct Object *obj, s32 numCoins, f32 sp30,
     }
 }
 
+static void obj_spawn_loot_coins(struct Object *obj, s32 numCoins, f32 sp30,
+                                 const BehaviorScript *coinBehavior,
+                                 s16 posJitter, s16 model) {
+    s32 slotCount = numCoins;
+
+    if (obj->oNumLootCoins > slotCount) {
+        slotCount = obj->oNumLootCoins;
+    }
+    if (obj_has_behavior(obj, bhvSmallWhomp)) {
+        slotCount = 10;
+    } else if (obj_has_behavior(obj, bhvGoomba) && obj->oGoombaSize == GOOMBA_SIZE_HUGE) {
+        slotCount = 5;
+    }
+
+    obj_spawn_loot_coins_in_range(
+        obj, numCoins, sp30, coinBehavior, posJitter, model, 0, slotCount);
+}
+
 void obj_spawn_loot_blue_coins(struct Object *obj, s32 numCoins, f32 sp28, s16 posJitter) {
     obj_spawn_loot_coins(obj, numCoins, sp28, bhvBlueCoinJumping, posJitter, MODEL_BLUE_COIN);
 }
 
 void obj_spawn_loot_yellow_coins(struct Object *obj, s32 numCoins, f32 sp28) {
     obj_spawn_loot_coins(obj, numCoins, sp28, bhvSingleCoinGetsSpawned, 0, MODEL_YELLOW_COIN);
+}
+
+void obj_spawn_whomp_loot_yellow_coins(struct Object *obj, s32 numCoins, f32 sp28) {
+    s32 groundPoundCoins = numCoins < 5 ? numCoins : 5;
+    s32 leftoverJumpCoins = numCoins - groundPoundCoins;
+
+    // Slots 0-4 are obtainable by ordinary jumps. Ground Pound has its own
+    // five outputs in slots 5-9 and may also release the jump coins left behind.
+    obj_spawn_loot_coins_in_range(
+        obj, groundPoundCoins, sp28, bhvSingleCoinGetsSpawned,
+        0, MODEL_YELLOW_COIN, 5, 5);
+    obj_spawn_loot_coins_in_range(
+        obj, leftoverJumpCoins, sp28, bhvSingleCoinGetsSpawned,
+        0, MODEL_YELLOW_COIN, 0, 5);
 }
 
 static void obj_collect_coin_value_without_contact(UNUSED struct Object *source, s32 coinValue) {
@@ -1746,6 +1769,26 @@ void obj_collect_loot_coins_without_contact(struct Object *obj, s32 numCoins) {
     obj->oNumLootCoins = 0;
 }
 
+s32 obj_reached_mario_death_surface_with_floor(struct Object *obj, struct Surface *floor,
+                                               f32 floorHeight, s32 isGrounded) {
+    if (floor == NULL) {
+        return FALSE;
+    }
+
+    if (is_position_below_death_barrier(floor, obj->oPosY, floorHeight)) {
+        return TRUE;
+    }
+
+    return isGrounded && SURFACE_IS_LETHAL_QUICKSAND(floor->type);
+}
+
+s32 obj_reached_mario_death_surface(struct Object *obj, s32 isGrounded) {
+    struct Surface *floor = NULL;
+    f32 floorHeight = find_floor(obj->oPosX, obj->oPosY, obj->oPosZ, &floor);
+
+    return obj_reached_mario_death_surface_with_floor(obj, floor, floorHeight, isGrounded);
+}
+
 void cur_obj_spawn_loot_coin_at_mario_pos(void) {
     struct Object *coin;
     if (o->oNumLootCoins <= 0) {
@@ -1755,7 +1798,7 @@ void cur_obj_spawn_loot_coin_at_mario_pos(void) {
     o->oNumLootCoins--;
 
     coin = spawn_object(o, MODEL_YELLOW_COIN, bhvSingleCoinGetsSpawned);
-    if (!SM64AP_AssignPermanentCoinOutput(o, coin, 1, o->apCoinSlotCount > 0 ? o->apCoinSlotCount : 10)) {
+    if (!SM64AP_AssignPermanentCoinOutputRange(o, coin, 1, 0, 5)) {
         coin->activeFlags = ACTIVE_FLAG_DEACTIVATED;
         return;
     }
@@ -1922,21 +1965,7 @@ static s32 cur_obj_collect_loot_if_no_despawn_void(void) {
         return TRUE;
     }
 
-    if (o->oFloor != NULL && SURFACE_IS_LETHAL_QUICKSAND(o->oFloor->type)
-        && (o->oMoveFlags & OBJ_MOVE_MASK_ON_GROUND)) {
-        obj_collect_loot_coins_without_contact(o, o->oNumLootCoins);
-        obj_mark_for_deletion(o);
-        return TRUE;
-    }
-
-    if (o->oFloor != NULL && o->oFloor->type == SURFACE_DEATH_PLANE
-        && o->oPosY < o->oFloorHeight + 2048.0f) {
-        obj_collect_loot_coins_without_contact(o, o->oNumLootCoins);
-        obj_mark_for_deletion(o);
-        return TRUE;
-    }
-
-    if (o->oFloor == NULL && o->oFloorHeight < -10000.0f && o->oPosY <= -10000.0f) {
+    if (obj_reached_mario_death_surface(o, o->oMoveFlags & OBJ_MOVE_MASK_ON_GROUND)) {
         obj_collect_loot_coins_without_contact(o, o->oNumLootCoins);
         obj_mark_for_deletion(o);
         return TRUE;

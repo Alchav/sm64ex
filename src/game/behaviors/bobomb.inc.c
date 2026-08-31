@@ -102,14 +102,18 @@ void bobomb_act_chase_mario(void) {
 static s32 bobomb_check_floor_or_void_death(s16 collisionFlags) {
     s32 previousAction = o->oAction;
 
-    obj_check_floor_death(collisionFlags, sObjFloor);
-    if (o->oAction != previousAction) {
+    // Record the Bob-omb's coin before vanilla floor handling changes its
+    // action and returns early on death-plane surfaces.
+    if (SM64AP_NoDespawn()
+        && obj_reached_mario_death_surface_with_floor(
+            o, sObjFloor, sObjFloorHeight, collisionFlags & OBJ_COL_FLAG_GROUNDED)) {
+        obj_collect_loot_coins_without_contact(o, o->oNumLootCoins);
+        o->oAction = BOBOMB_ACT_DEATH_PLANE_DEATH;
         return TRUE;
     }
 
-    if (sObjFloor == NULL && o->oPosY <= -10000.0f) {
-        obj_collect_loot_coins_without_contact(o, o->oNumLootCoins);
-        o->oAction = BOBOMB_ACT_DEATH_PLANE_DEATH;
+    obj_check_floor_death(collisionFlags, sObjFloor);
+    if (o->oAction != previousAction) {
         return TRUE;
     }
 
@@ -253,7 +257,14 @@ void curr_obj_random_blink(s32 *blinkTimer) {
 
 void bhv_bobomb_loop(void) {
     s8 dustPeriodMinus1;
-    if (is_point_within_radius_of_mario(o->oPosX, o->oPosY, o->oPosZ, 4000) != 0) {
+    s32 isNearMario = is_point_within_radius_of_mario(o->oPosX, o->oPosY, o->oPosZ, 4000) != 0;
+    s32 mustFinishFall = SM64AP_NoDespawn()
+        && o->oHeldState == HELD_FREE
+        && o->oVelY < 0.0f;
+
+    // TTM Bob-ombs can fall outside their normal update radius before reaching
+    // the death plane. Keep advancing that fall so their coin can be recorded.
+    if (isNearMario || mustFinishFall) {
         switch (o->oHeldState) {
             case HELD_FREE:
                 bobomb_free_loop();

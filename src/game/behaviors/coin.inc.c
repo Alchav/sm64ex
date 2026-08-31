@@ -55,38 +55,12 @@ static void bhv_coin_collect_without_contact(void) {
     obj_mark_for_deletion(o);
 }
 
-static bool bhv_coin_should_collect_on_no_despawn_floor(void) {
+static bool bhv_coin_should_collect_on_no_despawn_death_surface(void) {
     if (!SM64AP_NoDespawn()) {
         return false;
     }
 
-    if (o->oFloor != NULL) {
-        if (SURFACE_IS_LETHAL_QUICKSAND(o->oFloor->type)) {
-            return true;
-        }
-
-        switch (o->oFloor->type) {
-            case SURFACE_BURNING:
-            case SURFACE_DEATH_PLANE:
-                return true;
-            default:
-                break;
-        }
-    }
-
-    return o->oFloorHeight < -10000.0f && o->oPosY <= o->oFloorHeight;
-}
-
-static bool bhv_coin_should_collect_on_no_despawn_death_barrier(void) {
-    if (!SM64AP_NoDespawn()) {
-        return false;
-    }
-
-    if (o->oFloor != NULL && o->oFloor->type == SURFACE_DEATH_PLANE) {
-        return o->oPosY < o->oFloorHeight + 2048.0f;
-    }
-
-    return o->oFloor == NULL && o->oFloorHeight < -10000.0f && o->oPosY <= -10000.0f;
+    return obj_reached_mario_death_surface(o, o->oMoveFlags & OBJ_MOVE_MASK_ON_GROUND);
 }
 
 s32 bhv_coin_sparkles_init(void) {
@@ -162,7 +136,7 @@ void bhv_coin_loop(void) {
     cur_obj_update_floor_and_walls();
     cur_obj_if_hit_wall_bounce_away();
     cur_obj_move_standard(-62);
-    if (bhv_coin_should_collect_on_no_despawn_death_barrier()) {
+    if (bhv_coin_should_collect_on_no_despawn_death_surface()) {
         bhv_coin_collect_without_contact();
         return;
     }
@@ -188,10 +162,6 @@ void bhv_coin_loop(void) {
     if (o->oVelY < 0)
         cur_obj_become_tangible();
     if (o->oMoveFlags & OBJ_MOVE_LANDED) {
-        if (bhv_coin_should_collect_on_no_despawn_floor()) {
-            bhv_coin_collect_without_contact();
-            return;
-        }
 #ifndef VERSION_JP
         if (o->oMoveFlags & (OBJ_MOVE_ABOVE_DEATH_BARRIER | OBJ_MOVE_ABOVE_LAVA)) {
 #else

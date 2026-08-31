@@ -134,6 +134,12 @@ static std::map<int, SM64APSignHint> sm64_sign_hints;
 static std::mutex sm64_sign_hint_mutex;
 static std::set<int> sm64_read_signs;
 static std::set<std::string> sm64_known_hint_locations;
+static std::string sm64_exhausted_signs_key;
+static bool sm64_exhausted_signs_storage_received = false;
+static std::string sm64_server_hints_key;
+static std::string sm64_server_hints_raw;
+static AP_GetServerDataRequest sm64_server_hints_request = {};
+static bool sm64_server_hints_storage_received = false;
 static std::vector<u8> sm64_sign_dialog_text = { DIALOG_CHAR_TERMINATOR };
 static struct DialogEntry sm64_sign_dialog_entry = { 1, 4, 30, 200, sm64_sign_dialog_text.data() };
 static s16 sm64_active_sign_dialog = -1;
@@ -141,6 +147,7 @@ static s16 sm64_active_sign_dialog = -1;
 struct SM64APPermanentCoinRecord {
     u8 course;
     u8 value;
+    bool aggregate;
 };
 
 struct SM64APCoinOutputCatalogEntry {
@@ -208,6 +215,7 @@ static bool sm64_permanent_coin_sources_dirty = false;
 static std::set<int> sm64_checked_coin_output_locations;
 static std::set<std::pair<u64, u8>> sm64_pending_coin_output_checks;
 static std::set<u64> sm64_pending_coin_completion_checks;
+static int sm64_finished_bowser_flags = 0;
 static bool sm64_finished_bowser_storage_received = false;
 static bool sm64_moat_storage_received = false;
 static bool sm64_permanent_coin_storage_received = false;
@@ -471,6 +479,7 @@ struct SM64APPendingReturnSpawn {
 
 static std::vector<SM64APReturnPoint> sm64_return_stack;
 static SM64APPendingReturnSpawn sm64_pending_return_spawn = {};
+static bool sm64_track_sub_area_return_stack = false;
 
 std::map<int,int> map_boxid_locid;
 
@@ -2388,7 +2397,8 @@ bool SM64AP_ShouldSpawnLevelObject(s16 level, s16, s16 model, s16 x, s16 y, s16 
         return false;
     }
 
-    if (behavior_is(behavior, bhvHiddenStarTrigger)
+    if ((behavior_is(behavior, bhvHiddenStar)
+            || behavior_is(behavior, bhvHiddenStarTrigger))
         && !SM64AP_HaveLevelFeature(SM64AP_LEVEL_FEATURE_STAR_SECRET, level)) {
         return false;
     }
@@ -2575,7 +2585,7 @@ void setCourseNodeAndArea(int coursenum, s16* oldnode, bool isDeathWarp, int war
             *oldnode = (isDeathWarp || warpOp != WARP_OP_STAR_EXIT) ? 0x25 : 0x24;
             return;
         case LEVEL_VCUTM:
-            *oldnode = (isDeathWarp || warpOp != WARP_OP_STAR_EXIT) ? 0x06 : 0x07;
+            *oldnode = (isDeathWarp || warpOp != WARP_OP_STAR_EXIT) ? 0x06 : 0x08;
             return;
         case LEVEL_BITFS:
         case LEVEL_BOWSER_2:
@@ -2819,13 +2829,20 @@ static void SM64AP_PushSubAreaReturnPoint(
     SM64APReturnPoint point = {};
     point.level = level;
     point.area = area;
-    point.node = sourceId == 2 ? 0x0B
-        : returnToAreaStart || !hasSourceNode ? 0x0A : sourceWarpNode;
+    if (sourceId >= 11 && sourceId <= 13) {
+        // Each Bowser stage uses node 0x0C as its vanilla safe landing point
+        // after dying to Bowser. Node 0x0B is the arena entrance and would
+        // immediately send Mario back into the fight.
+        point.node = 0x0C;
+    } else {
+        point.node = sourceId == 2 ? 0x0B
+            : returnToAreaStart || !hasSourceNode ? 0x0A : sourceWarpNode;
+    }
     point.sourceId = sourceId;
-    point.overridePosition = sourceId == 1 || sourceId == 32
+    point.overridePosition = sourceId == 1 || sourceId == 23 || sourceId == 32
         || (!returnToAreaStart
             && (!hasSourceNode || sourceId == 4
-                || sourceId == 7 || sourceId == 8 || sourceId == 12));
+                || sourceId == 7 || sourceId == 8 || sourceId == 9));
     if (sourceId == 1) {
         // A grounded spawn on the chimney warp immediately re-enters it. Put
         // Mario on the roof just outside the trigger instead.
@@ -2847,19 +2864,19 @@ static void SM64AP_PushSubAreaReturnPoint(
         point.pos[1] = 300;
         point.pos[2] = 1400;
         point.yaw = 0;
-    } else if (sourceId == 8) {
-        // The pyramid's side warp sits at the bottom of a slope and immediately
-        // catches arrivals. Return to the flat ground above the entrance.
+    } else if (sourceId == 8 || sourceId == 9) {
+        // Both pyramid openings can immediately catch an arrival. Return both
+        // entrances to the same flat ground above the side entrance.
         point.pos[0] = -2048;
         point.pos[1] = 300;
         point.pos[2] = 768;
         point.yaw = 0;
-    } else if (sourceId == 12) {
-        // The BITFS arena warp occupies the funnel itself. Return to the solid
-        // platform before it so no return style can fall back into the funnel.
-        point.pos[0] = 5900;
-        point.pos[1] = 4450;
-        point.pos[2] = 99;
+    } else if (sourceId == 23) {
+        // The TTM slide-exit podium is the warp itself. Return to the flat
+        // platform beside it so Exit Course cannot immediately re-enter.
+        point.pos[0] = -6500;
+        point.pos[1] = -1800;
+        point.pos[2] = -4812;
         point.yaw = 0x4000;
     } else if (sourceId == 32) {
         // TOTWC starts in midair with flight. Returning there without flight
@@ -2878,6 +2895,16 @@ static void SM64AP_PushSubAreaReturnPoint(
         point.pos[2] = (s16) (gMarioState->pos[2] - 300.0f * std::cos(yawRadians));
     }
     sm64_return_stack.push_back(point);
+}
+
+static bool SM64AP_CollapseReturnStackToZone(s16 level, s8 area) {
+    for (auto point = sm64_return_stack.begin(); point != sm64_return_stack.end(); point++) {
+        if (point->level == level && point->area == area) {
+            sm64_return_stack.erase(point, sm64_return_stack.end());
+            return true;
+        }
+    }
+    return false;
 }
 
 static void SM64AP_SetPendingReturnSpawn(
@@ -3021,8 +3048,14 @@ void SM64AP_RedirectWarp(s16* curLevel, s16* destLevel, s8* curArea, s16* destAr
 
     auto subArea = map_sub_area_entrances.find(subAreaSource);
     if (subAreaSource != 0 && subArea != map_sub_area_entrances.end()) {
-        SM64AP_PushSubAreaReturnPoint(
-            subAreaSource, *curLevel, *curArea, sourceWarpNode);
+        if (sm64_track_sub_area_return_stack) {
+            s16 destinationLevel = (subArea->second >> 16) & 0xFF;
+            s8 destinationArea = (subArea->second >> 8) & 0xFF;
+            if (!SM64AP_CollapseReturnStackToZone(destinationLevel, destinationArea)) {
+                SM64AP_PushSubAreaReturnPoint(
+                    subAreaSource, *curLevel, *curArea, sourceWarpNode);
+            }
+        }
         SM64AP_DiscoverSubAreaEntrance(subAreaSource);
         SM64AP_ApplySubAreaDestination(
             subArea->second, destLevel, destArea, destWarpNode, warpArg);
@@ -3159,6 +3192,10 @@ void SM64AP_SetCourseMap(std::map<int,int> map) {
 
 void SM64AP_SetSubAreaMap(std::map<int,int> map) {
     map_sub_area_entrances = map;
+    sm64_track_sub_area_return_stack = std::any_of(
+        map_sub_area_entrances.begin(), map_sub_area_entrances.end(),
+        [](const auto &connection) { return connection.first >= 1000; });
+    SM64AP_ClearReturnStack();
 }
 
 static void SM64AP_ApplyStartInventory() {
@@ -3329,6 +3366,28 @@ static bool SM64AP_ParseJsonInt(const std::string &text, std::string::size_type 
     return true;
 }
 
+static bool SM64AP_ParseJsonInt64(
+    const std::string &text, std::string::size_type &pos, int64_t &value
+) {
+    SM64AP_SkipJsonWhitespace(text, pos);
+    if (pos >= text.size()) return false;
+
+    int64_t sign = 1;
+    if (text[pos] == '-') {
+        sign = -1;
+        pos++;
+    }
+    if (pos >= text.size() || !std::isdigit((unsigned char) text[pos])) return false;
+
+    int64_t parsed = 0;
+    while (pos < text.size() && std::isdigit((unsigned char) text[pos])) {
+        parsed = parsed * 10 + text[pos] - '0';
+        pos++;
+    }
+    value = parsed * sign;
+    return true;
+}
+
 static bool SM64AP_ParseJsonQuotedIntKey(const std::string &text, std::string::size_type &pos, int &key) {
     SM64AP_SkipJsonWhitespace(text, pos);
     if (pos >= text.size() || text[pos] != '"') {
@@ -3494,6 +3553,52 @@ static bool SM64AP_ParseJsonString(
     return false;
 }
 
+static bool SM64AP_SkipJsonValue(
+    const std::string &text, std::string::size_type &pos
+) {
+    SM64AP_SkipJsonWhitespace(text, pos);
+    if (pos >= text.size()) return false;
+
+    if (text[pos] == '"') {
+        std::string ignored;
+        return SM64AP_ParseJsonString(text, pos, ignored);
+    }
+    if (text[pos] == '{' || text[pos] == '[') {
+        char open = text[pos++];
+        char close = open == '{' ? '}' : ']';
+        while (true) {
+            SM64AP_SkipJsonWhitespace(text, pos);
+            if (pos >= text.size()) return false;
+            if (text[pos] == close) {
+                pos++;
+                return true;
+            }
+            if (open == '{') {
+                std::string ignoredKey;
+                if (!SM64AP_ParseJsonString(text, pos, ignoredKey)
+                    || !SM64AP_ConsumeJsonChar(text, pos, ':')) {
+                    return false;
+                }
+            }
+            if (!SM64AP_SkipJsonValue(text, pos)) return false;
+            SM64AP_SkipJsonWhitespace(text, pos);
+            if (pos < text.size() && text[pos] == ',') {
+                pos++;
+            } else if (pos >= text.size() || text[pos] != close) {
+                return false;
+            }
+        }
+    }
+
+    std::string::size_type start = pos;
+    while (pos < text.size()
+        && text[pos] != ',' && text[pos] != '}' && text[pos] != ']'
+        && !std::isspace((unsigned char) text[pos])) {
+        pos++;
+    }
+    return pos > start;
+}
+
 static void SM64AP_SetSignHintData(std::string rawHints) {
     std::map<int, SM64APSignHint> parsed;
     std::string::size_type pos = 0;
@@ -3506,7 +3611,7 @@ static void SM64AP_SetSignHintData(std::string rawHints) {
         }
 
         int key = 0;
-        int location = 0;
+        int64_t location = 0;
         int entrance = 0;
         int locationPlayer = 0;
         std::string hint;
@@ -3515,7 +3620,7 @@ static void SM64AP_SetSignHintData(std::string rawHints) {
             || !SM64AP_ConsumeJsonChar(rawHints, pos, '[')
             || !SM64AP_ParseJsonString(rawHints, pos, hint)
             || !SM64AP_ConsumeJsonChar(rawHints, pos, ',')
-            || !SM64AP_ParseJsonInt(rawHints, pos, location)) {
+            || !SM64AP_ParseJsonInt64(rawHints, pos, location)) {
             return;
         }
         SM64AP_SkipJsonWhitespace(rawHints, pos);
@@ -3543,6 +3648,143 @@ static void SM64AP_SetSignHintData(std::string rawHints) {
 
     std::lock_guard<std::mutex> lock(sm64_sign_hint_mutex);
     sm64_sign_hints = std::move(parsed);
+}
+
+static void SM64AP_LoadExhaustedSigns(const std::string &rawSigns) {
+    std::set<int> parsed;
+    std::string::size_type pos = 0;
+    if (!SM64AP_ConsumeJsonChar(rawSigns, pos, '{')) return;
+    while (true) {
+        SM64AP_SkipJsonWhitespace(rawSigns, pos);
+        if (pos < rawSigns.size() && rawSigns[pos] == '}') {
+            pos++;
+            break;
+        }
+
+        int signKey = 0;
+        int exhausted = 0;
+        if (!SM64AP_ParseJsonQuotedIntKey(rawSigns, pos, signKey)
+            || !SM64AP_ConsumeJsonChar(rawSigns, pos, ':')
+            || !SM64AP_ParseJsonInt(rawSigns, pos, exhausted)) {
+            return;
+        }
+        if (exhausted != 0) parsed.insert(signKey);
+
+        SM64AP_SkipJsonWhitespace(rawSigns, pos);
+        if (pos < rawSigns.size() && rawSigns[pos] == ',') {
+            pos++;
+        } else if (pos >= rawSigns.size() || rawSigns[pos] != '}') {
+            return;
+        }
+    }
+    SM64AP_SkipJsonWhitespace(rawSigns, pos);
+    if (pos != rawSigns.size()) return;
+
+    std::lock_guard<std::mutex> lock(sm64_sign_hint_mutex);
+    sm64_read_signs.insert(parsed.begin(), parsed.end());
+    sm64_exhausted_signs_storage_received = true;
+}
+
+static void SM64AP_MarkSignExhausted(int signKey) {
+    {
+        std::lock_guard<std::mutex> lock(sm64_sign_hint_mutex);
+        if (!sm64_read_signs.insert(signKey).second) return;
+    }
+    if (sm64_exhausted_signs_key.empty()
+        || AP_GetConnectionStatus() != AP_ConnectionStatus::Authenticated) {
+        return;
+    }
+
+    std::ostringstream request;
+    request << "[{\"cmd\":\"Set\",\"key\":\"" << sm64_exhausted_signs_key
+            << "\",\"operations\":[{\"operation\":\"update\",\"value\":{\""
+            << signKey << "\":1}}],\"default\":{},\"want_reply\":false}]";
+    SM64AP_SendSerializedRequest(request.str());
+}
+
+static void SM64AP_MarkSignsForHintLocation(const std::string &locationName) {
+    std::vector<int> signKeys;
+    {
+        std::lock_guard<std::mutex> lock(sm64_sign_hint_mutex);
+        sm64_known_hint_locations.insert(locationName);
+        for (const auto &entry : sm64_sign_hints) {
+            if (entry.second.text.find(" is at " + locationName) != std::string::npos) {
+                signKeys.push_back(entry.first);
+            }
+        }
+    }
+    for (int signKey : signKeys) SM64AP_MarkSignExhausted(signKey);
+}
+
+static void SM64AP_LoadServerHints(const std::string &rawHints) {
+    sm64_server_hints_storage_received = true;
+    std::vector<std::pair<int, int64_t>> hintedLocations;
+    std::string::size_type pos = 0;
+    SM64AP_SkipJsonWhitespace(rawHints, pos);
+    if (pos >= rawHints.size() || rawHints.compare(pos, 4, "null") == 0) return;
+    if (!SM64AP_ConsumeJsonChar(rawHints, pos, '[')) return;
+
+    while (true) {
+        SM64AP_SkipJsonWhitespace(rawHints, pos);
+        if (pos < rawHints.size() && rawHints[pos] == ']') break;
+        if (!SM64AP_ConsumeJsonChar(rawHints, pos, '{')) return;
+
+        int findingPlayer = 0;
+        int64_t location = 0;
+        bool haveFindingPlayer = false;
+        bool haveLocation = false;
+        while (true) {
+            SM64AP_SkipJsonWhitespace(rawHints, pos);
+            if (pos >= rawHints.size()) return;
+            if (rawHints[pos] == '}') {
+                pos++;
+                break;
+            }
+
+            std::string field;
+            if (!SM64AP_ParseJsonString(rawHints, pos, field)
+                || !SM64AP_ConsumeJsonChar(rawHints, pos, ':')) {
+                return;
+            }
+            if (field == "finding_player") {
+                if (!SM64AP_ParseJsonInt(rawHints, pos, findingPlayer)) return;
+                haveFindingPlayer = true;
+            } else if (field == "location") {
+                if (!SM64AP_ParseJsonInt64(rawHints, pos, location)) return;
+                haveLocation = true;
+            } else if (!SM64AP_SkipJsonValue(rawHints, pos)) {
+                return;
+            }
+
+            SM64AP_SkipJsonWhitespace(rawHints, pos);
+            if (pos < rawHints.size() && rawHints[pos] == ',') {
+                pos++;
+            } else if (pos >= rawHints.size() || rawHints[pos] != '}') {
+                return;
+            }
+        }
+        if (haveFindingPlayer && haveLocation) {
+            hintedLocations.emplace_back(findingPlayer, location);
+        }
+
+        SM64AP_SkipJsonWhitespace(rawHints, pos);
+        if (pos < rawHints.size() && rawHints[pos] == ',') pos++;
+        else if (pos >= rawHints.size() || rawHints[pos] != ']') return;
+    }
+
+    std::vector<int> signKeys;
+    {
+        std::lock_guard<std::mutex> lock(sm64_sign_hint_mutex);
+        for (const auto &hinted : hintedLocations) {
+            for (const auto &sign : sm64_sign_hints) {
+                if (sign.second.locationPlayer == hinted.first
+                    && sign.second.location == hinted.second) {
+                    signKeys.push_back(sign.first);
+                }
+            }
+        }
+    }
+    for (int signKey : signKeys) SM64AP_MarkSignExhausted(signKey);
 }
 
 static int SM64AP_EncodeSignCharacter(char c) {
@@ -3652,7 +3894,7 @@ void SM64AP_ReadSign(s16 level, s16 dialog) {
 
     SM64AP_EncodeSignHint(hint.text);
     sm64_active_sign_dialog = dialog;
-    sm64_read_signs.insert(level * 256 + dialog);
+    SM64AP_MarkSignExhausted(level * 256 + dialog);
     if (hint.location > 0 && hint.locationPlayer > 0
         && AP_GetConnectionStatus() == AP_ConnectionStatus::Authenticated) {
         std::ostringstream request;
@@ -3999,7 +4241,9 @@ void SM64AP_ResetItems() {
 
 void SM64AP_SetReplyHandler(AP_SetReply reply) {
     if (reply.key == AP_GetPrivateServerDataPrefix() + "FinishedBowser") {
+        sm64_finished_bowser_flags = *(int *) reply.value;
         sm64_finished_bowser_storage_received = true;
+        SM64AP_RequestLiveObjectReconcile();
         switch (sm64_completion_type) {
             case 0: // Only BitS
                 if ((*(int*)(reply.value) & 0b100) > 0) AP_StoryComplete();
@@ -4020,6 +4264,10 @@ void SM64AP_SetReplyHandler(AP_SetReply reply) {
     } else if (reply.key == sm64_permanent_coin_ledger_key) {
         SM64AP_LoadPermanentCoins(*(std::string *) reply.value);
         sm64_permanent_coin_storage_received = true;
+    } else if (reply.key == sm64_exhausted_signs_key) {
+        SM64AP_LoadExhaustedSigns(*(std::string *) reply.value);
+    } else if (reply.key == sm64_server_hints_key) {
+        SM64AP_LoadServerHints(*(std::string *) reply.value);
     } else {
         std::string coinScorePrefix = AP_GetPrivateServerDataPrefix() + "CoinHighScore;";
         if (reply.key.compare(0, coinScorePrefix.size(), coinScorePrefix) == 0) {
@@ -4102,6 +4350,12 @@ void SM64AP_GenericInit() {
     }
     sm64_read_signs.clear();
     sm64_known_hint_locations.clear();
+    sm64_exhausted_signs_key.clear();
+    sm64_exhausted_signs_storage_received = false;
+    sm64_server_hints_key.clear();
+    sm64_server_hints_raw.clear();
+    sm64_server_hints_request = {};
+    sm64_server_hints_storage_received = false;
     sm64_active_sign_dialog = -1;
     sm64_permanent_coins.clear();
     sm64_permanent_coin_updates.clear();
@@ -4116,6 +4370,7 @@ void SM64AP_GenericInit() {
     sm64_checked_coin_output_locations.clear();
     sm64_pending_coin_output_checks.clear();
     sm64_pending_coin_completion_checks.clear();
+    sm64_finished_bowser_flags = 0;
     sm64_finished_bowser_storage_received = false;
     sm64_moat_storage_received = false;
     sm64_permanent_coin_storage_received = false;
@@ -4300,8 +4555,38 @@ void SM64AP_FinishBowser(int i) {
     req.type = AP_DataType::Int;
     req.want_reply = true;
     int flag = 0b001 << i;
+    sm64_finished_bowser_flags |= flag;
+    SM64AP_RequestLiveObjectReconcile();
     req.operations = std::vector<AP_DataStorageOperation>{{{"or", &flag}}};
     AP_SetServerData(&req);
+}
+
+bool SM64AP_ShouldSpawnGrandStar() {
+    int stageIndex = -1;
+    switch (gCurrLevelNum) {
+        case LEVEL_BOWSER_1: stageIndex = 0; break;
+        case LEVEL_BOWSER_2: stageIndex = 1; break;
+        case LEVEL_BOWSER_3: stageIndex = 2; break;
+    }
+    if (sm64_completion_type != 1) {
+        return stageIndex == 2;
+    }
+    if (stageIndex < 0) {
+        return false;
+    }
+
+    if (SM64AP_CheckedLoc(SM64AP_ID_BITS_GRAND_STAR)) {
+        return false;
+    }
+
+    int stageFlag = 1 << stageIndex;
+    return (sm64_finished_bowser_flags | stageFlag) == 0b111;
+}
+
+void SM64AP_CollectGrandStar() {
+    if (sm64_completion_type == 1) {
+        SM64AP_SendItem(SM64AP_ID_BITS_GRAND_STAR);
+    }
 }
 
 
@@ -4871,6 +5156,53 @@ static struct Object *SM64AP_ValidObjectParent(struct Object *obj) {
     return parent;
 }
 
+bool SM64AP_IsSignExhausted(s16 level, s16 dialog) {
+    int signKey = level * 256 + dialog;
+    bool targetChecked = false;
+    std::lock_guard<std::mutex> lock(sm64_sign_hint_mutex);
+    auto hint = sm64_sign_hints.find(signKey);
+    if (hint != sm64_sign_hints.end()) {
+        targetChecked = hint->second.location > 0
+            && hint->second.locationPlayer == AP_GetPlayerID()
+            && SM64AP_CheckedLoc(static_cast<int>(hint->second.location));
+        if (!targetChecked) {
+            for (const std::string &locationName : sm64_known_hint_locations) {
+                if (hint->second.text.find(" is at " + locationName) != std::string::npos) {
+                    targetChecked = true;
+                    break;
+                }
+            }
+        }
+    }
+    return sm64_read_signs.count(signKey) != 0 || targetChecked;
+}
+
+static int SM64AP_BobombBuddyLocation(s16 level) {
+    switch (level) {
+        case LEVEL_BOB: return SM64AP_ID_CANNONUNLOCK(0);
+        case LEVEL_WF: return SM64AP_ID_CANNONUNLOCK(1);
+        case LEVEL_JRB: return SM64AP_ID_CANNONUNLOCK(2);
+        case LEVEL_CCM: return SM64AP_ID_CANNONUNLOCK(3);
+        case LEVEL_SSL: return SM64AP_ID_CANNONUNLOCK(7);
+        case LEVEL_SL: return SM64AP_ID_CANNONUNLOCK(9);
+        case LEVEL_WDW: return SM64AP_ID_CANNONUNLOCK(10);
+        case LEVEL_TTM: return SM64AP_ID_CANNONUNLOCK(11);
+        case LEVEL_THI: return SM64AP_ID_CANNONUNLOCK(12);
+        case LEVEL_RR: return SM64AP_ID_CANNONUNLOCK(14);
+        case LEVEL_WMOTR: return SM64AP_LOCATIONID_WMOTR_BOBOMB_BUDDY;
+        default: return 0;
+    }
+}
+
+static int SM64AP_CurrentBowserStageIndex() {
+    switch (gCurrLevelNum) {
+        case LEVEL_BOWSER_1: return 0;
+        case LEVEL_BOWSER_2: return 1;
+        case LEVEL_BOWSER_3: return 2;
+        default: return -1;
+    }
+}
+
 static u8 SM64AP_ComputeObjectVisualState(struct Object *obj) {
     // Orange counters inherit their spawning coin's source metadata, but are UI feedback rather than coin outputs.
     if (behavior_is(obj->behavior, bhvOrangeNumber)) {
@@ -4879,15 +5211,9 @@ static u8 SM64AP_ComputeObjectVisualState(struct Object *obj) {
 
     bool hasExhaustibleOutput = false;
     bool exhausted = true;
-    int enemySource = SM64AP_EnemyCoinSource(obj->behavior);
     struct Object *producer = obj;
 
     for (int depth = 0; depth < 4 && producer != nullptr; depth++) {
-        int ancestorEnemySource = SM64AP_EnemyCoinSource(producer->behavior);
-        if (ancestorEnemySource == SM64AP_COIN_SOURCE_BOO
-            || ancestorEnemySource == SM64AP_COIN_SOURCE_BIG_BOO) {
-            enemySource = ancestorEnemySource;
-        }
         if (SM64AP_StarProducerIndex(producer) >= 0) {
             break;
         }
@@ -4901,27 +5227,18 @@ static u8 SM64AP_ComputeObjectVisualState(struct Object *obj) {
 
     if (behavior_is(obj->behavior, bhvMessagePanel)
         || behavior_is(obj->behavior, bhvSignOnWall)) {
-        int signKey = gCurrLevelNum * 256 + obj->oBehParams2ndByte;
-        bool targetChecked = false;
-        {
-            std::lock_guard<std::mutex> lock(sm64_sign_hint_mutex);
-            auto hint = sm64_sign_hints.find(signKey);
-            if (hint != sm64_sign_hints.end()) {
-                targetChecked = hint->second.location > 0
-                    && hint->second.locationPlayer == AP_GetPlayerID()
-                    && SM64AP_CheckedLoc(static_cast<int>(hint->second.location));
-                if (!targetChecked) {
-                    for (const std::string &locationName : sm64_known_hint_locations) {
-                        if (hint->second.text.find(" is at " + locationName) != std::string::npos) {
-                            targetChecked = true;
-                            break;
-                        }
-                    }
-                }
-            }
-        }
         hasExhaustibleOutput = true;
-        exhausted = sm64_read_signs.count(signKey) != 0 || targetChecked;
+        exhausted = SM64AP_IsSignExhausted(gCurrLevelNum, obj->oBehParams2ndByte);
+    } else if (behavior_is(obj->behavior, bhvBowser)) {
+        int stageIndex = SM64AP_CurrentBowserStageIndex();
+        hasExhaustibleOutput = stageIndex >= 0;
+        exhausted = hasExhaustibleOutput
+            && (sm64_finished_bowser_flags & (1 << stageIndex)) != 0;
+    } else if (behavior_is(obj->behavior, bhvBobombBuddy)
+               || behavior_is(obj->behavior, bhvBobombBuddyOpensCannon)) {
+        int locId = SM64AP_BobombBuddyLocation(gCurrLevelNum);
+        hasExhaustibleOutput = locId != 0;
+        exhausted = hasExhaustibleOutput && SM64AP_CheckedLoc(locId);
     } else if (behavior_is(obj->behavior, bhvMontyMole)) {
         s16 group = 0;
         if (gCurrLevelNum == LEVEL_HMC) {
@@ -4982,16 +5299,31 @@ static u8 SM64AP_ComputeObjectVisualState(struct Object *obj) {
         if (behavior_is(obj->behavior, bhvExclamationBox)) {
             return SM64AP_VISUAL_EXHAUSTED_BLOCK;
         }
-        if (enemySource == SM64AP_COIN_SOURCE_BOO || enemySource == SM64AP_COIN_SOURCE_BIG_BOO) {
-            return SM64AP_VISUAL_EXHAUSTED_DARK;
-        }
         return SM64AP_VISUAL_EXHAUSTED;
     }
     return SM64AP_VISUAL_NORMAL;
 }
 
+static bool SM64AP_IsVanillaSparkleBehavior(const BehaviorScript *behavior) {
+    return behavior_is(behavior, bhvSparkle)
+        || behavior_is(behavior, bhvSparkleSpawn)
+        || behavior_is(behavior, bhvSparkleParticleSpawner)
+        || behavior_is(behavior, bhvCoinSparkles)
+        || behavior_is(behavior, bhvGoldenCoinSparkles)
+        || behavior_is(behavior, bhvWallTinyStarParticle)
+        || behavior_is(behavior, bhvVertStarParticleSpawner)
+        || behavior_is(behavior, bhvPoundTinyStarParticle)
+        || behavior_is(behavior, bhvHorStarParticleSpawner)
+        || behavior_is(behavior, bhvCelebrationStarSparkle);
+}
+
 u8 SM64AP_ObjectVisualState(struct Object *obj) {
     if (obj == nullptr) {
+        return SM64AP_VISUAL_NORMAL;
+    }
+    // Vanilla sparkle effects must never inherit AP exhaustion shading from
+    // the star, 1-Up, coin, shell, or other object that spawned them.
+    if (SM64AP_IsVanillaSparkleBehavior(obj->behavior)) {
         return SM64AP_VISUAL_NORMAL;
     }
     if (obj->apVisualStateFrame != gGlobalTimer) {
@@ -5591,40 +5923,52 @@ void SM64AP_AssignPermanentCoinSlot(struct Object *coin, struct Object *source, 
     }
 }
 
-bool SM64AP_AssignPermanentCoinOutput(
-    struct Object *source, struct Object *coin, int value, int slotCount) {
+bool SM64AP_AssignPermanentCoinOutputRange(
+    struct Object *source, struct Object *coin, int value, int firstSlot, int slotCount) {
     if (source == nullptr || coin == nullptr || source->apCoinSourceId == 0) {
         return true;
     }
 
     SM64AP_NormalizeInheritedCoinSource(source);
 
+    if (firstSlot < 0) {
+        firstSlot = 0;
+    }
+    if (firstSlot >= 64) {
+        return false;
+    }
     if (slotCount < 1) {
         slotCount = 1;
     }
-    if (slotCount > 64) {
-        slotCount = 64;
+    if (slotCount > 64 - firstSlot) {
+        slotCount = 64 - firstSlot;
     }
-    if (source->apCoinSlotCount < slotCount) {
-        source->apCoinSlotCount = slotCount;
+    int endSlot = firstSlot + slotCount;
+    if (source->apCoinSlotCount < endSlot) {
+        source->apCoinSlotCount = endSlot;
     }
 
     // Emit every uncollected output before using collected slots for spent,
     // restorative coin objects.
-    for (int slot = 0; slot < slotCount; slot++) {
+    for (int slot = firstSlot; slot < endSlot; slot++) {
         if (!SM64AP_PermanentCoinSlotCollected(source->apCoinSourceId, slot)
             && !SM64AP_PermanentCoinSlotActive(source->apCoinSourceId, slot)) {
             SM64AP_AssignPermanentCoinSlot(coin, source, slot, value);
             return true;
         }
     }
-    for (int slot = 0; slot < slotCount; slot++) {
+    for (int slot = firstSlot; slot < endSlot; slot++) {
         if (!SM64AP_PermanentCoinSlotActive(source->apCoinSourceId, slot)) {
             SM64AP_AssignPermanentCoinSlot(coin, source, slot, value);
             return true;
         }
     }
     return false;
+}
+
+bool SM64AP_AssignPermanentCoinOutput(
+    struct Object *source, struct Object *coin, int value, int slotCount) {
+    return SM64AP_AssignPermanentCoinOutputRange(source, coin, value, 0, slotCount);
 }
 
 bool SM64AP_AssignPermanentAggregateCoinOutput(
@@ -5648,6 +5992,29 @@ bool SM64AP_AssignPermanentAggregateCoinOutput(
     SM64AP_AssignPermanentCoinSlot(coin, source, 0, slotCount);
     coin->apCoinSlotCount = slotCount;
     return true;
+}
+
+bool SM64AP_MarkPermanentAggregateCoinSource(struct Object *source, int slotCount) {
+    if (source == nullptr || source->apCoinSourceId == 0 || slotCount < 1 || slotCount > 64) {
+        return false;
+    }
+
+    SM64AP_NormalizeInheritedCoinSource(source);
+    for (int slot = 0; slot < slotCount; slot++) {
+        auto key = std::make_pair(source->apCoinSourceId, static_cast<u8>(slot));
+        auto record = sm64_permanent_coins.find(key);
+        if (record == sm64_permanent_coins.end()) {
+            continue;
+        }
+        if (!record->second.aggregate) {
+            record->second.aggregate = true;
+            sm64_permanent_coin_updates[key] = record->second;
+            sm64_permanent_coin_sources_dirty = true;
+        }
+        SM64AP_SendCoinCompletionCheck(source->apCoinSourceId);
+        return true;
+    }
+    return false;
 }
 
 bool SM64AP_MarkSpentPermanentCoin(struct Object *coin, int value) {
@@ -5679,7 +6046,8 @@ static std::string SM64AP_SerializePermanentCoinEntries(
         first = false;
         output << '"' << SM64AP_PermanentCoinKey(entry.first.first, entry.first.second) << "\":["
                << static_cast<int>(entry.second.course) << ','
-               << static_cast<int>(entry.second.value) << ']';
+               << static_cast<int>(entry.second.value) << ','
+               << (entry.second.aggregate ? 1 : 0) << ']';
     }
     output << '}';
     return output.str();
@@ -5744,12 +6112,15 @@ static void SM64AP_SendCoinCompletionCheck(u64 physicalSource) {
         if (entry.physicalSource != physicalSource) {
             continue;
         }
-        bool complete = true;
+        bool complete = false;
         for (int slot = 0; slot < entry.requiredOutputCount; slot++) {
-            if (!SM64AP_PermanentCoinSlotCollected(physicalSource, static_cast<u8>(slot))) {
+            auto record = sm64_permanent_coins.find(
+                std::make_pair(physicalSource, static_cast<u8>(slot)));
+            if (record == sm64_permanent_coins.end()) {
                 complete = false;
                 break;
             }
+            complete = complete || record->second.aggregate;
         }
         if (!complete || sm64_checked_coin_output_locations.count(entry.locationId) != 0) {
             continue;
@@ -5785,13 +6156,23 @@ static void SM64AP_LoadPermanentCoins(const std::string &rawLedger) {
         int slot = 0;
         int course = 0;
         int value = 0;
+        int aggregate = 0;
         if (!SM64AP_ParsePermanentCoinKey(rawLedger, pos, source, slot)
             || !SM64AP_ConsumeJsonChar(rawLedger, pos, ':')
             || !SM64AP_ConsumeJsonChar(rawLedger, pos, '[')
             || !SM64AP_ParseJsonInt(rawLedger, pos, course)
             || !SM64AP_ConsumeJsonChar(rawLedger, pos, ',')
-            || !SM64AP_ParseJsonInt(rawLedger, pos, value)
-            || !SM64AP_ConsumeJsonChar(rawLedger, pos, ']')) {
+            || !SM64AP_ParseJsonInt(rawLedger, pos, value)) {
+            return;
+        }
+        SM64AP_SkipJsonWhitespace(rawLedger, pos);
+        if (pos < rawLedger.size() && rawLedger[pos] == ',') {
+            pos++;
+            if (!SM64AP_ParseJsonInt(rawLedger, pos, aggregate)) {
+                return;
+            }
+        }
+        if (!SM64AP_ConsumeJsonChar(rawLedger, pos, ']')) {
             return;
         }
         if (source != 0 && slot >= 0 && slot < 64
@@ -5799,7 +6180,7 @@ static void SM64AP_LoadPermanentCoins(const std::string &rawLedger) {
             && value > 0 && value <= 5
             && (SM64AP_ExpectedPermanentCoinMask(source) & (1ULL << slot)) != 0) {
             parsed[std::make_pair(source, static_cast<u8>(slot))] = {
-                static_cast<u8>(course), static_cast<u8>(value)
+                static_cast<u8>(course), static_cast<u8>(value), aggregate != 0
             };
         }
 
@@ -5845,6 +6226,16 @@ static void SM64AP_InitializeServerStorage() {
 
     sm64_permanent_coin_ledger_key = prefix + "PermanentCoins";
     AP_SetNotify(sm64_permanent_coin_ledger_key, AP_DataType::Raw, true);
+    sm64_exhausted_signs_key = prefix + "ExhaustedSigns";
+    AP_SetNotify(sm64_exhausted_signs_key, AP_DataType::Raw, true);
+    sm64_server_hints_key = "_read_hints_0_" + std::to_string(AP_GetPlayerID());
+    AP_SetNotify(sm64_server_hints_key, AP_DataType::Raw, false);
+    sm64_server_hints_raw.clear();
+    sm64_server_hints_request = {};
+    sm64_server_hints_request.key = sm64_server_hints_key;
+    sm64_server_hints_request.value = &sm64_server_hints_raw;
+    sm64_server_hints_request.type = AP_DataType::Raw;
+    AP_GetServerData(&sm64_server_hints_request);
     sm64_permanent_coin_sources_key =
         "SM64SpicyPermanentCoinSources_" + std::to_string(AP_GetPlayerID());
     sm64_permanent_coin_storage_initialized = true;
@@ -5852,6 +6243,14 @@ static void SM64AP_InitializeServerStorage() {
 
 bool SM64AP_ReadyToStart() {
     SM64AP_InitializeServerStorage();
+    if (!sm64_server_hints_storage_received) {
+        if (sm64_server_hints_request.status == AP_RequestStatus::Done) {
+            SM64AP_LoadServerHints(sm64_server_hints_raw);
+        } else if (sm64_server_hints_request.status == AP_RequestStatus::Error) {
+            // Existing hints improve sign state, but a failed optional read must not block startup.
+            sm64_server_hints_storage_received = true;
+        }
+    }
     bool ready = AP_GetConnectionStatus() == AP_ConnectionStatus::Authenticated
         && sm64_permanent_coin_storage_initialized
         && sm64_finished_bowser_storage_received
@@ -5859,7 +6258,9 @@ bool SM64AP_ReadyToStart() {
         && sm64_save_flags_storage_received
         && sm64_cannon_flags_storage_received
         && sm64_coin_scores_storage_received == COURSE_STAGES_COUNT
-        && sm64_permanent_coin_storage_received;
+        && sm64_permanent_coin_storage_received
+        && sm64_exhausted_signs_storage_received
+        && sm64_server_hints_storage_received;
     if (ready) {
         sm64_title_connection_wait_frames = 0;
     }
@@ -5918,8 +6319,8 @@ bool SM64AP_ConsumePermanentCoinReconcileRequest() {
 }
 
 static void SM64AP_RecordPermanentCoin(
-    const std::pair<u64, u8> &key, u8 course, u8 value) {
-    SM64APPermanentCoinRecord record = { course, value };
+    const std::pair<u64, u8> &key, u8 course, u8 value, bool aggregate = false) {
+    SM64APPermanentCoinRecord record = { course, value, aggregate };
     sm64_permanent_coins[key] = record;
     sm64_permanent_coin_updates[key] = record;
     sm64_uncollected_coin_tombstones.erase(key);
@@ -5943,7 +6344,8 @@ bool SM64AP_CollectPermanentCoin(struct Object *coin, int value) {
             SM64AP_RecordPermanentCoin(
                 std::make_pair(coin->apCoinSourceId, static_cast<u8>(slot)),
                 coin->apCoinCourse != 0 ? coin->apCoinCourse : static_cast<u8>(gCurrCourseNum),
-                1);
+                1,
+                true);
         }
         return true;
     }
@@ -6205,7 +6607,7 @@ void SM64AP_UpdatePermanentCoinTrap() {
         }
 
         std::pair<u64, u8> selectedKey = { 0, 0 };
-        SM64APPermanentCoinRecord selectedRecord = { 0, 0 };
+        SM64APPermanentCoinRecord selectedRecord = { 0, 0, false };
         if (!sm64_permanent_coins.empty()) {
             u64 selectionHash = AP_GetUUID() ^ (static_cast<u64>(ordinal) * 0x9E3779B97F4A7C15ULL);
             auto selected = sm64_permanent_coins.begin();
@@ -7355,8 +7757,7 @@ void SM64AP_PrintNext() {
         print_text(GFX_DIMENSIONS_FROM_LEFT_EDGE(0) + SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, std::to_string(o_msg->timer).c_str());
     } else if (msg->type == AP_MessageType::Hint) {
         AP_HintMessage* o_msg = static_cast<AP_HintMessage*>(msg);
-        std::lock_guard<std::mutex> lock(sm64_sign_hint_mutex);
-        sm64_known_hint_locations.insert(o_msg->location);
+        SM64AP_MarkSignsForHintLocation(o_msg->location);
     } else {
         //print_text(GFX_DIMENSIONS_FROM_LEFT_EDGE(0), (1-0)*20, msg->text.c_str());
     }

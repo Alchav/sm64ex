@@ -35,35 +35,9 @@ static bool moving_coin_collect_on_no_despawn_floor(s16 collisionFlags) {
         return false;
     }
 
-    if (sObjFloor != NULL && sObjFloor->type == SURFACE_DEATH_PLANE
-        && o->oPosY < o->oFloorHeight + 2048.0f) {
+    if (obj_reached_mario_death_surface(o, collisionFlags & OBJ_COL_FLAG_GROUNDED)) {
         moving_coin_collect_without_contact();
         return true;
-    }
-
-    if (sObjFloor == NULL && o->oPosY <= -10000.0f) {
-        moving_coin_collect_without_contact();
-        return true;
-    }
-
-    if (!(collisionFlags & OBJ_COL_FLAG_GROUNDED)) {
-        return false;
-    }
-
-    if (sObjFloor != NULL) {
-        if (SURFACE_IS_LETHAL_QUICKSAND(sObjFloor->type)) {
-            moving_coin_collect_without_contact();
-            return true;
-        }
-
-        switch (sObjFloor->type) {
-            case SURFACE_BURNING:
-            case SURFACE_DEATH_PLANE:
-                moving_coin_collect_without_contact();
-                return true;
-            default:
-                break;
-        }
     }
 
     return false;
@@ -229,6 +203,9 @@ void bhv_moving_blue_coin_loop(void) {
 
         case MOV_BCOIN_ACT_MOVING:
             collisionFlags = object_step();
+            if (moving_coin_collect_on_no_despawn_floor(collisionFlags)) {
+                return;
+            }
             if ((collisionFlags & OBJ_COL_FLAG_GROUNDED)) /* bit 0 */
             {
                 o->oForwardVel += 25.0f;

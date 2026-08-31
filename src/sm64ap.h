@@ -31,6 +31,7 @@ extern "C" {
 #define SM64AP_ID_PROGRESSIVE_WING_CAP_LENGTH (SM64AP_ID_OFFSET+936)
 #define SM64AP_ID_PROGRESSIVE_METAL_CAP_LENGTH (SM64AP_ID_OFFSET+937)
 #define SM64AP_ID_PROGRESSIVE_VANISH_CAP_LENGTH (SM64AP_ID_OFFSET+938)
+#define SM64AP_ID_BITS_GRAND_STAR (SM64AP_ID_OFFSET+3861)
 
 #define SM64AP_ABILITY_OFFSET (SM64AP_RESERVED_ITEM_184+1)
 #define SM64AP_ID_DOUBLEJUMP (SM64AP_ABILITY_OFFSET)
@@ -486,6 +487,7 @@ AP_EXTERN_C s16 SM64AP_ResolveAreaMusic(s16 level, s16 area, s16 vanillaSeq);
 AP_EXTERN_C void SM64AP_SelectSkybox(s16 level, s16 area, s16 vanillaSkybox);
 AP_EXTERN_C s16 SM64AP_ResolveSkyboxBackground(s16 vanillaSkybox);
 AP_EXTERN_C bool SM64AP_CheckedLoc(int);
+AP_EXTERN_C bool SM64AP_IsSignExhausted(s16 level, s16 dialog);
 AP_EXTERN_C void SM64AP_CheckLobbyFreeItems(s16, s16);
 AP_EXTERN_C void SM64AP_CheckCoinCount(int, int);
 AP_EXTERN_C bool SM64AP_OneUpChecksEnabled();
@@ -575,7 +577,10 @@ AP_EXTERN_C void SM64AP_AssignPermanentCoinSource(
 AP_EXTERN_C void SM64AP_PreserveInheritedPermanentCoinSource(struct Object *);
 AP_EXTERN_C void SM64AP_DistinguishInheritedPermanentCoinSource(struct Object *, int);
 AP_EXTERN_C bool SM64AP_AssignPermanentCoinOutput(struct Object *, struct Object *, int, int);
+AP_EXTERN_C bool SM64AP_AssignPermanentCoinOutputRange(
+    struct Object *, struct Object *, int, int, int);
 AP_EXTERN_C bool SM64AP_AssignPermanentAggregateCoinOutput(struct Object *, struct Object *, int);
+AP_EXTERN_C bool SM64AP_MarkPermanentAggregateCoinSource(struct Object *, int);
 AP_EXTERN_C void SM64AP_FinalizeRelativePermanentCoinSource(struct Object *, s16, s16, s16);
 AP_EXTERN_C void SM64AP_AssignPermanentCoinSlot(struct Object *, struct Object *, int, int);
 AP_EXTERN_C bool SM64AP_MarkSpentPermanentCoin(struct Object *, int);
@@ -631,6 +636,8 @@ AP_EXTERN_C int64_t SM64AP_PopDelayedStack();
 
 // Called on each Bowser stage completion, i is bowser index. Will send StoryComplete depending on completion option.
 AP_EXTERN_C void SM64AP_FinishBowser(int i);
+AP_EXTERN_C bool SM64AP_ShouldSpawnGrandStar();
+AP_EXTERN_C void SM64AP_CollectGrandStar();
 
 // Used to send and receive moat state
 AP_EXTERN_C void SM64AP_SetMoatDrained();

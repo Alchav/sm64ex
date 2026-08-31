@@ -89,6 +89,8 @@ extern const Gfx inside_castle_seg7_dl_07031720[];
 extern const Gfx inside_castle_seg7_dl_07031830[];
 extern const Gfx inside_castle_seg7_dl_07032FC0[];
 extern const Gfx inside_castle_seg7_dl_07033158[];
+extern const Gfx inside_castle_sm64ap_wall_sign_dialog_046[];
+extern const Gfx inside_castle_sm64ap_wall_sign_dialog_070[];
 extern const Gfx inside_castle_seg7_dl_07034D88[];
 extern const Gfx inside_castle_seg7_dl_07035178[];
 extern const Gfx inside_castle_seg7_dl_07035288[];

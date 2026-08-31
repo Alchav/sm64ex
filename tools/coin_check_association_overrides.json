@@ -19039,20 +19039,6 @@
             370
           ],
           "origin": "levels/thi/areas/2/macro.inc.c"
-        },
-        {
-          "physical_source_hash": "330147300833736101",
-          "slot": 0,
-          "value": 1,
-          "area": 2,
-          "behavior": "bhvOneCoin",
-          "source_category": "yellow_coin",
-          "position": [
-            -1171,
-            -153,
-            1023
-          ],
-          "origin": "levels/thi/areas/2/macro.inc.c"
         }
       ]
     },
@@ -20194,21 +20180,21 @@
     {
       "course": "Tiny-Huge Island",
       "source_id": "tiny_impossible_coin",
-      "label": "Impossible Coin",
+      "label": "Tiny Island Impossible Coin",
       "physical_outputs": [
         {
-          "physical_source_hash": "17226100584261914885",
+          "physical_source_hash": "330147300833736101",
           "slot": 0,
           "value": 1,
-          "area": 1,
-          "behavior": "bhvCoinFormation",
-          "source_category": "horizontal_line",
+          "area": 2,
+          "behavior": "bhvOneCoin",
+          "source_category": "yellow_coin",
           "position": [
-            -4911,
-            -395,
-            -1433
+            -1171,
+            -153,
+            1023
           ],
-          "origin": "levels/thi/areas/1/macro.inc.c"
+          "origin": "levels/thi/areas/2/macro.inc.c"
         }
       ]
     },
@@ -30863,8 +30849,8 @@
     },
     {
       "course": "Bowser in the Sky",
-      "source_id": "bits_suction_platform_line",
-      "label": "Coin line on the suction-cup platform",
+      "source_id": "bits_final_rotating_platform_line",
+      "label": "Coin line before the final rotating platforms",
       "physical_outputs": [
         {
           "physical_source_hash": "14173834641707679399",
@@ -31143,8 +31129,8 @@
     },
     {
       "course": "Bowser in the Sky",
-      "source_id": "bits_final_rotating_platform_line",
-      "label": "Coin line before the final rotating platforms",
+      "source_id": "bits_suction_platform_line",
+      "label": "Coin line on the suction-cup platform",
       "physical_outputs": [
         {
           "physical_source_hash": "16624160807700464899",

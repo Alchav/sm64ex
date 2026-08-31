@@ -10,9 +10,11 @@ void bhv_warp_loop(void) {
 
     sp6 = (o->oBehParams >> 24) & 0xFF;
     if (levelEntranceLocked) {
+        cur_obj_become_intangible();
         o->hitboxRadius = 0.0f;
         o->hitboxHeight = 0.0f;
     } else {
+        cur_obj_become_tangible();
         if (sp6 == 0)
             o->hitboxRadius = 50.0f;
         else if (sp6 == 0xFF)

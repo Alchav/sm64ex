@@ -82,35 +82,9 @@ static bool bhv_1up_collect_on_no_despawn_floor(s16 collisionFlags) {
         return false;
     }
 
-    if (sObjFloor != NULL && sObjFloor->type == SURFACE_DEATH_PLANE
-        && o->oPosY < o->oFloorHeight + 2048.0f) {
+    if (obj_reached_mario_death_surface(o, collisionFlags & OBJ_COL_FLAG_GROUNDED)) {
         bhv_1up_collect_without_contact();
         return true;
-    }
-
-    if (sObjFloor == NULL && o->oPosY <= -10000.0f) {
-        bhv_1up_collect_without_contact();
-        return true;
-    }
-
-    if (!(collisionFlags & OBJ_COL_FLAG_GROUNDED)) {
-        return false;
-    }
-
-    if (sObjFloor != NULL) {
-        if (SURFACE_IS_LETHAL_QUICKSAND(sObjFloor->type)) {
-            bhv_1up_collect_without_contact();
-            return true;
-        }
-
-        switch (sObjFloor->type) {
-            case SURFACE_BURNING:
-            case SURFACE_DEATH_PLANE:
-                bhv_1up_collect_without_contact();
-                return true;
-            default:
-                break;
-        }
     }
 
     return false;

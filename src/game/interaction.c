@@ -832,6 +832,9 @@ u32 interact_star_or_key(struct MarioState *m, UNUSED u32 interactType, struct O
 
         starIndex = (o->oBehParams >> 24) & 0x1F;
         save_file_collect_star_or_key(m->numCoins, starIndex);
+        if (grandStar) {
+            SM64AP_CollectGrandStar();
+        }
 
         m->numStars =
             save_file_get_total_star_count(gCurrSaveFileNum - 1, COURSE_MIN - 1, COURSE_MAX - 1);
@@ -2039,8 +2042,14 @@ void mario_process_interactions(struct MarioState *m) {
     update_arch_delayed_items(m);
 }
 
+s32 is_position_below_death_barrier(struct Surface *floor, f32 posY, f32 floorHeight) {
+    return floor != NULL
+        && (floor->type == SURFACE_DEATH_PLANE || floor->type == SURFACE_VERTICAL_WIND)
+        && posY < floorHeight + 2048.0f;
+}
+
 void check_death_barrier(struct MarioState *m) {
-    if (m->pos[1] < m->floorHeight + 2048.0f) {
+    if (is_position_below_death_barrier(m->floor, m->pos[1], m->floorHeight)) {
         if (level_trigger_warp(m, WARP_OP_WARP_FLOOR) == 20 && !(m->flags & MARIO_UNKNOWN_18)) {
             play_sound(SOUND_MARIO_WAAAOOOW, m->marioObj->header.gfx.cameraToObject);
         }

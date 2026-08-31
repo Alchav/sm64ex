@@ -756,7 +756,7 @@ void bowser_act_dance(void) {
 }
 
 void bowser_spawn_grand_star_key(void) {
-    if (BITS)
+    if (SM64AP_ShouldSpawnGrandStar())
         gSecondCameraFocus = spawn_object(o, MODEL_STAR, bhvGrandStar);
     else {
         gSecondCameraFocus = spawn_object(o, MODEL_BOWSER_KEY, bhvBowserKey);

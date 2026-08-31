@@ -191,10 +191,10 @@ static void geo_append_display_list(void *displayList, s16 layer) {
         listNode->displayList = displayList;
         listNode->next = 0;
         listNode->apVisualState = SM64AP_VISUAL_NORMAL;
-        if (gCurGraphNodeObject != NULL) {
-            listNode->apVisualState = SM64AP_ObjectVisualState((struct Object *) gCurGraphNodeObject);
-        } else if (gCurGraphNodeHeldObject != NULL && gCurGraphNodeHeldObject->objNode != NULL) {
+        if (gCurGraphNodeHeldObject != NULL && gCurGraphNodeHeldObject->objNode != NULL) {
             listNode->apVisualState = SM64AP_ObjectVisualState(gCurGraphNodeHeldObject->objNode);
+        } else if (gCurGraphNodeObject != NULL) {
+            listNode->apVisualState = SM64AP_ObjectVisualState((struct Object *) gCurGraphNodeObject);
         }
         if (gCurGraphNodeMasterList->listHeads[layer] == 0) {
             gCurGraphNodeMasterList->listHeads[layer] = listNode;

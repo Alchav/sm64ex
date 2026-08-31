@@ -3242,6 +3242,25 @@ const BehaviorScript bhvSparkleSpawn[] = {
     END_LOOP(),
 };
 
+const BehaviorScript bhvAPTriggerSparkle[] = {
+    BEGIN(OBJ_LIST_UNIMPORTANT),
+    BILLBOARD(),
+    OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE),
+    SET_INT(oAnimState, -1),
+    BEGIN_REPEAT(9),
+        ADD_INT(oAnimState, 1),
+    END_REPEAT(),
+    DEACTIVATE(),
+};
+
+const BehaviorScript bhvAPTriggerSparkleSpawn[] = {
+    BEGIN(OBJ_LIST_UNIMPORTANT),
+    OR_INT(oFlags, OBJ_FLAG_UPDATE_GFX_POS_AND_ANGLE),
+    BEGIN_LOOP(),
+        CALL_NATIVE(bhv_ap_trigger_sparkle_spawn_loop),
+    END_LOOP(),
+};
+
 const BehaviorScript bhvSparkleParticleSpawner[] = {
     BEGIN(OBJ_LIST_DEFAULT),
     PARENT_BIT_CLEAR(oActiveParticleFlags, ACTIVE_PARTICLE_SPARKLES),

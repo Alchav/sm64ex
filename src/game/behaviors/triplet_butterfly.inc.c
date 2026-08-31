@@ -170,19 +170,25 @@ static void triplet_butterfly_act_explode(void) {
 }
 
 void bhv_triplet_butterfly_update(void) {
+    s32 butterflyNum = o->oBehParams2ndByte & TRIPLET_BUTTERFLY_BP_BUTTERFLY_NUM;
+
     if (!SM64AP_HaveOneUpSource(gCurrLevelNum, SM64AP_1UP_SOURCE_BUTTERFLY)) {
         cur_obj_hide();
         return;
     }
 
-    if ((o->oBehParams2ndByte & TRIPLET_BUTTERFLY_BP_BUTTERFLY_NUM) == 0
+    if (butterflyNum == 0 && o->oAction == TRIPLET_BUTTERFLY_ACT_INIT
         && SM64AP_TriggerSparkles() && gGlobalTimer % 5 == 0) {
         s32 oneUpLocId = SM64AP_ResolveOneUpLocation(
             gCurrLevelNum, gCurrAreaIndex, SM64AP_1UP_SOURCE_BUTTERFLY,
             o->oBehParams2ndByte & TRIPLET_BUTTERFLY_BP_NO_BOMBS,
             (s16) o->oHomeX, (s16) o->oHomeY, (s16) o->oHomeZ);
         if (!SM64AP_OneUpCollected(oneUpLocId)) {
-            spawn_ap_trigger_sparkles(o, SM64AP_TRIGGER_SPARKLE_PURPLE);
+            struct Object *sparkles = spawn_object(o, MODEL_NONE, bhvAPTriggerSparkleSpawn);
+            sparkles->oBehParams2ndByte = SM64AP_TRIGGER_SPARKLE_PURPLE;
+            sparkles->oPosX = o->oHomeX;
+            sparkles->oPosY = o->oHomeY;
+            sparkles->oPosZ = o->oHomeZ;
         }
     }
 

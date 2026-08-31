@@ -88,6 +88,7 @@ const LevelScript level_main_scripts_entry[] = {
     LOAD_MODEL_FROM_GEO(MODEL_FISH,                    fish_geo),
     LOAD_MODEL_FROM_GEO(MODEL_FISH_SHADOW,             fish_shadow_geo),
     LOAD_MODEL_FROM_GEO(MODEL_SPARKLES_ANIMATION,      sparkles_animation_geo),
+    LOAD_MODEL_FROM_GEO(MODEL_AP_TRIGGER_SPARKLES_ANIMATION, ap_trigger_sparkles_animation_geo),
     LOAD_MODEL_FROM_DL( MODEL_SAND_DUST,               sand_seg3_dl_0302BCD0,       LAYER_ALPHA),
     LOAD_MODEL_FROM_GEO(MODEL_BUTTERFLY,               butterfly_geo),
     LOAD_MODEL_FROM_GEO(MODEL_BURN_SMOKE_UNUSED,       burn_smoke_geo),

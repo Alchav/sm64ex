@@ -244,6 +244,7 @@ void bhv_castle_floor_trap_init(void);
 void bhv_castle_floor_trap_loop(void);
 void bhv_floor_trap_in_castle_loop(void);
 void bhv_sparkle_spawn_loop(void);
+void bhv_ap_trigger_sparkle_spawn_loop(void);
 void bhv_scuttlebug_loop(void);
 void bhv_scuttlebug_spawn_loop(void);
 void bhv_whomp_loop(void);
