@@ -266,10 +266,16 @@ void spawn_coin_in_formation(s32 sp50, s32 sp54) {
 
 void bhv_coin_formation_init(void) {
     o->oCoinUnkF4 = (o->oBehParams >> 8) & 0xFF;
+    // Coin formations can be rebuilt after an area transition.  Restore their
+    // per-slot state from the permanent ledger so collected coins cannot respawn.
+    o->oCoinUnkF4 |= (u8) SM64AP_PermanentCoinMask(o, 8, 1);
 }
 
 void bhv_coin_formation_loop(void) {
     s32 bitIndex;
+    // The source can receive coin updates while this formation is unloaded by
+    // draw distance or an instant-area transition.
+    o->oCoinUnkF4 |= (u8) SM64AP_PermanentCoinMask(o, 8, 1);
     switch (o->oAction) {
         case 0:
 #ifndef NODRAWINGDISTANCE
