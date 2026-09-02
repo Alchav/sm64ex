@@ -508,6 +508,7 @@ static constexpr int SM64AP_SKYBOX_SHUFFLE_MAP = 1;
 static constexpr int SM64AP_SKYBOX_SHUFFLE_RANDOM_ON_LOAD = 2;
 static constexpr int SM64AP_NUM_COIN_STAR_REQUIREMENTS = 15;
 static constexpr int SM64AP_NUM_COIN_CHECK_COURSES = 24;
+static constexpr int SM64AP_NUM_GLOBAL_COIN_CHECK_COURSES = 24;
 static constexpr int SM64AP_DEFAULT_COIN_STAR_REQUIREMENT = 100;
 static constexpr int SM64AP_COIN_CHECK_MAX_COUNTS[SM64AP_NUM_COIN_CHECK_COURSES] = {
     146, 141, 104, 154, 151,
@@ -516,6 +517,26 @@ static constexpr int SM64AP_COIN_CHECK_MAX_COUNTS[SM64AP_NUM_COIN_CHECK_COURSES]
     80, 56, 56, 63, 27,
     47, 80, 80, 76,
 };
+static constexpr int SM64AP_GLOBAL_COIN_CHECK_LOCATION_START = 4100000;
+static constexpr int SM64AP_GLOBAL_COIN_CHECK_MAX_COUNTS[SM64AP_NUM_GLOBAL_COIN_CHECK_COURSES] = {
+    146, 141, 104, 154, 151,
+    139, 133, 136, 106, 127,
+    152, 137, 192, 128, 146,
+    80, 56, 56, 63, 27,
+    47, 80, 80, 76,
+};
+static constexpr int SM64AP_NUM_GLOBAL_COIN_CHECKS = 2657;
+static int sm64_global_coin_count_caps[SM64AP_NUM_GLOBAL_COIN_CHECK_COURSES] = {
+    146, 141, 104, 154, 151,
+    139, 133, 136, 106, 127,
+    152, 137, 192, 128, 146,
+    80, 56, 56, 63, 27,
+    47, 80, 80, 76,
+};
+static bool sm64_global_coin_count_checks_enabled = false;
+static bool sm64_global_coin_count_caps_loaded = false;
+static int sm64_last_global_coin_count = -1;
+static std::set<int> sm64_sent_global_coin_checks;
 
 static bool SM64AP_CanReportProgress() {
     return gCurrDemoInput == nullptr && gCurrCreditsEntry == nullptr;
@@ -3014,6 +3035,15 @@ void SM64AP_RedirectWarp(s16* curLevel, s16* destLevel, s8* curArea, s16* destAr
         return;
     }
 
+    // Pause-menu Exit to Lobby uses Castle node 0x1F.  It must bypass every
+    // randomized-warp system: sSourceWarpNodeId may still describe the last
+    // physical portal Mario used, which can otherwise make this lobby warp
+    // look like a sub-area entrance.
+    if (*destLevel == LEVEL_CASTLE && *destArea == 1 && *destWarpNode == 0x1F) {
+        SM64AP_ClearReturnStack();
+        return;
+    }
+
     if (SM64AP_TryReturnToPreviousEntrance(
             destLevel, destArea, destWarpNode, warpArg,
             isDeathWarp, warpOp, returnStyleOverride)) {
@@ -3530,6 +3560,65 @@ static void SM64AP_SetCoinStarRequirements(std::string rawRequirements) {
     if (!parsed || pos != rawRequirements.size()) {
         SM64AP_ResetCoinStarRequirements();
     }
+}
+
+static void SM64AP_ResetGlobalCoinCountCaps() {
+    for (int index = 0; index < SM64AP_NUM_GLOBAL_COIN_CHECK_COURSES; index++) {
+        sm64_global_coin_count_caps[index] = SM64AP_GLOBAL_COIN_CHECK_MAX_COUNTS[index];
+    }
+}
+
+static void SM64AP_SetGlobalCoinCountChecksEnabled(int enabled) {
+    sm64_global_coin_count_checks_enabled = enabled != 0;
+    sm64_last_global_coin_count = -1;
+}
+
+static void SM64AP_SetGlobalCoinCountCaps(std::string rawCaps) {
+    SM64AP_ResetGlobalCoinCountCaps();
+    sm64_global_coin_count_caps_loaded = false;
+    std::string::size_type pos = 0;
+    if (!SM64AP_ConsumeJsonChar(rawCaps, pos, '[')) {
+        return;
+    }
+
+    for (int index = 0; index < SM64AP_NUM_GLOBAL_COIN_CHECK_COURSES; index++) {
+        int cap = 0;
+        if (!SM64AP_ParseJsonInt(rawCaps, pos, cap)
+            || cap < 0 || cap > SM64AP_GLOBAL_COIN_CHECK_MAX_COUNTS[index]) {
+            SM64AP_ResetGlobalCoinCountCaps();
+            return;
+        }
+        sm64_global_coin_count_caps[index] = cap;
+        SM64AP_SkipJsonWhitespace(rawCaps, pos);
+        if (index + 1 < SM64AP_NUM_GLOBAL_COIN_CHECK_COURSES) {
+            if (!SM64AP_ConsumeJsonChar(rawCaps, pos, ',')) {
+                SM64AP_ResetGlobalCoinCountCaps();
+                return;
+            }
+        }
+    }
+
+    if (!SM64AP_ConsumeJsonChar(rawCaps, pos, ']')) {
+        // Older slot data included a 25th Castle cap. Castle coins no longer
+        // participate in coin counts, but accepting and discarding this value
+        // keeps existing multiworlds compatible with the corrected 24-course
+        // format.
+        int legacyCastleCap = 0;
+        if (!SM64AP_ConsumeJsonChar(rawCaps, pos, ',')
+            || !SM64AP_ParseJsonInt(rawCaps, pos, legacyCastleCap)
+            || legacyCastleCap < 0 || legacyCastleCap > 15
+            || !SM64AP_ConsumeJsonChar(rawCaps, pos, ']')) {
+            SM64AP_ResetGlobalCoinCountCaps();
+            return;
+        }
+    }
+    SM64AP_SkipJsonWhitespace(rawCaps, pos);
+    if (pos != rawCaps.size()) {
+        SM64AP_ResetGlobalCoinCountCaps();
+        return;
+    }
+    sm64_global_coin_count_caps_loaded = true;
+    sm64_last_global_coin_count = -1;
 }
 
 static bool SM64AP_ParseJsonString(
@@ -4206,6 +4295,9 @@ void SM64AP_ResetItems() {
     sm64_have_global_signs = false;
     sm64_have_level_signs.reset();
     sm64_sent_coin_checks.reset();
+    sm64_sent_global_coin_checks.clear();
+    sm64_global_coin_count_caps_loaded = false;
+    sm64_last_global_coin_count = -1;
     sm64_sent_1up_checks.reset();
     sm64_sent_blocksanity_checks.reset();
     sm64_sent_box_checks.clear();
@@ -4442,6 +4534,8 @@ void SM64AP_GenericInit() {
     AP_RegisterSlotDataRawCallback("SkyboxMap", static_cast<void (*)(std::string)>(&SM64AP_SetSkyboxMap));
     AP_RegisterSlotDataRawCallback("MarioColors", &SM64AP_SetMarioColors);
     AP_RegisterSlotDataRawCallback("CoinStarRequirements", &SM64AP_SetCoinStarRequirements);
+    AP_RegisterSlotDataIntCallback("GlobalCoinCountChecksEnabled", &SM64AP_SetGlobalCoinCountChecksEnabled);
+    AP_RegisterSlotDataRawCallback("GlobalCoinCountCaps", &SM64AP_SetGlobalCoinCountCaps);
     AP_RegisterSlotDataRawCallback("SignHintData", &SM64AP_SetSignHintData);
 
     map_boxid_locid[LEVEL_CCM*10 + 1] = 3626215;
@@ -5431,6 +5525,51 @@ void SM64AP_CheckCoinCount(int courseNum, int coinCount) {
         if (offset >= 0 && !sm64_sent_coin_checks[offset] && !SM64AP_CheckedLoc(locId)) {
             sm64_sent_coin_checks[offset] = true;
             SM64AP_SendItem(locId);
+        }
+    }
+}
+
+static int SM64AP_GlobalCoinCheckCourseIndex(int courseNum) {
+    return SM64AP_CoinCheckCourseIndex(courseNum);
+}
+
+void SM64AP_CheckGlobalCoinCount() {
+    if (!sm64_global_coin_count_checks_enabled || !sm64_global_coin_count_caps_loaded
+        || !SM64AP_CanReportProgress()) {
+        return;
+    }
+
+    int courseTotals[SM64AP_NUM_GLOBAL_COIN_CHECK_COURSES] = {};
+    for (const auto &entry : sm64_permanent_coins) {
+        int courseIndex = SM64AP_GlobalCoinCheckCourseIndex(entry.second.course);
+        if (courseIndex >= 0) {
+            courseTotals[courseIndex] += entry.second.value;
+        }
+    }
+
+    int currentCourseIndex = SM64AP_GlobalCoinCheckCourseIndex(gCurrCourseNum);
+    if (currentCourseIndex >= 0 && currentCourseIndex < SM64AP_NUM_COIN_CHECK_COURSES
+        && gMarioState != nullptr && gCurrCourseNum != COURSE_NONE) {
+        // The active course must use the displayed count. This includes a coin
+        // picked up this frame and deliberately does not force a current-course
+        // Uncollect trap to alter the in-level counter until Mario reloads it.
+        courseTotals[currentCourseIndex] = gMarioState->numCoins;
+    }
+
+    int total = 0;
+    for (int courseIndex = 0; courseIndex < SM64AP_NUM_GLOBAL_COIN_CHECK_COURSES; courseIndex++) {
+        total += std::min(courseTotals[courseIndex], sm64_global_coin_count_caps[courseIndex]);
+    }
+    total = std::min(total, SM64AP_NUM_GLOBAL_COIN_CHECKS);
+    if (total == sm64_last_global_coin_count) {
+        return;
+    }
+    sm64_last_global_coin_count = total;
+
+    for (int count = 1; count <= total; count++) {
+        int locationId = SM64AP_GLOBAL_COIN_CHECK_LOCATION_START + count - 1;
+        if (sm64_sent_global_coin_checks.insert(locationId).second) {
+            SM64AP_SendItem(locationId);
         }
     }
 }
@@ -6486,6 +6625,7 @@ void SM64AP_RestorePermanentCoinCount() {
         gHudDisplay.coins = total;
         SM64AP_CheckCoinCount(gCurrCourseNum, total);
     }
+    SM64AP_CheckGlobalCoinCount();
 }
 
 bool SM64AP_ShouldSpawnOutstandingCoinStar() {
@@ -6576,6 +6716,7 @@ static void SM64AP_ApplyUncollectTrapEvent(const SM64APUncollectTrapEvent &event
     sm64_permanent_coin_updates.erase(key);
     sm64_uncollected_coin_tombstones.insert(key);
     sm64_permanent_coin_sources_dirty = true;
+    SM64AP_CheckGlobalCoinCount();
 }
 
 void SM64AP_UpdatePermanentCoinTrap() {

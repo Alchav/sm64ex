@@ -758,6 +758,7 @@ u32 interact_coin(struct MarioState *m, UNUSED u32 interactType, struct Object *
     m->numCoins += o->oDamageOrCoinValue;
     m->healCounter += 4 * o->oDamageOrCoinValue;
     SM64AP_CheckCoinCount(gCurrCourseNum, m->numCoins);
+    SM64AP_CheckGlobalCoinCount();
     spawn_outstanding_permanent_coin_star();
 
     o->oInteractStatus = INT_STATUS_INTERACTED;

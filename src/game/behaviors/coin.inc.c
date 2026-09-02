@@ -36,6 +36,7 @@ static void bhv_coin_collect_without_contact(void) {
     gMarioState->numCoins += coinValue;
     gMarioState->healCounter += 4 * coinValue;
     SM64AP_CheckCoinCount(gCurrCourseNum, gMarioState->numCoins);
+    SM64AP_CheckGlobalCoinCount();
     spawn_outstanding_permanent_coin_star();
 
     coinStarRequirement = SM64AP_GetCoinStarRequirement(gCurrCourseNum);
