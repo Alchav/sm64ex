@@ -3063,8 +3063,6 @@ static s16 render_pause_bowser_bomb_count(
     static const u8 label[] = {
         ASCII_TO_DIALOG('B'), ASCII_TO_DIALOG('O'), ASCII_TO_DIALOG('W'), ASCII_TO_DIALOG('S'),
         ASCII_TO_DIALOG('E'), ASCII_TO_DIALOG('R'), DIALOG_CHAR_SPACE,
-        ASCII_TO_DIALOG('A'), ASCII_TO_DIALOG('R'), ASCII_TO_DIALOG('E'), ASCII_TO_DIALOG('N'),
-        ASCII_TO_DIALOG('A'), DIALOG_CHAR_SPACE,
         ASCII_TO_DIALOG('B'), ASCII_TO_DIALOG('O'), ASCII_TO_DIALOG('M'), ASCII_TO_DIALOG('B'),
         ASCII_TO_DIALOG('S'), DIALOG_CHAR_TERMINATOR
     };
@@ -3075,6 +3073,26 @@ static s16 render_pause_bowser_bomb_count(
         return 0;
     }
     int_to_str(bombCount, value);
+    print_generic_string(x, y - row * 11, label);
+    print_generic_string(valueX, y - row * 11, value);
+    return 1;
+}
+
+static s16 render_pause_bowser_health(
+    s16 x, s16 y, s16 valueX, s16 levelNum, s16 row, s16 maxRows
+) {
+    static const u8 label[] = {
+        ASCII_TO_DIALOG('B'), ASCII_TO_DIALOG('O'), ASCII_TO_DIALOG('W'), ASCII_TO_DIALOG('S'),
+        ASCII_TO_DIALOG('E'), ASCII_TO_DIALOG('R'), DIALOG_CHAR_SPACE,
+        ASCII_TO_DIALOG('H'), ASCII_TO_DIALOG('E'), ASCII_TO_DIALOG('A'), ASCII_TO_DIALOG('L'),
+        ASCII_TO_DIALOG('T'), ASCII_TO_DIALOG('H'), DIALOG_CHAR_TERMINATOR
+    };
+    u8 value[4];
+
+    if (SM64AP_BowserArenaBombCount(levelNum) < 0 || row >= maxRows) {
+        return 0;
+    }
+    int_to_str(SM64AP_BowserHitRequirement(levelNum), value);
     print_generic_string(x, y - row * 11, label);
     print_generic_string(valueX, y - row * 11, value);
     return 1;
@@ -3208,6 +3226,8 @@ static void render_pause_area_unlocks(s16 x, s16 y, const struct PauseUnlockView
     unlockCount += render_pause_one_up_unlocks(
         x, y, x + 170, view->levelNum, unlockCount, 11);
     unlockCount += render_pause_bowser_extra_one_ups(
+        x, y, x + 170, view->levelNum, unlockCount, 11);
+    unlockCount += render_pause_bowser_health(
         x, y, x + 170, view->levelNum, unlockCount, 11);
     unlockCount += render_pause_bowser_bomb_count(
         x, y, x + 170, view->levelNum, unlockCount, 11);

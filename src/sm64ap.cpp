@@ -114,9 +114,45 @@ int sm64_progressive_underwater_breath = 0;
 int sm64_progressive_damage_dodge = 0;
 int sm64_underwater_breath_accumulator = 0;
 bool sm64_underwater_breath_active = false;
-int sm64_bowser_arena_bombs[3] = { 0, 0, 0 };
+unsigned char sm64_bowser_arena_bomb_bits[3] = { 0, 0, 0 };
 int sm64_bowser_hit_requirements[3] = { 1, 1, 3 };
 int sm64_bowser_in_the_sky_stage_collapse_hits = 2;
+
+static int SM64AP_BowserArenaBombLimit(int arena) {
+    return arena == 2 ? 5 : 4;
+}
+
+static bool SM64AP_HaveBowserArenaBomb(int arena, int bomb) {
+    return arena >= 0 && arena < 3 && bomb >= 1 && bomb <= SM64AP_BowserArenaBombLimit(arena)
+        && (sm64_bowser_arena_bomb_bits[arena] & (1 << (bomb - 1)));
+}
+
+static void SM64AP_SetBowserArenaBomb(int arena, int bomb, bool enabled) {
+    if (arena < 0 || arena >= 3 || bomb < 1 || bomb > SM64AP_BowserArenaBombLimit(arena)) return;
+    unsigned char bit = 1 << (bomb - 1);
+    if (enabled) {
+        sm64_bowser_arena_bomb_bits[arena] |= bit;
+    } else {
+        sm64_bowser_arena_bomb_bits[arena] &= ~bit;
+    }
+}
+
+static void SM64AP_EnableNextBowserArenaBomb(int arena) {
+    for (int bomb = 1; bomb <= SM64AP_BowserArenaBombLimit(arena); bomb++) {
+        if (!SM64AP_HaveBowserArenaBomb(arena, bomb)) {
+            SM64AP_SetBowserArenaBomb(arena, bomb, true);
+            return;
+        }
+    }
+}
+
+static int SM64AP_BowserArenaBombCountForArena(int arena) {
+    int count = 0;
+    for (int bomb = 1; bomb <= SM64AP_BowserArenaBombLimit(arena); bomb++) {
+        count += SM64AP_HaveBowserArenaBomb(arena, bomb);
+    }
+    return count;
+}
 
 struct SM64APSignHint {
     std::string text;
@@ -993,18 +1029,45 @@ void SM64AP_RecvItem(int64_t idx, bool notify) {
             SM64AP_IncrementClamped(sm64_have_progressive_mips, 2);
             break;
         case SM64AP_ID_PROGRESSIVE_BOWSER_ARENA_BOMB:
-            SM64AP_IncrementClamped(sm64_bowser_arena_bombs[0], 4);
-            SM64AP_IncrementClamped(sm64_bowser_arena_bombs[1], 4);
-            SM64AP_IncrementClamped(sm64_bowser_arena_bombs[2], 5);
+            SM64AP_EnableNextBowserArenaBomb(0);
+            SM64AP_EnableNextBowserArenaBomb(1);
+            SM64AP_EnableNextBowserArenaBomb(2);
             break;
         case SM64AP_ID_BITDW_PROGRESSIVE_BOWSER_ARENA_BOMB:
-            SM64AP_IncrementClamped(sm64_bowser_arena_bombs[0], 4);
+            SM64AP_EnableNextBowserArenaBomb(0);
             break;
         case SM64AP_ID_BITFS_PROGRESSIVE_BOWSER_ARENA_BOMB:
-            SM64AP_IncrementClamped(sm64_bowser_arena_bombs[1], 4);
+            SM64AP_EnableNextBowserArenaBomb(1);
             break;
         case SM64AP_ID_BITS_PROGRESSIVE_BOWSER_ARENA_BOMB:
-            SM64AP_IncrementClamped(sm64_bowser_arena_bombs[2], 5);
+            SM64AP_EnableNextBowserArenaBomb(2);
+            break;
+        case SM64AP_ID_GLOBAL_BOWSER_ARENA_BOMB_1:
+        case SM64AP_ID_GLOBAL_BOWSER_ARENA_BOMB_2:
+        case SM64AP_ID_GLOBAL_BOWSER_ARENA_BOMB_3:
+        case SM64AP_ID_GLOBAL_BOWSER_ARENA_BOMB_4: {
+            int bomb = idx - SM64AP_ID_GLOBAL_BOWSER_ARENA_BOMB_1 + 1;
+            for (int arena = 0; arena < 3; arena++) SM64AP_SetBowserArenaBomb(arena, bomb, true);
+            break;
+        }
+        case SM64AP_ID_BITDW_BOWSER_ARENA_BOMB_1:
+        case SM64AP_ID_BITDW_BOWSER_ARENA_BOMB_2:
+        case SM64AP_ID_BITDW_BOWSER_ARENA_BOMB_3:
+        case SM64AP_ID_BITDW_BOWSER_ARENA_BOMB_4:
+            SM64AP_SetBowserArenaBomb(0, idx - SM64AP_ID_BITDW_BOWSER_ARENA_BOMB_1 + 1, true);
+            break;
+        case SM64AP_ID_BITFS_BOWSER_ARENA_BOMB_1:
+        case SM64AP_ID_BITFS_BOWSER_ARENA_BOMB_2:
+        case SM64AP_ID_BITFS_BOWSER_ARENA_BOMB_3:
+        case SM64AP_ID_BITFS_BOWSER_ARENA_BOMB_4:
+            SM64AP_SetBowserArenaBomb(1, idx - SM64AP_ID_BITFS_BOWSER_ARENA_BOMB_1 + 1, true);
+            break;
+        case SM64AP_ID_BITS_BOWSER_ARENA_BOMB_1:
+        case SM64AP_ID_BITS_BOWSER_ARENA_BOMB_2:
+        case SM64AP_ID_BITS_BOWSER_ARENA_BOMB_3:
+        case SM64AP_ID_BITS_BOWSER_ARENA_BOMB_4:
+        case SM64AP_ID_BITS_BOWSER_ARENA_BOMB_5:
+            SM64AP_SetBowserArenaBomb(2, idx - SM64AP_ID_BITS_BOWSER_ARENA_BOMB_1 + 1, true);
             break;
         case SM64AP_ID_WING_CAP_LIGHT:
             sm64_have_wing_cap_light = true;
@@ -2371,7 +2434,7 @@ bool SM64AP_ShouldSpawnLevelObject(s16 level, s16, s16 model, s16 x, s16 y, s16 
     if (behavior_is(behavior, bhvBowserBomb)) {
         int arena = SM64AP_BowserArenaIndex(level);
         int bomb = SM64AP_BowserArenaBombIndex(level, x, z);
-        if (arena >= 0 && bomb >= 0) return bomb < sm64_bowser_arena_bombs[arena];
+        if (arena >= 0 && bomb >= 0) return SM64AP_HaveBowserArenaBomb(arena, bomb + 1);
     }
 
     int enemyUnlockSource = SM64AP_EnemyUnlockSource(behParam, behavior);
@@ -4338,7 +4401,7 @@ void SM64AP_ResetItems() {
     sm64_progressive_damage_dodge = 0;
     SM64AP_ResetUnderwaterBreathTimer();
     for (int i = 0; i < 3; i++) {
-        sm64_bowser_arena_bombs[i] = 0;
+        sm64_bowser_arena_bomb_bits[i] = 0;
     }
     starsCollected = 0;
 
@@ -4947,7 +5010,7 @@ int SM64AP_BowserArenaBombCount(s16 level) {
     if (level == LEVEL_BITDW) arena = 0;
     if (level == LEVEL_BITFS) arena = 1;
     if (level == LEVEL_BITS) arena = 2;
-    return arena >= 0 ? sm64_bowser_arena_bombs[arena] : -1;
+    return arena >= 0 ? SM64AP_BowserArenaBombCountForArena(arena) : -1;
 }
 
 static bool SM64AP_HaveOneUpForLocation(int locId) {
@@ -7256,9 +7319,9 @@ static void SM64AP_InitCheatItems() {
     }
 
     for (int bomb = 1; bomb <= 4; bomb++) {
-        SM64AP_CheatAdd(
-            SM64AP_CHEAT_ITEM_BOWSER_ARENA_BOMB, 30 + bomb,
-            std::string("GLOBAL BOWSER ARENA BOMB ") + std::to_string(bomb));
+            SM64AP_CheatAdd(
+                SM64AP_CHEAT_ITEM_BOWSER_ARENA_BOMB, 30 + bomb,
+            std::string("GLOBAL BOWSER BOMB ") + std::to_string(bomb));
     }
 
     static constexpr const char *bowserStageNames[] = { "BITDW", "BITFS", "BITS" };
@@ -7267,7 +7330,7 @@ static void SM64AP_InitCheatItems() {
         for (int bomb = 1; bomb <= bowserStageBombCounts[arena]; bomb++) {
             SM64AP_CheatAdd(
                 SM64AP_CHEAT_ITEM_BOWSER_ARENA_BOMB, arena * 10 + bomb,
-                std::string(bowserStageNames[arena]) + " BOWSER ARENA BOMB " + std::to_string(bomb));
+                std::string(bowserStageNames[arena]) + " BOWSER BOMB " + std::to_string(bomb));
         }
     }
 
@@ -7551,11 +7614,11 @@ bool SM64AP_CheatItemEnabled(int index) {
             int arena = item.index / 10;
             int bomb = item.index % 10;
             if (arena == 3) {
-                return sm64_bowser_arena_bombs[0] >= bomb
-                    && sm64_bowser_arena_bombs[1] >= bomb
-                    && sm64_bowser_arena_bombs[2] >= bomb;
+                return SM64AP_HaveBowserArenaBomb(0, bomb)
+                    && SM64AP_HaveBowserArenaBomb(1, bomb)
+                    && SM64AP_HaveBowserArenaBomb(2, bomb);
             }
-            return arena >= 0 && arena < 3 && sm64_bowser_arena_bombs[arena] >= bomb;
+            return SM64AP_HaveBowserArenaBomb(arena, bomb);
         }
         case SM64AP_CHEAT_ITEM_SIGN_UNLOCK:
             if (item.index == SM64AP_ID_GLOBAL_SIGNS) {
@@ -7644,21 +7707,12 @@ void SM64AP_CheatSetItemEnabled(int index, bool enabled) {
         case SM64AP_CHEAT_ITEM_BOWSER_ARENA_BOMB: {
             int arena = item.index / 10;
             int bomb = item.index % 10;
-            int value = enabled ? bomb : bomb - 1;
             if (arena == 3) {
                 for (int i = 0; i < 3; i++) {
-                    if (enabled) {
-                        SM64AP_SetMin(sm64_bowser_arena_bombs[i], value);
-                    } else if (sm64_bowser_arena_bombs[i] >= bomb) {
-                        sm64_bowser_arena_bombs[i] = value;
-                    }
+                    SM64AP_SetBowserArenaBomb(i, bomb, enabled);
                 }
             } else if (arena >= 0 && arena < 3) {
-                if (enabled) {
-                    SM64AP_SetMin(sm64_bowser_arena_bombs[arena], value);
-                } else if (sm64_bowser_arena_bombs[arena] >= bomb) {
-                    sm64_bowser_arena_bombs[arena] = value;
-                }
+                SM64AP_SetBowserArenaBomb(arena, bomb, enabled);
             }
             break;
         }
