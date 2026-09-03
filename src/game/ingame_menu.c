@@ -2600,20 +2600,8 @@ static const u8 sPauseViewVcutm[] = { TEXT_PAUSE_VIEW_VCUTM };
 static const u8 sPauseViewCotmc[] = { TEXT_PAUSE_VIEW_COTMC };
 static const u8 sPauseViewTotwc[] = { TEXT_PAUSE_VIEW_TOTWC };
 static const u8 sPauseViewWmotr[] = { TEXT_PAUSE_VIEW_WMOTR };
-static const u8 sPauseViewPss[] = {
-    ASCII_TO_DIALOG('P'), ASCII_TO_DIALOG('R'), ASCII_TO_DIALOG('I'), ASCII_TO_DIALOG('N'),
-    ASCII_TO_DIALOG('C'), ASCII_TO_DIALOG('E'), ASCII_TO_DIALOG('S'), ASCII_TO_DIALOG('S'),
-    DIALOG_CHAR_SPACE,
-    ASCII_TO_DIALOG('S'), ASCII_TO_DIALOG('L'), ASCII_TO_DIALOG('I'), ASCII_TO_DIALOG('D'),
-    ASCII_TO_DIALOG('E'), DIALOG_CHAR_TERMINATOR
-};
-static const u8 sPauseViewSa[] = {
-    ASCII_TO_DIALOG('S'), ASCII_TO_DIALOG('E'), ASCII_TO_DIALOG('C'), ASCII_TO_DIALOG('R'),
-    ASCII_TO_DIALOG('E'), ASCII_TO_DIALOG('T'), DIALOG_CHAR_SPACE,
-    ASCII_TO_DIALOG('A'), ASCII_TO_DIALOG('Q'), ASCII_TO_DIALOG('U'), ASCII_TO_DIALOG('A'),
-    ASCII_TO_DIALOG('R'), ASCII_TO_DIALOG('I'), ASCII_TO_DIALOG('U'), ASCII_TO_DIALOG('M'),
-    DIALOG_CHAR_TERMINATOR
-};
+static const u8 sPauseViewPss[] = { TEXT_PAUSE_VIEW_PSS };
+static const u8 sPauseViewSa[] = { TEXT_PAUSE_VIEW_SA };
 
 static const u8 sMoveDouble[] = { TEXT_DOUBLE_JUMP };
 static const u8 sMoveTriple[] = { TEXT_TRIPLE_JUMP };

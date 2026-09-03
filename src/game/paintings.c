@@ -1090,10 +1090,7 @@ void reset_painting(struct Painting *painting) {
  *
  * Before Mario gets the BITFS Archipelago item, the painting spawns at frontPos.
  *
- * If Mario just got the item, the painting's x coordinate moves to backPos at a rate of `speed` units.
- *
- * When the painting reaches backPos, a save flag is set so that the painting will spawn at backPos
- * whenever it loads.
+ * In Archipelago, the BITFS unlock selects the back position immediately.
  *
  * This function also sets gDddPaintingStatus, which controls the warp:
  *  0 (0b00): set x coordinate to frontPos
@@ -1102,20 +1099,14 @@ void reset_painting(struct Painting *painting) {
  */
 void move_ddd_painting(struct Painting *painting, f32 frontPos, f32 backPos, f32 speed) {
     u32 bitfsUnlocked = SM64AP_HaveBITFS();
-    u32 dddBack = bitfsUnlocked && (save_file_get_flags() & SAVE_FLAG_DDD_MOVED_BACK);
+    (void) speed;
 
     if (!bitfsUnlocked) {
         painting->posX = frontPos;
         gDddPaintingStatus = 0;
-    } else if (!dddBack) {
-        painting->posX += speed;
-        gDddPaintingStatus = BOWSERS_SUB_BEATEN;
-        if (painting->posX >= backPos) {
-            painting->posX = backPos;
-            gDddPaintingStatus = BOWSERS_SUB_BEATEN | DDD_BACK;
-            save_file_set_flags(SAVE_FLAG_DDD_MOVED_BACK);
-        }
     } else {
+        // BITFS controls this visual state in Archipelago.  Do not depend on
+        // the vanilla DDD save flag, which is unrelated to the DDD entrance.
         painting->posX = backPos;
         gDddPaintingStatus = BOWSERS_SUB_BEATEN | DDD_BACK;
     }

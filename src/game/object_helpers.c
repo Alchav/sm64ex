@@ -1780,7 +1780,12 @@ s32 obj_reached_mario_death_surface_with_floor(struct Object *obj, struct Surfac
         return TRUE;
     }
 
-    return isGrounded && SURFACE_IS_LETHAL_QUICKSAND(floor->type);
+    // Deep quicksand is traversable for a while.  Treat only the instant
+    // quicksand variants as an automatic collection surface, matching the
+    // terrain Mario cannot stand on without immediately dying.
+    return isGrounded
+        && (floor->type == SURFACE_INSTANT_QUICKSAND
+            || floor->type == SURFACE_INSTANT_MOVING_QUICKSAND);
 }
 
 s32 obj_reached_mario_death_surface(struct Object *obj, s32 isGrounded) {
