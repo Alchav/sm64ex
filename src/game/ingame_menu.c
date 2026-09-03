@@ -2937,6 +2937,7 @@ static const struct PauseLevelUnlock sPauseLevelUnlocks[] = {
     { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_WF, 1, sPaintingWf },
     { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_JRB, 1, sPaintingJrb },
     { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_CCM, 1, sPaintingCcm },
+    { PAUSE_LEVEL_UNLOCK_BBH, 0, 0, sPaintingBbh },
     { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_HMC, 1, sPaintingHmc },
     { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_LLL, 1, sPaintingLll },
     { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_SSL, 1, sPaintingSsl },
@@ -2948,14 +2949,13 @@ static const struct PauseLevelUnlock sPauseLevelUnlocks[] = {
     { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_THI, 2, sPaintingThiTiny },
     { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_TTC, 1, sPaintingTtc },
     { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_RR, 1, sPaintingRr },
-    { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_WMOTR, 1, sPaintingWmotr },
     { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_PSS, 1, sPauseViewPss },
     { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_SA, 1, sPauseViewSa },
-    { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_COTMC, 1, sPauseViewCotmc },
+    { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_WMOTR, 1, sPaintingWmotr },
     { PAUSE_LEVEL_UNLOCK_WING_LIGHT, 0, 0, sUnlockTotwc },
-    { PAUSE_LEVEL_UNLOCK_BBH, 0, 0, sPaintingBbh },
-    { PAUSE_LEVEL_UNLOCK_BITFS, 0, 0, sUnlockBitfs },
     { PAUSE_LEVEL_UNLOCK_VCUTM_ENTRANCE, 0, 0, sUnlockVcutm },
+    { PAUSE_LEVEL_UNLOCK_PAINTING, COURSE_COTMC, 1, sPauseViewCotmc },
+    { PAUSE_LEVEL_UNLOCK_BITFS, 0, 0, sUnlockBitfs },
 };
 
 static bool pause_course_unlock_collected(const struct PauseCourseUnlock *unlock, const struct PauseUnlockView *view) {
