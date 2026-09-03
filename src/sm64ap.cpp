@@ -112,6 +112,7 @@ bool sm64_have_vanishcap = false;
 int sm64_progressive_cap_length = 0;
 int sm64_progressive_underwater_breath = 0;
 int sm64_progressive_damage_dodge = 0;
+float sm64_damage_dodge_chance = 0.01f;
 int sm64_underwater_breath_accumulator = 0;
 bool sm64_underwater_breath_active = false;
 unsigned char sm64_bowser_arena_bomb_bits[3] = { 0, 0, 0 };
@@ -3366,9 +3367,19 @@ void SM64AP_ResetUnderwaterBreathTimer() {
 }
 
 s16 SM64AP_ApplyDamageDodge(s16 hurtCounter) {
-    for (int roll = 0; roll < sm64_progressive_damage_dodge && hurtCounter > 0; roll++) {
-        if (random_float() < 0.01f) {
+    for (s16 remainingDamage = hurtCounter; remainingDamage >= 4; remainingDamage -= 4) {
+        bool dodged = false;
+        for (int roll = 0; roll < sm64_progressive_damage_dodge; roll++) {
+            if (random_float() < sm64_damage_dodge_chance) {
+                dodged = true;
+                break;
+            }
+        }
+        if (dodged) {
             hurtCounter = std::max<s16>(0, hurtCounter - 4);
+            sm64_damage_dodge_chance *= 0.5f;
+        } else {
+            sm64_damage_dodge_chance = 0.01f;
         }
     }
     return hurtCounter;
@@ -4399,6 +4410,7 @@ void SM64AP_ResetItems() {
     sm64_progressive_cap_length = 0;
     sm64_progressive_underwater_breath = 0;
     sm64_progressive_damage_dodge = 0;
+    sm64_damage_dodge_chance = 0.01f;
     SM64AP_ResetUnderwaterBreathTimer();
     for (int i = 0; i < 3; i++) {
         sm64_bowser_arena_bomb_bits[i] = 0;
