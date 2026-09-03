@@ -17,6 +17,7 @@ struct CheatList {
     bool         ShowLastLocationCheck;
     bool         RespawnCollectedOneUps;
     bool         ShowVerticalWind;
+    bool         DebugMode;
 };
 
 extern struct CheatList Cheats;

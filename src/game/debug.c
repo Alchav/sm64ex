@@ -12,7 +12,9 @@
 #include "object_list_processor.h"
 #include "print.h"
 #include "sm64.h"
+#include "sm64ap.h"
 #include "types.h"
+#include "pc/cheats.h"
 
 #define DEBUG_INFO_NOFLAGS (0 << 0)
 #define DEBUG_INFO_FLAG_DPRINT (1 << 0)
@@ -327,9 +329,33 @@ void reset_debug_objectinfo(void) {
     D_8035FEE2 = 0;
     D_8035FEE4 = 0;
 
+    gDebugInfoFlags = Cheats.DebugMode ? DEBUG_INFO_FLAG_ALL
+        : (gDebugLevelSelect ? DEBUG_INFO_FLAG_LSELECT : DEBUG_INFO_NOFLAGS);
+
     set_print_state_info(gDebugPrintState1, 20, 185, 40, 200, -15);
     set_print_state_info(gDebugPrintState2, 180, 30, 0, 150, 15);
     update_debug_dpadmask();
+}
+
+static void print_debug_damage_dodge_chance(void) {
+    s16 *printState = gDebugPrintState2;
+    u16 chance;
+
+    if ((gDebugInfoFlags & DEBUG_INFO_FLAG_DPRINT) == 0 || printState[DEBUG_PSTATE_DISABLED]) {
+        return;
+    }
+    if (printState[DEBUG_PSTATE_Y_CURSOR] < printState[DEBUG_PSTATE_MIN_Y_CURSOR]
+        || printState[DEBUG_PSTATE_MAX_X_CURSOR] < printState[DEBUG_PSTATE_Y_CURSOR]) {
+        return;
+    }
+
+    chance = SM64AP_DamageDodgeChanceBasisPoints();
+    print_text(printState[DEBUG_PSTATE_X_CURSOR], printState[DEBUG_PSTATE_Y_CURSOR], "DODGE");
+    print_text_fmt_int(printState[DEBUG_PSTATE_X_CURSOR] + 60, printState[DEBUG_PSTATE_Y_CURSOR], "%d", chance / 100);
+    print_text(printState[DEBUG_PSTATE_X_CURSOR] + 70, printState[DEBUG_PSTATE_Y_CURSOR], ".");
+    print_text_fmt_int(printState[DEBUG_PSTATE_X_CURSOR] + 80, printState[DEBUG_PSTATE_Y_CURSOR], "%02d", chance % 100);
+    print_text(printState[DEBUG_PSTATE_X_CURSOR] + 100, printState[DEBUG_PSTATE_Y_CURSOR], "%");
+    printState[DEBUG_PSTATE_Y_CURSOR] += printState[DEBUG_PSTATE_LINE_Y_OFFSET];
 }
 
 /*
@@ -474,6 +500,8 @@ void try_print_debug_mario_object_info(void) {
     if (gUnknownWallCount) {
         print_debug_bottom_up("WALL   %d", gUnknownWallCount);
     }
+
+    print_debug_damage_dodge_chance();
 }
 
 /*

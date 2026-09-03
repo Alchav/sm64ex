@@ -125,6 +125,12 @@ static const u8 apToggleYesStr[] = {
     ASCII_TO_DIALOG('Y'), ASCII_TO_DIALOG('E'), ASCII_TO_DIALOG('S'), DIALOG_CHAR_TERMINATOR
 };
 
+static const u8 debugModeStr[] = {
+    ASCII_TO_DIALOG('D'), ASCII_TO_DIALOG('E'), ASCII_TO_DIALOG('B'), ASCII_TO_DIALOG('U'),
+    ASCII_TO_DIALOG('G'), DIALOG_CHAR_SPACE, ASCII_TO_DIALOG('M'), ASCII_TO_DIALOG('O'),
+    ASCII_TO_DIALOG('D'), ASCII_TO_DIALOG('E'), DIALOG_CHAR_TERMINATOR
+};
+
 static const u8 bindStr[][32] = {
     { TEXT_OPT_UNBOUND },
     { TEXT_OPT_PRESSKEY },
@@ -305,6 +311,7 @@ static struct Option optsCheats[] = {
     DEF_OPT_TOGGLE( optsCheatsStr[9], &Cheats.ShowLastLocationCheck ),
     DEF_OPT_TOGGLE( optsCheatsStr[10], &Cheats.RespawnCollectedOneUps ),
     DEF_OPT_TOGGLE( optsCheatsStr[11], &Cheats.ShowVerticalWind ),
+    DEF_OPT_TOGGLE( debugModeStr, &Cheats.DebugMode ),
     DEF_OPT_SUBMENU( menuApItemsStr, &menuApItems ),
 
 };

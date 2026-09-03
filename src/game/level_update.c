@@ -295,17 +295,20 @@ void set_mario_initial_cap_powerup(struct MarioState *m) {
     switch (capCourseIndex) {
         case COURSE_COTMC - COURSE_CAP_COURSES:
             m->flags |= MARIO_METAL_CAP | MARIO_CAP_ON_HEAD;
-            m->capTimer = SM64AP_ScaleCapTimer(MARIO_METAL_CAP, 600);
+            m->capTimer = SM64AP_HaveLevelCapOrGlobal(SM64AP_LEVEL_CAP_COTMC_METAL)
+                ? SM64AP_ScaleCapTimer(MARIO_METAL_CAP, 600) : 600;
             break;
 
         case COURSE_TOTWC - COURSE_CAP_COURSES:
             m->flags |= MARIO_WING_CAP | MARIO_CAP_ON_HEAD;
-            m->capTimer = SM64AP_ScaleCapTimer(MARIO_WING_CAP, 1200);
+            m->capTimer = SM64AP_HaveLevelCapOrGlobal(SM64AP_LEVEL_CAP_TOTWC_WING)
+                ? SM64AP_ScaleCapTimer(MARIO_WING_CAP, 1200) : 1200;
             break;
 
         case COURSE_VCUTM - COURSE_CAP_COURSES:
             m->flags |= MARIO_VANISH_CAP | MARIO_CAP_ON_HEAD;
-            m->capTimer = SM64AP_ScaleCapTimer(MARIO_VANISH_CAP, 600);
+            m->capTimer = SM64AP_HaveLevelCapOrGlobal(SM64AP_LEVEL_CAP_VCUTM_VANISH)
+                ? SM64AP_ScaleCapTimer(MARIO_VANISH_CAP, 600) : 600;
             break;
     }
 }

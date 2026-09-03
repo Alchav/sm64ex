@@ -2593,6 +2593,11 @@ struct PauseMoveUnlock {
 
 static const u8 sPauseViewCastle[] = { TEXT_PAUSE_VIEW_CASTLE };
 static const u8 sPauseViewLevels[] = { TEXT_PAUSE_VIEW_LEVELS };
+static const u8 sPauseViewUpgrades[] = {
+    ASCII_TO_DIALOG('U'), ASCII_TO_DIALOG('P'), ASCII_TO_DIALOG('G'), ASCII_TO_DIALOG('R'),
+    ASCII_TO_DIALOG('A'), ASCII_TO_DIALOG('D'), ASCII_TO_DIALOG('E'), ASCII_TO_DIALOG('S'),
+    DIALOG_CHAR_TERMINATOR
+};
 static const u8 sPauseViewBitdw[] = { TEXT_PAUSE_VIEW_BITDW };
 static const u8 sPauseViewBitfs[] = { TEXT_PAUSE_VIEW_BITFS };
 static const u8 sPauseViewBits[] = { TEXT_PAUSE_VIEW_BITS };
@@ -2614,6 +2619,22 @@ static const u8 sMoveGroundPound[] = { TEXT_GROUND_POUND };
 static const u8 sMoveKick[] = { TEXT_KICK };
 static const u8 sMoveClimb[] = { TEXT_CLIMB };
 static const u8 sMoveLedgeGrab[] = { TEXT_LEDGE_GRAB };
+
+static const u8 sUpgradeCapLength[] = {
+    ASCII_TO_DIALOG('C'), ASCII_TO_DIALOG('A'), ASCII_TO_DIALOG('P'), DIALOG_CHAR_SPACE,
+    ASCII_TO_DIALOG('L'), ASCII_TO_DIALOG('E'), ASCII_TO_DIALOG('N'), ASCII_TO_DIALOG('G'),
+    ASCII_TO_DIALOG('T'), ASCII_TO_DIALOG('H'), DIALOG_CHAR_TERMINATOR
+};
+static const u8 sUpgradeBreath[] = {
+    ASCII_TO_DIALOG('B'), ASCII_TO_DIALOG('R'), ASCII_TO_DIALOG('E'), ASCII_TO_DIALOG('A'),
+    ASCII_TO_DIALOG('T'), ASCII_TO_DIALOG('H'), DIALOG_CHAR_TERMINATOR
+};
+static const u8 sUpgradeDamageDodge[] = {
+    ASCII_TO_DIALOG('D'), ASCII_TO_DIALOG('A'), ASCII_TO_DIALOG('M'), ASCII_TO_DIALOG('A'),
+    ASCII_TO_DIALOG('G'), ASCII_TO_DIALOG('E'), DIALOG_CHAR_SPACE, ASCII_TO_DIALOG('D'),
+    ASCII_TO_DIALOG('O'), ASCII_TO_DIALOG('D'), ASCII_TO_DIALOG('G'), ASCII_TO_DIALOG('E'),
+    DIALOG_CHAR_TERMINATOR
+};
 
 static const u8 sUnlockBaby[] = { TEXT_UNLOCK_BABY };
 static const u8 sUnlockBoos[] = {
@@ -3265,11 +3286,24 @@ static const u8 *pause_unlock_view_title(const struct PauseUnlockView *view) {
 
 static void render_pause_castle_unlocks(s16 x, s16 y);
 static void render_pause_level_unlocks(s16 x, s16 y);
+static void render_pause_upgrades(s16 x, s16 y);
 
 static void render_pause_unlock_view_page(s16 viewIndex) {
     const struct PauseUnlockView *view = pause_unlock_view_at(viewIndex);
     static const u8 textPageOne[] = { TEXT_PAGE_1 };
     static const u8 textPageTwo[] = { TEXT_PAGE_2 };
+    static const u8 textCastlePageOne[] = {
+        ASCII_TO_DIALOG('1'), DIALOG_CHAR_SPACE, ASCII_TO_DIALOG('O'), ASCII_TO_DIALOG('F'),
+        DIALOG_CHAR_SPACE, ASCII_TO_DIALOG('3'), DIALOG_CHAR_TERMINATOR
+    };
+    static const u8 textCastlePageTwo[] = {
+        ASCII_TO_DIALOG('2'), DIALOG_CHAR_SPACE, ASCII_TO_DIALOG('O'), ASCII_TO_DIALOG('F'),
+        DIALOG_CHAR_SPACE, ASCII_TO_DIALOG('3'), DIALOG_CHAR_TERMINATOR
+    };
+    static const u8 textPageThree[] = {
+        ASCII_TO_DIALOG('3'), DIALOG_CHAR_SPACE, ASCII_TO_DIALOG('O'), ASCII_TO_DIALOG('F'),
+        DIALOG_CHAR_SPACE, ASCII_TO_DIALOG('3'), DIALOG_CHAR_TERMINATOR
+    };
     const s16 contentYOffset = 11;
 
     create_dl_translation_matrix(MENU_MTX_PUSH, -16, 105 + contentYOffset, 0);
@@ -3287,10 +3321,15 @@ static void render_pause_unlock_view_page(s16 viewIndex) {
 
     print_generic_string(
         -8, 140 + contentYOffset,
-        view->type == PAUSE_UNLOCK_VIEW_CASTLE && sPauseUnlockPage == 1
-            ? sPauseViewLevels
-            : pause_unlock_view_title(view));
-    print_generic_string(266, 140 + contentYOffset, sPauseUnlockPage == 0 ? textPageOne : textPageTwo);
+        view->type == PAUSE_UNLOCK_VIEW_CASTLE && sPauseUnlockPage == 1 ? sPauseViewLevels
+        : view->type == PAUSE_UNLOCK_VIEW_CASTLE && sPauseUnlockPage == 2 ? sPauseViewUpgrades
+        : pause_unlock_view_title(view));
+    print_generic_string(
+        266, 140 + contentYOffset,
+        view->type == PAUSE_UNLOCK_VIEW_CASTLE && sPauseUnlockPage == 0 ? textCastlePageOne
+        : view->type == PAUSE_UNLOCK_VIEW_CASTLE && sPauseUnlockPage == 1 ? textCastlePageTwo
+        : view->type == PAUSE_UNLOCK_VIEW_CASTLE && sPauseUnlockPage == 2 ? textPageThree
+        : sPauseUnlockPage == 0 ? textPageOne : textPageTwo);
     if (sPauseUnlockPage == 0) {
         render_pause_move_unlocks(-8, 122 + contentYOffset, view->moveArea, view->levelNum);
         render_pause_sign_unlock(-8, 1 + contentYOffset, 112, view->levelNum);
@@ -3302,6 +3341,11 @@ static void render_pause_unlock_view_page(s16 viewIndex) {
         gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
         gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
         render_pause_level_unlocks(74, 122 + contentYOffset);
+        gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
+    } else if (sPauseUnlockPage == 2 && view->type == PAUSE_UNLOCK_VIEW_CASTLE) {
+        gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
+        gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
+        render_pause_upgrades(74, 122 + contentYOffset);
         gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
     } else if (sPauseUnlockPage == 1) {
         gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
@@ -3386,19 +3430,55 @@ static void render_pause_level_unlocks(s16 x, s16 y) {
     }
 }
 
-static void handle_pause_unlock_page_scrolling(bool hasPages) {
+static void upgrade_count_to_str(s16 count, u8 *dst) {
+    u16 value = count < 0 ? 0 : count;
+    u16 divisor = 10000;
+    s16 pos = 0;
+    bool wroteDigit = false;
+
+    while (divisor > 0) {
+        u8 digit = value / divisor;
+        if (digit != 0 || wroteDigit || divisor == 1) {
+            dst[pos++] = digit;
+            wroteDigit = true;
+        }
+        value %= divisor;
+        divisor /= 10;
+    }
+    dst[pos] = DIALOG_CHAR_TERMINATOR;
+}
+
+static void render_pause_upgrades(s16 x, s16 y) {
+    static const s16 labelX = 0;
+    static const s16 valueX = 154;
+    const u8 *labels[] = { sUpgradeCapLength, sUpgradeBreath, sUpgradeDamageDodge };
+    const s16 values[] = {
+        SM64AP_ProgressiveCapLengthCount(),
+        SM64AP_ProgressiveBreathCount(),
+        SM64AP_ProgressiveDamageDodgeCount(),
+    };
+    u8 value[6];
+
+    for (s16 i = 0; i < 3; i++) {
+        upgrade_count_to_str(values[i], value);
+        print_generic_string(x + labelX, y - i * 14, labels[i]);
+        print_generic_string(x + valueX, y - i * 14, value);
+    }
+}
+
+static void handle_pause_unlock_page_scrolling(s8 pageCount) {
     s8 requestedPage = sPauseUnlockPage;
 
-    if (!hasPages) {
+    if (pageCount <= 1) {
         sPauseUnlockPage = 0;
         sPauseUnlockHorizontalHeld = false;
         return;
     }
 
     if (gPlayer3Controller->rawStickX > 60) {
-        requestedPage = 1;
+        requestedPage = (sPauseUnlockPage + 1) % pageCount;
     } else if (gPlayer3Controller->rawStickX < -60) {
-        requestedPage = 0;
+        requestedPage = (sPauseUnlockPage + pageCount - 1) % pageCount;
     } else {
         sPauseUnlockHorizontalHeld = false;
         return;
@@ -3412,9 +3492,13 @@ static void handle_pause_unlock_page_scrolling(bool hasPages) {
 }
 
 void render_pause_castle_main_strings(s16 x, s16 y) {
+    s16 previousViewIndex;
+    const struct PauseUnlockView *view;
+
     (void) x;
     (void) y;
 
+    previousViewIndex = gDialogLineNum;
     handle_menu_scrolling(MENU_SCROLL_VERTICAL, &gDialogLineNum, -1, pause_unlock_view_count());
 
     if (gDialogLineNum == pause_unlock_view_count()) {
@@ -3425,7 +3509,12 @@ void render_pause_castle_main_strings(s16 x, s16 y) {
         gDialogLineNum = pause_unlock_view_count() - 1;
     }
 
-    handle_pause_unlock_page_scrolling(true);
+    if (gDialogLineNum != previousViewIndex && sPauseUnlockPage == 2) {
+        sPauseUnlockPage = 1;
+    }
+
+    view = pause_unlock_view_at(gDialogLineNum);
+    handle_pause_unlock_page_scrolling(view->type == PAUSE_UNLOCK_VIEW_CASTLE ? 3 : 2);
     render_pause_unlock_view_page(gDialogLineNum);
 }
 
@@ -3450,6 +3539,9 @@ static void set_pause_course_unlock_view_to_current_course(void) {
 }
 
 static void handle_pause_course_unlock_view_scrolling(void) {
+    s16 previousViewIndex = sPauseUnlockViewIndex;
+    const struct PauseUnlockView *view;
+
     handle_menu_scrolling(MENU_SCROLL_VERTICAL, &sPauseUnlockViewIndex, -1, pause_unlock_view_count());
 
     if (sPauseUnlockViewIndex == pause_unlock_view_count()) {
@@ -3460,7 +3552,12 @@ static void handle_pause_course_unlock_view_scrolling(void) {
         sPauseUnlockViewIndex = pause_unlock_view_count() - 1;
     }
 
-    handle_pause_unlock_page_scrolling(true);
+    if (sPauseUnlockViewIndex != previousViewIndex && sPauseUnlockPage == 2) {
+        sPauseUnlockPage = 1;
+    }
+
+    view = pause_unlock_view_at(sPauseUnlockViewIndex);
+    handle_pause_unlock_page_scrolling(view->type == PAUSE_UNLOCK_VIEW_CASTLE ? 3 : 2);
 }
 
 static bool pause_menu_confirm_pressed(void) {

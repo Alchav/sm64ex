@@ -43,6 +43,7 @@ extern "C" {
 #include <string>
 #include <vector>
 #include <map>
+#include <atomic>
 #include <cstdio>
 #include <bitset>
 #include <set>
@@ -109,9 +110,9 @@ static constexpr int SM64AP_LIVE_OBJECT_RECONCILE_DELAY = 3;
 bool sm64_have_wingcap = false;
 bool sm64_have_metalcap = false;
 bool sm64_have_vanishcap = false;
-int sm64_progressive_cap_length = 0;
-int sm64_progressive_underwater_breath = 0;
-int sm64_progressive_damage_dodge = 0;
+std::atomic<int> sm64_progressive_cap_length = 0;
+std::atomic<int> sm64_progressive_underwater_breath = 0;
+std::atomic<int> sm64_progressive_damage_dodge = 0;
 float sm64_damage_dodge_chance = 0.01f;
 int sm64_underwater_breath_accumulator = 0;
 bool sm64_underwater_breath_active = false;
@@ -1205,13 +1206,13 @@ void SM64AP_RecvItem(int64_t idx, bool notify) {
             sm64_have_vanishcap = true;
             break;
         case SM64AP_ID_PROGRESSIVE_CAP_LENGTH:
-            sm64_progressive_cap_length++;
+            sm64_progressive_cap_length.fetch_add(1, std::memory_order_relaxed);
             break;
         case SM64AP_ID_PROGRESSIVE_UNDERWATER_BREATH:
-            sm64_progressive_underwater_breath++;
+            sm64_progressive_underwater_breath.fetch_add(1, std::memory_order_relaxed);
             break;
         case SM64AP_ID_PROGRESSIVE_DAMAGE_DODGE:
-            sm64_progressive_damage_dodge++;
+            sm64_progressive_damage_dodge.fetch_add(1, std::memory_order_relaxed);
             break;
         case SM64AP_ID_LEVEL_CAP(0) ... SM64AP_ID_LEVEL_CAP(SM64AP_NUM_LEVEL_CAPS - 1):
             sm64_have_level_caps[idx - SM64AP_LEVEL_CAP_OFFSET] = true;
@@ -3343,12 +3344,12 @@ u16 SM64AP_ScaleCapTimer(u32 capFlag, u16 baseTimer) {
         return baseTimer;
     }
     u64 scaledTimer = static_cast<u64>(baseTimer)
-        * static_cast<u64>(100 + std::max(0, sm64_progressive_cap_length)) / 100;
+        * static_cast<u64>(100 + std::max(0, sm64_progressive_cap_length.load(std::memory_order_relaxed))) / 100;
     return static_cast<u16>(std::min<u64>(scaledTimer, std::numeric_limits<u16>::max()));
 }
 
 s16 SM64AP_ScaleUnderwaterHealthDrain(s16 vanillaDrain) {
-    int interval = 100 + std::max(0, sm64_progressive_underwater_breath);
+    int interval = 100 + std::max(0, sm64_progressive_underwater_breath.load(std::memory_order_relaxed));
     if (!sm64_underwater_breath_active) {
         sm64_underwater_breath_accumulator = interval - 100;
         sm64_underwater_breath_active = true;
@@ -3366,10 +3367,31 @@ void SM64AP_ResetUnderwaterBreathTimer() {
     sm64_underwater_breath_active = false;
 }
 
+s16 SM64AP_ProgressiveCapLengthCount() {
+    return static_cast<s16>(std::min(
+        sm64_progressive_cap_length.load(std::memory_order_relaxed), static_cast<int>(std::numeric_limits<s16>::max())));
+}
+
+s16 SM64AP_ProgressiveBreathCount() {
+    return static_cast<s16>(std::min(
+        sm64_progressive_underwater_breath.load(std::memory_order_relaxed), static_cast<int>(std::numeric_limits<s16>::max())));
+}
+
+s16 SM64AP_ProgressiveDamageDodgeCount() {
+    return static_cast<s16>(std::min(
+        sm64_progressive_damage_dodge.load(std::memory_order_relaxed), static_cast<int>(std::numeric_limits<s16>::max())));
+}
+
+u16 SM64AP_DamageDodgeChanceBasisPoints() {
+    return static_cast<u16>(std::clamp(
+        static_cast<int>(sm64_damage_dodge_chance * 10000.0f + 0.5f), 0, 10000));
+}
+
 s16 SM64AP_ApplyDamageDodge(s16 hurtCounter) {
     for (s16 remainingDamage = hurtCounter; remainingDamage >= 4; remainingDamage -= 4) {
         bool dodged = false;
-        for (int roll = 0; roll < sm64_progressive_damage_dodge; roll++) {
+        for (int roll = 0, dodgeItems = sm64_progressive_damage_dodge.load(std::memory_order_relaxed);
+             roll < dodgeItems; roll++) {
             if (random_float() < sm64_damage_dodge_chance) {
                 dodged = true;
                 break;
@@ -4407,9 +4429,9 @@ void SM64AP_ResetItems() {
     sm64_have_wingcap = false;
     sm64_have_metalcap = false;
     sm64_have_vanishcap = false;
-    sm64_progressive_cap_length = 0;
-    sm64_progressive_underwater_breath = 0;
-    sm64_progressive_damage_dodge = 0;
+    sm64_progressive_cap_length.store(0, std::memory_order_relaxed);
+    sm64_progressive_underwater_breath.store(0, std::memory_order_relaxed);
+    sm64_progressive_damage_dodge.store(0, std::memory_order_relaxed);
     sm64_damage_dodge_chance = 0.01f;
     SM64AP_ResetUnderwaterBreathTimer();
     for (int i = 0; i < 3; i++) {

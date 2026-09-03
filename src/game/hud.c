@@ -365,7 +365,7 @@ static void render_cap_timer_row(const char *label, u16 frames, s32 y) {
     s32 x = GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(150);
 
     print_text(x, y, label);
-    print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(48), y, "%02d", seconds);
+    print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(seconds >= 100 ? 58 : 48), y, "%02d", seconds);
     print_text_fmt_int(GFX_DIMENSIONS_RECT_FROM_RIGHT_EDGE(14), y, "%d", tenths);
 }
 
