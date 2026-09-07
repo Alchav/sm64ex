@@ -60,7 +60,7 @@ index 802d97a..1b0d677 100644
  };
  
  /** An entry in the master list. It is a linked list of display lists
-@@ -118,7 +120,9 @@ struct GraphNodePerspective
+@@ -118,8 +120,10 @@ struct GraphNodePerspective
  struct DisplayListNode
  {
      Mtx *transform;
@@ -68,6 +68,7 @@ index 802d97a..1b0d677 100644
      void *displayList;
 +    void *displayListInterpolated;
      struct DisplayListNode *next;
+     u8 apVisualState;
  };
  
 @@ -185,7 +189,11 @@ struct GraphNodeCamera
@@ -937,10 +938,11 @@ index d5bf577..71656b4 100644
  /**
   * Process a master list node.
   */
-@@ -156,9 +200,14 @@ static void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
+@@ -158,11 +202,16 @@ static void geo_process_master_list_sub(struct GraphNodeMasterList *node) {
          if ((currList = node->listHeads[i]) != NULL) {
              gDPSetRenderMode(gDisplayListHead++, modeList->modes[i], mode2List->modes[i]);
              while (currList != NULL) {
+                 gDPNoOpTag(gDisplayListHead++, SM64AP_VISUAL_TAG_BASE | currList->apVisualState);
 -                gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(currList->transform),
 +                if ((u32) gMtxTblSize < sizeof(gMtxTbl) / sizeof(gMtxTbl[0])) {
 +                    gMtxTbl[gMtxTblSize].pos = gDisplayListHead;
@@ -951,6 +953,7 @@ index d5bf577..71656b4 100644
                            G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
 -                gSPDisplayList(gDisplayListHead++, currList->displayList);
 +                gSPDisplayList(gDisplayListHead++, currList->displayListInterpolated);
+                 gDPNoOpTag(gDisplayListHead++, SM64AP_VISUAL_TAG_BASE | SM64AP_VISUAL_NORMAL);
                  currList = currList->next;
              }
          }
@@ -963,7 +966,7 @@ index d5bf577..71656b4 100644
  
  #ifdef F3DEX_GBI_2
      gSPLookAt(gDisplayListHead++, &lookAt);
-@@ -184,7 +233,9 @@ static void geo_append_display_list(void *displayList, s16 layer) {
+@@ -188,5 +237,7 @@ static void geo_append_display_list(void *displayList, s16 layer) {
              alloc_only_pool_alloc(gDisplayListHeap, sizeof(struct DisplayListNode));
  
          listNode->transform = gMatStackFixed[gMatStackIndex];
@@ -971,8 +974,6 @@ index d5bf577..71656b4 100644
          listNode->displayList = displayList;
 +        listNode->displayListInterpolated = displayListInterpolated;
          listNode->next = 0;
-         if (gCurGraphNodeMasterList->listHeads[layer] == 0) {
-             gCurGraphNodeMasterList->listHeads[layer] = listNode;
 @@ -195,6 +246,10 @@ static void geo_append_display_list(void *displayList, s16 layer) {
      }
  }

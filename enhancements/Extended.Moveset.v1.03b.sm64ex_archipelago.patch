@@ -1018,7 +1018,7 @@ index 01a991b..950eb7c 100644
 +
      if (m->input & INPUT_UNKNOWN_10) {
          if (m->marioObj->oInteractStatus & INT_STATUS_MARIO_UNK1) {
-             m->hurtCounter += (m->flags & MARIO_CAP_ON_HEAD) ? 12 : 18;
+             m->hurtCounter += SM64AP_ApplyDamageDodge((m->flags & MARIO_CAP_ON_HEAD) ? 12 : 18);
 diff --git a/src/game/mario_actions_moving.c b/src/game/mario_actions_moving.c
 index 96ab5dc..6745fab 100644
 --- a/src/game/mario_actions_moving.c
