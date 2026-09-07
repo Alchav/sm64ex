@@ -3490,6 +3490,9 @@ static void SM64AP_SetBowserInTheSkyStageCollapseHits(int hits) {
 
 int SM64AP_BowserHitRequirement(s16 level) {
     int arena = SM64AP_BowserArenaIndex(level);
+    if (level == LEVEL_BITDW) arena = 0;
+    if (level == LEVEL_BITFS) arena = 1;
+    if (level == LEVEL_BITS) arena = 2;
     return arena >= 0 ? sm64_bowser_hit_requirements[arena] : 1;
 }
 
