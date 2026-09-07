@@ -507,6 +507,8 @@ AP_EXTERN_C s16 SM64AP_ResolveSkyboxBackground(s16 vanillaSkybox);
 AP_EXTERN_C bool SM64AP_CheckedLoc(int);
 AP_EXTERN_C bool SM64AP_IsSignExhausted(s16 level, s16 dialog);
 AP_EXTERN_C void SM64AP_CheckLobbyFreeItems(s16, s16);
+AP_EXTERN_C void SM64AP_SetVisitZone(s16, s16);
+AP_EXTERN_C void SM64AP_CheckVisitZone(void);
 AP_EXTERN_C void SM64AP_CheckCoinCount(int, int);
 AP_EXTERN_C void SM64AP_CheckGlobalCoinCount(void);
 AP_EXTERN_C bool SM64AP_OneUpChecksEnabled();

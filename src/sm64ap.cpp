@@ -581,6 +581,10 @@ static bool sm64_global_coin_count_checks_enabled = false;
 static bool sm64_global_coin_count_caps_loaded = false;
 static int sm64_last_global_coin_count = -1;
 static std::set<int> sm64_sent_global_coin_checks;
+static int sm64_current_visit_location = 0;
+static std::set<int> sm64_sent_visit_checks;
+static s16 sm64_current_visit_level = LEVEL_NONE;
+static s16 sm64_current_visit_area = 0;
 
 static bool SM64AP_CanReportProgress() {
     return gCurrDemoInput == nullptr && gCurrCreditsEntry == nullptr;
@@ -4428,6 +4432,7 @@ void SM64AP_ResetItems() {
     sm64_have_level_signs.reset();
     sm64_sent_coin_checks.reset();
     sm64_sent_global_coin_checks.clear();
+    sm64_sent_visit_checks.clear();
     sm64_global_coin_count_caps_loaded = false;
     sm64_last_global_coin_count = -1;
     sm64_sent_1up_checks.reset();
@@ -4769,6 +4774,64 @@ void SM64AP_CheckLobbyFreeItems(s16 level, s16 area) {
             SM64AP_SendItem(locationId);
         }
     }
+}
+
+void SM64AP_SetVisitZone(s16 level, s16 area) {
+    int offset = -1;
+    switch (level) {
+        case LEVEL_CASTLE_GROUNDS: offset = 0; break;
+        case LEVEL_CASTLE:
+            offset = area == 1 ? 1 : area == 3 ? 3 : area == 2 ? 4 : -1;
+            break;
+        case LEVEL_CASTLE_COURTYARD: offset = 2; break;
+        case LEVEL_BOB: offset = 5; break;
+        case LEVEL_WF: offset = 6; break;
+        case LEVEL_JRB: offset = area == 2 ? 8 : 7; break;
+        case LEVEL_CCM: offset = area == 2 ? 10 : 9; break;
+        case LEVEL_BBH: offset = 11; break;
+        case LEVEL_HMC: offset = 12; break;
+        case LEVEL_LLL: offset = area == 2 ? 14 : 13; break;
+        case LEVEL_SSL: offset = area == 1 ? 15 : 16; break;
+        case LEVEL_DDD: offset = 17; break;
+        case LEVEL_SL: offset = area == 2 ? 19 : 18; break;
+        case LEVEL_WDW: offset = 20; break;
+        case LEVEL_TTM: offset = area == 1 ? 21 : 22; break;
+        case LEVEL_THI:
+            if (area == 1) offset = 23;
+            else if (area == 2) offset = 24;
+            else if (area == 3) offset = 25;
+            break;
+        case LEVEL_TTC: offset = 26; break;
+        case LEVEL_RR: offset = 27; break;
+        case LEVEL_PSS: offset = 28; break;
+        case LEVEL_SA: offset = 29; break;
+        case LEVEL_TOTWC: offset = 30; break;
+        case LEVEL_VCUTM: offset = 31; break;
+        case LEVEL_COTMC: offset = 32; break;
+        case LEVEL_BITDW: offset = 33; break;
+        case LEVEL_BOWSER_1: offset = 34; break;
+        case LEVEL_BITFS: offset = 35; break;
+        case LEVEL_BOWSER_2: offset = 36; break;
+        case LEVEL_WMOTR: offset = 37; break;
+        case LEVEL_BITS: offset = 38; break;
+        case LEVEL_BOWSER_3: offset = 39; break;
+    }
+    sm64_current_visit_location = offset < 0 ? 0 : 4026000 + offset;
+    sm64_current_visit_level = level;
+    sm64_current_visit_area = area;
+}
+
+void SM64AP_CheckVisitZone(void) {
+    s16 area = gCurrentArea != NULL ? gCurrentArea->index : 0;
+    if (gCurrLevelNum != sm64_current_visit_level || area != sm64_current_visit_area) {
+        SM64AP_SetVisitZone(gCurrLevelNum, area);
+    }
+    if (sm64_current_visit_location == 0 || !SM64AP_CanReportProgress()
+        || sm64_sent_visit_checks.count(sm64_current_visit_location) != 0) {
+        return;
+    }
+    SM64AP_SendItem(sm64_current_visit_location);
+    sm64_sent_visit_checks.insert(sm64_current_visit_location);
 }
 
 int SM64AP_LastLocationCheckId() {
