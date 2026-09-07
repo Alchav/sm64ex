@@ -1535,6 +1535,63 @@ s32 update_fixed_camera(struct Camera *c, Vec3f focus, UNUSED Vec3f pos) {
 /**
  * Updates the camera during a boss fight
  */
+#ifdef BETTERCAMERA
+#define BOSS_FIGHT_NEWCAM_STICK_DEADZONE 20
+
+static void handle_bettercam_boss_fight_movement(struct Camera *c) {
+    u16 buttonPressed = gPlayer1Controller->buttonPressed;
+    u16 buttonDown = gPlayer1Controller->buttonDown;
+    u16 maskedCButtons = 0;
+    s16 stickX = gPlayer1Controller->extStickX;
+    s16 stickY = gPlayer1Controller->extStickY;
+    s16 adjustedY;
+
+    if (!newcam_active) {
+        handle_c_button_movement(c);
+        return;
+    }
+
+    if (ABS(stickX) > BOSS_FIGHT_NEWCAM_STICK_DEADZONE) {
+        maskedCButtons |= L_CBUTTONS | R_CBUTTONS;
+    }
+    if (ABS(stickY) > BOSS_FIGHT_NEWCAM_STICK_DEADZONE) {
+        maskedCButtons |= U_CBUTTONS | D_CBUTTONS;
+    }
+
+    if (maskedCButtons) {
+        gPlayer1Controller->buttonPressed &= ~maskedCButtons;
+        gPlayer1Controller->buttonDown &= ~maskedCButtons;
+    }
+    handle_c_button_movement(c);
+    if (maskedCButtons) {
+        gPlayer1Controller->buttonPressed = buttonPressed;
+        gPlayer1Controller->buttonDown = buttonDown;
+    }
+
+    if (ABS(stickX) > BOSS_FIGHT_NEWCAM_STICK_DEADZONE) {
+        gCameraMovementFlags &= ~(CAM_MOVE_ROTATE_RIGHT | CAM_MOVE_ROTATE_LEFT);
+        if (sCSideButtonYaw == 0) {
+            play_sound_cbutton_side();
+        }
+        sCSideButtonYaw = (stickX * ivrt(0) < 0) ? 0x1000 : -0x1000;
+    }
+
+    if (ABS(stickY) > BOSS_FIGHT_NEWCAM_STICK_DEADZONE) {
+        adjustedY = stickY * ivrt(1);
+        if (adjustedY > 0) {
+            if (gCameraMovementFlags & CAM_MOVE_ZOOMED_OUT) {
+                gCameraMovementFlags &= ~CAM_MOVE_ZOOMED_OUT;
+                play_sound_cbutton_up();
+            }
+        } else if (!(gCameraMovementFlags & CAM_MOVE_ZOOMED_OUT)) {
+            gCameraMovementFlags |= CAM_MOVE_ZOOMED_OUT;
+            sZoomAmount = gCameraZoomDist + 400.f;
+            play_sound_cbutton_down();
+        }
+    }
+}
+#endif
+
 s32 update_boss_fight_camera(struct Camera *c, Vec3f focus, Vec3f pos) {
     struct Object *o;
     UNUSED u8 filler2[12];
@@ -1555,7 +1612,11 @@ s32 update_boss_fight_camera(struct Camera *c, Vec3f focus, Vec3f pos) {
     Vec3f secondFocus;
     Vec3f holdFocOffset = { 0.f, -150.f, -125.f };
 
+#ifdef BETTERCAMERA
+    handle_bettercam_boss_fight_movement(c);
+#else
     handle_c_button_movement(c);
+#endif
 
     // Start camera shakes if bowser jumps or gets thrown.
     if (sMarioCamState->cameraEvent == CAM_EVENT_BOWSER_JUMP) {

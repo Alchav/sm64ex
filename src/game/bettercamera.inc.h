@@ -355,14 +355,14 @@ static void newcam_rotate_button(void) {
                     #endif
                     if (newcam_stick2[0] > 20) {
                         if (newcam_modeflags & NC_FLAG_8D)
-                            newcam_yaw_target = newcam_yaw_target+(ivrt(0)*0x2000);
-                        else
-                            newcam_yaw_target = newcam_yaw_target+(ivrt(0)*0x4000);
-                    } else {
-                        if (newcam_modeflags & NC_FLAG_8D)
                             newcam_yaw_target = newcam_yaw_target-(ivrt(0)*0x2000);
                         else
                             newcam_yaw_target = newcam_yaw_target-(ivrt(0)*0x4000);
+                    } else {
+                        if (newcam_modeflags & NC_FLAG_8D)
+                            newcam_yaw_target = newcam_yaw_target+(ivrt(0)*0x2000);
+                        else
+                            newcam_yaw_target = newcam_yaw_target+(ivrt(0)*0x4000);
                     }
                 }
             } else {
