@@ -2956,7 +2956,7 @@ static void SM64AP_PushSubAreaReturnPoint(
             : returnToAreaStart || !hasSourceNode ? 0x0A : sourceWarpNode;
     }
     point.sourceId = sourceId;
-    point.overridePosition = sourceId == 1 || sourceId == 23 || sourceId == 32
+    point.overridePosition = sourceId == 1 || sourceId == 5 || sourceId == 23 || sourceId == 32
         || (!returnToAreaStart
             && (!hasSourceNode || sourceId == 4
                 || sourceId == 7 || sourceId == 8 || sourceId == 9));
@@ -2973,6 +2973,13 @@ static void SM64AP_PushSubAreaReturnPoint(
         point.pos[0] = 410;
         point.pos[1] = -400;
         point.pos[2] = 1200;
+        point.yaw = 0;
+    } else if (sourceId == 5) {
+        // The COTMC floor painting is also its warp trigger. Return to the solid
+        // HMC floor just south of it instead of dropping Mario back into it.
+        point.pos[0] = 3351;
+        point.pos[1] = -4179;
+        point.pos[2] = 4000;
         point.yaw = 0;
     } else if (sourceId == 7) {
         // The volcano warp covers the crater. Return beyond its trigger on the
