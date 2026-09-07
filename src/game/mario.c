@@ -1926,7 +1926,11 @@ void init_mario(void) {
     } else if (save_file_get_flags()
                & (SAVE_FLAG_CAP_ON_GROUND | SAVE_FLAG_CAP_ON_KLEPTO | SAVE_FLAG_CAP_ON_UKIKI
                   | SAVE_FLAG_CAP_ON_MR_BLIZZARD)) {
-        switch(save_file_get_cap_level()) {
+        u32 capLossFlags = save_file_get_flags();
+        if (!SM64AP_LostHatHolderAvailable(save_file_get_cap_level(), capLossFlags)) {
+            gMarioState->flags = (MARIO_CAP_ON_HEAD | MARIO_NORMAL_CAP);
+            sm64ap_clear_cap_loss_flags();
+        } else switch(save_file_get_cap_level()) {
             case LEVEL_SSL:
             case LEVEL_SL:
             case LEVEL_TTM:

@@ -18,6 +18,11 @@ static Lights1 mario_cap_seg3_lights_0301CF38 = gdSPDefLights1(
     0xff, 0x00, 0x00, 0x28, 0x28, 0x28
 );
 
+static const Lights1 mario_cap_metal_lights = gdSPDefLights1(
+    0x7f, 0x7f, 0x7f,
+    0xff, 0xff, 0xff, 0x28, 0x28, 0x28
+);
+
 static void sm64ap_set_mario_cap_light_color(Lights1 *lights, u8 r, u8 g, u8 b) {
     lights->a.l.col[0] = lights->a.l.colc[0] = r >> 1;
     lights->a.l.col[1] = lights->a.l.colc[1] = g >> 1;
@@ -306,8 +311,8 @@ const Gfx mario_cap_seg3_dl_03022FF8[] = {
     gsDPSetCombineMode(G_CC_MODULATERGBFADE, G_CC_MODULATERGBFADE),
     gsDPLoadTextureBlock(mario_cap_seg3_texture_0301CF50, G_IM_FMT_RGBA, G_IM_SIZ_16b, 64, 32, 0, G_TX_WRAP | G_TX_NOMIRROR, G_TX_WRAP | G_TX_NOMIRROR, 6, 5, G_TX_NOLOD, G_TX_NOLOD),
     gsSPTexture(0x0F80, 0x07C0, 0, G_TX_RENDERTILE, G_ON),
-    gsSPLight(&mario_cap_seg3_lights_0301CF20.l, 1),
-    gsSPLight(&mario_cap_seg3_lights_0301CF20.a, 2),
+    gsSPLight(&mario_cap_metal_lights.l, 1),
+    gsSPLight(&mario_cap_metal_lights.a, 2),
     gsSPDisplayList(mario_cap_seg3_dl_03022B30),
     gsSPDisplayList(mario_cap_seg3_dl_03022B68),
     gsSPDisplayList(mario_cap_seg3_dl_03022CC8),
@@ -406,8 +411,8 @@ const Gfx mario_cap_seg3_dl_03023298[] = {
     gsDPSetTile(G_IM_FMT_RGBA, G_IM_SIZ_16b, 16, 0, G_TX_RENDERTILE, 0, G_TX_WRAP | G_TX_NOMIRROR, 5, G_TX_NOLOD, G_TX_WRAP | G_TX_NOMIRROR, 6, G_TX_NOLOD),
     gsDPSetTileSize(0, 0, 0, (64 - 1) << G_TEXTURE_IMAGE_FRAC, (32 - 1) << G_TEXTURE_IMAGE_FRAC),
     gsSPTexture(0x0F80, 0x07C0, 0, G_TX_RENDERTILE, G_ON),
-    gsSPLight(&mario_cap_seg3_lights_0301CF20.l, 1),
-    gsSPLight(&mario_cap_seg3_lights_0301CF20.a, 2),
+    gsSPLight(&mario_cap_metal_lights.l, 1),
+    gsSPLight(&mario_cap_metal_lights.a, 2),
     gsSPDisplayList(mario_cap_seg3_dl_03022B30),
     gsSPDisplayList(mario_cap_seg3_dl_03022B68),
     gsSPDisplayList(mario_cap_seg3_dl_03022CC8),

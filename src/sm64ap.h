@@ -302,6 +302,7 @@ enum {
     SM64AP_LEVEL_FEATURE_KOOPA_SHELL_BLOCK,
     SM64AP_LEVEL_FEATURE_STAR_SECRET,
     SM64AP_LEVEL_FEATURE_JET_STREAM,
+    SM64AP_LEVEL_FEATURE_CAP_SWITCH,
 };
 
 #define SM64AP_ID_GLOBAL_FREESTANDING_STARS 3627115
@@ -567,6 +568,7 @@ AP_EXTERN_C bool SM64AP_HaveWind(int, s16);
 AP_EXTERN_C bool SM64AP_HaveVerticalWind(s16);
 AP_EXTERN_C bool SM64AP_HaveHorizontalWind(s16);
 AP_EXTERN_C bool SM64AP_HaveCoinSource(int, s16);
+AP_EXTERN_C bool SM64AP_LostHatHolderAvailable(s16, u32);
 AP_EXTERN_C bool SM64AP_HaveChainChomp(s16);
 AP_EXTERN_C int SM64AP_LevelCoinUnlockCount(s16, bool);
 AP_EXTERN_C const char *SM64AP_LevelCoinUnlockName(s16, bool, int);

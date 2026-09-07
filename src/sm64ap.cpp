@@ -471,6 +471,10 @@ static constexpr SM64APLevelFeatureUnlockItem sm64_level_feature_unlock_items[] 
     { 3627145, SM64AP_LEVEL_FEATURE_STAR_SECRET, LEVEL_THI },
     { 3627147, SM64AP_LEVEL_FEATURE_JET_STREAM, -1 },
     { 3627146, SM64AP_LEVEL_FEATURE_JET_STREAM, LEVEL_DDD },
+    { 3627167, SM64AP_LEVEL_FEATURE_CAP_SWITCH, -1 },
+    { 3627168, SM64AP_LEVEL_FEATURE_CAP_SWITCH, LEVEL_TOTWC },
+    { 3627169, SM64AP_LEVEL_FEATURE_CAP_SWITCH, LEVEL_COTMC },
+    { 3627170, SM64AP_LEVEL_FEATURE_CAP_SWITCH, LEVEL_VCUTM },
 };
 
 static constexpr int SM64AP_NUM_LEVEL_FEATURE_UNLOCK_ITEMS =
@@ -494,6 +498,8 @@ std::queue<int64_t> delayed_queue;
 
 std::map<int,int> map_entrances;
 std::map<int,int> map_sub_area_entrances;
+static int sm64_castle_return_shuffle_mode = 0;
+static int sm64_sub_area_shuffle_mode = 0;
 static bool sm64_ccm_slide_exit_arrival_pending = false;
 static int sm64_exit_return_to = 0;
 static int sm64_exit_orig_entrance_level = 0;
@@ -1596,6 +1602,19 @@ bool SM64AP_HaveDddMoatExit() {
     return sm64_have_ddd_moat_exit;
 }
 
+bool SM64AP_LostHatHolderAvailable(s16 level, u32 saveFlags) {
+    if (level == LEVEL_SSL && (saveFlags & SAVE_FLAG_CAP_ON_KLEPTO)) {
+        return SM64AP_HaveEnemyUnlock(SM64AP_ENEMY_UNLOCK_KLEPTO, LEVEL_SSL);
+    }
+    if (level == LEVEL_SL && (saveFlags & SAVE_FLAG_CAP_ON_MR_BLIZZARD)) {
+        return SM64AP_HaveCoinSource(SM64AP_COIN_SOURCE_MR_BLIZZARD, LEVEL_SL);
+    }
+    if (level == LEVEL_TTM && (saveFlags & SAVE_FLAG_CAP_ON_UKIKI)) {
+        return SM64AP_HaveFeature(SM64AP_FEATURE_TTM_UKIKI);
+    }
+    return true;
+}
+
 static bool SM64AP_IsEnemyCoinSource(int source) {
     return (source >= SM64AP_COIN_SOURCE_BOBOMB && source <= SM64AP_COIN_SOURCE_WHOMP)
         || source == SM64AP_COIN_SOURCE_BIG_BOO
@@ -2413,6 +2432,11 @@ bool SM64AP_ShouldSpawnLevelObject(s16 level, s16, s16 model, s16 x, s16 y, s16 
         return SM64AP_HaveYoshi();
     }
 
+    if (behavior_is(behavior, bhvCapSwitch)
+        && !SM64AP_HaveLevelFeature(SM64AP_LEVEL_FEATURE_CAP_SWITCH, level)) {
+        return false;
+    }
+
     if (behavior_is(behavior, bhvHiddenAt120Stars)) {
         return !SM64AP_HaveCastleCannon();
     }
@@ -3109,13 +3133,18 @@ void SM64AP_RedirectWarp(s16* curLevel, s16* destLevel, s8* curArea, s16* destAr
         return;
     }
 
+    int subAreaSource = SM64AP_PhysicalSubAreaSource(*curLevel, *curArea, sourceWarpNode);
+    if (sm64_castle_return_shuffle_mode == 2
+        && subAreaSource >= 31 && subAreaSource <= 36) {
+        returnStyleOverride = SM64AP_RETURN_STYLE_DEATH;
+        isDeathWarp = true;
+    }
+
     if (SM64AP_TryReturnToPreviousEntrance(
             destLevel, destArea, destWarpNode, warpArg,
             isDeathWarp, warpOp, returnStyleOverride)) {
         return;
     }
-
-    int subAreaSource = SM64AP_PhysicalSubAreaSource(*curLevel, *curArea, sourceWarpNode);
 
     if ((*curLevel == LEVEL_CASTLE || *curLevel == LEVEL_CASTLE_COURTYARD
          || *curLevel == LEVEL_CASTLE_GROUNDS)
@@ -3290,10 +3319,17 @@ void SM64AP_SetCourseMap(std::map<int,int> map) {
 
 void SM64AP_SetSubAreaMap(std::map<int,int> map) {
     map_sub_area_entrances = map;
-    sm64_track_sub_area_return_stack = std::any_of(
-        map_sub_area_entrances.begin(), map_sub_area_entrances.end(),
-        [](const auto &connection) { return connection.first >= 1000; });
+    sm64_track_sub_area_return_stack = sm64_sub_area_shuffle_mode == 2;
     SM64AP_ClearReturnStack();
+}
+
+void SM64AP_SetSubAreaShuffleMode(int mode) {
+    sm64_sub_area_shuffle_mode = mode;
+    sm64_track_sub_area_return_stack = mode == 2;
+}
+
+void SM64AP_SetCastleReturnShuffleMode(int mode) {
+    sm64_castle_return_shuffle_mode = mode;
 }
 
 static void SM64AP_ApplyStartInventory() {
@@ -4624,6 +4660,8 @@ void SM64AP_GenericInit() {
     AP_RegisterSlotDataRawCallback("AreaRando", static_cast<void (*)(std::string)>(&SM64AP_SetCourseMap));
     AP_RegisterSlotDataRawCallback(
         "SubAreaRando", static_cast<void (*)(std::string)>(&SM64AP_SetSubAreaMap));
+    AP_RegisterSlotDataIntCallback("SubAreaShuffleMode", &SM64AP_SetSubAreaShuffleMode);
+    AP_RegisterSlotDataIntCallback("CastleReturnShuffleMode", &SM64AP_SetCastleReturnShuffleMode);
     AP_RegisterSlotDataRawCallback("StartInventory", static_cast<void (*)(std::string)>(&SM64AP_SetStartInventory));
     AP_RegisterSlotDataIntCallback("MusicShuffleMode", &SM64AP_SetMusicShuffleMode);
     AP_RegisterSlotDataRawCallback("MusicMap", static_cast<void (*)(std::string)>(&SM64AP_SetMusicMap));
@@ -7305,7 +7343,7 @@ static void SM64AP_InitCheatItems() {
             item.level == -1 ? std::string("GLOBAL ") + item.name : item.name);
     }
     static constexpr const char *levelFeatureNames[] = {
-        "FREE STARS", "STAR BLOCKS", "SHELL BLOCKS", "STAR SECRETS", "JET STREAMS"
+        "FREE STARS", "STAR BLOCKS", "SHELL BLOCKS", "STAR SECRETS", "JET STREAMS", "CAP SWITCHES"
     };
     auto levelFeaturePrefix = [](s16 level) -> const char * {
         switch (level) {
@@ -7317,6 +7355,8 @@ static void SM64AP_InitCheatItems() {
             case LEVEL_WDW: return "WDW"; case LEVEL_TTM: return "TTM";
             case LEVEL_THI: return "THI"; case LEVEL_TTC: return "TTC";
             case LEVEL_RR: return "RR"; case LEVEL_PSS: return "PSS";
+            case LEVEL_TOTWC: return "TOTWC"; case LEVEL_COTMC: return "COTMC";
+            case LEVEL_VCUTM: return "VCUTM";
             default: return "GLOBAL";
         }
     };
