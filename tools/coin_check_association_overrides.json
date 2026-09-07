@@ -31049,16 +31049,16 @@
           "origin": "levels/bits/areas/1/macro.inc.c"
         },
         {
-          "physical_source_hash": "7204995425964503995",
+          "physical_source_hash": "3440853442239391762",
           "slot": 0,
           "value": 1,
           "area": 1,
           "behavior": "bhvGoomba",
           "source_category": "goomba",
           "position": [
-            -5489,
-            3839,
-            -1431
+            110,
+            6040,
+            -3312
           ],
           "origin": "levels/bits/areas/1/macro.inc.c"
         },

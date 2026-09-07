@@ -65,17 +65,17 @@ COIN_OUTPUT(UINT64_C(1942189364407472022), 4, 4000061) // Bob-omb Battlefield - 
 COIN_OUTPUT(UINT64_C(1942189364407472022), 5, 4000062) // Bob-omb Battlefield - Flowerbed Coin Ring Coin 6
 COIN_OUTPUT(UINT64_C(1942189364407472022), 6, 4000063) // Bob-omb Battlefield - Flowerbed Coin Ring Coin 7
 COIN_OUTPUT(UINT64_C(1942189364407472022), 7, 4000064) // Bob-omb Battlefield - Flowerbed Coin Ring Coin 8
-COIN_OUTPUT(UINT64_C(3486023878218068749), 0, 4000065) // Bob-omb Battlefield - Bob-omb 1 Coin
-COIN_OUTPUT(UINT64_C(1751290671411937382), 0, 4000066) // Bob-omb Battlefield - Bob-omb 2 Coin
-COIN_OUTPUT(UINT64_C(9040613835018155178), 0, 4000067) // Bob-omb Battlefield - Bob-omb 3 Coin
-COIN_OUTPUT(UINT64_C(4097689103061210960), 0, 4000068) // Bob-omb Battlefield - Bob-omb 4 Coin
-COIN_OUTPUT(UINT64_C(4682952730827534688), 0, 4000069) // Bob-omb Battlefield - Bob-omb 5 Coin
+COIN_OUTPUT(UINT64_C(3486023878218068749), 0, 4000065) // Bob-omb Battlefield - Bob-omb 11 Coin
+COIN_OUTPUT(UINT64_C(1751290671411937382), 0, 4000066) // Bob-omb Battlefield - Bob-omb 10 Coin
+COIN_OUTPUT(UINT64_C(9040613835018155178), 0, 4000067) // Bob-omb Battlefield - Bob-omb 9 Coin
+COIN_OUTPUT(UINT64_C(4097689103061210960), 0, 4000068) // Bob-omb Battlefield - Bob-omb 8 Coin
+COIN_OUTPUT(UINT64_C(4682952730827534688), 0, 4000069) // Bob-omb Battlefield - Bob-omb 7 Coin
 COIN_OUTPUT(UINT64_C(9186408020462695870), 0, 4000070) // Bob-omb Battlefield - Bob-omb 6 Coin
-COIN_OUTPUT(UINT64_C(5639944777209499653), 0, 4000071) // Bob-omb Battlefield - Bob-omb 7 Coin
-COIN_OUTPUT(UINT64_C(3730440739087152723), 0, 4000072) // Bob-omb Battlefield - Bob-omb 8 Coin
-COIN_OUTPUT(UINT64_C(16279758581557239129), 0, 4000073) // Bob-omb Battlefield - Bob-omb 9 Coin
-COIN_OUTPUT(UINT64_C(6757103456477611720), 0, 4000074) // Bob-omb Battlefield - Bob-omb 10 Coin
-COIN_OUTPUT(UINT64_C(14473045918156287876), 0, 4000075) // Bob-omb Battlefield - Bob-omb 11 Coin
+COIN_OUTPUT(UINT64_C(5639944777209499653), 0, 4000071) // Bob-omb Battlefield - Bob-omb 5 Coin
+COIN_OUTPUT(UINT64_C(3730440739087152723), 0, 4000072) // Bob-omb Battlefield - Bob-omb 4 Coin
+COIN_OUTPUT(UINT64_C(16279758581557239129), 0, 4000073) // Bob-omb Battlefield - Bob-omb 3 Coin
+COIN_OUTPUT(UINT64_C(6757103456477611720), 0, 4000074) // Bob-omb Battlefield - Bob-omb 2 Coin
+COIN_OUTPUT(UINT64_C(14473045918156287876), 0, 4000075) // Bob-omb Battlefield - Bob-omb 1 Coin
 COIN_OUTPUT(UINT64_C(6760598025969728796), 0, 4000076) // Bob-omb Battlefield - Bob-omb 12 Coin
 COIN_OUTPUT(UINT64_C(18246637186801241488), 0, 4000077) // Bob-omb Battlefield - Goomba 1 Coin
 COIN_OUTPUT(UINT64_C(14275696977088578489), 0, 4000078) // Bob-omb Battlefield - Goomba 2 Coin
@@ -88,52 +88,52 @@ COIN_OUTPUT(UINT64_C(8955258487551589934), 0, 4000084) // Bob-omb Battlefield - 
 COIN_OUTPUT(UINT64_C(2226342642396557200), 0, 4000085) // Bob-omb Battlefield - Goomba 9 Coin
 COIN_OUTPUT(UINT64_C(243610335547895951), 0, 4000086) // Bob-omb Battlefield - Goomba 10 Coin
 COIN_OUTPUT(UINT64_C(10685061127057352680), 0, 4000087) // Bob-omb Battlefield - Goomba 11 Coin
-COIN_OUTPUT(UINT64_C(11272173055597013593), 0, 4000088) // Bob-omb Battlefield - Main Area Koopa Troopa Blue Coin
-COIN_OUTPUT(UINT64_C(12454789691145686486), 0, 4000089) // Bob-omb Battlefield - Island Vertical Coin Ring 5 Coin 1
-COIN_OUTPUT(UINT64_C(12454789691145686486), 1, 4000090) // Bob-omb Battlefield - Island Vertical Coin Ring 5 Coin 2
-COIN_OUTPUT(UINT64_C(12454789691145686486), 2, 4000091) // Bob-omb Battlefield - Island Vertical Coin Ring 5 Coin 3
-COIN_OUTPUT(UINT64_C(12454789691145686486), 3, 4000092) // Bob-omb Battlefield - Island Vertical Coin Ring 5 Coin 4
-COIN_OUTPUT(UINT64_C(12454789691145686486), 4, 4000093) // Bob-omb Battlefield - Island Vertical Coin Ring 5 Coin 5
-COIN_OUTPUT(UINT64_C(12454789691145686486), 5, 4000094) // Bob-omb Battlefield - Island Vertical Coin Ring 5 Coin 6
-COIN_OUTPUT(UINT64_C(12454789691145686486), 6, 4000095) // Bob-omb Battlefield - Island Vertical Coin Ring 5 Coin 7
-COIN_OUTPUT(UINT64_C(12454789691145686486), 7, 4000096) // Bob-omb Battlefield - Island Vertical Coin Ring 5 Coin 8
-COIN_OUTPUT(UINT64_C(4863634168354214533), 0, 4000097) // Bob-omb Battlefield - Island Vertical Coin Ring 3 Coin 1
-COIN_OUTPUT(UINT64_C(4863634168354214533), 1, 4000098) // Bob-omb Battlefield - Island Vertical Coin Ring 3 Coin 2
-COIN_OUTPUT(UINT64_C(4863634168354214533), 2, 4000099) // Bob-omb Battlefield - Island Vertical Coin Ring 3 Coin 3
-COIN_OUTPUT(UINT64_C(4863634168354214533), 3, 4000100) // Bob-omb Battlefield - Island Vertical Coin Ring 3 Coin 4
-COIN_OUTPUT(UINT64_C(4863634168354214533), 4, 4000101) // Bob-omb Battlefield - Island Vertical Coin Ring 3 Coin 5
-COIN_OUTPUT(UINT64_C(4863634168354214533), 5, 4000102) // Bob-omb Battlefield - Island Vertical Coin Ring 3 Coin 6
-COIN_OUTPUT(UINT64_C(4863634168354214533), 6, 4000103) // Bob-omb Battlefield - Island Vertical Coin Ring 3 Coin 7
-COIN_OUTPUT(UINT64_C(4863634168354214533), 7, 4000104) // Bob-omb Battlefield - Island Vertical Coin Ring 3 Coin 8
-COIN_OUTPUT(UINT64_C(18105749123579416449), 0, 4000105) // Bob-omb Battlefield - Island Vertical Coin Ring 2 Coin 1
-COIN_OUTPUT(UINT64_C(18105749123579416449), 1, 4000106) // Bob-omb Battlefield - Island Vertical Coin Ring 2 Coin 2
-COIN_OUTPUT(UINT64_C(18105749123579416449), 2, 4000107) // Bob-omb Battlefield - Island Vertical Coin Ring 2 Coin 3
-COIN_OUTPUT(UINT64_C(18105749123579416449), 3, 4000108) // Bob-omb Battlefield - Island Vertical Coin Ring 2 Coin 4
-COIN_OUTPUT(UINT64_C(18105749123579416449), 4, 4000109) // Bob-omb Battlefield - Island Vertical Coin Ring 2 Coin 5
-COIN_OUTPUT(UINT64_C(18105749123579416449), 5, 4000110) // Bob-omb Battlefield - Island Vertical Coin Ring 2 Coin 6
-COIN_OUTPUT(UINT64_C(18105749123579416449), 6, 4000111) // Bob-omb Battlefield - Island Vertical Coin Ring 2 Coin 7
-COIN_OUTPUT(UINT64_C(18105749123579416449), 7, 4000112) // Bob-omb Battlefield - Island Vertical Coin Ring 2 Coin 8
-COIN_OUTPUT(UINT64_C(4388049234176458269), 0, 4000113) // Bob-omb Battlefield - Island Vertical Coin Ring 1 Coin 1
-COIN_OUTPUT(UINT64_C(4388049234176458269), 1, 4000114) // Bob-omb Battlefield - Island Vertical Coin Ring 1 Coin 2
-COIN_OUTPUT(UINT64_C(4388049234176458269), 2, 4000115) // Bob-omb Battlefield - Island Vertical Coin Ring 1 Coin 3
-COIN_OUTPUT(UINT64_C(4388049234176458269), 3, 4000116) // Bob-omb Battlefield - Island Vertical Coin Ring 1 Coin 4
-COIN_OUTPUT(UINT64_C(4388049234176458269), 4, 4000117) // Bob-omb Battlefield - Island Vertical Coin Ring 1 Coin 5
-COIN_OUTPUT(UINT64_C(4388049234176458269), 5, 4000118) // Bob-omb Battlefield - Island Vertical Coin Ring 1 Coin 6
-COIN_OUTPUT(UINT64_C(4388049234176458269), 6, 4000119) // Bob-omb Battlefield - Island Vertical Coin Ring 1 Coin 7
-COIN_OUTPUT(UINT64_C(4388049234176458269), 7, 4000120) // Bob-omb Battlefield - Island Vertical Coin Ring 1 Coin 8
-COIN_OUTPUT(UINT64_C(1973391024944359924), 0, 4000121) // Bob-omb Battlefield - Island Vertical Coin Ring 4 Coin 1
-COIN_OUTPUT(UINT64_C(1973391024944359924), 1, 4000122) // Bob-omb Battlefield - Island Vertical Coin Ring 4 Coin 2
-COIN_OUTPUT(UINT64_C(1973391024944359924), 2, 4000123) // Bob-omb Battlefield - Island Vertical Coin Ring 4 Coin 3
-COIN_OUTPUT(UINT64_C(1973391024944359924), 3, 4000124) // Bob-omb Battlefield - Island Vertical Coin Ring 4 Coin 4
-COIN_OUTPUT(UINT64_C(1973391024944359924), 4, 4000125) // Bob-omb Battlefield - Island Vertical Coin Ring 4 Coin 5
-COIN_OUTPUT(UINT64_C(1973391024944359924), 5, 4000126) // Bob-omb Battlefield - Island Vertical Coin Ring 4 Coin 6
-COIN_OUTPUT(UINT64_C(1973391024944359924), 6, 4000127) // Bob-omb Battlefield - Island Vertical Coin Ring 4 Coin 7
-COIN_OUTPUT(UINT64_C(1973391024944359924), 7, 4000128) // Bob-omb Battlefield - Island Vertical Coin Ring 4 Coin 8
-COIN_OUTPUT(UINT64_C(8837847397148801858), 0, 4000129) // Bob-omb Battlefield - Island Coin Ring 5 Center Coin
-COIN_OUTPUT(UINT64_C(270957891712792667), 0, 4000130) // Bob-omb Battlefield - Island Coin Ring 3 Center Coin
-COIN_OUTPUT(UINT64_C(3920356166214191855), 0, 4000131) // Bob-omb Battlefield - Island Coin Ring 2 Center Coin
-COIN_OUTPUT(UINT64_C(12401913572476054035), 0, 4000132) // Bob-omb Battlefield - Island Coin Ring 1 Center Coin
-COIN_OUTPUT(UINT64_C(8270928514112359662), 0, 4000133) // Bob-omb Battlefield - Island Coin Ring 4 Center Coin
+COIN_OUTPUT(UINT64_C(11272173055597013593), 0, 4000088) // Bob-omb Battlefield - Koopa Blue Coin
+COIN_OUTPUT(UINT64_C(12454789691145686486), 0, 4000089) // Bob-omb Battlefield - Mario Wings to the Sky Vertical Coin Ring 5 Coin 1
+COIN_OUTPUT(UINT64_C(12454789691145686486), 1, 4000090) // Bob-omb Battlefield - Mario Wings to the Sky Vertical Coin Ring 5 Coin 2
+COIN_OUTPUT(UINT64_C(12454789691145686486), 2, 4000091) // Bob-omb Battlefield - Mario Wings to the Sky Vertical Coin Ring 5 Coin 3
+COIN_OUTPUT(UINT64_C(12454789691145686486), 3, 4000092) // Bob-omb Battlefield - Mario Wings to the Sky Vertical Coin Ring 5 Coin 4
+COIN_OUTPUT(UINT64_C(12454789691145686486), 4, 4000093) // Bob-omb Battlefield - Mario Wings to the Sky Vertical Coin Ring 5 Coin 5
+COIN_OUTPUT(UINT64_C(12454789691145686486), 5, 4000094) // Bob-omb Battlefield - Mario Wings to the Sky Vertical Coin Ring 5 Coin 6
+COIN_OUTPUT(UINT64_C(12454789691145686486), 6, 4000095) // Bob-omb Battlefield - Mario Wings to the Sky Vertical Coin Ring 5 Coin 7
+COIN_OUTPUT(UINT64_C(12454789691145686486), 7, 4000096) // Bob-omb Battlefield - Mario Wings to the Sky Vertical Coin Ring 5 Coin 8
+COIN_OUTPUT(UINT64_C(4863634168354214533), 0, 4000097) // Bob-omb Battlefield - Mario Wings to the Sky Vertical Coin Ring 3 Coin 1
+COIN_OUTPUT(UINT64_C(4863634168354214533), 1, 4000098) // Bob-omb Battlefield - Mario Wings to the Sky Vertical Coin Ring 3 Coin 2
+COIN_OUTPUT(UINT64_C(4863634168354214533), 2, 4000099) // Bob-omb Battlefield - Mario Wings to the Sky Vertical Coin Ring 3 Coin 3
+COIN_OUTPUT(UINT64_C(4863634168354214533), 3, 4000100) // Bob-omb Battlefield - Mario Wings to the Sky Vertical Coin Ring 3 Coin 4
+COIN_OUTPUT(UINT64_C(4863634168354214533), 4, 4000101) // Bob-omb Battlefield - Mario Wings to the Sky Vertical Coin Ring 3 Coin 5
+COIN_OUTPUT(UINT64_C(4863634168354214533), 5, 4000102) // Bob-omb Battlefield - Mario Wings to the Sky Vertical Coin Ring 3 Coin 6
+COIN_OUTPUT(UINT64_C(4863634168354214533), 6, 4000103) // Bob-omb Battlefield - Mario Wings to the Sky Vertical Coin Ring 3 Coin 7
+COIN_OUTPUT(UINT64_C(4863634168354214533), 7, 4000104) // Bob-omb Battlefield - Mario Wings to the Sky Vertical Coin Ring 3 Coin 8
+COIN_OUTPUT(UINT64_C(18105749123579416449), 0, 4000105) // Bob-omb Battlefield - Mario Wings to the Sky Vertical Coin Ring 2 Coin 1
+COIN_OUTPUT(UINT64_C(18105749123579416449), 1, 4000106) // Bob-omb Battlefield - Mario Wings to the Sky Vertical Coin Ring 2 Coin 2
+COIN_OUTPUT(UINT64_C(18105749123579416449), 2, 4000107) // Bob-omb Battlefield - Mario Wings to the Sky Vertical Coin Ring 2 Coin 3
+COIN_OUTPUT(UINT64_C(18105749123579416449), 3, 4000108) // Bob-omb Battlefield - Mario Wings to the Sky Vertical Coin Ring 2 Coin 4
+COIN_OUTPUT(UINT64_C(18105749123579416449), 4, 4000109) // Bob-omb Battlefield - Mario Wings to the Sky Vertical Coin Ring 2 Coin 5
+COIN_OUTPUT(UINT64_C(18105749123579416449), 5, 4000110) // Bob-omb Battlefield - Mario Wings to the Sky Vertical Coin Ring 2 Coin 6
+COIN_OUTPUT(UINT64_C(18105749123579416449), 6, 4000111) // Bob-omb Battlefield - Mario Wings to the Sky Vertical Coin Ring 2 Coin 7
+COIN_OUTPUT(UINT64_C(18105749123579416449), 7, 4000112) // Bob-omb Battlefield - Mario Wings to the Sky Vertical Coin Ring 2 Coin 8
+COIN_OUTPUT(UINT64_C(4388049234176458269), 0, 4000113) // Bob-omb Battlefield - Mario Wings to the Sky Vertical Coin Ring 1 Coin 1
+COIN_OUTPUT(UINT64_C(4388049234176458269), 1, 4000114) // Bob-omb Battlefield - Mario Wings to the Sky Vertical Coin Ring 1 Coin 2
+COIN_OUTPUT(UINT64_C(4388049234176458269), 2, 4000115) // Bob-omb Battlefield - Mario Wings to the Sky Vertical Coin Ring 1 Coin 3
+COIN_OUTPUT(UINT64_C(4388049234176458269), 3, 4000116) // Bob-omb Battlefield - Mario Wings to the Sky Vertical Coin Ring 1 Coin 4
+COIN_OUTPUT(UINT64_C(4388049234176458269), 4, 4000117) // Bob-omb Battlefield - Mario Wings to the Sky Vertical Coin Ring 1 Coin 5
+COIN_OUTPUT(UINT64_C(4388049234176458269), 5, 4000118) // Bob-omb Battlefield - Mario Wings to the Sky Vertical Coin Ring 1 Coin 6
+COIN_OUTPUT(UINT64_C(4388049234176458269), 6, 4000119) // Bob-omb Battlefield - Mario Wings to the Sky Vertical Coin Ring 1 Coin 7
+COIN_OUTPUT(UINT64_C(4388049234176458269), 7, 4000120) // Bob-omb Battlefield - Mario Wings to the Sky Vertical Coin Ring 1 Coin 8
+COIN_OUTPUT(UINT64_C(1973391024944359924), 0, 4000121) // Bob-omb Battlefield - Mario Wings to the Sky Vertical Coin Ring 4 Coin 1
+COIN_OUTPUT(UINT64_C(1973391024944359924), 1, 4000122) // Bob-omb Battlefield - Mario Wings to the Sky Vertical Coin Ring 4 Coin 2
+COIN_OUTPUT(UINT64_C(1973391024944359924), 2, 4000123) // Bob-omb Battlefield - Mario Wings to the Sky Vertical Coin Ring 4 Coin 3
+COIN_OUTPUT(UINT64_C(1973391024944359924), 3, 4000124) // Bob-omb Battlefield - Mario Wings to the Sky Vertical Coin Ring 4 Coin 4
+COIN_OUTPUT(UINT64_C(1973391024944359924), 4, 4000125) // Bob-omb Battlefield - Mario Wings to the Sky Vertical Coin Ring 4 Coin 5
+COIN_OUTPUT(UINT64_C(1973391024944359924), 5, 4000126) // Bob-omb Battlefield - Mario Wings to the Sky Vertical Coin Ring 4 Coin 6
+COIN_OUTPUT(UINT64_C(1973391024944359924), 6, 4000127) // Bob-omb Battlefield - Mario Wings to the Sky Vertical Coin Ring 4 Coin 7
+COIN_OUTPUT(UINT64_C(1973391024944359924), 7, 4000128) // Bob-omb Battlefield - Mario Wings to the Sky Vertical Coin Ring 4 Coin 8
+COIN_OUTPUT(UINT64_C(8837847397148801858), 0, 4000129) // Bob-omb Battlefield - Mario Wings to the Sky Coin Ring 5 Center Coin
+COIN_OUTPUT(UINT64_C(270957891712792667), 0, 4000130) // Bob-omb Battlefield - Mario Wings to the Sky Coin Ring 3 Center Coin
+COIN_OUTPUT(UINT64_C(3920356166214191855), 0, 4000131) // Bob-omb Battlefield - Mario Wings to the Sky Coin Ring 2 Center Coin
+COIN_OUTPUT(UINT64_C(12401913572476054035), 0, 4000132) // Bob-omb Battlefield - Mario Wings to the Sky Coin Ring 1 Center Coin
+COIN_OUTPUT(UINT64_C(8270928514112359662), 0, 4000133) // Bob-omb Battlefield - Mario Wings to the Sky Coin Ring 4 Center Coin
 COIN_OUTPUT(UINT64_C(7030571149922220527), 0, 4001000) // Whomp's Fortress - Rotating Plank Red Coin
 COIN_OUTPUT(UINT64_C(18313336984663760333), 0, 4001001) // Whomp's Fortress - Narrow Ledge Red Coin
 COIN_OUTPUT(UINT64_C(180791707638267664), 0, 4001002) // Whomp's Fortress - Piranha Plant Red Coin
@@ -494,7 +494,7 @@ COIN_OUTPUT(UINT64_C(312056985772532339), 0, 4004045) // Big Boo's Haunt - First
 COIN_OUTPUT(UINT64_C(13762801075027478223), 0, 4004046) // Big Boo's Haunt - Second Floor Flying Bookend 1 Blue Coin
 COIN_OUTPUT(UINT64_C(3584102075370214457), 0, 4004047) // Big Boo's Haunt - Second Floor Flying Bookend 2 Blue Coin
 COIN_OUTPUT(UINT64_C(13948300913832475066), 0, 4004048) // Big Boo's Haunt - Second Floor Mr. I Blue Coin
-COIN_OUTPUT(UINT64_C(15006065071256724925), 0, 4004049) // Big Boo's Haunt - Third Floor Boo Blue Coin
+COIN_OUTPUT(UINT64_C(15006065071256724925), 0, 4004049) // Big Boo's Haunt - Merry-Go-Round Boo 4 Blue Coin
 COIN_OUTPUT(UINT64_C(1417484581569004874), 0, 4004050) // Big Boo's Haunt - Blue Coin Block in the Attic Blue Coin 1
 COIN_OUTPUT(UINT64_C(4905563867994954475), 0, 4004051) // Big Boo's Haunt - Blue Coin Block in the Attic Blue Coin 2
 COIN_OUTPUT(UINT64_C(402971786891338201), 0, 4004052) // Big Boo's Haunt - Blue Coin Block in the Attic Blue Coin 3
@@ -502,8 +502,8 @@ COIN_OUTPUT(UINT64_C(9669603755377056279), 0, 4004053) // Big Boo's Haunt - Blue
 COIN_OUTPUT(UINT64_C(12773749664289135516), 0, 4004054) // Big Boo's Haunt - Merry-Go-Round Boo 1 Blue Coin
 COIN_OUTPUT(UINT64_C(1023951811482352127), 0, 4004055) // Big Boo's Haunt - Merry-Go-Round Boo 2 Blue Coin
 COIN_OUTPUT(UINT64_C(17238380478224314334), 0, 4004056) // Big Boo's Haunt - Merry-Go-Round Boo 3 Blue Coin
-COIN_OUTPUT(UINT64_C(6076803443386367289), 0, 4004057) // Big Boo's Haunt - Merry-Go-Round Boo 4 Blue Coin
-COIN_OUTPUT(UINT64_C(15091704351762370766), 0, 4004058) // Big Boo's Haunt - Merry-Go-Round Boo 5 Blue Coin
+COIN_OUTPUT(UINT64_C(6076803443386367289), 0, 4004057) // Big Boo's Haunt - Merry-Go-Round Boo 5 Blue Coin
+COIN_OUTPUT(UINT64_C(15091704351762370766), 0, 4004058) // Big Boo's Haunt - Secret Room Boo Blue Coin
 COIN_OUTPUT(UINT64_C(14845559467394506238), 0, 4005000) // Hazy Maze Cave - Lower Red Coin 1
 COIN_OUTPUT(UINT64_C(4218543455029372485), 0, 4005001) // Hazy Maze Cave - Lower Red Coin 2
 COIN_OUTPUT(UINT64_C(8036490565236904619), 0, 4005002) // Hazy Maze Cave - Lower Red Coin 3
@@ -959,15 +959,15 @@ COIN_OUTPUT(UINT64_C(15616086837633518731), 0, 4009065) // Snowman's Land - Coin
 COIN_OUTPUT(UINT64_C(13807215121659027055), 0, 4009066) // Snowman's Land - Coin Leading to Snowman's Big Head 1
 COIN_OUTPUT(UINT64_C(17509080467391167207), 0, 4009067) // Snowman's Land - Coin Leading to Snowman's Big Head 2
 COIN_OUTPUT(UINT64_C(1935755855598764578), 0, 4009068) // Snowman's Land - Coin Leading to Snowman's Big Head 3
-COIN_OUTPUT(UINT64_C(10400236185832743012), 0, 4009069) // Snowman's Land - Additional Outdoor Spindrift 1 Coin 1
-COIN_OUTPUT(UINT64_C(10400236185832743012), 1, 4009070) // Snowman's Land - Additional Outdoor Spindrift 1 Coin 2
-COIN_OUTPUT(UINT64_C(10400236185832743012), 2, 4009071) // Snowman's Land - Additional Outdoor Spindrift 1 Coin 3
-COIN_OUTPUT(UINT64_C(3036630138039916877), 0, 4009072) // Snowman's Land - Additional Outdoor Spindrift 2 Coin 1
-COIN_OUTPUT(UINT64_C(3036630138039916877), 1, 4009073) // Snowman's Land - Additional Outdoor Spindrift 2 Coin 2
-COIN_OUTPUT(UINT64_C(3036630138039916877), 2, 4009074) // Snowman's Land - Additional Outdoor Spindrift 2 Coin 3
-COIN_OUTPUT(UINT64_C(6759329844412779376), 0, 4009075) // Snowman's Land - Additional Outdoor Spindrift 3 Coin 1
-COIN_OUTPUT(UINT64_C(6759329844412779376), 1, 4009076) // Snowman's Land - Additional Outdoor Spindrift 3 Coin 2
-COIN_OUTPUT(UINT64_C(6759329844412779376), 2, 4009077) // Snowman's Land - Additional Outdoor Spindrift 3 Coin 3
+COIN_OUTPUT(UINT64_C(10400236185832743012), 0, 4009069) // Snowman's Land - Spindrift 9 Coin 1
+COIN_OUTPUT(UINT64_C(10400236185832743012), 1, 4009070) // Snowman's Land - Spindrift 9 Coin 2
+COIN_OUTPUT(UINT64_C(10400236185832743012), 2, 4009071) // Snowman's Land - Spindrift 9 Coin 3
+COIN_OUTPUT(UINT64_C(3036630138039916877), 0, 4009072) // Snowman's Land - Spindrift 10 Coin 1
+COIN_OUTPUT(UINT64_C(3036630138039916877), 1, 4009073) // Snowman's Land - Spindrift 10 Coin 2
+COIN_OUTPUT(UINT64_C(3036630138039916877), 2, 4009074) // Snowman's Land - Spindrift 10 Coin 3
+COIN_OUTPUT(UINT64_C(6759329844412779376), 0, 4009075) // Snowman's Land - Spindrift 11 Coin 1
+COIN_OUTPUT(UINT64_C(6759329844412779376), 1, 4009076) // Snowman's Land - Spindrift 11 Coin 2
+COIN_OUTPUT(UINT64_C(6759329844412779376), 2, 4009077) // Snowman's Land - Spindrift 11 Coin 3
 COIN_OUTPUT(UINT64_C(14949877359224318930), 0, 4009078) // Snowman's Land - Igloo Goomba 1 Coin
 COIN_OUTPUT(UINT64_C(10187495627118315744), 0, 4009079) // Snowman's Land - Igloo Goomba 2 Coin
 COIN_OUTPUT(UINT64_C(14120503613981409538), 0, 4009080) // Snowman's Land - Igloo Goomba 3 Coin
@@ -1066,12 +1066,12 @@ COIN_OUTPUT(UINT64_C(1115470279253350631), 6, 4010053) // Wet-Dry World - Push B
 COIN_OUTPUT(UINT64_C(1115470279253350631), 7, 4010054) // Wet-Dry World - Push Block 10-Coin Block Coin 8
 COIN_OUTPUT(UINT64_C(1115470279253350631), 8, 4010055) // Wet-Dry World - Push Block 10-Coin Block Coin 9
 COIN_OUTPUT(UINT64_C(1115470279253350631), 9, 4010056) // Wet-Dry World - Push Block 10-Coin Block Coin 10
-COIN_OUTPUT(UINT64_C(4022299540139909623), 0, 4010057) // Wet-Dry World - Blue Coins at Low Water Blue Coin 1
-COIN_OUTPUT(UINT64_C(6173113369733372059), 0, 4010058) // Wet-Dry World - Blue Coins at Low Water Blue Coin 2
-COIN_OUTPUT(UINT64_C(17926736903323104567), 0, 4010059) // Wet-Dry World - Blue Coins at Low Water Blue Coin 3
-COIN_OUTPUT(UINT64_C(4413567370499962925), 0, 4010060) // Wet-Dry World - Blue Coins at Low Water Blue Coin 4
-COIN_OUTPUT(UINT64_C(11228467073414351976), 0, 4010061) // Wet-Dry World - Blue Coins at Low Water Blue Coin 5
-COIN_OUTPUT(UINT64_C(12152654132819111788), 0, 4010062) // Wet-Dry World - Blue Coins at Low Water Blue Coin 6
+COIN_OUTPUT(UINT64_C(4022299540139909623), 0, 4010057) // Wet-Dry World - Blue Coin Block Blue Coin 1
+COIN_OUTPUT(UINT64_C(6173113369733372059), 0, 4010058) // Wet-Dry World - Blue Coin Block Blue Coin 2
+COIN_OUTPUT(UINT64_C(17926736903323104567), 0, 4010059) // Wet-Dry World - Blue Coin Block Blue Coin 3
+COIN_OUTPUT(UINT64_C(4413567370499962925), 0, 4010060) // Wet-Dry World - Blue Coin Block Blue Coin 4
+COIN_OUTPUT(UINT64_C(11228467073414351976), 0, 4010061) // Wet-Dry World - Blue Coin Block Blue Coin 5
+COIN_OUTPUT(UINT64_C(12152654132819111788), 0, 4010062) // Wet-Dry World - Blue Coin Block Blue Coin 6
 COIN_OUTPUT(UINT64_C(3508715211436502736), 0, 4010063) // Wet-Dry World - Wooden Structure 3-Coin Block Coin 1
 COIN_OUTPUT(UINT64_C(3508715211436502736), 1, 4010064) // Wet-Dry World - Wooden Structure 3-Coin Block Coin 2
 COIN_OUTPUT(UINT64_C(3508715211436502736), 2, 4010065) // Wet-Dry World - Wooden Structure 3-Coin Block Coin 3
@@ -1281,7 +1281,7 @@ COIN_OUTPUT(UINT64_C(7273045542988121135), 0, 4012032) // Tiny-Huge Island - Tin
 COIN_OUTPUT(UINT64_C(18007270184792959867), 0, 4012033) // Tiny-Huge Island - Tiny Island Goomba 7 Coin
 COIN_OUTPUT(UINT64_C(5837159805459639483), 0, 4012034) // Tiny-Huge Island - Tiny Island Goomba 8 Coin
 COIN_OUTPUT(UINT64_C(2700820942839853903), 0, 4012035) // Tiny-Huge Island - Tiny Island Goomba 9 Coin
-COIN_OUTPUT(UINT64_C(2495232528457931136), 0, 4012036) // Tiny-Huge Island - Tiny Main Area Koopa Troopa Blue Coin
+COIN_OUTPUT(UINT64_C(2495232528457931136), 0, 4012036) // Tiny-Huge Island - Tiny Island Koopa Blue Coin
 COIN_OUTPUT(UINT64_C(11771152675370971988), 0, 4012037) // Tiny-Huge Island - Five Itty Bitty Secrets Island Coin
 COIN_OUTPUT(UINT64_C(10653829006633911174), 0, 4012038) // Tiny-Huge Island - Huge Starting Area Goomba 1 Coin
 COIN_COMPLETION(UINT64_C(10653829006633911174), 5, 4012039) // Tiny-Huge Island - Huge Starting Area Goomba 1 Blue Coin
@@ -1307,7 +1307,7 @@ COIN_OUTPUT(UINT64_C(5847723274718491684), 1, 4012058) // Tiny-Huge Island - Hug
 COIN_OUTPUT(UINT64_C(5847723274718491684), 2, 4012059) // Tiny-Huge Island - Huge Island Lakitu Coin 3
 COIN_OUTPUT(UINT64_C(5847723274718491684), 3, 4012060) // Tiny-Huge Island - Huge Island Lakitu Coin 4
 COIN_OUTPUT(UINT64_C(5847723274718491684), 4, 4012061) // Tiny-Huge Island - Huge Island Lakitu Coin 5
-COIN_OUTPUT(UINT64_C(13296956193758623431), 0, 4012062) // Tiny-Huge Island - Huge Island Koopa Troopa Blue Coin
+COIN_OUTPUT(UINT64_C(13296956193758623431), 0, 4012062) // Tiny-Huge Island - Huge Island Koopa Blue Coin
 COIN_OUTPUT(UINT64_C(524042051120170091), 0, 4012063) // Tiny-Huge Island - Wooden Post on Lakitu's Island Coin 1
 COIN_OUTPUT(UINT64_C(524042051120170091), 1, 4012064) // Tiny-Huge Island - Wooden Post on Lakitu's Island Coin 2
 COIN_OUTPUT(UINT64_C(524042051120170091), 2, 4012065) // Tiny-Huge Island - Wooden Post on Lakitu's Island Coin 3
@@ -1399,8 +1399,8 @@ COIN_OUTPUT(UINT64_C(5518623956952914474), 6, 4013014) // Tick Tock Clock - 10-C
 COIN_OUTPUT(UINT64_C(5518623956952914474), 7, 4013015) // Tick Tock Clock - 10-Coin Block behind the Start Coin 8
 COIN_OUTPUT(UINT64_C(5518623956952914474), 8, 4013016) // Tick Tock Clock - 10-Coin Block behind the Start Coin 9
 COIN_OUTPUT(UINT64_C(5518623956952914474), 9, 4013017) // Tick Tock Clock - 10-Coin Block behind the Start Coin 10
-COIN_OUTPUT(UINT64_C(3069512257523061106), 0, 4013018) // Tick Tock Clock - Starting Area Bob-omb 1 Coin
-COIN_OUTPUT(UINT64_C(14792639509504044139), 0, 4013019) // Tick Tock Clock - Starting Area Bob-omb 2 Coin
+COIN_OUTPUT(UINT64_C(3069512257523061106), 0, 4013018) // Tick Tock Clock - Bob-omb 1 Coin
+COIN_OUTPUT(UINT64_C(14792639509504044139), 0, 4013019) // Tick Tock Clock - Bob-omb 2 Coin
 COIN_OUTPUT(UINT64_C(6164718277736868578), 0, 4013020) // Tick Tock Clock - Coin above the First Turning Cube 1
 COIN_OUTPUT(UINT64_C(16194655097679522494), 0, 4013021) // Tick Tock Clock - Coin above the First Turning Cube 2
 COIN_OUTPUT(UINT64_C(3961208959755783222), 0, 4013022) // Tick Tock Clock - 3-Coin Block behind the Second Pendulum Coin 1
@@ -1691,14 +1691,14 @@ COIN_OUTPUT(UINT64_C(7727469496014904741), 4, 4016044) // The Secret Aquarium - 
 COIN_OUTPUT(UINT64_C(7727469496014904741), 5, 4016045) // The Secret Aquarium - Vertical Coin Ring 4 Coin 6
 COIN_OUTPUT(UINT64_C(7727469496014904741), 6, 4016046) // The Secret Aquarium - Vertical Coin Ring 4 Coin 7
 COIN_OUTPUT(UINT64_C(7727469496014904741), 7, 4016047) // The Secret Aquarium - Vertical Coin Ring 4 Coin 8
-COIN_OUTPUT(UINT64_C(17313667399051933446), 0, 4017000) // Wing Mario Over the Rainbow - Cannon Region Red Coin 1
-COIN_OUTPUT(UINT64_C(3306241481376695547), 0, 4017001) // Wing Mario Over the Rainbow - Cannon Region Red Coin 2
-COIN_OUTPUT(UINT64_C(12684981429785748325), 0, 4017002) // Wing Mario Over the Rainbow - Cannon Region Red Coin 3
-COIN_OUTPUT(UINT64_C(12051222259787030723), 0, 4017003) // Wing Mario Over the Rainbow - Flight Path Red Coin 1
-COIN_OUTPUT(UINT64_C(2188914312596767964), 0, 4017004) // Wing Mario Over the Rainbow - Flight Path Red Coin 2
-COIN_OUTPUT(UINT64_C(13089668381092514108), 0, 4017005) // Wing Mario Over the Rainbow - Flight Path Red Coin 3
-COIN_OUTPUT(UINT64_C(12976015976727214844), 0, 4017006) // Wing Mario Over the Rainbow - Initial Red Coin
-COIN_OUTPUT(UINT64_C(16793528763025925630), 0, 4017007) // Wing Mario Over the Rainbow - Cannon Region Red Coin 4
+COIN_OUTPUT(UINT64_C(17313667399051933446), 0, 4017000) // Wing Mario Over the Rainbow - Hanging Poles Red Coin
+COIN_OUTPUT(UINT64_C(3306241481376695547), 0, 4017001) // Wing Mario Over the Rainbow - Transparent Cloud Red Coin
+COIN_OUTPUT(UINT64_C(12684981429785748325), 0, 4017002) // Wing Mario Over the Rainbow - Pole Cloud Red Coin 1
+COIN_OUTPUT(UINT64_C(12051222259787030723), 0, 4017003) // Wing Mario Over the Rainbow - Overlooking Bob-omb Buddy Cloud Red Coin
+COIN_OUTPUT(UINT64_C(2188914312596767964), 0, 4017004) // Wing Mario Over the Rainbow - Bob-omb Buddy Platform Red Coin
+COIN_OUTPUT(UINT64_C(13089668381092514108), 0, 4017005) // Wing Mario Over the Rainbow - Lowest Cloud Red Coin
+COIN_OUTPUT(UINT64_C(12976015976727214844), 0, 4017006) // Wing Mario Over the Rainbow - Starting Cloud Red Coin
+COIN_OUTPUT(UINT64_C(16793528763025925630), 0, 4017007) // Wing Mario Over the Rainbow - Pole Cloud Red Coin 2
 COIN_OUTPUT(UINT64_C(2736503998361915065), 0, 4017008) // Wing Mario Over the Rainbow - Vertical Coin Ring around the Rainbows 1 Coin 1
 COIN_OUTPUT(UINT64_C(2736503998361915065), 1, 4017009) // Wing Mario Over the Rainbow - Vertical Coin Ring around the Rainbows 1 Coin 2
 COIN_OUTPUT(UINT64_C(2736503998361915065), 2, 4017010) // Wing Mario Over the Rainbow - Vertical Coin Ring around the Rainbows 1 Coin 3
@@ -1948,9 +1948,9 @@ COIN_OUTPUT(UINT64_C(17857525755295352848), 5, 4022020) // Bowser in the Fire Se
 COIN_OUTPUT(UINT64_C(17857525755295352848), 6, 4022021) // Bowser in the Fire Sea - Wire Platform Coin Ring Coin 7
 COIN_OUTPUT(UINT64_C(17857525755295352848), 7, 4022022) // Bowser in the Fire Sea - Wire Platform Coin Ring Coin 8
 COIN_OUTPUT(UINT64_C(1594898432222632689), 0, 4022023) // Bowser in the Fire Sea - First Bully Coin
-COIN_OUTPUT(UINT64_C(1195418959348995378), 0, 4022024) // Bowser in the Fire Sea - Starting Area Goomba 1 Coin
-COIN_OUTPUT(UINT64_C(18215143470214485682), 0, 4022025) // Bowser in the Fire Sea - Starting Area Goomba 2 Coin
-COIN_OUTPUT(UINT64_C(13543189116904537739), 0, 4022026) // Bowser in the Fire Sea - Starting Area Goomba 3 Coin
+COIN_OUTPUT(UINT64_C(1195418959348995378), 0, 4022024) // Bowser in the Fire Sea - Goomba 1 Coin
+COIN_OUTPUT(UINT64_C(18215143470214485682), 0, 4022025) // Bowser in the Fire Sea - Goomba 2 Coin
+COIN_OUTPUT(UINT64_C(13543189116904537739), 0, 4022026) // Bowser in the Fire Sea - Goomba 3 Coin
 COIN_OUTPUT(UINT64_C(15430374943047765977), 0, 4022027) // Bowser in the Fire Sea - 3-Coin Block Coin 1
 COIN_OUTPUT(UINT64_C(15430374943047765977), 1, 4022028) // Bowser in the Fire Sea - 3-Coin Block Coin 2
 COIN_OUTPUT(UINT64_C(15430374943047765977), 2, 4022029) // Bowser in the Fire Sea - 3-Coin Block Coin 3
@@ -1999,11 +1999,11 @@ COIN_OUTPUT(UINT64_C(16119340804281294921), 0, 4022071) // Bowser in the Fire Se
 COIN_OUTPUT(UINT64_C(6231880787882052043), 0, 4023000) // Bowser in the Sky - Piranha Plant Red Coin
 COIN_OUTPUT(UINT64_C(9075898343163429872), 0, 4023001) // Bowser in the Sky - Push Block Red Coin
 COIN_OUTPUT(UINT64_C(15099825163588910882), 0, 4023002) // Bowser in the Sky - Beneath the Tilting Platform Hidden Red Coin
-COIN_OUTPUT(UINT64_C(10192470643035968804), 0, 4023003) // Bowser in the Sky - Arrow Ride Red Coin 1
-COIN_OUTPUT(UINT64_C(17003191766161851301), 0, 4023004) // Bowser in the Sky - Arrow Ride Red Coin 2
-COIN_OUTPUT(UINT64_C(835847319852345341), 0, 4023005) // Bowser in the Sky - Top Red Coin 1
-COIN_OUTPUT(UINT64_C(7826780960619633607), 0, 4023006) // Bowser in the Sky - Arrow Ride Red Coin 3
-COIN_OUTPUT(UINT64_C(11994561705212852584), 0, 4023007) // Bowser in the Sky - Top Red Coin 2
+COIN_OUTPUT(UINT64_C(10192470643035968804), 0, 4023003) // Bowser in the Sky - Suction Cup Platform Red Coin
+COIN_OUTPUT(UINT64_C(17003191766161851301), 0, 4023004) // Bowser in the Sky - Arrow Ride Red Coin
+COIN_OUTPUT(UINT64_C(835847319852345341), 0, 4023005) // Bowser in the Sky - Top Pole Red Coin
+COIN_OUTPUT(UINT64_C(7826780960619633607), 0, 4023006) // Bowser in the Sky - Spinning Platform Red Coin
+COIN_OUTPUT(UINT64_C(11994561705212852584), 0, 4023007) // Bowser in the Sky - Under Final Steps Red Coin
 COIN_OUTPUT(UINT64_C(11323123911323748700), 0, 4023008) // Bowser in the Sky - Coin on the Tilting W Platform 1
 COIN_OUTPUT(UINT64_C(14351855812259622984), 0, 4023009) // Bowser in the Sky - Coin on the Tilting W Platform 2
 COIN_OUTPUT(UINT64_C(2630464862869280223), 0, 4023010) // Bowser in the Sky - Coin on the Tilting W Platform 3
@@ -2047,14 +2047,14 @@ COIN_OUTPUT(UINT64_C(16624160807700464899), 1, 4023047) // Bowser in the Sky - C
 COIN_OUTPUT(UINT64_C(16624160807700464899), 2, 4023048) // Bowser in the Sky - Coin Line on the Suction-Cup Platform Coin 3
 COIN_OUTPUT(UINT64_C(16624160807700464899), 3, 4023049) // Bowser in the Sky - Coin Line on the Suction-Cup Platform Coin 4
 COIN_OUTPUT(UINT64_C(16624160807700464899), 4, 4023050) // Bowser in the Sky - Coin Line on the Suction-Cup Platform Coin 5
-COIN_OUTPUT(UINT64_C(17564072643664567165), 0, 4023051) // Bowser in the Sky - Coin on the Spinning Platform after the Fifth Red Coin 1
-COIN_OUTPUT(UINT64_C(16775418442334642873), 0, 4023052) // Bowser in the Sky - Coin on the Spinning Platform after the Fifth Red Coin 2
-COIN_OUTPUT(UINT64_C(2932846808984964597), 0, 4023053) // Bowser in the Sky - Coin on the Spinning Platform after the Fifth Red Coin 3
+COIN_OUTPUT(UINT64_C(17564072643664567165), 0, 4023051) // Bowser in the Sky - Spinning Platform Coin 1
+COIN_OUTPUT(UINT64_C(16775418442334642873), 0, 4023052) // Bowser in the Sky - Spinning Platform Coin 2
+COIN_OUTPUT(UINT64_C(2932846808984964597), 0, 4023053) // Bowser in the Sky - Spinning Platform Coin 3
 COIN_OUTPUT(UINT64_C(12373745360825535786), 0, 4023054) // Bowser in the Sky - Arrow Ride Bob-omb 1 Coin
 COIN_OUTPUT(UINT64_C(256844268087504040), 0, 4023055) // Bowser in the Sky - Arrow Ride Bob-omb 2 Coin
 COIN_OUTPUT(UINT64_C(5705259654593155830), 0, 4023056) // Bowser in the Sky - Arrow Ride Fire Piranha Plant Coin
 COIN_OUTPUT(UINT64_C(17918488181751716022), 0, 4023057) // Bowser in the Sky - Top Goomba 2 Coin
-COIN_OUTPUT(UINT64_C(7204995425964503995), 0, 4023058) // Bowser in the Sky - Top Goomba 3 Coin
+COIN_OUTPUT(UINT64_C(3440853442239391762), 0, 4023058) // Bowser in the Sky - Top Goomba 3 Coin
 COIN_OUTPUT(UINT64_C(9067295497235964580), 0, 4023059) // Bowser in the Sky - Top Goomba 4 Coin
 COIN_OUTPUT(UINT64_C(4274362423818305777), 0, 4023060) // Bowser in the Sky - Top Goomba 5 Coin
 COIN_OUTPUT(UINT64_C(1911898279736606605), 0, 4023061) // Bowser in the Sky - Top Bob-omb 1 Coin
@@ -2064,21 +2064,21 @@ COIN_OUTPUT(UINT64_C(14173834641707679399), 1, 4023064) // Bowser in the Sky - C
 COIN_OUTPUT(UINT64_C(14173834641707679399), 2, 4023065) // Bowser in the Sky - Coin Line before the Final Rotating Platforms Coin 3
 COIN_OUTPUT(UINT64_C(14173834641707679399), 3, 4023066) // Bowser in the Sky - Coin Line before the Final Rotating Platforms Coin 4
 COIN_OUTPUT(UINT64_C(14173834641707679399), 4, 4023067) // Bowser in the Sky - Coin Line before the Final Rotating Platforms Coin 5
-COIN_OUTPUT(UINT64_C(2157455861602796768), 0, 4024000) // Castle - Coin Under the Bridge 1
-COIN_OUTPUT(UINT64_C(16330817500381477859), 0, 4024001) // Castle - Coin Under the Bridge 2
-COIN_OUTPUT(UINT64_C(3037459968408057125), 0, 4024002) // Castle - Lobby Coin 1
-COIN_OUTPUT(UINT64_C(16939346357142410508), 0, 4024003) // Castle - Lobby Coin 2
-COIN_OUTPUT(UINT64_C(9766074890907063255), 0, 4024004) // Castle - Lobby Coin 3
-COIN_OUTPUT(UINT64_C(10884078425327435414), 0, 4024005) // Castle - Lobby Coin 4
-COIN_OUTPUT(UINT64_C(13827330324851217627), 0, 4024006) // Castle - Courtyard Boo 1 Coin
-COIN_OUTPUT(UINT64_C(15532012561141637485), 0, 4024007) // Castle - Courtyard Boo 2 Coin
-COIN_OUTPUT(UINT64_C(7549438160062669023), 0, 4024008) // Castle - Courtyard Boo 3 Coin
-COIN_OUTPUT(UINT64_C(2136356700941350801), 0, 4024009) // Castle - Courtyard Boo 4 Coin
-COIN_OUTPUT(UINT64_C(18079725013614110851), 0, 4024010) // Castle - Courtyard Boo 5 Coin
-COIN_OUTPUT(UINT64_C(15545773201924517354), 0, 4024011) // Castle - Courtyard Boo 6 Coin
-COIN_OUTPUT(UINT64_C(3535099882712564471), 0, 4024012) // Castle - Courtyard Boo 7 Coin
-COIN_OUTPUT(UINT64_C(13420328892179364659), 0, 4024013) // Castle - Courtyard Boo 8 Coin
-COIN_OUTPUT(UINT64_C(149211852993819841), 0, 4024014) // Castle - Courtyard Boo 9 Coin
+COIN_OUTPUT(UINT64_C(2157455861602796768), 0, 4024000) // Castle Grounds - Coin Under the Bridge 1
+COIN_OUTPUT(UINT64_C(16330817500381477859), 0, 4024001) // Castle Grounds - Coin Under the Bridge 2
+COIN_OUTPUT(UINT64_C(3037459968408057125), 0, 4024002) // Castle First Floor - Coin 1
+COIN_OUTPUT(UINT64_C(16939346357142410508), 0, 4024003) // Castle First Floor - Coin 2
+COIN_OUTPUT(UINT64_C(9766074890907063255), 0, 4024004) // Castle First Floor - Coin 3
+COIN_OUTPUT(UINT64_C(10884078425327435414), 0, 4024005) // Castle First Floor - Coin 4
+COIN_OUTPUT(UINT64_C(13827330324851217627), 0, 4024006) // Castle Courtyard - Boo 1 Coin
+COIN_OUTPUT(UINT64_C(15532012561141637485), 0, 4024007) // Castle Courtyard - Boo 2 Coin
+COIN_OUTPUT(UINT64_C(7549438160062669023), 0, 4024008) // Castle Courtyard - Boo 3 Coin
+COIN_OUTPUT(UINT64_C(2136356700941350801), 0, 4024009) // Castle Courtyard - Boo 4 Coin
+COIN_OUTPUT(UINT64_C(18079725013614110851), 0, 4024010) // Castle Courtyard - Boo 5 Coin
+COIN_OUTPUT(UINT64_C(15545773201924517354), 0, 4024011) // Castle Courtyard - Boo 6 Coin
+COIN_OUTPUT(UINT64_C(3535099882712564471), 0, 4024012) // Castle Courtyard - Boo 7 Coin
+COIN_OUTPUT(UINT64_C(13420328892179364659), 0, 4024013) // Castle Courtyard - Boo 8 Coin
+COIN_OUTPUT(UINT64_C(149211852993819841), 0, 4024014) // Castle Courtyard - Boo 9 Coin
 
 COIN_SEMANTIC_SOURCE(UINT64_C(43344795016952615), 0, "ssl_goombas", 1)
 COIN_SEMANTIC_SOURCE(UINT64_C(43344795016952615), 0, "ssl_pyramid_goombas", 1)
@@ -2625,6 +2625,7 @@ COIN_SEMANTIC_SOURCE(UINT64_C(3428102740230172561), 0, "lower_red_coins", 2)
 COIN_SEMANTIC_SOURCE(UINT64_C(3428102740230172561), 0, "red_coin", 2)
 COIN_SEMANTIC_SOURCE(UINT64_C(3428483919344631383), 0, "lll_remaining_three_red_coins", 2)
 COIN_SEMANTIC_SOURCE(UINT64_C(3428483919344631383), 0, "red_coin", 2)
+COIN_SEMANTIC_SOURCE(UINT64_C(3440853442239391762), 0, "bits_top_goombas", 1)
 COIN_SEMANTIC_SOURCE(UINT64_C(3486023878218068749), 0, "main_bob_ombs", 1)
 COIN_SEMANTIC_SOURCE(UINT64_C(3503458455389022400), 0, "mansion_ten_coin_block", 1)
 COIN_SEMANTIC_SOURCE(UINT64_C(3503458455389022400), 1, "mansion_ten_coin_block", 1)
@@ -3162,7 +3163,6 @@ COIN_SEMANTIC_SOURCE(UINT64_C(7167489218913249006), 4, "bitdw_coin_rings", 1)
 COIN_SEMANTIC_SOURCE(UINT64_C(7167489218913249006), 5, "bitdw_coin_rings", 1)
 COIN_SEMANTIC_SOURCE(UINT64_C(7167489218913249006), 6, "bitdw_coin_rings", 1)
 COIN_SEMANTIC_SOURCE(UINT64_C(7167489218913249006), 7, "bitdw_coin_rings", 1)
-COIN_SEMANTIC_SOURCE(UINT64_C(7204995425964503995), 0, "bits_top_goombas", 1)
 COIN_SEMANTIC_SOURCE(UINT64_C(7207760236314837028), 0, "ssl_upper_pyramid_single_coins", 1)
 COIN_SEMANTIC_SOURCE(UINT64_C(7214758931168833692), 0, "initial_red_coins", 2)
 COIN_SEMANTIC_SOURCE(UINT64_C(7214758931168833692), 0, "red_coin", 2)
@@ -4193,12 +4193,14 @@ COIN_SEMANTIC_SOURCE(UINT64_C(14989538792887949378), 1, "main_horizontal_coin_li
 COIN_SEMANTIC_SOURCE(UINT64_C(14989538792887949378), 2, "main_horizontal_coin_lines", 1)
 COIN_SEMANTIC_SOURCE(UINT64_C(14989538792887949378), 3, "main_horizontal_coin_lines", 1)
 COIN_SEMANTIC_SOURCE(UINT64_C(14989538792887949378), 4, "main_horizontal_coin_lines", 1)
+COIN_SEMANTIC_SOURCE(UINT64_C(15006065071256724925), 0, "merry_go_round_boos", 5)
 COIN_SEMANTIC_SOURCE(UINT64_C(15006065071256724925), 0, "third_floor_boo", 5)
 COIN_SEMANTIC_SOURCE(UINT64_C(15008990179358265362), 0, "ddd_remaining_red_coins", 2)
 COIN_SEMANTIC_SOURCE(UINT64_C(15008990179358265362), 0, "red_coin", 2)
 COIN_SEMANTIC_SOURCE(UINT64_C(15067271541434961793), 0, "huge_piranha_area_plants", 1)
 COIN_SEMANTIC_SOURCE(UINT64_C(15067271541434961793), 1, "huge_piranha_area_plants", 1)
 COIN_SEMANTIC_SOURCE(UINT64_C(15091704351762370766), 0, "merry_go_round_boos", 5)
+COIN_SEMANTIC_SOURCE(UINT64_C(15091704351762370766), 0, "third_floor_boo", 5)
 COIN_SEMANTIC_SOURCE(UINT64_C(15099825163588910882), 0, "bits_start_red_coins", 2)
 COIN_SEMANTIC_SOURCE(UINT64_C(15099825163588910882), 0, "red_coin", 2)
 COIN_SEMANTIC_SOURCE(UINT64_C(15113789788046324901), 0, "red_coin", 2)

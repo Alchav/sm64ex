@@ -937,7 +937,10 @@ static void SM64AP_SetMin(int &value, int minValue) {
 static int SM64AP_CoinCheckOffsetFromLocationId(int locId);
 
 void SM64AP_RecvItem(int64_t idx, bool notify) {
-    AP_EnableQueueItemRecvMsgs(true);
+    const bool suppressItemMessage = idx == SM64AP_ID_PROGRESSIVE_CAP_LENGTH
+        || idx == SM64AP_ID_PROGRESSIVE_UNDERWATER_BREATH
+        || idx == SM64AP_ID_PROGRESSIVE_DAMAGE_DODGE;
+    AP_EnableQueueItemRecvMsgs(!suppressItemMessage);
 
     if (idx == SM64AP_ID_GLOBAL_SIGNS) {
         sm64_have_global_signs = true;
