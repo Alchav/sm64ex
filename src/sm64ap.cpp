@@ -69,6 +69,14 @@ extern void APSend(std::string request);
 // Set to false on some branch for compat with patches
 static constexpr bool SM64AP_SUPPORT_MOVE_RANDO = true;
 static constexpr const char *SM64AP_GAME_NAME = "SM64: Spicy Mycena 64";
+static constexpr int SM64AP_VERSION_MAJOR = 1;
+static constexpr int SM64AP_VERSION_MINOR = 0;
+
+static std::atomic<bool> sm64_world_version_received { false };
+static std::atomic<bool> sm64_world_version_compatible { false };
+static std::atomic<int> sm64_world_version_major { -1 };
+static std::atomic<int> sm64_world_version_minor { -1 };
+static std::atomic<int> sm64_world_version_patch { -1 };
 
 int starsCollected = 0;
 bool sm64_locations[SM64AP_NUM_LOCS];
@@ -3334,6 +3342,25 @@ void SM64AP_SetCompletionType(int type) {
     sm64_completion_type = type;
 }
 
+void SM64AP_SetWorldVersion(std::string rawVersion) {
+    int major = -1;
+    int minor = -1;
+    int patch = -1;
+    const bool valid = (
+        std::sscanf(rawVersion.c_str(), " [ %d , %d , %d ]", &major, &minor, &patch) == 3
+        || std::sscanf(rawVersion.c_str(), " ( %d , %d , %d )", &major, &minor, &patch) == 3
+        || std::sscanf(rawVersion.c_str(), " \" %d . %d . %d \"", &major, &minor, &patch) == 3
+        || std::sscanf(rawVersion.c_str(), " %d . %d . %d", &major, &minor, &patch) == 3)
+        && major >= 0 && minor >= 0 && patch >= 0;
+
+    sm64_world_version_major.store(major);
+    sm64_world_version_minor.store(minor);
+    sm64_world_version_patch.store(patch);
+    sm64_world_version_compatible.store(
+        valid && major == SM64AP_VERSION_MAJOR && minor == SM64AP_VERSION_MINOR);
+    sm64_world_version_received.store(true);
+}
+
 void SM64AP_SetCourseMap(std::map<int,int> map) {
     map_entrances = map;
 }
@@ -4608,6 +4635,11 @@ void SM64AP_SetReplyHandler(AP_SetReply reply) {
 }
 
 void SM64AP_GenericInit() {
+    sm64_world_version_received.store(false);
+    sm64_world_version_compatible.store(false);
+    sm64_world_version_major.store(-1);
+    sm64_world_version_minor.store(-1);
+    sm64_world_version_patch.store(-1);
     {
         std::lock_guard<std::mutex> lock(sm64_sign_hint_mutex);
         sm64_sign_hints.clear();
@@ -4666,6 +4698,7 @@ void SM64AP_GenericInit() {
     AP_RegisterSlotDataIntCallback("MIPS2Cost", &SM64AP_SetMIPS2Cost);
     AP_RegisterSlotDataIntCallback("StarsToFinish", &SM64AP_SetStarsToFinish);
     AP_RegisterSlotDataIntCallback("CompletionType", &SM64AP_SetCompletionType);
+    AP_RegisterSlotDataRawCallback("SpicyMycenaVersion", &SM64AP_SetWorldVersion);
     AP_RegisterSlotDataIntCallback("MoveRandoVec", &SM64AP_SetMoveRandoVec);
     AP_RegisterSlotDataIntCallback("GlobalCapItems", &SM64AP_SetGlobalCapDisplay);
     AP_RegisterSlotDataIntCallback("ShowGlobalCapDisplay", &SM64AP_SetGlobalCapDisplay);
@@ -6655,6 +6688,8 @@ bool SM64AP_ReadyToStart() {
         }
     }
     bool ready = AP_GetConnectionStatus() == AP_ConnectionStatus::Authenticated
+        && sm64_world_version_received.load()
+        && sm64_world_version_compatible.load()
         && sm64_permanent_coin_storage_initialized
         && sm64_finished_bowser_storage_received
         && sm64_moat_storage_received
@@ -6673,6 +6708,25 @@ bool SM64AP_ReadyToStart() {
 void SM64AP_PrintTitleConnectionStatus() {
     if (AP_GetConnectionStatus() != AP_ConnectionStatus::ConnectionRefused
         && ++sm64_title_connection_wait_frames < 15) {
+        return;
+    }
+
+    if (AP_GetConnectionStatus() == AP_ConnectionStatus::Authenticated
+        && sm64_world_version_received.load()
+        && !sm64_world_version_compatible.load()) {
+        print_text_centered(SCREEN_WIDTH / 2, 74, "VERSION MISMATCH");
+        print_text_centered(SCREEN_WIDTH / 2, 56, "REBUILD SM64EX WITH THE");
+        print_text_centered(SCREEN_WIDTH / 2, 38, "CORRECT VERSION USED TO");
+        print_text_centered(SCREEN_WIDTH / 2, 20, "GENERATE THE MULTIWORLD");
+        return;
+    }
+
+    if (AP_GetConnectionStatus() == AP_ConnectionStatus::Authenticated
+        && !sm64_world_version_received.load()) {
+        print_text_centered(SCREEN_WIDTH / 2, 74, "VERSION MISMATCH");
+        print_text_centered(SCREEN_WIDTH / 2, 56, "REBUILD SM64EX WITH THE");
+        print_text_centered(SCREEN_WIDTH / 2, 38, "CORRECT VERSION USED TO");
+        print_text_centered(SCREEN_WIDTH / 2, 20, "GENERATE THE MULTIWORLD");
         return;
     }
 
