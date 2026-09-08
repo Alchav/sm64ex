@@ -18957,16 +18957,16 @@
           "origin": "levels/thi/areas/2/macro.inc.c"
         },
         {
-          "physical_source_hash": "13701133656343387576",
+          "physical_source_hash": "330147300833736101",
           "slot": 0,
           "value": 1,
           "area": 2,
           "behavior": "bhvOneCoin",
           "source_category": "yellow_coin",
           "position": [
-            -1466,
-            -70,
-            -814
+            -1171,
+            -153,
+            1023
           ],
           "origin": "levels/thi/areas/2/macro.inc.c"
         },
@@ -20183,16 +20183,16 @@
       "label": "Tiny Island Impossible Coin",
       "physical_outputs": [
         {
-          "physical_source_hash": "330147300833736101",
+          "physical_source_hash": "13701133656343387576",
           "slot": 0,
           "value": 1,
           "area": 2,
           "behavior": "bhvOneCoin",
           "source_category": "yellow_coin",
           "position": [
-            -1171,
-            -153,
-            1023
+            -1466,
+            -70,
+            -814
           ],
           "origin": "levels/thi/areas/2/macro.inc.c"
         }
