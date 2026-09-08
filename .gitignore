@@ -88,4 +88,5 @@ sm64config.txt
 .DS_Store
 
 .cache/
+/APCpp_datapkg.cache
 compile_commands.json

@@ -851,7 +851,8 @@ u32 interact_star_or_key(struct MarioState *m, UNUSED u32 interactType, struct O
         // func_802521A0
 #endif
 
-        if (grandStar) {
+        if ((grandStar || gCurrLevelNum == LEVEL_BOWSER_1 || gCurrLevelNum == LEVEL_BOWSER_2)
+            && SM64AP_ShouldStartEnding()) {
             return set_mario_action(m, ACT_JUMBO_STAR_CUTSCENE, 0);
         }
 

@@ -2978,11 +2978,12 @@ static void SM64AP_PushSubAreaReturnPoint(
         point.pos[2] = 1200;
         point.yaw = 0;
     } else if (sourceId == 5) {
-        // The COTMC floor painting is also its warp trigger. Return to the solid
-        // HMC floor just south of it instead of dropping Mario back into it.
+        // The COTMC floor painting is also its warp trigger. Return inside the
+        // hallway so HMC loads the entrance room and its goop before Mario
+        // approaches it, while keeping Mario clear of the warp trigger.
         point.pos[0] = 3351;
         point.pos[1] = -4179;
-        point.pos[2] = 4000;
+        point.pos[2] = 3400;
         point.yaw = 0;
     } else if (sourceId == 7) {
         // The volcano warp covers the crater. Return beyond its trigger on the
@@ -3333,13 +3334,13 @@ void SM64AP_SetCourseMap(std::map<int,int> map) {
 
 void SM64AP_SetSubAreaMap(std::map<int,int> map) {
     map_sub_area_entrances = map;
-    sm64_track_sub_area_return_stack = sm64_sub_area_shuffle_mode == 2;
+    sm64_track_sub_area_return_stack = sm64_sub_area_shuffle_mode >= 2;
     SM64AP_ClearReturnStack();
 }
 
 void SM64AP_SetSubAreaShuffleMode(int mode) {
     sm64_sub_area_shuffle_mode = mode;
-    sm64_track_sub_area_return_stack = mode == 2;
+    sm64_track_sub_area_return_stack = mode >= 2;
 }
 
 void SM64AP_SetCastleReturnShuffleMode(int mode) {
@@ -4878,26 +4879,18 @@ void SM64AP_FinishBowser(int i) {
 }
 
 bool SM64AP_ShouldSpawnGrandStar() {
-    int stageIndex = -1;
-    switch (gCurrLevelNum) {
-        case LEVEL_BOWSER_1: stageIndex = 0; break;
-        case LEVEL_BOWSER_2: stageIndex = 1; break;
-        case LEVEL_BOWSER_3: stageIndex = 2; break;
-    }
-    if (sm64_completion_type != 1) {
-        return stageIndex == 2;
-    }
-    if (stageIndex < 0) {
-        return false;
-    }
+    return gCurrLevelNum == LEVEL_BOWSER_3;
+}
 
-    int stageFlag = 1 << stageIndex;
-    return (sm64_finished_bowser_flags | stageFlag) == 0b111;
+bool SM64AP_ShouldStartEnding() {
+    if (gCurrLevelNum == LEVEL_BOWSER_3) {
+        return sm64_completion_type != 1 || sm64_finished_bowser_flags == 0b111;
+    }
+    return sm64_completion_type == 1 && sm64_finished_bowser_flags == 0b111;
 }
 
 void SM64AP_CollectGrandStar() {
-    // The Grand Star location belongs to BITS. Other arenas can produce a Grand
-    // Star to play the ending for the all-Bowser goal, but have no location there.
+    // This location and the Grand Star itself belong exclusively to BITS.
     if (sm64_completion_type == 1 && gCurrLevelNum == LEVEL_BOWSER_3) {
         SM64AP_SendItem(SM64AP_ID_BITS_GRAND_STAR);
     }
@@ -7249,9 +7242,9 @@ static constexpr const char *SM64AP_CHEAT_OBJECT_ITEM_NAMES[SM64AP_NUM_OBJECT_IT
     "JRB TREASURE CHESTS",
     "DDD TREASURE CHESTS",
     "TREASURE CHESTS",
-    "BITDW WARP PIPES",
+    "BITDW WARP PIPE",
     "BITFS WARP PIPES",
-    "BITS WARP PIPES",
+    "BITS WARP PIPE",
     "WARP PIPES",
 };
 

@@ -666,6 +666,7 @@ AP_EXTERN_C int64_t SM64AP_PopDelayedStack();
 // Called on each Bowser stage completion, i is bowser index. Will send StoryComplete depending on completion option.
 AP_EXTERN_C void SM64AP_FinishBowser(int i);
 AP_EXTERN_C bool SM64AP_ShouldSpawnGrandStar();
+AP_EXTERN_C bool SM64AP_ShouldStartEnding();
 AP_EXTERN_C void SM64AP_CollectGrandStar();
 
 // Used to send and receive moat state
