@@ -1473,10 +1473,10 @@ s32 lvl_set_current_level(UNUSED s16 arg0, s32 levelNum) {
         return 0;
     }
 
-    if (gSavedCourseNum != gCurrCourseNum) {
-        gMarioState->numCoins = 0;
-        gHudDisplay.coins = 0;
-    }
+    // Permanent coins rebuild the counter from the ledger on every full course
+    // load. Area warps bypass this function and preserve the current visit.
+    gMarioState->numCoins = 0;
+    gHudDisplay.coins = 0;
     if (gCurrLevelNum != LEVEL_BOWSER_1 && gCurrLevelNum != LEVEL_BOWSER_2
         && gCurrLevelNum != LEVEL_BOWSER_3) {
         gCurrCourseStarFlags = save_file_get_star_flags(gCurrSaveFileNum - 1, gCurrCourseNum - 1);
