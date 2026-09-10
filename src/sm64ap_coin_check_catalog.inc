@@ -693,11 +693,11 @@ COIN_OUTPUT(UINT64_C(16789917666581882054), 4, 4006090) // Lethal Lava Land - No
 COIN_OUTPUT(UINT64_C(15827073291300106623), 0, 4006091) // Lethal Lava Land - Coin on the Volcano S-Shaped Island 1
 COIN_OUTPUT(UINT64_C(16829643711767022640), 0, 4006092) // Lethal Lava Land - Coin on the Volcano S-Shaped Island 2
 COIN_OUTPUT(UINT64_C(8249543559515624239), 0, 4006093) // Lethal Lava Land - Coin on the Volcano S-Shaped Island 3
-COIN_OUTPUT(UINT64_C(6278963474447093671), 0, 4006094) // Lethal Lava Land - Coin on the Volcano First Ridge 1
-COIN_OUTPUT(UINT64_C(5486290469229364450), 0, 4006095) // Lethal Lava Land - Coin on the Volcano First Ridge 2
-COIN_OUTPUT(UINT64_C(14675751832903098624), 0, 4006096) // Lethal Lava Land - Coin on the Volcano First Ridge 3
-COIN_OUTPUT(UINT64_C(9816707947596141169), 0, 4006097) // Lethal Lava Land - Coin on the Volcano First Ridge 4
-COIN_OUTPUT(UINT64_C(3202542088495976594), 0, 4006098) // Lethal Lava Land - Coin on the Volcano First Ridge 5
+COIN_OUTPUT(UINT64_C(6278963474447093671), 0, 4006094) // Lethal Lava Land - Volcano First Ridge Coin 1
+COIN_OUTPUT(UINT64_C(5486290469229364450), 0, 4006095) // Lethal Lava Land - Volcano First Ridge Coin 2
+COIN_OUTPUT(UINT64_C(14675751832903098624), 0, 4006096) // Lethal Lava Land - Volcano First Ridge Coin 3
+COIN_OUTPUT(UINT64_C(9816707947596141169), 0, 4006097) // Lethal Lava Land - Volcano First Ridge Coin 4
+COIN_OUTPUT(UINT64_C(3202542088495976594), 0, 4006098) // Lethal Lava Land - Volcano First Ridge Coin 5
 COIN_OUTPUT(UINT64_C(16385066547906058377), 0, 4006099) // Lethal Lava Land - Coin on the Volcano Second Ridge 1
 COIN_OUTPUT(UINT64_C(15928814600252398193), 0, 4006100) // Lethal Lava Land - Coin on the Volcano Second Ridge 2
 COIN_OUTPUT(UINT64_C(10707864592431151964), 0, 4006101) // Lethal Lava Land - Coin on a Volcano Floating Platform 1
