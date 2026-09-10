@@ -535,6 +535,8 @@ struct SM64APPendingReturnSpawn {
 static std::vector<SM64APReturnPoint> sm64_return_stack;
 static SM64APPendingReturnSpawn sm64_pending_return_spawn = {};
 static bool sm64_track_sub_area_return_stack = false;
+static bool sm64_keep_ssl_pyramid_top_open = false;
+static bool sm64_keep_thi_wiggler_entrance_open = false;
 
 std::map<int,int> map_boxid_locid;
 
@@ -2967,7 +2969,8 @@ static void SM64AP_PushSubAreaReturnPoint(
             : returnToAreaStart || !hasSourceNode ? 0x0A : sourceWarpNode;
     }
     point.sourceId = sourceId;
-    point.overridePosition = sourceId == 1 || sourceId == 5 || sourceId == 23 || sourceId == 32
+    point.overridePosition = sourceId == 1 || sourceId == 5 || sourceId == 10
+        || sourceId == 23 || sourceId == 32
         || (!returnToAreaStart
             && (!hasSourceNode || sourceId == 4
                 || sourceId == 7 || sourceId == 8 || sourceId == 9));
@@ -3000,13 +3003,27 @@ static void SM64AP_PushSubAreaReturnPoint(
         point.pos[1] = 300;
         point.pos[2] = 1400;
         point.yaw = 0;
-    } else if (sourceId == 8 || sourceId == 9) {
-        // Both pyramid openings can immediately catch an arrival. Return both
-        // entrances to the same flat ground above the side entrance.
+    } else if (sourceId == 8) {
+        // The side opening can immediately catch an arrival. Return on the
+        // flat ground above it instead.
         point.pos[0] = -2048;
         point.pos[1] = 300;
         point.pos[2] = 768;
         point.yaw = 0;
+    } else if (sourceId == 9) {
+        // Return beside the open summit instead of making Mario climb the
+        // pyramid and remove its top again.
+        point.pos[0] = -2048;
+        point.pos[1] = 1380;
+        point.pos[2] = -700;
+        point.yaw = 0;
+    } else if (sourceId == 10) {
+        // The Wiggler entrance covers the opening in Huge Island's summit.
+        // Return on the solid rim so Mario cannot immediately fall back in.
+        point.pos[0] = 870;
+        point.pos[1] = 4196;
+        point.pos[2] = -1570;
+        point.yaw = 0x4000;
     } else if (sourceId == 23) {
         // The TTM slide-exit podium is the warp itself. Return to the flat
         // platform beside it so Exit Course cannot immediately re-enter.
@@ -3080,6 +3097,11 @@ static bool SM64AP_TryReturnToPreviousEntrance(
     int returnStyle = SM64AP_ResolveReturnStyle(isDeathWarp, warpOp, returnStyleOverride);
     SM64APReturnPoint point = sm64_return_stack.back();
     sm64_return_stack.pop_back();
+    if (point.sourceId == 9) {
+        sm64_keep_ssl_pyramid_top_open = true;
+    } else if (point.sourceId == 10) {
+        sm64_keep_thi_wiggler_entrance_open = true;
+    }
     *destLevel = point.level;
     *destArea = point.area;
     *warpArg = 0;
@@ -3091,6 +3113,18 @@ static bool SM64AP_TryReturnToPreviousEntrance(
     }
     SM64AP_SetPendingReturnSpawn(point, spawnType, point.overridePosition);
     return true;
+}
+
+bool SM64AP_ConsumeOpenSSLPyramidTopReturn() {
+    bool keepOpen = sm64_keep_ssl_pyramid_top_open;
+    sm64_keep_ssl_pyramid_top_open = false;
+    return keepOpen;
+}
+
+bool SM64AP_ConsumeOpenTHIWigglerEntranceReturn() {
+    bool keepOpen = sm64_keep_thi_wiggler_entrance_open;
+    sm64_keep_thi_wiggler_entrance_open = false;
+    return keepOpen;
 }
 
 bool SM64AP_ApplyPendingReturnSpawn(s16* pos, s16* angle, u32* spawnType, s32* actionArg) {

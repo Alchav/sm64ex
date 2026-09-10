@@ -7,6 +7,9 @@ struct SpawnParticlesInfo D_8032F134 = {
 UNUSED u8 unused8032F134[] = { 10, 11, 12 };
 
 void bhv_thi_huge_island_top_loop(void) {
+    if (SM64AP_ConsumeOpenTHIWigglerEntranceReturn()) {
+        gTHIWaterDrained |= 1;
+    }
     if (gTHIWaterDrained & 1) {
         if (o->oTimer == 0)
             gEnvironmentRegions[18] = 3000;

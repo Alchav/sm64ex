@@ -495,6 +495,8 @@ AP_EXTERN_C void SM64AP_RedirectWarp(s16*,s16*,s8*,s16*,s16*,bool,int,s32,s16,s3
 AP_EXTERN_C bool SM64AP_ApplyPendingReturnSpawn(s16*,s16*,u32*,s32*);
 AP_EXTERN_C void SM64AP_ClearReturnStack();
 AP_EXTERN_C bool SM64AP_ConsumeCCMSlideExitArrival(s16,s8);
+AP_EXTERN_C bool SM64AP_ConsumeOpenSSLPyramidTopReturn();
+AP_EXTERN_C bool SM64AP_ConsumeOpenTHIWigglerEntranceReturn();
 AP_EXTERN_C int SM64AP_EntranceToTTC();
 AP_EXTERN_C void SM64AP_SetClockToTTCAction(int* action);
 AP_EXTERN_C void SM64AP_SetClockToTTCState();
