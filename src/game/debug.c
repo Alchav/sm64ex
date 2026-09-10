@@ -5,6 +5,7 @@
 #include "engine/behavior_script.h"
 #include "engine/surface_collision.h"
 #include "game_init.h"
+#include "level_update.h"
 #include "main.h"
 #include "object_constants.h"
 #include "object_fields.h"
@@ -358,6 +359,16 @@ static void print_debug_damage_dodge_chance(void) {
     printState[DEBUG_PSTATE_Y_CURSOR] += printState[DEBUG_PSTATE_LINE_Y_OFFSET];
 }
 
+static void print_debug_mario_position(void) {
+    if ((gDebugInfoFlags & DEBUG_INFO_FLAG_DPRINT) == 0 || gMarioState == NULL) {
+        return;
+    }
+
+    print_debug_bottom_up("X      %d", gMarioState->pos[0]);
+    print_debug_bottom_up("Y      %d", gMarioState->pos[1]);
+    print_debug_bottom_up("Z      %d", gMarioState->pos[2]);
+}
+
 /*
  * This function checks for a button sequence (C Up, C Left, C Down,
  * C Right) and then toggles the debug flags from FF to 2; 2 is unused,
@@ -501,6 +512,7 @@ void try_print_debug_mario_object_info(void) {
         print_debug_bottom_up("WALL   %d", gUnknownWallCount);
     }
 
+    print_debug_mario_position();
     print_debug_damage_dodge_chance();
 }
 

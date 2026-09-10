@@ -2989,10 +2989,10 @@ static void SM64AP_PushSubAreaReturnPoint(
         // The COTMC floor painting is also its warp trigger. Return inside the
         // hallway so HMC loads the entrance room and its goop before Mario
         // approaches it, while keeping Mario clear of the warp trigger.
-        point.pos[0] = 3351;
-        point.pos[1] = -4179;
-        point.pos[2] = 3400;
-        point.yaw = 0;
+        point.pos[0] = 2222;
+        point.pos[1] = -4279;
+        point.pos[2] = 5887;
+        point.yaw = 0x6000;
     } else if (sourceId == 7) {
         // The volcano warp covers the crater. Return beyond its trigger on the
         // outer platform instead of dropping Mario back into the volcano.
