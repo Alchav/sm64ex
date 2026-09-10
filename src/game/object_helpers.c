@@ -1797,17 +1797,16 @@ s32 obj_reached_mario_death_surface(struct Object *obj, s32 isGrounded) {
 
 void cur_obj_spawn_loot_coin_at_mario_pos(void) {
     struct Object *coin;
+    s32 slot;
     if (o->oNumLootCoins <= 0) {
         return;
     }
 
+    slot = 5 - o->oNumLootCoins;
     o->oNumLootCoins--;
 
     coin = spawn_object(o, MODEL_YELLOW_COIN, bhvSingleCoinGetsSpawned);
-    if (!SM64AP_AssignPermanentCoinOutputRange(o, coin, 1, 0, 5)) {
-        coin->activeFlags = ACTIVE_FLAG_DEACTIVATED;
-        return;
-    }
+    SM64AP_AssignPermanentCoinSlot(coin, o, slot, 1);
     coin->oVelY = 30.0f;
 
     obj_copy_pos(coin, gMarioObject);

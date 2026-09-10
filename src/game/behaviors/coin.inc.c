@@ -267,8 +267,8 @@ void spawn_coin_in_formation(s32 sp50, s32 sp54) {
 
 void bhv_coin_formation_init(void) {
     o->oCoinUnkF4 = (o->oBehParams >> 8) & 0xFF;
-    // Coin formations can be rebuilt after an area transition.  Restore their
-    // per-slot state from the permanent ledger so collected coins cannot respawn.
+    // Coin formations can be rebuilt after an area transition. Restore their
+    // per-slot state so rebuilt children retain their collected appearance.
     o->oCoinUnkF4 |= (u8) SM64AP_PermanentCoinMask(o, 8, 1);
 }
 
@@ -283,8 +283,10 @@ void bhv_coin_formation_loop(void) {
             if (o->oDistanceToMario < 2000.0f) {
 #endif
                 for (bitIndex = 0; bitIndex < 8; bitIndex++) {
-                    if (!(o->oCoinUnkF4 & (1 << bitIndex)))
+                    if (SM64AP_PermanentCoinCollection()
+                        || !(o->oCoinUnkF4 & (1 << bitIndex))) {
                         spawn_coin_in_formation(bitIndex, o->oBehParams2ndByte);
+                    }
                 }
                 o->oAction++;
 #ifndef NODRAWINGDISTANCE
