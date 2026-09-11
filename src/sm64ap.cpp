@@ -3281,13 +3281,14 @@ void SM64AP_RedirectWarp(s16* curLevel, s16* destLevel, s8* curArea, s16* destAr
         *destLevel == LEVEL_BITS || *curLevel == LEVEL_BITS) return; // Dont play around with this one
     if (*curLevel == LEVEL_HMC && *destLevel == LEVEL_COTMC) {
         int sourceKey = SM64AP_SourceEntranceKey(*destLevel, *destArea, sourceEntrance);
-        int destination = SM64AP_GetMappedEntrance(sourceKey);
-        if (destination != sourceKey) {
-            // COTMC is a normal secret-course entrance, not a shuffled
-            // sub-area. A redirected destination still needs to return to the
-            // physical entrance in HMC when Mario exits or dies, though.
-            SM64AP_PushSubAreaReturnPoint(5, *curLevel, *curArea, sourceWarpNode);
+        auto mixedDestination = map_sub_area_entrances.find(1000 + sourceKey);
+        if (mixedDestination != map_sub_area_entrances.end()) {
+            SM64AP_DiscoverEntrance(sourceKey);
+            SM64AP_ApplySubAreaDestination(
+                mixedDestination->second, destLevel, destArea, destWarpNode, warpArg);
+            return;
         }
+        int destination = SM64AP_GetMappedEntrance(sourceKey);
         SM64AP_DiscoverEntrance(sourceKey);
         SM64AP_ApplyEntranceDestination(destination, destLevel, destArea);
         *destWarpNode = 0x0A;
@@ -3402,7 +3403,6 @@ void SM64AP_SetCourseMap(std::map<int,int> map) {
 void SM64AP_SetSubAreaMap(std::map<int,int> map) {
     map_sub_area_entrances = map;
     sm64_track_sub_area_return_stack = sm64_sub_area_shuffle_mode >= 2;
-    SM64AP_ClearReturnStack();
 }
 
 void SM64AP_SetSubAreaShuffleMode(int mode) {
