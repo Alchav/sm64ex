@@ -508,6 +508,7 @@ std::map<int,int> map_entrances;
 std::map<int,int> map_sub_area_entrances;
 static int sm64_castle_return_shuffle_mode = 0;
 static int sm64_sub_area_shuffle_mode = 0;
+static int sm64_secret_course_shuffle_mode = 0;
 static bool sm64_ccm_slide_exit_arrival_pending = false;
 static int sm64_exit_return_to = 0;
 static int sm64_exit_orig_entrance_level = 0;
@@ -534,7 +535,6 @@ struct SM64APPendingReturnSpawn {
 
 static std::vector<SM64APReturnPoint> sm64_return_stack;
 static SM64APPendingReturnSpawn sm64_pending_return_spawn = {};
-static bool sm64_track_sub_area_return_stack = false;
 static bool sm64_keep_ssl_pyramid_top_open = false;
 static bool sm64_keep_thi_wiggler_entrance_open = false;
 
@@ -2950,6 +2950,13 @@ static bool SM64AP_SubAreaReturnsToAreaStart(int sourceId) {
         || (sourceId >= 31 && sourceId <= 36);
 }
 
+static bool SM64AP_ShouldTrackPhysicalReturn(int sourceId) {
+    if (sourceId >= 31 && sourceId <= 36) {
+        return sm64_castle_return_shuffle_mode == 1;
+    }
+    return sm64_sub_area_shuffle_mode >= 2;
+}
+
 static void SM64AP_PushSubAreaReturnPoint(
     int sourceId, s16 level, s8 area, s16 sourceWarpNode
 ) {
@@ -3232,7 +3239,7 @@ void SM64AP_RedirectWarp(s16* curLevel, s16* destLevel, s8* curArea, s16* destAr
 
     auto subArea = map_sub_area_entrances.find(subAreaSource);
     if (subAreaSource != 0 && subArea != map_sub_area_entrances.end()) {
-        if (sm64_track_sub_area_return_stack) {
+        if (SM64AP_ShouldTrackPhysicalReturn(subAreaSource)) {
             s16 destinationLevel = (subArea->second >> 16) & 0xFF;
             s8 destinationArea = (subArea->second >> 8) & 0xFF;
             if (!SM64AP_CollapseReturnStackToZone(destinationLevel, destinationArea)) {
@@ -3283,12 +3290,18 @@ void SM64AP_RedirectWarp(s16* curLevel, s16* destLevel, s8* curArea, s16* destAr
         int sourceKey = SM64AP_SourceEntranceKey(*destLevel, *destArea, sourceEntrance);
         auto mixedDestination = map_sub_area_entrances.find(1000 + sourceKey);
         if (mixedDestination != map_sub_area_entrances.end()) {
+            if (sm64_secret_course_shuffle_mode != 0) {
+                SM64AP_PushSubAreaReturnPoint(5, *curLevel, *curArea, sourceWarpNode);
+            }
             SM64AP_DiscoverEntrance(sourceKey);
             SM64AP_ApplySubAreaDestination(
                 mixedDestination->second, destLevel, destArea, destWarpNode, warpArg);
             return;
         }
         int destination = SM64AP_GetMappedEntrance(sourceKey);
+        if (sm64_secret_course_shuffle_mode != 0) {
+            SM64AP_PushSubAreaReturnPoint(5, *curLevel, *curArea, sourceWarpNode);
+        }
         SM64AP_DiscoverEntrance(sourceKey);
         SM64AP_ApplyEntranceDestination(destination, destLevel, destArea);
         *destWarpNode = 0x0A;
@@ -3402,12 +3415,10 @@ void SM64AP_SetCourseMap(std::map<int,int> map) {
 
 void SM64AP_SetSubAreaMap(std::map<int,int> map) {
     map_sub_area_entrances = map;
-    sm64_track_sub_area_return_stack = sm64_sub_area_shuffle_mode >= 2;
 }
 
 void SM64AP_SetSubAreaShuffleMode(int mode) {
     sm64_sub_area_shuffle_mode = mode;
-    sm64_track_sub_area_return_stack = mode >= 2;
 }
 
 void SM64AP_SetCastleReturnShuffleMode(int mode) {
@@ -4278,6 +4289,38 @@ static bool SM64AP_ParseJsonIntMap(const std::string &rawMap, std::map<int,int> 
     return pos == rawMap.size();
 }
 
+static void SM64AP_SetShuffleOptions(std::string rawOptions) {
+    std::string::size_type pos = 0;
+    if (!SM64AP_ConsumeJsonChar(rawOptions, pos, '{')) return;
+
+    while (true) {
+        SM64AP_SkipJsonWhitespace(rawOptions, pos);
+        if (pos < rawOptions.size() && rawOptions[pos] == '}') return;
+
+        std::string key;
+        if (!SM64AP_ParseJsonString(rawOptions, pos, key)
+            || !SM64AP_ConsumeJsonChar(rawOptions, pos, ':')) {
+            return;
+        }
+
+        if (key == "secret_course_shuffle") {
+            int mode = 0;
+            if (!SM64AP_ParseJsonInt(rawOptions, pos, mode)) return;
+            sm64_secret_course_shuffle_mode = mode;
+        } else if (!SM64AP_SkipJsonValue(rawOptions, pos)) {
+            return;
+        }
+
+        SM64AP_SkipJsonWhitespace(rawOptions, pos);
+        if (pos < rawOptions.size() && rawOptions[pos] == ',') {
+            pos++;
+            continue;
+        }
+        if (pos < rawOptions.size() && rawOptions[pos] == '}') return;
+        return;
+    }
+}
+
 static void SM64AP_SetStartInventory(std::string rawMap) {
     std::map<int,int> parsedMap;
     if (!SM64AP_ParseJsonIntMap(rawMap, parsedMap)) {
@@ -4733,6 +4776,7 @@ void SM64AP_GenericInit() {
     AP_RegisterSlotDataIntCallback("StarsToFinish", &SM64AP_SetStarsToFinish);
     AP_RegisterSlotDataIntCallback("CompletionType", &SM64AP_SetCompletionType);
     AP_RegisterSlotDataRawCallback("SpicyMycenaVersion", &SM64AP_SetWorldVersion);
+    AP_RegisterSlotDataRawCallback("Options", &SM64AP_SetShuffleOptions);
     AP_RegisterSlotDataIntCallback("MoveRandoVec", &SM64AP_SetMoveRandoVec);
     AP_RegisterSlotDataIntCallback("GlobalCapItems", &SM64AP_SetGlobalCapDisplay);
     AP_RegisterSlotDataIntCallback("ShowGlobalCapDisplay", &SM64AP_SetGlobalCapDisplay);
