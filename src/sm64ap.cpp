@@ -6353,7 +6353,10 @@ void SM64AP_AssignPermanentCoinSource(
     hash = SM64AP_PermanentCoinHashValue(hash, static_cast<u16>(x));
     hash = SM64AP_PermanentCoinHashValue(hash, static_cast<u16>(y));
     hash = SM64AP_PermanentCoinHashValue(hash, static_cast<u16>(z));
-    hash = SM64AP_PermanentCoinHashValue(hash, behaviorParams);
+    // Bits 8-15 are engine-owned respawn state. Coin formations write their
+    // collected-slot mask there, so including it changes the source identity
+    // after leaving and re-entering an area.
+    hash = SM64AP_PermanentCoinHashValue(hash, behaviorParams & ~0x0000FF00U);
     if (hash == 0) {
         hash = 1;
     }
