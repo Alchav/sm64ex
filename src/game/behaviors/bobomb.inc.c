@@ -260,10 +260,11 @@ void bhv_bobomb_loop(void) {
     s32 isNearMario = is_point_within_radius_of_mario(o->oPosX, o->oPosY, o->oPosZ, 4000) != 0;
     s32 mustFinishFall = SM64AP_NoDespawn()
         && o->oHeldState == HELD_FREE
-        && o->oVelY < 0.0f;
+        && (o->oVelY < 0.0f || o->oPosY < o->oHomeY - 100.0f);
 
     // TTM Bob-ombs can fall outside their normal update radius before reaching
-    // the death plane. Keep advancing that fall so their coin can be recorded.
+    // the death plane, then stop there with zero vertical velocity. Keep them
+    // active below their home so their coin can still be recorded.
     if (isNearMario || mustFinishFall) {
         switch (o->oHeldState) {
             case HELD_FREE:
