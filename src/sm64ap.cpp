@@ -510,6 +510,7 @@ static int sm64_castle_return_shuffle_mode = 0;
 static int sm64_sub_area_shuffle_mode = 0;
 static int sm64_secret_course_shuffle_mode = 0;
 static bool sm64_ccm_slide_exit_arrival_pending = false;
+static bool sm64_force_area_reload = false;
 static int sm64_exit_return_to = 0;
 static int sm64_exit_orig_entrance_level = 0;
 static bool sm64_castle_exit_return_active = false;
@@ -2843,12 +2844,15 @@ static void SM64AP_ApplySubAreaDestination(
 ) {
     int variant = (destination >> 24) & 0x0F;
     int level = (destination >> 16) & 0xFF;
+    int area = (destination >> 8) & 0xFF;
 
     SM64AP_SetWDWEntranceVariant(0);
     *destLevel = level;
-    *destArea = (destination >> 8) & 0xFF;
+    *destArea = area;
     *destWarpNode = destination & 0xFF;
     *warpArg = (destination >> 28) & 0x0F;
+    sm64_force_area_reload = level == gCurrLevelNum
+        && gCurrentArea != nullptr && area == gCurrentArea->index;
     sm64_ccm_slide_exit_arrival_pending =
         level == LEVEL_CCM && *destArea == 1 && *destWarpNode == 0x14;
 
@@ -2857,6 +2861,12 @@ static void SM64AP_ApplySubAreaDestination(
     } else if (level == LEVEL_TTC && variant != 0) {
         SM64AP_SetTTCEntranceVariantSpeed(variant);
     }
+}
+
+bool SM64AP_ConsumeForceAreaReload() {
+    bool forceAreaReload = sm64_force_area_reload;
+    sm64_force_area_reload = false;
+    return forceAreaReload;
 }
 
 bool SM64AP_ConsumeCCMSlideExitArrival(s16 level, s8 area) {
@@ -3179,6 +3189,7 @@ void SM64AP_RedirectWarp(s16* curLevel, s16* destLevel, s8* curArea, s16* destAr
                          s16* destWarpNode, bool isDeathWarp, int warpOp,
                          s32 sourceEntrance, s16 sourceWarpNode, s32* warpArg,
                          int returnStyleOverride) {
+    sm64_force_area_reload = false;
     // When warping, always lock the clock and reset var to avoid segfault if old clock val is not in new area
     SM64AP_SetClockToTTCState();
     if (*destWarpNode >= WARP_NODE_CREDITS_MIN

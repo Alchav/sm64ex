@@ -492,6 +492,7 @@ AP_EXTERN_C int SM64AP_GetRequiredStars(int);
 AP_EXTERN_C int SM64AP_GetCoinStarRequirement(int);
 AP_EXTERN_C u32 SM64AP_CourseStarFlags(s32);
 AP_EXTERN_C void SM64AP_RedirectWarp(s16*,s16*,s8*,s16*,s16*,bool,int,s32,s16,s32*,int);
+AP_EXTERN_C bool SM64AP_ConsumeForceAreaReload();
 AP_EXTERN_C bool SM64AP_ApplyPendingReturnSpawn(s16*,s16*,u32*,s32*);
 AP_EXTERN_C void SM64AP_ClearReturnStack();
 AP_EXTERN_C bool SM64AP_ConsumeCCMSlideExitArrival(s16,s8);

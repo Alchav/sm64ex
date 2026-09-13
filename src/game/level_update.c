@@ -634,6 +634,8 @@ void initiate_warp_with_source(s16 destLevel, s16 destArea, s16 destWarpNode, s3
                         sourceWarpNode, &arg3, sSM64APReturnStyleOverride);
     if (destWarpNode >= WARP_NODE_CREDITS_MIN) {
         sWarpDest.type = WARP_TYPE_CHANGE_LEVEL;
+    } else if (SM64AP_ConsumeForceAreaReload()) {
+        sWarpDest.type = WARP_TYPE_CHANGE_AREA;
     } else if (destLevel != gCurrLevelNum) {
         sWarpDest.type = WARP_TYPE_CHANGE_LEVEL;
     } else if (destArea != gCurrentArea->index) {
