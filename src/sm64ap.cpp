@@ -2964,6 +2964,13 @@ static bool SM64AP_ShouldTrackPhysicalReturn(int sourceId) {
     if (sourceId >= 31 && sourceId <= 36) {
         return sm64_castle_return_shuffle_mode == 1;
     }
+    if (sourceId >= 11 && sourceId <= 13) {
+        // Arena death warps are fixed to their vanilla Bowser stages rather
+        // than represented by independently shuffled return entrances. Keep
+        // the physical arena pipe on the stack in every shuffled mode so a
+        // death returns to the stage that actually led into the arena.
+        return sm64_sub_area_shuffle_mode != 0;
+    }
     return sm64_sub_area_shuffle_mode >= 2;
 }
 
