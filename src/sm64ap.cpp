@@ -2993,7 +2993,7 @@ static void SM64AP_PushSubAreaReturnPoint(
             : returnToAreaStart || !hasSourceNode ? 0x0A : sourceWarpNode;
     }
     point.sourceId = sourceId;
-    point.overridePosition = sourceId == 1 || sourceId == 5 || sourceId == 10
+    point.overridePosition = sourceId == 1 || sourceId == 3 || sourceId == 5 || sourceId == 10
         || sourceId == 23 || sourceId == 32
         || (!returnToAreaStart
             && (!hasSourceNode || sourceId == 4
@@ -3005,6 +3005,13 @@ static void SM64AP_PushSubAreaReturnPoint(
         point.pos[1] = 3018;
         point.pos[2] = -1886;
         point.yaw = 0;
+    } else if (sourceId == 3) {
+        // The TTM slide painting is embedded in the mountain. Return on the
+        // flat ledge outside it instead of using a warp node inside the wall.
+        point.pos[0] = 3476;
+        point.pos[1] = 800;
+        point.pos[2] = -896;
+        point.yaw = 0x4000;
     } else if (sourceId == 4) {
         // The Huge Island cave entrance is itself a warp trigger. Place Mario
         // farther outside the cave so a return cannot immediately re-enter it.
