@@ -4555,6 +4555,22 @@ void SM64AP_ResetItems() {
             sm64_pending_uncollect_trap_events.pop();
         }
     }
+
+    // SetNotify subscriptions are scoped to a connection. This callback runs
+    // after every authentication, so force SM64's DataStorage setup to subscribe
+    // again and retrieve changes that occurred while this client was disconnected.
+    sm64_permanent_coin_storage_initialized = false;
+    sm64_finished_bowser_storage_received = false;
+    sm64_moat_storage_received = false;
+    sm64_permanent_coin_storage_received = false;
+    sm64_save_flags_storage_received = false;
+    sm64_cannon_flags_storage_received = false;
+    sm64_coin_scores_storage_received = 0;
+    std::fill_n(sm64_server_coin_high_scores, COURSE_STAGES_COUNT, -1);
+    sm64_exhausted_signs_storage_received = false;
+    sm64_server_hints_storage_received = false;
+    sm64_server_hints_request = {};
+
     for (int i = 0; i < SM64AP_NUM_LOCS; i++) {
         sm64_locations[i] = false;
     }
