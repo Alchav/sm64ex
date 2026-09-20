@@ -16,6 +16,11 @@ Your changes will be stored in the .patch file you specify.
 
 The following enhancements are included in this directory:
 
+## Automatic Bowser Spin - `Auto.Bowser.Spin.patch`
+
+While holding Bowser's tail, holding the joystick in any direction automatically spins Bowser.
+This may prevent wear on your joystick.
+
 ## 60 FPS - `60fps_ex.patch`
 
 This allows the game to be rendered at 60 FPS instead of 30 FPS by interpolation (game logic still runs at 30 FPS).
