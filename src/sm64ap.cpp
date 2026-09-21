@@ -5523,7 +5523,6 @@ static int SM64AP_StarProducerIndex(struct Object *obj) {
 
     if (behavior_is(behavior, bhvKingBobomb)
         || behavior_is(behavior, bhvWhompKingBoss)
-        || behavior_is(behavior, bhvFirePiranhaPlant)
         || behavior_is(behavior, bhvBigBully)
         || behavior_is(behavior, bhvBigBullyWithMinions)
         || behavior_is(behavior, bhvBigChillBully)
