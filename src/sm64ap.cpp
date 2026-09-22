@@ -5507,6 +5507,14 @@ static bool SM64AP_IsRenderedCoin(const void *behavior) {
         || behavior_is(behavior, bhvHiddenBlueCoin);
 }
 
+static bool SM64AP_IsRenderedStar(const void *behavior) {
+    return behavior_is(behavior, bhvStar)
+        || behavior_is(behavior, bhvSpawnedStar)
+        || behavior_is(behavior, bhvSpawnedStarNoLevelExit)
+        || behavior_is(behavior, bhvStarSpawnCoordinates)
+        || behavior_is(behavior, bhvGrandStar);
+}
+
 static bool SM64AP_IsOneUpBehavior(const void *behavior) {
     return behavior_is(behavior, bhv1Up)
         || behavior_is(behavior, bhv1upSliding)
@@ -5735,6 +5743,12 @@ static u8 SM64AP_ComputeObjectVisualState(struct Object *obj) {
         || behavior_is(obj->behavior, bhvSignOnWall)) {
         hasExhaustibleOutput = true;
         exhausted = SM64AP_IsSignExhausted(gCurrLevelNum, obj->oBehParams2ndByte);
+    } else if (SM64AP_IsRenderedStar(obj->behavior)) {
+        hasExhaustibleOutput = true;
+        exhausted = behavior_is(obj->behavior, bhvGrandStar)
+            ? SM64AP_CheckedLoc(SM64AP_ID_BITS_GRAND_STAR)
+            : SM64AP_CollectedCourseStar(
+                gCurrCourseNum - COURSE_MIN, beh_param_star(obj->oBehParams));
     } else if (behavior_is(obj->behavior, bhvBlueCoinSwitch)) {
         hasExhaustibleOutput = true;
         exhausted = SM64AP_BlueCoinSwitchExhausted(obj);
@@ -5781,7 +5795,9 @@ static u8 SM64AP_ComputeObjectVisualState(struct Object *obj) {
     } else if (SM64AP_IsOneUpBehavior(obj->behavior)) {
         hasExhaustibleOutput = obj->o1UpApLocationId != 0;
         exhausted = hasExhaustibleOutput && SM64AP_OneUpCollected(obj->o1UpApLocationId);
-    } else if (!SM64AP_IsRenderedCoin(obj->behavior) && obj->apCoinSourceId != 0) {
+    } else if (!SM64AP_IsRenderedCoin(obj->behavior)
+               && !SM64AP_IsRenderedStar(obj->behavior)
+               && obj->apCoinSourceId != 0) {
         u64 expectedMask = SM64AP_ExpectedPermanentCoinMask(obj->apCoinSourceId);
         if (expectedMask != 0) {
             hasExhaustibleOutput = true;
@@ -5842,6 +5858,7 @@ u8 SM64AP_ObjectVisualState(struct Object *obj) {
         if (obj->apVisualState == SM64AP_VISUAL_NORMAL
             && parent != nullptr
             && !SM64AP_IsRenderedCoin(obj->behavior)
+            && !SM64AP_IsRenderedStar(obj->behavior)
             && !behavior_is(obj->behavior, bhvOrangeNumber)) {
             obj->apVisualState = SM64AP_ObjectVisualState(parent);
         }

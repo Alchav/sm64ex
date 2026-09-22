@@ -3825,8 +3825,8 @@
     },
     {
       "course": "Jolly Roger Bay",
-      "source_id": "tall_spike_coin_ring",
-      "label": "Coin ring around the tall spike",
+      "source_id": "cave_chest_coin_ring",
+      "label": "Clam Coin Ring",
       "physical_outputs": [
         {
           "physical_source_hash": "4329466816992812512",
@@ -4112,8 +4112,8 @@
     },
     {
       "course": "Jolly Roger Bay",
-      "source_id": "cave_chest_coin_ring",
-      "label": "Coin ring near the cave treasure chests",
+      "source_id": "tall_spike_coin_ring",
+      "label": "Coin ring around the tall spike",
       "physical_outputs": [
         {
           "physical_source_hash": "286206540288504194",
