@@ -5545,8 +5545,7 @@ static int SM64AP_StarProducerIndex(struct Object *obj) {
         || behavior_is(behavior, bhvMerryGoRoundBigBoo)
         || behavior_is(behavior, bhvBalconyBigBoo)
         || behavior_is(behavior, bhvTreasureChests)
-        || behavior_is(behavior, bhvTreasureChestsJrb)
-        || behavior_is(behavior, bhvTreasureChestsShip)) {
+        || behavior_is(behavior, bhvTreasureChestsJrb)) {
         return starIndex;
     }
 
@@ -5565,6 +5564,10 @@ static int SM64AP_StarProducerIndex(struct Object *obj) {
 
 static bool SM64AP_SpecialStarProducerExhausted(struct Object *obj, bool *isProducer) {
     *isProducer = true;
+    if (behavior_is(obj->behavior, bhvTreasureChestsShip)) {
+        return SM64AP_CollectedCourseStar(AP_COURSE_JRB, 0)
+            && SM64AP_CheckedLoc(SM64AP_LOCATIONID_JRB_PLUNDER_STAR_BLOCK);
+    }
     if (behavior_is(obj->behavior, bhvYoshi)) {
         return SM64AP_CheckedLoc(SM64AP_LOCATIONID_YOSHI);
     }
