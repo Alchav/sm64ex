@@ -1,16 +1,18 @@
 diff --git a/src/game/mario_actions_object.c b/src/game/mario_actions_object.c
-index 38070c2b..973b074f 100644
+index 38070c2b..7026b2f8 100644
 --- a/src/game/mario_actions_object.c
 +++ b/src/game/mario_actions_object.c
-@@ -330,6 +330,7 @@ s32 act_picking_up_bowser(struct MarioState *m) {
+@@ -330,6 +330,9 @@ s32 act_picking_up_bowser(struct MarioState *m) {
  }
  
  s32 act_holding_bowser(struct MarioState *m) {
++    s16 spinAcceleration;
++    s16 targetSpinSpeed;
 +    f32 stickAmount;
      s16 spin;
  
      if (m->input & INPUT_B_PRESSED) {
-@@ -356,30 +357,12 @@ s32 act_holding_bowser(struct MarioState *m) {
+@@ -356,31 +359,13 @@ s32 act_holding_bowser(struct MarioState *m) {
          set_mario_animation(m, MARIO_ANIM_SWINGING_BOWSER);
      }
  
@@ -38,12 +40,14 @@ index 38070c2b..973b074f 100644
 -            if (m->angleVel[1] < -0x1000) {
 -                m->angleVel[1] = -0x1000;
 -            }
+-        }
 +    if (m->intendedMag > 0.0f) {
 +        m->actionArg = 0;
-+        stickAmount = min(m->controller->stickMag / 64.0f, 1.0f);
-+        m->angleVel[1] += (s16)(stickAmount * 0x80);
-+        if (m->angleVel[1] > 0x1000) {
-+            m->angleVel[1] = 0x1000;
-         }
++        stickAmount = min(m->intendedMag / 32.0f, 1.0f);
++        spinAcceleration = max((s16)(stickAmount * 0x80), 1);
++        targetSpinSpeed = (s16)(stickAmount * 0x1000);
++        m->angleVel[1] = approach_s32(
++            m->angleVel[1], targetSpinSpeed, spinAcceleration, spinAcceleration);
      } else {
          m->actionArg = 0;
+         m->angleVel[1] = approach_s32(m->angleVel[1], 0, 64, 64);
