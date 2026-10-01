@@ -503,6 +503,7 @@ int sm64_cost_mips2 = 50;
 int msg_frame_duration = 90;
 int cur_msg_frame_duration = msg_frame_duration;
 std::queue<int64_t> delayed_queue;
+static std::mutex delayed_queue_mutex;
 
 std::map<int,int> map_entrances;
 std::map<int,int> map_sub_area_entrances;
@@ -1283,7 +1284,10 @@ void SM64AP_RecvItem(int64_t idx, bool notify) {
             break;
         case SM64AP_ID_1_HEALTH_PIP ... SM64AP_ID_GUST_TRAP:
             if(!notify) break;
-            delayed_queue.push(idx);
+            {
+                std::lock_guard<std::mutex> lock(delayed_queue_mutex);
+                delayed_queue.push(idx);
+            }
             break;
         case SM64AP_ID_UNCOLLECT_COIN_TRAP:
             sm64_received_uncollect_coin_traps++;
@@ -4627,6 +4631,12 @@ void SM64AP_SetMoveRandoVec(int vec) {
 }
 void SM64AP_ResetItems() {
     {
+        std::lock_guard<std::mutex> lock(delayed_queue_mutex);
+        while (!delayed_queue.empty()) {
+            delayed_queue.pop();
+        }
+    }
+    {
         std::lock_guard<std::mutex> lock(sm64_permanent_coin_mutex);
         sm64_received_uncollect_coin_traps = 0;
         while (!sm64_pending_uncollect_coin_traps.empty()) {
@@ -5102,6 +5112,7 @@ int SM64AP_LastLocationCheckId() {
 
 // If an item exists on the stack, return it, otherwise 0
 int64_t SM64AP_PopDelayedStack() {
+    std::lock_guard<std::mutex> lock(delayed_queue_mutex);
     if(delayed_queue.empty()) return 0;
     int64_t item = delayed_queue.front();
     delayed_queue.pop();

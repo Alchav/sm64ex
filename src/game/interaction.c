@@ -1947,8 +1947,25 @@ void update_arch_delayed_items(struct MarioState *m) {
             }
             break;
         case SM64AP_ID_BONK_TRAP:
-            interact = spawn_object(m->marioObj, MODEL_NONE, bhvSmallParticleBubbles);
-            interact_bully(m, INTERACT_BULLY, interact);
+            // Do not route this through interact_bully with a particle object.
+            // Particle objects have no Bully hitbox radius, which makes the
+            // Bully collision math divide by zero and corrupt Mario's motion.
+            mario_stop_riding_and_holding(m);
+            m->faceAngle[1] = random_u16();
+            m->forwardVel = -16.0f;
+            m->invincTimer = 2;
+            update_mario_sound_and_camera(m);
+            play_sound(SOUND_MARIO_EEUH, m->marioObj->header.gfx.cameraToObject);
+            play_sound(SOUND_OBJ_BULLY_METAL, m->marioObj->header.gfx.cameraToObject);
+            queue_rumble_data(5, 80);
+            if (m->action & (ACT_FLAG_SWIMMING | ACT_FLAG_METAL_WATER)) {
+                m->vel[1] = 20.0f;
+                drop_and_set_mario_action(m, ACT_BACKWARD_WATER_KB, 0);
+            } else if (m->action & (ACT_FLAG_AIR | ACT_FLAG_ON_POLE | ACT_FLAG_HANGING)) {
+                drop_and_set_mario_action(m, ACT_BACKWARD_AIR_KB, 0);
+            } else {
+                drop_and_set_mario_action(m, ACT_SOFT_BACKWARD_GROUND_KB, 0);
+            }
             break;
         case SM64AP_ID_FIRE_TRAP:
             interact = spawn_object(m->marioObj, MODEL_RED_FLAME, bhvFlameLargeBurningOut);
