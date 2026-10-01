@@ -376,6 +376,22 @@ void set_mario_initial_action(struct MarioState *m, u32 spawnType, u32 actionArg
 
 void init_mario_after_warp(void) {
     struct ObjectWarpNode *spawnNode = area_get_warp_node(sWarpDest.nodeId);
+    if (spawnNode == NULL || spawnNode->object == NULL) {
+        // Entrance shuffle can return to an area whose vanilla exit node does
+        // not exist there. Use the area's normal start instead of
+        // dereferencing an invalid node or borrowing an unrelated exit type.
+        spawnNode = area_get_warp_node(0x0A);
+        if (spawnNode == NULL || spawnNode->object == NULL) {
+            for (spawnNode = gCurrentArea->warpNodes;
+                 spawnNode != NULL && spawnNode->object == NULL;
+                 spawnNode = spawnNode->next) {
+            }
+        }
+        if (spawnNode == NULL) {
+            return;
+        }
+        sWarpDest.nodeId = spawnNode->node.id;
+    }
     u32 marioSpawnType = get_mario_spawn_type(spawnNode->object);
     s32 actionArg = sWarpDest.arg;
 
@@ -1008,6 +1024,21 @@ void initiate_delayed_warp(void) {
 
                 default:
                     warpNode = area_get_warp_node(sSourceWarpNodeId);
+
+                    // A shuffled return may request a vanilla death/exit node
+                    // that this physical zone does not define. Prefer its
+                    // ordinary exit, then its start, instead of crashing while
+                    // dispatching the delayed warp.
+                    if (warpNode == NULL) {
+                        warpNode = area_get_warp_node(WARP_NODE_F0);
+                    }
+                    if (warpNode == NULL) {
+                        warpNode = area_get_warp_node(0x0A);
+                    }
+                    if (warpNode == NULL) {
+                        sDelayedWarpOp = WARP_OP_NONE;
+                        break;
+                    }
 
                     initiate_warp(warpNode->node.destLevel & 0x7F, warpNode->node.destArea,
                                   warpNode->node.destNode, sDelayedWarpArg);
