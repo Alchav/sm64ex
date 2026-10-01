@@ -2593,9 +2593,9 @@ struct PauseMoveUnlock {
 
 static const u8 sPauseViewCastle[] = { TEXT_PAUSE_VIEW_CASTLE };
 static const u8 sPauseViewLevels[] = { TEXT_PAUSE_VIEW_LEVELS };
-static const u8 sPauseViewUpgrades[] = {
-    ASCII_TO_DIALOG('U'), ASCII_TO_DIALOG('P'), ASCII_TO_DIALOG('G'), ASCII_TO_DIALOG('R'),
-    ASCII_TO_DIALOG('A'), ASCII_TO_DIALOG('D'), ASCII_TO_DIALOG('E'), ASCII_TO_DIALOG('S'),
+static const u8 sPauseViewGlobal[] = {
+    ASCII_TO_DIALOG('G'), ASCII_TO_DIALOG('L'), ASCII_TO_DIALOG('O'), ASCII_TO_DIALOG('B'),
+    ASCII_TO_DIALOG('A'), ASCII_TO_DIALOG('L'),
     DIALOG_CHAR_TERMINATOR
 };
 static const u8 sPauseViewBitdw[] = { TEXT_PAUSE_VIEW_BITDW };
@@ -2649,7 +2649,10 @@ static const u8 sUnlockCarpet[] = { TEXT_UNLOCK_CARPET };
 static const u8 sUnlockChests[] = { TEXT_UNLOCK_CHESTS };
 static const u8 sUnlockCastleCannon[] = { TEXT_UNLOCK_CASTLE_CANNON };
 static const u8 sUnlockCheck[] = { TEXT_UNLOCK_CHECK };
-static const u8 sUnlockCoinStar[] = { TEXT_UNLOCK_COIN_STAR };
+static const u8 sUnlockCoins[] = {
+    ASCII_TO_DIALOG('C'), ASCII_TO_DIALOG('O'), ASCII_TO_DIALOG('I'), ASCII_TO_DIALOG('N'),
+    ASCII_TO_DIALOG('S'), DIALOG_CHAR_TERMINATOR
+};
 static const u8 sUnlockElev[] = { TEXT_UNLOCK_ELEV };
 static const u8 sUnlockFort[] = { TEXT_UNLOCK_FORT };
 static const u8 sUnlockHoot[] = { TEXT_UNLOCK_HOOT };
@@ -3061,6 +3064,44 @@ static void pause_ascii_to_dialog_string(const char *ascii, u8 *dialog, s16 maxL
     dialog[i] = DIALOG_CHAR_TERMINATOR;
 }
 
+static void pause_count_to_str(s16 count, u8 *dst) {
+    u16 value = count < 0 ? 0 : count;
+    u16 divisor = 10000;
+    s16 pos = 0;
+    bool wroteDigit = false;
+
+    while (divisor > 0) {
+        u8 digit = value / divisor;
+        if (digit != 0 || wroteDigit || divisor == 1) {
+            dst[pos++] = digit;
+            wroteDigit = true;
+        }
+        value %= divisor;
+        divisor /= 10;
+    }
+    dst[pos] = DIALOG_CHAR_TERMINATOR;
+}
+
+static s16 pause_coin_fraction_to_str(s16 current, s16 maximum, u8 *dst) {
+    static const char separator[] = " OUT OF ";
+    u8 number[6];
+    s16 pos = 0;
+
+    pause_count_to_str(current, number);
+    for (s16 i = 0; number[i] != DIALOG_CHAR_TERMINATOR; i++) {
+        dst[pos++] = number[i];
+    }
+    for (s16 i = 0; separator[i] != '\0'; i++) {
+        dst[pos++] = separator[i] == ' ' ? DIALOG_CHAR_SPACE : ASCII_TO_DIALOG(separator[i]);
+    }
+    pause_count_to_str(maximum, number);
+    for (s16 i = 0; number[i] != DIALOG_CHAR_TERMINATOR; i++) {
+        dst[pos++] = number[i];
+    }
+    dst[pos] = DIALOG_CHAR_TERMINATOR;
+    return pos;
+}
+
 static s16 render_pause_one_up_unlocks(
     s16 x, s16 y, s16 statusX, s16 levelNum, s16 firstRow, s16 maxRows
 ) {
@@ -3153,17 +3194,15 @@ static void render_pause_coin_and_enemy_unlocks(const struct PauseUnlockView *vi
     render_pause_coin_unlock_column(150, 108, 292, view->levelNum, true);
 }
 
-static void render_pause_coin_star_requirement(s16 x, s16 y, s16 valueX, s16 courseNum) {
-    u8 strCoinRequirement[4];
-    s16 digitCount = 0;
+static void render_pause_coin_count(s16 x, s16 y, s16 valueX, s16 courseNum) {
+    u8 value[18];
+    s16 gameCourseNum = courseNum + COURSE_MIN;
+    s16 length = pause_coin_fraction_to_str(
+        SM64AP_GetCourseCoinCount(gameCourseNum),
+        SM64AP_GetCourseCoinDisplayMaximum(gameCourseNum), value);
 
-    int_to_str(SM64AP_GetCoinStarRequirement(courseNum + COURSE_MIN), strCoinRequirement);
-    while (strCoinRequirement[digitCount] != DIALOG_CHAR_TERMINATOR) {
-        digitCount++;
-    }
-
-    print_generic_string(x, y, sUnlockCoinStar);
-    print_generic_string(valueX - (digitCount - 1) * 8, y, strCoinRequirement);
+    print_generic_string(x, y, sUnlockCoins);
+    print_generic_string(valueX - (length - 1) * 8, y, value);
 }
 
 static s16 pause_unlock_view_count(void) {
@@ -3223,8 +3262,8 @@ static void render_pause_area_unlocks(s16 x, s16 y, const struct PauseUnlockView
     static const u8 textNoItems[] = { TEXT_UNLOCK_NO_ITEMS };
     s16 unlockCount = 0;
 
-    if (view->type == PAUSE_UNLOCK_VIEW_COURSE) {
-        render_pause_coin_star_requirement(x, y, x + 170, view->courseNum);
+    if (view->type != PAUSE_UNLOCK_VIEW_CASTLE) {
+        render_pause_coin_count(x, y, x + 170, view->courseNum);
         y -= 11;
     }
 
@@ -3286,7 +3325,7 @@ static const u8 *pause_unlock_view_title(const struct PauseUnlockView *view) {
 
 static void render_pause_castle_unlocks(s16 x, s16 y);
 static void render_pause_level_unlocks(s16 x, s16 y);
-static void render_pause_upgrades(s16 x, s16 y);
+static void render_pause_global(s16 x, s16 y);
 
 static void render_pause_unlock_view_page(s16 viewIndex) {
     const struct PauseUnlockView *view = pause_unlock_view_at(viewIndex);
@@ -3322,7 +3361,7 @@ static void render_pause_unlock_view_page(s16 viewIndex) {
     print_generic_string(
         -8, 140 + contentYOffset,
         view->type == PAUSE_UNLOCK_VIEW_CASTLE && sPauseUnlockPage == 1 ? sPauseViewLevels
-        : view->type == PAUSE_UNLOCK_VIEW_CASTLE && sPauseUnlockPage == 2 ? sPauseViewUpgrades
+        : view->type == PAUSE_UNLOCK_VIEW_CASTLE && sPauseUnlockPage == 2 ? sPauseViewGlobal
         : pause_unlock_view_title(view));
     print_generic_string(
         266, 140 + contentYOffset,
@@ -3345,7 +3384,7 @@ static void render_pause_unlock_view_page(s16 viewIndex) {
     } else if (sPauseUnlockPage == 2 && view->type == PAUSE_UNLOCK_VIEW_CASTLE) {
         gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
         gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, gDialogTextAlpha);
-        render_pause_upgrades(74, 122 + contentYOffset);
+        render_pause_global(74, 122 + contentYOffset);
         gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
     } else if (sPauseUnlockPage == 1) {
         gSPDisplayList(gDisplayListHead++, dl_ia_text_begin);
@@ -3430,40 +3469,27 @@ static void render_pause_level_unlocks(s16 x, s16 y) {
     }
 }
 
-static void upgrade_count_to_str(s16 count, u8 *dst) {
-    u16 value = count < 0 ? 0 : count;
-    u16 divisor = 10000;
-    s16 pos = 0;
-    bool wroteDigit = false;
-
-    while (divisor > 0) {
-        u8 digit = value / divisor;
-        if (digit != 0 || wroteDigit || divisor == 1) {
-            dst[pos++] = digit;
-            wroteDigit = true;
-        }
-        value %= divisor;
-        divisor /= 10;
-    }
-    dst[pos] = DIALOG_CHAR_TERMINATOR;
-}
-
-static void render_pause_upgrades(s16 x, s16 y) {
+static void render_pause_global(s16 x, s16 y) {
     static const s16 labelX = 0;
-    static const s16 valueX = 154;
+    static const s16 valueX = 180;
     const u8 *labels[] = { sUpgradeCapLength, sUpgradeBreath, sUpgradeDamageDodge };
     const s16 values[] = {
         SM64AP_ProgressiveCapLengthCount(),
         SM64AP_ProgressiveBreathCount(),
         SM64AP_ProgressiveDamageDodgeCount(),
     };
-    u8 value[6];
+    u8 value[18];
 
     for (s16 i = 0; i < 3; i++) {
-        upgrade_count_to_str(values[i], value);
+        pause_count_to_str(values[i], value);
         print_generic_string(x + labelX, y - i * 14, labels[i]);
         print_generic_string(x + valueX, y - i * 14, value);
     }
+
+    s16 length = pause_coin_fraction_to_str(
+        SM64AP_GetGlobalCoinCount(), SM64AP_GetGlobalCoinDisplayMaximum(), value);
+    print_generic_string(x + labelX, y - 3 * 14, sUnlockCoins);
+    print_generic_string(x + valueX - (length - 1) * 8, y - 3 * 14, value);
 }
 
 static void handle_pause_unlock_page_scrolling(s8 pageCount) {
