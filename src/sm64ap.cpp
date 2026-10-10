@@ -1917,9 +1917,9 @@ static int SM64AP_LevelForCourseIndex(int courseIdx) {
 }
 
 bool SM64AP_HaveObjectItemForLevel(int item, s16 level) {
-    if (item == SM64AP_OBJECT_ITEM_THI_WARP_PIPES
-        && SM64AP_HaveObjectItem(SM64AP_OBJECT_ITEM_GLOBAL_WARP_PIPES)) {
-        return true;
+    if (item == SM64AP_OBJECT_ITEM_THI_WARP_PIPES) {
+        return SM64AP_HaveObjectItem(SM64AP_OBJECT_ITEM_GLOBAL_WARP_PIPES)
+            || SM64AP_HaveObjectItem(SM64AP_LevelSpecificObjectItemForLevel(item, level));
     }
     return SM64AP_HaveObjectItem(item)
         || SM64AP_HaveObjectItem(SM64AP_LevelSpecificObjectItemForLevel(item, level));
@@ -4239,6 +4239,7 @@ static void SM64AP_EncodeSignHint(const std::string &text) {
 #else
     constexpr size_t lineWidth = 24;
 #endif
+    constexpr size_t maxDialogCharacters = 512;
     size_t lineLength = 0;
     size_t input = 0;
     bool openingQuote = true;
@@ -4288,6 +4289,11 @@ static void SM64AP_EncodeSignHint(const std::string &text) {
             sm64_sign_dialog_text.push_back(static_cast<u8>(encoded));
             lineLength++;
         }
+    }
+    if (sm64_sign_dialog_text.size() > maxDialogCharacters) {
+        sm64_sign_dialog_text.resize(maxDialogCharacters - 3);
+        const u8 period = static_cast<u8>(SM64AP_EncodeSignCharacter('.'));
+        sm64_sign_dialog_text.insert(sm64_sign_dialog_text.end(), 3, period);
     }
     sm64_sign_dialog_text.push_back(DIALOG_CHAR_TERMINATOR);
     sm64_sign_dialog_entry.str = sm64_sign_dialog_text.data();
