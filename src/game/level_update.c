@@ -387,24 +387,27 @@ void init_mario_after_warp(void) {
                  spawnNode = spawnNode->next) {
             }
         }
-        if (spawnNode == NULL) {
-            return;
+        if (spawnNode != NULL) {
+            sWarpDest.nodeId = spawnNode->node.id;
         }
-        sWarpDest.nodeId = spawnNode->node.id;
     }
-    u32 marioSpawnType = get_mario_spawn_type(spawnNode->object);
+    struct Object *spawnObject = spawnNode != NULL ? spawnNode->object : NULL;
+    u32 marioSpawnType = spawnObject != NULL
+        ? get_mario_spawn_type(spawnObject) : MARIO_SPAWN_INSTANT_ACTIVE;
     s32 actionArg = sWarpDest.arg;
 
     SM64AP_SetVisitZone(gCurrLevelNum, sWarpDest.areaIdx);
 
     if (gMarioState->action != ACT_UNINITIALIZED) {
-        gPlayerSpawnInfos[0].startPos[0] = (s16) spawnNode->object->oPosX;
-        gPlayerSpawnInfos[0].startPos[1] = (s16) spawnNode->object->oPosY;
-        gPlayerSpawnInfos[0].startPos[2] = (s16) spawnNode->object->oPosZ;
+        if (spawnObject != NULL) {
+            gPlayerSpawnInfos[0].startPos[0] = (s16) spawnObject->oPosX;
+            gPlayerSpawnInfos[0].startPos[1] = (s16) spawnObject->oPosY;
+            gPlayerSpawnInfos[0].startPos[2] = (s16) spawnObject->oPosZ;
 
-        gPlayerSpawnInfos[0].startAngle[0] = 0;
-        gPlayerSpawnInfos[0].startAngle[1] = spawnNode->object->oMoveAngleYaw;
-        gPlayerSpawnInfos[0].startAngle[2] = 0;
+            gPlayerSpawnInfos[0].startAngle[0] = 0;
+            gPlayerSpawnInfos[0].startAngle[1] = spawnObject->oMoveAngleYaw;
+            gPlayerSpawnInfos[0].startAngle[2] = 0;
+        }
 
         if (marioSpawnType == MARIO_SPAWN_DOOR_WARP) {
             init_door_warp(&gPlayerSpawnInfos[0], actionArg);
@@ -421,8 +424,8 @@ void init_mario_after_warp(void) {
         init_mario();
         set_mario_initial_action(gMarioState, marioSpawnType, actionArg);
 
-        gMarioState->interactObj = spawnNode->object;
-        gMarioState->usedObj = spawnNode->object;
+        gMarioState->interactObj = spawnObject;
+        gMarioState->usedObj = spawnObject;
     }
 
     reset_camera(gCurrentArea->camera);
@@ -596,6 +599,9 @@ void check_instant_warp(void) {
 
 s16 music_changed_through_warp(s16 arg) {
     struct ObjectWarpNode *warpNode = area_get_warp_node(arg);
+    if (warpNode == NULL || warpNode->node.destArea < 1 || warpNode->node.destArea >= 8) {
+        return FALSE;
+    }
     s16 levelNum = warpNode->node.destLevel & 0x7F;
 
 #if BUGFIX_KOOPA_RACE_MUSIC
