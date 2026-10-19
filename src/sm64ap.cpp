@@ -2828,11 +2828,28 @@ static void SM64AP_DiscoverSubAreaEntrance(int sourceId) {
     SM64AP_SetServerInt(key, "or", 1 << bit);
 }
 
-static void SM64AP_DiscoverRandomizedSource(int sourceId) {
+static void SM64AP_HintRandomizedSource(int sourceId) {
+    if (AP_GetConnectionStatus() != AP_ConnectionStatus::Authenticated) {
+        return;
+    }
+
     if (sourceId > 0 && sourceId < 64) {
-        SM64AP_DiscoverSubAreaEntrance(sourceId);
-    } else {
-        SM64AP_DiscoverEntrance(sourceId);
+        const bool high = sourceId >= 32;
+        const int bit = high ? sourceId - 32 : sourceId - 1;
+        std::string key = high
+            ? "SM64SpicyHintedSubAreaEntrancesHigh_"
+            : "SM64SpicyHintedSubAreaEntrancesLow_";
+        key += std::to_string(AP_GetPlayerID());
+        SM64AP_SetServerInt(key, "or", 1 << bit);
+        return;
+    }
+
+    for (int bit = 0; bit < static_cast<int>(ARRAY_COUNT(sm64_shuffled_entrance_ids)); bit++) {
+        if (sm64_shuffled_entrance_ids[bit] == sourceId) {
+            std::string key = "SM64SpicyHintedEntrances_" + std::to_string(AP_GetPlayerID());
+            SM64AP_SetServerInt(key, "or", 1 << bit);
+            return;
+        }
     }
 }
 
@@ -4343,7 +4360,7 @@ void SM64AP_ReadSign(s16 level, s16 dialog) {
         SM64AP_SendSerializedRequest(request.str());
     }
     if (hint.entrance > 0) {
-        SM64AP_DiscoverRandomizedSource(hint.entrance);
+        SM64AP_HintRandomizedSource(hint.entrance);
     }
 }
 
