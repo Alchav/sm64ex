@@ -2833,6 +2833,15 @@ static void SM64AP_HintRandomizedSource(int sourceId) {
         return;
     }
 
+    // Main-entrance ids 41/51 (BBH/CCM paintings) are < 64, so check the shuffled list before the sub-area range.
+    for (int bit = 0; bit < static_cast<int>(ARRAY_COUNT(sm64_shuffled_entrance_ids)); bit++) {
+        if (sm64_shuffled_entrance_ids[bit] == sourceId) {
+            std::string key = "SM64SpicyHintedEntrances_" + std::to_string(AP_GetPlayerID());
+            SM64AP_SetServerInt(key, "or", 1 << bit);
+            return;
+        }
+    }
+
     if (sourceId > 0 && sourceId < 64) {
         const bool high = sourceId >= 32;
         const int bit = high ? sourceId - 32 : sourceId - 1;
@@ -2841,15 +2850,6 @@ static void SM64AP_HintRandomizedSource(int sourceId) {
             : "SM64SpicyHintedSubAreaEntrancesLow_";
         key += std::to_string(AP_GetPlayerID());
         SM64AP_SetServerInt(key, "or", 1 << bit);
-        return;
-    }
-
-    for (int bit = 0; bit < static_cast<int>(ARRAY_COUNT(sm64_shuffled_entrance_ids)); bit++) {
-        if (sm64_shuffled_entrance_ids[bit] == sourceId) {
-            std::string key = "SM64SpicyHintedEntrances_" + std::to_string(AP_GetPlayerID());
-            SM64AP_SetServerInt(key, "or", 1 << bit);
-            return;
-        }
     }
 }
 
