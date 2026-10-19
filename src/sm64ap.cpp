@@ -265,6 +265,9 @@ static std::mutex sm64_permanent_coin_mutex;
 static bool sm64_permanent_coin_storage_initialized = false;
 static bool sm64_permanent_coin_reconcile_requested = false;
 static std::string sm64_permanent_coin_ledger_keys[SM64AP_PERMANENT_COIN_COURSE_COUNT];
+static std::string sm64_permanent_coin_ledger_raw[SM64AP_PERMANENT_COIN_COURSE_COUNT];
+static AP_GetServerDataRequest
+    sm64_permanent_coin_ledger_requests[SM64AP_PERMANENT_COIN_COURSE_COUNT] = {};
 static bool sm64_permanent_coin_storage_received[SM64AP_PERMANENT_COIN_COURSE_COUNT] = {};
 static std::string sm64_legacy_permanent_coin_ledger_key;
 static std::string sm64_legacy_permanent_coin_ledger_raw;
@@ -4668,6 +4671,8 @@ void SM64AP_ResetItems() {
                 sm64_permanent_coin_updates_in_flight[course].end());
             sm64_permanent_coin_updates_in_flight[course].clear();
             sm64_permanent_coin_storage_received[course] = false;
+            sm64_permanent_coin_ledger_raw[course].clear();
+            sm64_permanent_coin_ledger_requests[course] = {};
         }
         while (!sm64_pending_permanent_coin_snapshots.empty()) {
             sm64_pending_permanent_coin_snapshots.pop();
@@ -4945,6 +4950,8 @@ void SM64AP_GenericInit() {
         sm64_permanent_coin_updates[course].clear();
         sm64_permanent_coin_updates_in_flight[course].clear();
         sm64_permanent_coin_ledger_keys[course].clear();
+        sm64_permanent_coin_ledger_raw[course].clear();
+        sm64_permanent_coin_ledger_requests[course] = {};
         sm64_permanent_coin_storage_received[course] = false;
     }
     while (!sm64_pending_permanent_coin_snapshots.empty()) {
@@ -7033,6 +7040,31 @@ static bool SM64AP_AllPermanentCoinStorageReceived() {
     return true;
 }
 
+static void SM64AP_UpdatePermanentCoinStorageRequests() {
+    for (int course = 0; course < SM64AP_PERMANENT_COIN_COURSE_COUNT; course++) {
+        if (sm64_permanent_coin_storage_received[course]
+            || sm64_permanent_coin_ledger_requests[course].status != AP_RequestStatus::Done) {
+            continue;
+        }
+        std::map<std::pair<u64, u8>, SM64APPermanentCoinRecord> parsed;
+        if (!SM64AP_ParsePermanentCoins(sm64_permanent_coin_ledger_raw[course], parsed)) {
+            continue;
+        }
+        for (auto record = parsed.begin(); record != parsed.end();) {
+            if (record->second.course != course) {
+                record = parsed.erase(record);
+            } else {
+                record++;
+            }
+        }
+        {
+            std::lock_guard<std::mutex> lock(sm64_permanent_coin_mutex);
+            sm64_pending_permanent_coin_snapshots.push({ course, std::move(parsed) });
+        }
+        sm64_permanent_coin_storage_received[course] = true;
+    }
+}
+
 static void SM64AP_InitializeServerStorage() {
     if (sm64_permanent_coin_storage_initialized
         || AP_GetConnectionStatus() != AP_ConnectionStatus::Authenticated) {
@@ -7068,7 +7100,15 @@ static void SM64AP_InitializeServerStorage() {
             prefix + "PermanentCoins;" + std::to_string(course);
         permanentCoinStorageKeys[sm64_permanent_coin_ledger_keys[course]] = AP_DataType::Raw;
     }
-    AP_SetNotify(permanentCoinStorageKeys, true);
+    AP_SetNotify(permanentCoinStorageKeys, false);
+    for (int course = 0; course < SM64AP_PERMANENT_COIN_COURSE_COUNT; course++) {
+        sm64_permanent_coin_ledger_raw[course].clear();
+        sm64_permanent_coin_ledger_requests[course] = {};
+        sm64_permanent_coin_ledger_requests[course].key = sm64_permanent_coin_ledger_keys[course];
+        sm64_permanent_coin_ledger_requests[course].value = &sm64_permanent_coin_ledger_raw[course];
+        sm64_permanent_coin_ledger_requests[course].type = AP_DataType::Raw;
+        AP_GetServerData(&sm64_permanent_coin_ledger_requests[course]);
+    }
     sm64_legacy_permanent_coin_ledger_key = prefix + "PermanentCoins";
     sm64_exhausted_signs_key = prefix + "ExhaustedSigns";
     AP_SetNotify(sm64_exhausted_signs_key, AP_DataType::Raw, true);
@@ -7087,6 +7127,7 @@ static void SM64AP_InitializeServerStorage() {
 
 bool SM64AP_ReadyToStart() {
     SM64AP_InitializeServerStorage();
+    SM64AP_UpdatePermanentCoinStorageRequests();
     SM64AP_UpdateLegacyPermanentCoinMigration();
     if (!sm64_server_hints_storage_received) {
         if (sm64_server_hints_request.status == AP_RequestStatus::Done) {
