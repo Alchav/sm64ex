@@ -6160,13 +6160,13 @@ static int SM64AP_GetConfiguredCoinMaximum(int courseIndex) {
 }
 
 static int SM64AP_GetCourseCoinCap(int courseIndex) {
+    if (sm64_legacy_global_coin_count_caps_loaded) {
+        return sm64_legacy_global_coin_count_caps[courseIndex];
+    }
     if (SM64AP_UseNewCoinCountProtocol()) {
         return sm64_counts_coins_beyond_coin_stars
             ? std::numeric_limits<int>::max()
             : SM64AP_GetConfiguredCoinMaximum(courseIndex);
-    }
-    if (sm64_legacy_global_coin_count_caps_loaded) {
-        return sm64_legacy_global_coin_count_caps[courseIndex];
     }
     return SM64AP_GetConfiguredCoinMaximum(courseIndex);
 }
@@ -6202,7 +6202,13 @@ int SM64AP_GetGlobalCoinCount() {
 int SM64AP_GetGlobalCoinDisplayMaximum() {
     int total = 0;
     for (int courseIndex = 0; courseIndex < SM64AP_NUM_GLOBAL_COIN_CHECK_COURSES; courseIndex++) {
-        total += SM64AP_GetConfiguredCoinMaximum(courseIndex);
+        if (sm64_legacy_global_coin_count_caps_loaded) {
+            total += sm64_legacy_global_coin_count_caps[courseIndex];
+        } else if (SM64AP_UseNewCoinCountProtocol() && sm64_counts_coins_beyond_coin_stars) {
+            total += SM64AP_GLOBAL_COIN_CHECK_MAX_COUNTS[courseIndex];
+        } else {
+            total += SM64AP_GetConfiguredCoinMaximum(courseIndex);
+        }
     }
     return total;
 }
