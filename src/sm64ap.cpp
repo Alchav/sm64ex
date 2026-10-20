@@ -624,13 +624,15 @@ static bool sm64_coin_display_maximums_loaded = false;
 static bool sm64_legacy_global_coin_count_caps_loaded = false;
 static int sm64_last_global_coin_count = -1;
 static std::set<int> sm64_sent_global_coin_checks;
+static std::set<int> sm64_pending_blocksanity_checks;
 static int sm64_current_visit_location = 0;
 static std::set<int> sm64_sent_visit_checks;
 static s16 sm64_current_visit_level = LEVEL_NONE;
 static s16 sm64_current_visit_area = 0;
 
 static bool SM64AP_CanReportProgress() {
-    return gCurrDemoInput == nullptr && gCurrCreditsEntry == nullptr;
+    return gCurrDemoInput == nullptr && gCurrCreditsEntry == nullptr
+        && AP_GetConnectionStatus() == AP_ConnectionStatus::Authenticated;
 }
 
 static int sm64ap_last_location_check_id = 0;
@@ -1349,6 +1351,7 @@ void SM64AP_CheckLocation(int64_t loc_id) {
     int blocksanityOffset = loc_id - SM64AP_LOCATIONID_BLOCKSANITY_START;
     if (blocksanityOffset >= 0 && blocksanityOffset < SM64AP_NUM_BLOCKSANITY_CHECKS) {
         sm64_sent_blocksanity_checks[blocksanityOffset] = true;
+        sm64_pending_blocksanity_checks.erase(static_cast<int>(loc_id));
     }
 
     SM64AP_RequestLiveObjectReconcile();
@@ -6080,13 +6083,13 @@ u8 SM64AP_ObjectVisualState(struct Object *obj) {
 }
 
 void SM64AP_SendBlocksanityCheck(s16 level, s16 area, s32 behParams, s16 x, s16 y, s16 z) {
-    if (!SM64AP_CanReportProgress()) {
-        return;
-    }
-
     int locId = SM64AP_ResolveBlocksanityLocation(level, area, behParams, x, y, z);
     int offset = SM64AP_BlocksanityOffsetFromLocationId(locId);
     if (offset < 0 || sm64_sent_blocksanity_checks[offset] || SM64AP_CheckedLoc(locId)) {
+        return;
+    }
+    if (!SM64AP_CanReportProgress()) {
+        sm64_pending_blocksanity_checks.insert(locId);
         return;
     }
 
@@ -7447,6 +7450,19 @@ static void SM64AP_UpdateLegacyPermanentCoinMigration() {
 
 void SM64AP_FlushPermanentCoinLedger() {
     SM64AP_UpdateLegacyPermanentCoinMigration();
+    if (SM64AP_CanReportProgress() && !sm64_pending_blocksanity_checks.empty()) {
+        std::vector<int> pendingBlocks(
+            sm64_pending_blocksanity_checks.begin(), sm64_pending_blocksanity_checks.end());
+        for (int locationId : pendingBlocks) {
+            int offset = SM64AP_BlocksanityOffsetFromLocationId(locationId);
+            if (offset >= 0 && !sm64_sent_blocksanity_checks[offset]
+                && !SM64AP_CheckedLoc(locationId)) {
+                sm64_sent_blocksanity_checks[offset] = true;
+                SM64AP_SendItem(locationId);
+            }
+            sm64_pending_blocksanity_checks.erase(locationId);
+        }
+    }
     if (!sm64_pending_coin_output_checks.empty()) {
         std::vector<std::pair<u64, u8>> pending(
             sm64_pending_coin_output_checks.begin(), sm64_pending_coin_output_checks.end());
