@@ -62,6 +62,7 @@ extern "C" {
 // APCpp's JSON reader and writer are shared by its network thread. Game-thread messages are
 // serialized here before entering APCpp so coin collection cannot race incoming messages.
 extern void APSend(std::string request);
+extern AP_NetworkPlayer getPlayer(int team, int slot);
 
 #define WARP_NODE_CREDITS_MIN 0xF8 // level_update.c
 #define NUM_PAINTING_LOCKS SM64AP_NUM_PAINTING_LOCKS
@@ -8782,6 +8783,12 @@ void SM64AP_PrintNext() {
     int display_duration = msg_frame_duration;
     if (msg->type == AP_MessageType::ItemSend) {
         AP_ItemSendMessage* o_msg = static_cast<AP_ItemSendMessage*>(msg);
+        AP_NetworkPlayer localPlayer = getPlayer(0, AP_GetPlayerID());
+        if (o_msg->sendPlayer != localPlayer.alias) {
+            AP_ClearLatestMessage();
+            cur_msg_frame_duration = msg_frame_duration;
+            return;
+        }
         SM64AP_PrintWrappedItemMessage(
             o_msg->item, "Sent to " + o_msg->recvPlayer);
     } else if (msg->type == AP_MessageType::ItemRecv) {
