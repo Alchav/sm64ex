@@ -15,7 +15,6 @@
 #include "sm64.h"
 #include "sm64ap.h"
 
-#define PRESS_START_DEMO_TIMER 800
 
 #define STUB_LEVEL(textname, _1, _2, _3, _4, _5, _6, _7, _8) textname,
 #define DEFINE_LEVEL(textname, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10) textname,
@@ -26,47 +25,14 @@ static char gLevelSelect_StageNamesText[64][16] = {
 #undef STUB_LEVEL
 #undef DEFINE_LEVEL
 
-static u16 gDemoCountdown = 0;
 #ifndef VERSION_JP
 static s16 D_U_801A7C34 = 1;
 static s16 gameOverNotPlayed = 1;
 #endif
 
-// run the demo timer on the PRESS START screen.
-// this function will return a non-0 timer once
-// the demo starts, signaling to the subsystem that
-// the demo needs to be ran.
-
-// don't shift this function from being the first function in the segment.
-// the level scripts assume this function is the first, so it cant be moved.
+// Keep this first in the segment for the level-script entry point.
 int run_press_start_demo_timer(s32 timer) {
     gCurrDemoInput = NULL;
-
-    if (timer == 0) {
-        if (!gPlayer1Controller->buttonDown && !gPlayer1Controller->stickMag) {
-            if ((++gDemoCountdown) == PRESS_START_DEMO_TIMER) {
-                // start the demo. 800 frames has passed while
-                // player is idle on PRESS START screen.
-
-                // start the Mario demo animation for the demo list.
-                load_patchable_table(&gDemo, gDemoInputListID);
-
-                // if the next demo sequence ID is the count limit, reset it back to
-                // the first sequence.
-                if (++gDemoInputListID == gDemo.animDmaTable->count) {
-                    gDemoInputListID = 0;
-                }
-
-                // add 1 (+4) to the pointer to skip the demoID.
-                gCurrDemoInput = ((struct DemoInput *) gDemo.targetAnim) + 1;
-                timer = (s8)((struct DemoInput *) gDemo.targetAnim)->timer;
-                gCurrSaveFileNum = 1;
-                gCurrActNum = 1;
-            }
-        } else { // activity was detected, so reset the demo countdown.
-            gDemoCountdown = 0;
-        }
-    }
     return timer;
 }
 
