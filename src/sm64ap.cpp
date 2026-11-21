@@ -58,6 +58,7 @@ extern "C" {
 #include <limits>
 #include <atomic>
 #include <cmath>
+#include <chrono>
 
 // APCpp's JSON reader and writer are shared by its network thread. Game-thread messages are
 // serialized here before entering APCpp so coin collection cannot race incoming messages.
@@ -625,14 +626,22 @@ static bool sm64_coin_display_maximums_loaded = false;
 static bool sm64_legacy_global_coin_count_caps_loaded = false;
 static int sm64_last_global_coin_count = -1;
 static std::set<int> sm64_sent_global_coin_checks;
-static std::set<int> sm64_pending_blocksanity_checks;
+static std::mutex sm64_location_check_mutex;
+static std::map<int, unsigned int> sm64_pending_location_checks;
+static std::chrono::steady_clock::time_point sm64_location_check_retry_at;
+static constexpr auto SM64AP_PROGRESS_RETRY_INTERVAL = std::chrono::seconds(15);
+static constexpr unsigned int SM64AP_LOCATION_CHECK_RETRIES = 3;
 static int sm64_current_visit_location = 0;
 static std::set<int> sm64_sent_visit_checks;
 static s16 sm64_current_visit_level = LEVEL_NONE;
 static s16 sm64_current_visit_area = 0;
 
+static bool SM64AP_IsGameplayProgress() {
+    return gCurrDemoInput == nullptr && gCurrCreditsEntry == nullptr;
+}
+
 static bool SM64AP_CanReportProgress() {
-    return gCurrDemoInput == nullptr && gCurrCreditsEntry == nullptr
+    return SM64AP_IsGameplayProgress()
         && AP_GetConnectionStatus() == AP_ConnectionStatus::Authenticated;
 }
 
@@ -1328,6 +1337,10 @@ void SM64AP_RecvItem(int64_t idx, bool notify) {
 }
 
 void SM64AP_CheckLocation(int64_t loc_id) {
+    if (loc_id >= 0 && loc_id <= INT_MAX) {
+        std::lock_guard<std::mutex> lock(sm64_location_check_mutex);
+        sm64_pending_location_checks.erase(static_cast<int>(loc_id));
+    }
     if (loc_id >= 4000000 && loc_id <= INT_MAX) {
         int coinLocation = static_cast<int>(loc_id);
         sm64_checked_coin_output_locations.insert(coinLocation);
@@ -1352,7 +1365,6 @@ void SM64AP_CheckLocation(int64_t loc_id) {
     int blocksanityOffset = loc_id - SM64AP_LOCATIONID_BLOCKSANITY_START;
     if (blocksanityOffset >= 0 && blocksanityOffset < SM64AP_NUM_BLOCKSANITY_CHECKS) {
         sm64_sent_blocksanity_checks[blocksanityOffset] = true;
-        sm64_pending_blocksanity_checks.erase(static_cast<int>(loc_id));
     }
 
     SM64AP_RequestLiveObjectReconcile();
@@ -4679,6 +4691,13 @@ void SM64AP_SetMoveRandoVec(int vec) {
 }
 void SM64AP_ResetItems() {
     {
+        std::lock_guard<std::mutex> lock(sm64_location_check_mutex);
+        sm64_location_check_retry_at = {};
+        for (auto &check : sm64_pending_location_checks) {
+            check.second = 0;
+        }
+    }
+    {
         std::lock_guard<std::mutex> lock(delayed_queue_mutex);
         while (!delayed_queue.empty()) {
             delayed_queue.pop();
@@ -4948,6 +4967,8 @@ void SM64AP_SetReplyHandler(AP_SetReply reply) {
 }
 
 void SM64AP_GenericInit() {
+    sm64_pending_location_checks.clear();
+    sm64_location_check_retry_at = {};
     sm64_world_version_received.store(false);
     sm64_world_version_compatible.store(false);
     sm64_world_version_major.store(-1);
@@ -5124,6 +5145,49 @@ static void SM64AP_SendSerializedRequest(const std::string &request) {
     APSend(request);
 }
 
+static void SM64AP_RetryLocationChecks() {
+    if (!SM64AP_CanReportProgress()) {
+        return;
+    }
+    std::vector<int> pending;
+    {
+        std::lock_guard<std::mutex> lock(sm64_location_check_mutex);
+        const auto now = std::chrono::steady_clock::now();
+        if (sm64_pending_location_checks.empty() || now < sm64_location_check_retry_at) {
+            return;
+        }
+        sm64_location_check_retry_at = now + SM64AP_PROGRESS_RETRY_INTERVAL;
+        // Older slot data does not identify every enabled check. Bound retries
+        // for IDs the server silently ignores, and try again after reconnect.
+        for (auto &check : sm64_pending_location_checks) {
+            if (check.second < SM64AP_LOCATION_CHECK_RETRIES) {
+                pending.push_back(check.first);
+                ++check.second;
+            }
+        }
+    }
+    std::ostringstream request;
+    size_t batchSize = 0;
+    for (int location : pending) {
+        if (batchSize == 0) {
+            request << "[{\"cmd\":\"LocationChecks\",\"locations\":[";
+        } else {
+            request << ',';
+        }
+        request << location;
+        if (++batchSize == 128) {
+            request << "]}]";
+            SM64AP_SendSerializedRequest(request.str());
+            request.str("");
+            batchSize = 0;
+        }
+    }
+    if (batchSize != 0) {
+        request << "]}]";
+        SM64AP_SendSerializedRequest(request.str());
+    }
+}
+
 void SM64AP_SendByBoxID(int id) {
     int locId = SM64AP_BoxLocationId(id);
 
@@ -5133,11 +5197,20 @@ void SM64AP_SendByBoxID(int id) {
 }
 
 void SM64AP_SendItem(int idx) {
-    if (!SM64AP_CanReportProgress()) {
+    if (idx <= 0 || !SM64AP_IsGameplayProgress()) {
         return;
     }
 
     sm64ap_last_location_check_id = idx;
+    {
+        std::lock_guard<std::mutex> lock(sm64_location_check_mutex);
+        if (!sm64_pending_location_checks.emplace(idx, 0).second) {
+            return;
+        }
+    }
+    if (!SM64AP_CanReportProgress()) {
+        return;
+    }
     std::ostringstream request;
     request << "[{\"cmd\":\"LocationChecks\",\"locations\":[" << idx << "]}]";
     SM64AP_SendSerializedRequest(request.str());
@@ -5614,7 +5687,7 @@ bool SM64AP_CollectOneUp(int locId) {
         if (SM64AP_OneUpCollected(locId)) {
             return false;
         }
-        if (SM64AP_CanReportProgress()
+        if (SM64AP_IsGameplayProgress()
             && sm64_sent_box_checks.count(locId) == 0
             && !SM64AP_CheckedLoc(locId)) {
             sm64_sent_box_checks.insert(locId);
@@ -5623,7 +5696,7 @@ bool SM64AP_CollectOneUp(int locId) {
         return true;
     }
 
-    if (!SM64AP_CanReportProgress() || !sm64_1up_checks_enabled || offset < 0) {
+    if (!SM64AP_IsGameplayProgress() || !sm64_1up_checks_enabled || offset < 0) {
         return false;
     }
 
@@ -6089,8 +6162,7 @@ void SM64AP_SendBlocksanityCheck(s16 level, s16 area, s32 behParams, s16 x, s16 
     if (offset < 0 || sm64_sent_blocksanity_checks[offset] || SM64AP_CheckedLoc(locId)) {
         return;
     }
-    if (!SM64AP_CanReportProgress()) {
-        sm64_pending_blocksanity_checks.insert(locId);
+    if (!SM64AP_IsGameplayProgress()) {
         return;
     }
 
@@ -6099,7 +6171,7 @@ void SM64AP_SendBlocksanityCheck(s16 level, s16 area, s32 behParams, s16 x, s16 
 }
 
 void SM64AP_CheckCoinCount(int courseNum, int coinCount) {
-    if (!SM64AP_CanReportProgress()) {
+    if (!SM64AP_IsGameplayProgress()) {
         return;
     }
 
@@ -6218,7 +6290,7 @@ void SM64AP_CheckGlobalCoinCount() {
     bool configurationLoaded = SM64AP_UseNewCoinCountProtocol()
         || sm64_legacy_global_coin_count_caps_loaded;
     if (!sm64_global_coin_count_checks_enabled || !configurationLoaded
-        || !SM64AP_CanReportProgress()) {
+        || !SM64AP_IsGameplayProgress()) {
         return;
     }
 
@@ -6951,7 +7023,7 @@ static void SM64AP_SendCoinOutputCheck(const std::pair<u64, u8> &physicalKey) {
         if (sm64_checked_coin_output_locations.count(entry.locationId) != 0) {
             continue;
         }
-        if (!SM64AP_CanReportProgress()) {
+        if (!SM64AP_IsGameplayProgress()) {
             retry = true;
             continue;
         }
@@ -6984,7 +7056,7 @@ static void SM64AP_SendCoinCompletionCheck(u64 physicalSource) {
         if (!complete || sm64_checked_coin_output_locations.count(entry.locationId) != 0) {
             continue;
         }
-        if (!SM64AP_CanReportProgress()) {
+        if (!SM64AP_IsGameplayProgress()) {
             retry = true;
             continue;
         }
@@ -7275,6 +7347,15 @@ bool SM64AP_ConsumePermanentCoinReconcileRequest() {
     }
     if (receivedSnapshot) {
         sm64_permanent_coin_sources_dirty = true;
+        int totals[COURSE_MAX + 1] = {};
+        for (const auto &entry : sm64_permanent_coins) {
+            if (entry.second.course <= COURSE_MAX) {
+                totals[entry.second.course] += entry.second.value;
+            }
+        }
+        for (int course = COURSE_MIN; course <= COURSE_MAX; ++course) {
+            SM64AP_CheckCoinCount(course, totals[course]);
+        }
     }
 
     bool requested = sm64_permanent_coin_reconcile_requested;
@@ -7457,19 +7538,7 @@ static void SM64AP_UpdateLegacyPermanentCoinMigration() {
 
 void SM64AP_FlushPermanentCoinLedger() {
     SM64AP_UpdateLegacyPermanentCoinMigration();
-    if (SM64AP_CanReportProgress() && !sm64_pending_blocksanity_checks.empty()) {
-        std::vector<int> pendingBlocks(
-            sm64_pending_blocksanity_checks.begin(), sm64_pending_blocksanity_checks.end());
-        for (int locationId : pendingBlocks) {
-            int offset = SM64AP_BlocksanityOffsetFromLocationId(locationId);
-            if (offset >= 0 && !sm64_sent_blocksanity_checks[offset]
-                && !SM64AP_CheckedLoc(locationId)) {
-                sm64_sent_blocksanity_checks[offset] = true;
-                SM64AP_SendItem(locationId);
-            }
-            sm64_pending_blocksanity_checks.erase(locationId);
-        }
-    }
+    SM64AP_RetryLocationChecks();
     if (!sm64_pending_coin_output_checks.empty()) {
         std::vector<std::pair<u64, u8>> pending(
             sm64_pending_coin_output_checks.begin(), sm64_pending_coin_output_checks.end());
