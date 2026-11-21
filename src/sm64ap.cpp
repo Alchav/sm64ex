@@ -260,6 +260,8 @@ static std::map<std::pair<u64, u8>, SM64APPermanentCoinRecord>
     sm64_permanent_coin_updates[SM64AP_PERMANENT_COIN_COURSE_COUNT];
 static std::map<std::pair<u64, u8>, SM64APPermanentCoinRecord>
     sm64_permanent_coin_updates_in_flight[SM64AP_PERMANENT_COIN_COURSE_COUNT];
+static std::chrono::steady_clock::time_point
+    sm64_permanent_coin_retry_at[SM64AP_PERMANENT_COIN_COURSE_COUNT];
 static std::queue<std::pair<int, std::map<std::pair<u64, u8>, SM64APPermanentCoinRecord>>>
     sm64_pending_permanent_coin_snapshots;
 static std::set<std::pair<u64, u8>> sm64_uncollected_coin_tombstones;
@@ -6939,6 +6941,7 @@ bool SM64AP_MarkPermanentAggregateCoinSource(struct Object *source, int slotCoun
         if (!record->second.aggregate) {
             record->second.aggregate = true;
             int course = std::min<int>(record->second.course, COURSE_MAX);
+            std::lock_guard<std::mutex> lock(sm64_permanent_coin_mutex);
             sm64_permanent_coin_updates[course][key] = record->second;
             sm64_permanent_coin_sources_dirty = true;
         }
@@ -7309,11 +7312,11 @@ bool SM64AP_ConsumePermanentCoinReconcileRequest() {
         receivedSnapshot = true;
 
         std::set<std::pair<u64, u8>> localWrites;
-        for (const auto &entry : sm64_permanent_coin_updates[course]) {
-            localWrites.insert(entry.first);
-        }
         {
             std::lock_guard<std::mutex> lock(sm64_permanent_coin_mutex);
+            for (const auto &entry : sm64_permanent_coin_updates[course]) {
+                localWrites.insert(entry.first);
+            }
             for (const auto &entry : sm64_permanent_coin_updates_in_flight[course]) {
                 localWrites.insert(entry.first);
             }
@@ -7368,7 +7371,10 @@ static void SM64AP_RecordPermanentCoin(
     SM64APPermanentCoinRecord record = { course, value, aggregate };
     sm64_permanent_coins[key] = record;
     int storageCourse = std::min<int>(course, COURSE_MAX);
-    sm64_permanent_coin_updates[storageCourse][key] = record;
+    {
+        std::lock_guard<std::mutex> lock(sm64_permanent_coin_mutex);
+        sm64_permanent_coin_updates[storageCourse][key] = record;
+    }
     sm64_uncollected_coin_tombstones.erase(key);
     sm64_permanent_coin_sources_dirty = true;
     SM64AP_SendCoinOutputCheck(key);
@@ -7526,7 +7532,10 @@ static void SM64AP_UpdateLegacyPermanentCoinMigration() {
         }
         int course = std::min<int>(entry.second.course, COURSE_MAX);
         sm64_permanent_coins[entry.first] = entry.second;
-        sm64_permanent_coin_updates[course][entry.first] = entry.second;
+        {
+            std::lock_guard<std::mutex> lock(sm64_permanent_coin_mutex);
+            sm64_permanent_coin_updates[course][entry.first] = entry.second;
+        }
         SM64AP_SendCoinOutputCheck(entry.first);
         SM64AP_SendCoinCompletionCheck(entry.first.first);
     }
@@ -7560,15 +7569,20 @@ void SM64AP_FlushPermanentCoinLedger() {
             std::string serialized;
             {
                 std::lock_guard<std::mutex> lock(sm64_permanent_coin_mutex);
-                if (!sm64_permanent_coin_updates_in_flight[course].empty()
-                    || sm64_permanent_coin_updates[course].empty()
-                    || sm64_permanent_coin_ledger_keys[course].empty()) {
+                auto &inFlight = sm64_permanent_coin_updates_in_flight[course];
+                auto &pending = sm64_permanent_coin_updates[course];
+                const auto now = std::chrono::steady_clock::now();
+                if (sm64_permanent_coin_ledger_keys[course].empty()
+                    || (!inFlight.empty() && now < sm64_permanent_coin_retry_at[course])
+                    || (inFlight.empty() && pending.empty())) {
                     continue;
                 }
-                sm64_permanent_coin_updates_in_flight[course].swap(
-                    sm64_permanent_coin_updates[course]);
-                serialized = SM64AP_SerializePermanentCoinEntries(
-                    sm64_permanent_coin_updates_in_flight[course]);
+                // A newer local record takes precedence over a stalled write.
+                pending.insert(inFlight.begin(), inFlight.end());
+                inFlight.clear();
+                inFlight.swap(pending);
+                sm64_permanent_coin_retry_at[course] = now + SM64AP_PROGRESS_RETRY_INTERVAL;
+                serialized = SM64AP_SerializePermanentCoinEntries(inFlight);
             }
             std::ostringstream request;
             request << "[{\"cmd\":\"Set\",\"key\":\""
@@ -7645,9 +7659,9 @@ static void SM64AP_ApplyUncollectTrapEvent(const SM64APUncollectTrapEvent &event
     std::pair<u64, u8> key = std::make_pair(event.source, event.slot);
     sm64_permanent_coins.erase(key);
     int course = std::min<int>(event.course, COURSE_MAX);
-    sm64_permanent_coin_updates[course].erase(key);
     {
         std::lock_guard<std::mutex> lock(sm64_permanent_coin_mutex);
+        sm64_permanent_coin_updates[course].erase(key);
         sm64_permanent_coin_updates_in_flight[course].erase(key);
     }
     sm64_uncollected_coin_tombstones.insert(key);
